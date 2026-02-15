@@ -1,4 +1,3 @@
-# lis-gcr-order-inf-svc API Specification
 
 Based on the documents provided, I have architected the **GCRS to LIS API Specification**.
 
