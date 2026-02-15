@@ -19,7 +19,7 @@
             - Used by CRAS Alert, Report Printing
     - Possible values
 
-![{19EAF5B2-4348-4C58-A9B5-019DE36AD1BC}.png](Clarification.assets/%7B19EAF5B2-4348-4C58-A9B5-019DE36AD1BC%7D.png)
+![{19EAF5B2-4348-4C58-A9B5-019DE36AD1BC}.png]({19EAF5B2-4348-4C58-A9B5-019DE36AD1BC}.png)
 
 - Determination of confidential (034 [A08])
     - pmi_access_code (IOI)
