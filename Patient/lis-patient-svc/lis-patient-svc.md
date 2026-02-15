@@ -5,7 +5,7 @@
     - Registration
         - Input Encounter No.
 
-![image.png](lis-patient-svc.assets/image.png)
+![image.png](Patient/lis-patient-svc/lis-patient-svc.assets/image.png)
 
     - Specimen Acknowledgement
         - Order Retrieval (Patient does not exist in DB)
@@ -15,7 +15,7 @@
         - Input HKID
         - Click "Generate Computer Encounter"
 
-![image.png](lis-patient-svc.assets/image%20(2).png)
+![image.png](Patient/lis-patient-svc/lis-patient-svc.assets/image%20(2).png)
 
 1. **getHkpmiCaseListbyHkid**
     - Original Stored Procedure: lis_sp_pat_remote_pmi_by_pid2
@@ -23,7 +23,7 @@
         - Input HKID
         - Click PMI List
 
-![image.png](lis-patient-svc.assets/image%20(3).png)
+![image.png](Patient/lis-patient-svc/lis-patient-svc.assets/image%20(3).png)
 
 1. **updatePatientFromPMI**
     - Original Stored Procedure: lis_sp_pat_upd_enc_by_pmi1

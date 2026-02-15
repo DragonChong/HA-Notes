@@ -2,7 +2,7 @@
 
 # proc_type_1
 
-![image.png](IOI%20Methods.assets/image.png)
+![image.png](Patient/IOI/IOI%20Methods.assets/image.png)
 
 ## Methods Being Called
 

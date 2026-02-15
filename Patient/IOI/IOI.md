@@ -10,7 +10,7 @@ so that I can use the updated patient data to create the request.
 
 [http://cmsscm/svn/lis_ecpath4/IOI/CPI](http://cmsscm/svn/lis_ecpath4/IOI/CPI) for ECPath
 
-![image.png](IOI.assets/image.png)
+![image.png](Patient/IOI/IOI.assets/image.png)
 
 
 
@@ -72,13 +72,13 @@ The program start at "laps_restart" in gateway.
 
 The script will run laps_config and laps to start the download IPAS data.
 
-![image.png](IOI.assets/image%20(2).png)
+![image.png](Patient/IOI/IOI.assets/image%20(2).png)
 
 File: **laps_config.c**
 
 Mainly read the config file "laps.cfg", for the interval download time, process mode and output to the log.
 
-![image.png](IOI.assets/image%20(3).png)
+![image.png](Patient/IOI/IOI.assets/image%20(3).png)
 
 | char **rec_count**[4]  <br/>char interval[3]  <br/>**char las**tkey[20]  <br/>char semaphore  <br/>**char** proc_mode |
 | --------------------------------------------------------------------------------------------------------------------- |
@@ -86,7 +86,7 @@ Mainly read the config file "laps.cfg", for the interval download time, process 
 
 
 
-![image.png](IOI.assets/image%20(4).png)
+![image.png](image%20(4).png)
 
 Default setup:
 
@@ -132,7 +132,7 @@ Function: **main_logic()**
 
 Called "lis_sp_laps_utility.cp.**set_laboratory()**"
 
-![image.png](IOI.assets/image%20(5).png)
+![image.png](image%20(5).png)
 
 ****
 
@@ -140,7 +140,7 @@ Function: "lis_sp_laps_utility.cp.**set_laboratory()**"
 
 check the lab availability in hospital
 
-![{1AA3700E-8464-49B8-8E9D-B6958C920408}.png](IOI.assets/%7B1AA3700E-8464-49B8-8E9D-B6958C920408%7D.png)
+![{1AA3700E-8464-49B8-8E9D-B6958C920408}.png]({1AA3700E-8464-49B8-8E9D-B6958C920408}.png)
 
 
 
@@ -250,7 +250,7 @@ Hosp gateway testioi/prodioi account
 
 Reference Doc: \dc7shdns04b\CP3_LIS_ECPATH_STORE\Regression Testing\Sybase_16_upgrade\CMC\IOI  In-Out Patient Interface (CMC) sybase16.docx
 
-![image.png](IOI.assets/image%20(6).png)
+![image.png](image%20(6).png)
 
 ---
 
