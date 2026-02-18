@@ -1,1 +1,0 @@
-Refactor OddsTableView: Use Odds API Instead of H2H API
