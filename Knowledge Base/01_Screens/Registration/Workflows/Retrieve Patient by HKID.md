@@ -759,20 +759,6 @@ Tracks merged HKID records.
 
 ---
 
-## Modification History
-
-| Date | Developer | Reference | Changes |
-|------|-----------|-----------|---------|
-| 02 Nov 2020 | Henry Chan | LIS-2604 | Amend closePatientPopUpCallbackFunction, hkidModifiedFunction |
-| 04 Jun 2020 | Tony Chong | LIS-1722 | Add constructPatientEpisodeSelectionDialgouePm |
-| 05 Aug 2016 | Tony Chong | CEO-78130 | Amend pmiPatientPopUpItemSelectedFunction |
-| 31 Oct 2016 | Tony Chong | CEO-76657 | Amend popUpPatientEpisodeSelectionDialogueForSelection |
-| 10 Nov 2014 | Rock Yu | PMH-BBS-B-000068 | Added serverCallErrorHandlerForPMI |
-| 27 May 2025 | Tony Chong | LIS-9975 | Amend retrieveRegistrationPatientListHandler |
-| 08 Apr 2025 | Collins | LIS-9914 | Enhance patient service using composite key |
-
----
-
 ## Testing Considerations
 
 ### Test Scenarios
