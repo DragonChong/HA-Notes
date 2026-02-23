@@ -305,6 +305,8 @@ User clicks the window close button (✕ / Close Indicator) on "Select an episod
 2. **Error Messages**
    - **Message 4274** displayed on log monitor:
      > "Due to the unavailability of PMI service, the system cannot retrieve patient details for entered HKID at this moment."
+   
+   - **Message 687** prompted to user:
      > "Create new Encounter case?"
 
 3. **User Options**

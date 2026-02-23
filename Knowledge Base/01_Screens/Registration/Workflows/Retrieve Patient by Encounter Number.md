@@ -310,7 +310,7 @@ sequenceDiagram
         RegUIComp->>PMI: Query PMI
         PMI-->>RegUIComp: Case No. Not Found
         RegUIComp->>RegScreen: Display Message 687
-        RegUIComp->>RegScreen: Display Message 3780
+        RegUIComp->>RegScreen: Display Message 4274
         alt User Confirms Create New Encounter
             User->>RegScreen: Click "Yes" on 687
             RegScreen->>RegUIComp: popUpCreateNewEpisodeDialogue()
@@ -390,7 +390,7 @@ sequenceDiagram
    4. System queries PMI service
    5. PMI query fails - case number not found in PMI
    6. System displays **Message 687**: "Create new Encounter case?"
-   7. System displays **Message 3780** on log monitor: "Due to the unavailability of PMI service, the system cannot retrieve patient details for entered HKID at this moment."
+   7. System displays **Message 4274** on log monitor: "Due to the unavailability of PMI service, the system cannot retrieve patient details for entered HKID at this moment."
    8. User prompted for action:
       
       **Sub-Option C1: User Clicks "Yes"**
@@ -458,7 +458,7 @@ sequenceDiagram
     RegPm->>PMI: Query PMI Service
     PMI-->>RegPm: Service Timeout/Failure
     RegPm->>RegPm: serverCallErrorHandlerForPMI()
-    RegPm->>LogMonitor: Display Message 3780
+    RegPm->>LogMonitor: Display Message 4274
     LogMonitor->>User: Show Error on Log Monitor
     RegPm->>RegScreen: Display Message 687
     
