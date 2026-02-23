@@ -44,21 +44,86 @@ This workflow describes how the LIS system retrieves patient information when a 
 
 **Trigger:** User enters case number in Enc No field
 
-**Step-by-Step:**
-1. User enters case number in Enc No field on Registration screen
-2. System validates check digit of case number
-3. System checks if case number exists in PATIENT table for current hospital
-4. System retrieves patient's HKID from PATIENT.pat_hkid
-5. System populates HKID field in Patient Registration Key
-6. System loads patient demographics from PATIENT table:
-   - Patient Name (English/Chinese)
-   - Date of Birth
-   - Gender
-   - Address
-   - Phone numbers
-   - Other demographic fields
-7. System sets focus to Request No. field
-8. User proceeds with test registration
+#### Process Flow
+
+```mermaid
+sequenceDiagram
+    User->>Registration Screen: Enter Case Number
+    Registration Screen->>LisEncounterNoTextInputPm: Validate Encounter No.
+    LisEncounterNoTextInputPm->>EncounterNoTextInputEvent: VALIDATE_ENCOUNTER_NO
+    EncounterNoTextInputEvent->>RegistrationUIComponents: validateEncounterNoHandler()
+    RegistrationUIComponents->>RegistrationUIComponents: Validate Check Digit
+    RegistrationUIComponents->>PatientUIAppServiceBean: retrieveRegistrationPatientList()
+    PatientUIAppServiceBean->>PatientUIAppServiceImpl: Query PATIENT table
+    PatientUIAppServiceImpl->>Database: SELECT * FROM PATIENT WHERE pat_encounter = ?
+    Database-->>PatientUIAppServiceImpl: Patient Record Found
+    PatientUIAppServiceImpl-->>RegistrationPm: Patient Data
+    RegistrationPm->>RegistrationPm: retrieveRegistrationPatientListHandler()
+    RegistrationPm->>RegistrationUIComponents: loadPatientReadyDataToComponents()
+    RegistrationUIComponents->>Registration Screen: Populate HKID Field
+    RegistrationUIComponents->>Registration Screen: Populate Demographics
+    Registration Screen->>Registration Screen: Set Focus to Req No.
+```
+
+#### Step-by-Step Details
+
+1. **Encounter Number Input & Validation**
+   - User enters case number in Enc No field on Registration screen
+   - `LisEncounterNoTextInputPm` component triggers validation
+   - System dispatches `EncounterNoTextInputEvent.VALIDATE_ENCOUNTER_NO`
+
+2. **Check Digit Validation**
+   - `RegistrationUIComponents.validateEncounterNoHandler()` invoked
+   - System validates check digit of case number
+   - Check digit algorithm is hospital-specific
+   - Validation confirms case number belongs to current hospital
+
+3. **Local Patient Lookup**
+   - System checks if case number exists in PATIENT table for current hospital
+   - `PatientUIAppServiceBean.retrieveRegistrationPatientList()` called with:
+     - `encNo` - The case number entered
+     - `hospital` - Current hospital code
+   - Query executed:
+     ```sql
+     SELECT * FROM PATIENT 
+     WHERE pat_encounter = ? 
+     AND pat_hospital = ?
+     ```
+
+4. **Retrieve Patient HKID**
+   - System retrieves patient's HKID from `PATIENT.pat_pid`
+   - `RegistrationPm.retrieveRegistrationPatientListHandler()` processes result
+   - HKID field in Patient Registration Key is populated
+
+5. **Load Patient Demographics**
+   - `RegistrationUIComponents.loadPatientReadyDataToComponents()` executed
+   - System loads patient demographics from PATIENT table:
+     - **Name** = `PATIENT.pat_name`
+     - **Name (in Chinese)** = `PATIENT.pat_cname`
+     - **Sex** = `PATIENT.pat_sex`
+     - **Pay Code** = `PATIENT.pat_type`
+     - **DOB** = `PATIENT.pat_dob`
+     - **Age** = `PATIENT.pat_age`
+     - **Age Unit** = `PATIENT.pat_age_unit`
+     - **Loc Hosp** = `PATIENT.pat_hospital`
+     - **Loc Specialty** = `PATIENT.pat_unit`
+     - **Loc Ward/Clinic** = `PATIENT.pat_location`
+     - **Cat** = `PATIENT.pat_cat`
+     - **Bed** = `PATIENT.pat_bed`
+     - **Admitted** = `PATIENT.pat_adm_date`
+     - **MRN** = `PATIENT.pat_mrn`
+     - **Race** = `PATIENT.pat_race`
+
+6. **Field State Management**
+   - All patient demographic fields become:
+     - **Visible** - displayed on screen
+     - **Dimmed** - visually grayed out
+     - **Non-editable** - user cannot modify
+
+7. **Focus Management**
+   - System sets focus to Request No. field
+   - `RegistrationUIComponents.setDefaultFocusWhenRequestNoReadyToProceed()` called
+   - User can proceed with test registration
 
 **Result:** Patient demographics displayed, ready for test registration
 
@@ -71,30 +136,130 @@ This workflow describes how the LIS system retrieves patient information when a 
 - Case number matches current hospital
 - Patient exists in PMI List
 - PMI service is available
+- LAB_OPTION.PMI_ENABLED = 'Y'
 
 **Trigger:** User enters PMI case number in Enc No field
 
-**Step-by-Step:**
-1. User enters case number in Enc No field
-2. System validates check digit
-3. System checks local PATIENT table - no record found
-4. System extracts hospital code from case number
-5. System verifies case number hospital matches current hospital
-6. System queries PMI service with case number
-7. PMI service returns patient record with HKID
-8. System populates HKID field in Patient Registration Key
-9. System retrieves patient demographics from PMI:
-   - Patient Name (English/Chinese)
-   - HKID
-   - Date of Birth
-   - Gender
-   - Address
-   - Contact information
-10. System displays "Close Indicator" (🔒) next to HKID field
-11. System sets focus to Request No. field
-12. User proceeds with test registration
+#### Process Flow
 
-**Result:** PMI patient demographics displayed with close indicator, ready for test registration
+```mermaid
+sequenceDiagram
+    User->>Registration Screen: Enter PMI Case Number
+    Registration Screen->>LisEncounterNoTextInputPm: Validate Encounter No.
+    LisEncounterNoTextInputPm->>RegistrationUIComponents: validateEncounterNoHandler()
+    RegistrationUIComponents->>RegistrationUIComponents: Validate Check Digit
+    RegistrationUIComponents->>PatientUIAppServiceBean: retrieveRegistrationPatientList()
+    PatientUIAppServiceBean->>Database: Query PATIENT table
+    Database-->>PatientUIAppServiceBean: No Record Found
+    PatientUIAppServiceBean->>RegistrationUIComponents: Check Hospital Match
+    RegistrationUIComponents->>RegistrationUIComponents: Extract Hospital from Case No.
+    RegistrationUIComponents->>RegistrationUIComponents: Verify Current Hospital Match
+    RegistrationUIComponents->>RegistrationPm: gatherPMIPatientInformationByEncounterNo()
+    RegistrationPm->>RegistrationEvent: GATHER_PMI_PATIENT_INFORMATION_BY_ECOUNTER_NO
+    RegistrationEvent->>PMI Service: Query PMI by Case Number
+    PMI Service-->>RegistrationPm: PMI Patient Record + HKID
+    RegistrationPm->>RegistrationUIComponents: loadPatientReadyDataToComponents()
+    RegistrationUIComponents->>Registration Screen: Populate HKID Field
+    RegistrationUIComponents->>Registration Screen: Populate Demographics
+    RegistrationUIComponents->>Registration Screen: Display Close Indicator (🔒)
+    Registration Screen->>Registration Screen: Set Focus to Req No.
+```
+
+#### Step-by-Step Details
+
+1. **Encounter Number Input & Validation**
+   - User enters case number in Enc No field
+   - `LisEncounterNoTextInputPm` component triggers validation
+   - System dispatches `EncounterNoTextInputEvent.VALIDATE_ENCOUNTER_NO`
+   - `RegistrationUIComponents.validateEncounterNoHandler()` invoked
+
+2. **Check Digit Validation**
+   - System validates check digit of case number
+   - Confirms format is valid for current hospital
+
+3. **Local Patient Table Check**
+   - System queries local PATIENT table:
+     ```sql
+     SELECT * FROM PATIENT 
+     WHERE pat_encounter = ? 
+     AND pat_hospital = ?
+     ```
+   - No record found in local table
+
+4. **Hospital Code Extraction & Verification**
+   - System extracts hospital code from case number format
+   - Verifies case number hospital matches current hospital
+   - If match fails, proceed to Scenario 3 (Hospital Selection Panel)
+
+5. **PMI Configuration Check**
+   - System checks LAB_OPTION table:
+     ```sql
+     SELECT option_value FROM LAB_OPTION 
+     WHERE option_name = 'PMI_ENABLED' 
+     AND hospital_code = ?
+     ```
+   - Confirms PMI is enabled (value = 'Y')
+
+6. **Query PMI Service**
+   - `RegistrationPm.gatherPMIPatientInformationByEncounterNo()` invoked
+   - System dispatches `RegistrationEvent.GATHER_PMI_PATIENT_INFORMATION_BY_ECOUNTER_NO`
+   - PMI service called with:
+     - `encNo` - The case number
+     - `hospital` - Current hospital code
+   - Modified in: PMH-BBS-B-000068
+
+7. **PMI Response Processing**
+   - PMI service returns patient record including:
+     - Patient HKID
+     - Complete demographics
+     - Episode information
+   - `RegistrationPm` processes PMI response
+
+8. **Populate HKID Field**
+   - System populates HKID field in Patient Registration Key
+   - HKID value retrieved from PMI patient record
+
+9. **Load PMI Patient Demographics**
+   - `RegistrationUIComponents.loadPatientReadyDataToComponents()` executed
+   - System loads patient demographics from PMI:
+     - **Name** = PMI patient name (English)
+     - **Name (in Chinese)** = PMI patient name (Chinese)
+     - **HKID** = PMI patient HKID
+     - **Sex** = PMI patient sex
+     - **Pay Code** = PMI patient type
+     - **DOB** = PMI patient date of birth
+     - **Age** = Calculated from DOB
+     - **Age Unit** = Calculated age unit
+     - **Loc Hosp** = Hospital from case number
+     - **Loc Specialty** = PMI unit
+     - **Loc Ward/Clinic** = PMI location
+     - **Cat** = PMI patient category
+     - **Bed** = PMI bed number
+     - **Admitted** = PMI admission date
+     - **MRN** = PMI medical record number
+     - **Race** = PMI race code
+     - **Address** = PMI address
+     - **Contact information** = PMI phone/contact details
+
+10. **Display Close Indicator**
+    - System displays "Close Indicator" (🔒) next to HKID field
+    - Indicates patient data retrieved from PMI (not local)
+    - `RegistrationUIComponents.setCloseIndicatorForPmiPatient()` called
+    - Visual indicator only - no user interaction
+
+11. **Field State Management**
+    - All patient demographic fields become:
+      - **Visible** - displayed on screen
+      - **Dimmed** - visually grayed out
+      - **Non-editable** - user cannot modify
+    - Close indicator (🔒) displayed
+
+12. **Focus Management**
+    - System sets focus to Request No. field
+    - `RegistrationUIComponents.setDefaultFocusWhenRequestNoReadyToProceed()` called
+    - User can proceed with test registration
+
+**Result:** PMI patient demographics displayed with close indicator (🔒), ready for test registration
 
 ---
 
@@ -107,43 +272,159 @@ This workflow describes how the LIS system retrieves patient information when a 
 
 **Trigger:** User enters non-current hospital case number
 
-**Step-by-Step:**
-1. User enters case number in Enc No field
-2. System validates check digit fails for current hospital
-3. System displays error message (3214): "Invalid check digit for HKID/Encounter No."
-4. System displays Hospital Selection Panel
-5. **User Action: Select Hospital from Panel**
-   - **Option A: Selected Hospital Matches Case Number Hospital (PMI Available)**
-     1. User selects hospital from panel that matches case number
-     2. System queries PMI with case number for selected hospital
-     3. PMI returns patient record
-     4. System populates HKID field
-     5. System loads demographics from PMI
-     6. System displays close indicator
-     7. Focus moves to Request No. field
-     8. User proceeds with registration
+#### Process Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant RegScreen as Registration Screen
+    participant RegUIComp as RegistrationUIComponents
+    participant HospitalPanel as Hospital Selection Panel
+    participant PMI as PMI Service
+    participant Database
+    
+    User->>RegScreen: Enter Non-Current Hospital Case No.
+    RegScreen->>RegUIComp: validateEncounterNoHandler()
+    RegUIComp->>RegUIComp: Validate Check Digit for Current Hospital
+    RegUIComp->>RegUIComp: Check Digit Validation FAILS
+    RegUIComp->>RegScreen: Display Error 3214
+    RegUIComp->>HospitalPanel: popUpHospitalDialogueForHospitalSelection()
+    HospitalPanel->>User: Display Hospital List
+    
+    alt User Selects Cancel
+        User->>HospitalPanel: Click Cancel
+        HospitalPanel->>RegUIComp: Cancel Action
+        RegUIComp->>RegScreen: Clear Case Number
+    else User Selects Hospital (Matches + PMI Available)
+        User->>HospitalPanel: Select Hospital
+        HospitalPanel->>RegUIComp: processEncounterNoSelection()
+        RegUIComp->>RegUIComp: Verify Hospital Match
+        RegUIComp->>PMI: Query PMI with Case No.
+        PMI-->>RegUIComp: PMI Patient Record
+        RegUIComp->>RegScreen: Populate HKID + Demographics
+        RegUIComp->>RegScreen: Display Close Indicator (🔒)
+        RegScreen->>RegScreen: Set Focus to Req No.
+    else User Selects Hospital (Matches + NOT in PMI)
+        User->>HospitalPanel: Select Hospital
+        HospitalPanel->>RegUIComp: processEncounterNoSelection()
+        RegUIComp->>PMI: Query PMI
+        PMI-->>RegUIComp: Case No. Not Found
+        RegUIComp->>RegScreen: Display Message 687
+        RegUIComp->>RegScreen: Display Message 3780
+        alt User Confirms Create New Encounter
+            User->>RegScreen: Click "Yes" on 687
+            RegScreen->>RegUIComp: popUpCreateNewEpisodeDialogue()
+            RegUIComp->>User: Display "Enter New Episode" Panel
+            User->>RegScreen: Enter HKID + Episode Info
+            RegScreen->>RegScreen: Register as New Patient
+        else User Cancels
+            User->>RegScreen: Click "No" on 687
+            RegScreen->>RegScreen: Clear Case Number
+        end
+    else User Selects Hospital (Does NOT Match)
+        User->>HospitalPanel: Select Non-Matching Hospital
+        HospitalPanel->>RegUIComp: processEncounterNoSelection()
+        RegUIComp->>RegUIComp: Verify Hospital Match FAILS
+        RegUIComp->>RegScreen: Display Error 3214
+        RegScreen->>RegScreen: Clear Case Number
+    end
+```
+
+#### Step-by-Step Details
+#### Step-by-Step Details
+
+1. **Encounter Number Input & Initial Validation**
+   - User enters case number in Enc No field
+   - `RegistrationUIComponents.validateEncounterNoHandler()` invoked
+   - System validates check digit for current hospital
+   - Validation fails (case number doesn't belong to current hospital)
+
+2. **Display Error Message 3214**
+   - System displays error: "Invalid check digit for HKID/Encounter No."
+   - Error code: 3214
+   - User is alerted that case number doesn't match current hospital
+
+3. **Display Hospital Selection Panel**
+   - `RegistrationUIComponents.popUpHospitalDialogueForHospitalSelection()` called
+   - System displays modal Hospital Selection Panel
+   - Panel contains:
+     - List of all available hospitals
+     - Hospital codes and names
+     - "Cancel" button
+   - Panel remains open until user action
+
+4. **User Action: Select Hospital from Panel**
+
+   **Option A: User Selects "Cancel"**
+   - User clicks Cancel button on Hospital Panel
+   - Panel closes
+   - Case number cleared from Enc No field
+   - User can re-enter case number or use alternative lookup
+
+   **Option B: Selected Hospital Matches Case Number Hospital (PMI Available)**
    
-   - **Option B: Selected Hospital Matches but NOT on PMI List**
-     1. User selects hospital from panel
-     2. System queries PMI but case number not found
-     3. System displays message (687): "Create new Encounter case?"
-     4. System displays message (3780): "Due to the unavailability of PMI service, the system cannot retrieve patient details for entered HKID at this moment."
-     5. **User Sub-Action:**
-        - **Yes:** System displays "Enter new episode" panel
-          - User manually assigns HKID
-          - Focus moves to Request No. field
-          - Registration proceeds as new patient
-        - **No:** Case number cleared from Enc No field
+   1. User selects hospital from panel that matches case number
+   2. `RegistrationUIComponents.processEncounterNoSelection()` invoked with selected hospital
+   3. System validates case number check digit against selected hospital
+   4. Validation succeeds
+   5. System checks LAB_OPTION for PMI configuration
+   6. PMI is enabled
+   7. System queries PMI service:
+      - `RegistrationPm.gatherPMIPatientInformationByEncounterNo()` called
+      - Dispatches `RegistrationEvent.GATHER_PMI_PATIENT_INFORMATION_BY_ECOUNTER_NO`
+      - PMI query with case number and selected hospital
+   8. PMI returns patient record with complete demographics
+   9. System populates HKID field with PMI HKID
+   10. System loads demographics from PMI to all patient fields
+   11. System displays close indicator (🔒) next to HKID
+   12. Focus moves to Request No. field
+   13. User proceeds with registration
    
-   - **Option C: Selected Hospital Does NOT Match Case Number Hospital**
-     1. User selects hospital that doesn't match case number
-     2. System displays error message (3214): "Invalid check digit for HKID/Encounter No."
-     3. Case number cleared from Enc No field
+   **Result:** PMI patient retrieved successfully
+
+   **Option C: Selected Hospital Matches but Case Number NOT on PMI List**
    
-   - **Option D: Cancel Hospital Selection**
-     1. User clicks Cancel button
-     2. Hospital panel closes
-     3. Case number cleared from Enc No field
+   1. User selects hospital from panel
+   2. `RegistrationUIComponents.processEncounterNoSelection()` invoked
+   3. System validates case number check digit - succeeds
+   4. System queries PMI service
+   5. PMI query fails - case number not found in PMI
+   6. System displays **Message 687**: "Create new Encounter case?"
+   7. System displays **Message 3780** on log monitor: "Due to the unavailability of PMI service, the system cannot retrieve patient details for entered HKID at this moment."
+   8. User prompted for action:
+      
+      **Sub-Option C1: User Clicks "Yes"**
+      - `RegistrationUIComponents.popUpCreateNewEpisodeDialogue()` called
+      - System displays "Enter new episode" panel
+      - User manually enters:
+        - HKID
+        - Episode date
+        - Additional demographics as needed
+      - `RegistrationUIComponents.createNewEncounterEpisode()` processes new episode
+      - Modified in: CEO69621
+      - Focus moves to Request No. field
+      - Registration proceeds as new patient
+      - System logs new episode creation
+      
+      **Sub-Option C2: User Clicks "No"**
+      - User declines to create new encounter
+      - Case number cleared from Enc No field
+      - User returns to registration screen
+      - Can retry with different case number
+   
+   **Result:** New patient episode created OR operation cancelled
+
+   **Option D: Selected Hospital Does NOT Match Case Number Hospital**
+   
+   1. User selects hospital that doesn't match case number's hospital
+   2. `RegistrationUIComponents.processEncounterNoSelection()` invoked
+   3. System validates case number check digit against selected hospital
+   4. Validation fails
+   5. System displays **Error 3214**: "Invalid check digit for HKID/Encounter No."
+   6. Case number cleared from Enc No field
+   7. User must re-enter correct case number
+   
+   **Result:** Error displayed, case number cleared
 
 **Result:** Varies based on user selection - PMI patient retrieved, new patient created, or entry cancelled
 
@@ -158,21 +439,116 @@ This workflow describes how the LIS system retrieves patient information when a 
 
 **Trigger:** User enters case number when PMI unavailable
 
-**Step-by-Step:**
-1. User enters case number in Enc No field
-2. System attempts to query PMI service
-3. PMI service fails or times out
-4. System displays message (3780): "Due to the unavailability of PMI service, the system cannot retrieve patient details for entered HKID at this moment."
-5. System displays message (687): "Create new Encounter case?"
-6. **User Action:**
-   - **Yes:** 
-     - System displays "Enter new episode" panel
-     - User manually enters patient information including HKID
-     - Registration proceeds as new patient
-     - System logs PMI unavailability
-   - **No:**
-     - Case number cleared from Enc No field
-     - User must retry later or use alternative identification
+#### Process Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant RegScreen as Registration Screen
+    participant RegUIComp as RegistrationUIComponents
+    participant RegPm as RegistrationPm
+    participant PMI as PMI Service
+    participant LogMonitor as Log Monitor
+    
+    User->>RegScreen: Enter Case Number
+    RegScreen->>RegUIComp: validateEncounterNoHandler()
+    RegUIComp->>Database: Query PATIENT table
+    Database-->>RegUIComp: No Record Found
+    RegUIComp->>RegPm: gatherPMIPatientInformationByEncounterNo()
+    RegPm->>PMI: Query PMI Service
+    PMI-->>RegPm: Service Timeout/Failure
+    RegPm->>RegPm: serverCallErrorHandlerForPMI()
+    RegPm->>LogMonitor: Display Message 3780
+    LogMonitor->>User: Show Error on Log Monitor
+    RegPm->>RegScreen: Display Message 687
+    
+    alt User Confirms Create New Encounter
+        User->>RegScreen: Click "Yes" on Message 687
+        RegScreen->>RegUIComp: popUpCreateNewEpisodeDialogue()
+        RegUIComp->>User: Display "Enter New Episode" Panel
+        User->>RegScreen: Enter HKID + Patient Info
+        RegScreen->>RegPm: Create New Patient Episode
+        RegPm->>RegScreen: Registration as New Patient
+        RegScreen->>LogMonitor: Log PMI Unavailability
+    else User Cancels
+        User->>RegScreen: Click "No" on Message 687
+        RegScreen->>RegScreen: Clear Case Number
+        User->>User: Retry Later or Use Alternative ID
+    end
+```
+
+#### Step-by-Step Details
+
+1. **Encounter Number Input**
+   - User enters case number in Enc No field
+   - `RegistrationUIComponents.validateEncounterNoHandler()` invoked
+   - System validates check digit
+
+2. **Local PATIENT Table Check**
+   - System queries local PATIENT table
+   - Query returns no results (patient not found locally)
+
+3. **Attempt PMI Service Query**
+   - `RegistrationPm.gatherPMIPatientInformationByEncounterNo()` called
+   - System dispatches `RegistrationEvent.GATHER_PMI_PATIENT_INFORMATION_BY_ECOUNTER_NO`
+   - PMI service call initiated
+
+4. **PMI Service Failure Detection**
+   - PMI service fails to respond or times out
+   - Network connectivity issues OR
+   - PMI service is down OR
+   - PMI service returns error
+   - `RegistrationPm.serverCallErrorHandlerForPMI()` invoked
+   - Error handler added in: PMH-BBS-B-000068
+
+5. **Display Error Message 3780**
+   - System displays **Message 3780** on log monitor:
+     > "Due to the unavailability of PMI service, the system cannot retrieve patient details for entered HKID at this moment."
+   - Message visible to user on log monitor panel
+   - Indicates PMI service issue
+
+6. **Prompt User for Action - Message 687**
+   - System displays **Message 687** to user:
+     > "Create new Encounter case?"
+   - User must decide how to proceed
+
+7. **User Action: Confirm or Cancel**
+
+   **Option A: User Clicks "Yes" - Create New Encounter**
+   
+   1. User confirms creation of new encounter
+   2. `RegistrationUIComponents.popUpCreateNewEpisodeDialogue()` called
+   3. System displays "Enter new episode" panel
+   4. Panel fields:
+      - HKID (manual entry required)
+      - Episode date
+      - Patient demographics fields
+   5. User manually enters patient information:
+      - HKID
+      - Name (English/Chinese)
+      - Sex
+      - Date of Birth
+      - Other required demographics
+   6. `RegistrationUIComponents.createNewEncounterEpisode()` processes entry
+   7. System creates new patient record locally
+   8. Registration proceeds as **new patient**
+   9. System logs PMI unavailability in system log
+   10. Focus moves to Request No. field
+   11. User proceeds with test registration
+   
+   **Result:** New patient episode created, registration continues
+
+   **Option B: User Clicks "No" - Cancel Operation**
+   
+   1. User declines to create new encounter
+   2. Case number cleared from Enc No field
+   3. Focus returns to Enc No field
+   4. User options:
+      - Retry case number entry later (when PMI available)
+      - Use alternative patient identification (HKID lookup)
+      - Wait for PMI service restoration
+   
+   **Result:** Operation cancelled, user can retry
 
 **Result:** User creates new patient record or cancels operation
 
