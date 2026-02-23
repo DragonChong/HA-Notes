@@ -7,7 +7,7 @@ The Manual Registration screen allows Registration Staff to manually register sp
 
 The Manual Registration screen consists of **four main sections**:
 
-### 1. Patient Panel (Top Left)
+### 1. Patient Panel
 The Patient Panel is divided into two columns for patient demographic information:
 
 #### First Column
@@ -32,7 +32,7 @@ The Patient Panel is divided into two columns for patient demographic informatio
 
 ---
 
-### 2. Request Information Panel (Top Right)
+### 2. Request Information Panel
 The Request Information Panel is divided into two columns for request details:
 
 #### First Column
