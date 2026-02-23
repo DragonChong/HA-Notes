@@ -962,27 +962,6 @@ INSERT INTO PATIENT (
 
 ---
 
-## Modification History
-
-| Date | Developer | Reference | Changes |
-|------|-----------|-----------|---------|
-| 03 Apr 2013 | Richard Shiu (ASL) | CEO-45179 | doneButtonClickFunction(): Change to protected |
-| 26 Apr 2013 | Christie Tse | | Add PMI Server Not Available handling |
-| 20 Aug 2013 | Christie Tse | | Prompt message when encounter no check digit checking failed |
-| 30 Dec 2013 | Tony Chong | Refactor for CPLC | protected isPmiServiceNotAvailable |
-| 06 Feb 2014 | Tony Chong | Refactor for CPLC | Amend popUpCreateNewEpisodeDialogue, createNewEncounterEpisode |
-| 26 Mar 2014 | Rock Yu | NDH-GEN-MS-00049 | Added handling for existing patient with unknown category |
-| 23 Apr 2014 | Tony Chong | UCH-BBS-B-00024 | Amend enableComponents |
-| 16 May 2014 | Rock Yu | UCH-BBS-B-00045 | Amended enableComponents |
-| 26 May 2014 | Rock Yu | TKO-BBS-B-00055 | Amended processCreateNewEncounterEpisode |
-| 27 Jun 2014 | Rock Yu | CEO69621 | Amended constructComponents |
-| 25 Aug 2014 | Rock Yu | RD-APS-140825-01 | Amended setDefaultFocusWhenRequestNoReadyToProceed |
-| 10 Nov 2014 | Rock Yu | PMH-BBS-B-000068 | added errorHkidOfEncounterNoHandler |
-| 18 Nov 2014 | Rock Yu | PMH-BBS-B-000068 | Amended isEncounterNoModified, popUpHospitalDialogueForHospitalSelection |
-| 14 Nov 2016 | Tony Chong | CEO-76657 | Amend checkHkidOfEncounterNoHandler |
-
----
-
 ## Notes
 
 - This workflow creates **local patient records only** - not PMI records
