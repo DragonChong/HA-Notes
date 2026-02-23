@@ -20,11 +20,11 @@ The **Patient Selection Dialogue** is a modal dialogue displayed during the Regi
 
 The dialogue operates in one of three modes depending on the patient data source and system configuration. The title and the label of the bottom-right button change to reflect the current mode.
 
-| Mode | When It Applies | Distinguishing Feature |
-|------|-----------------|------------------------|
-| Local patient list | Patient has records in the local system; external patient index is available | Bottom-right button labelled **"PMI List"** |
-| External patient list | External patient index records have been loaded after the user requested them | Title suffixed with **(PMI List)**; bottom-right button labelled **"Cancel"** |
-| PMI unavailable | External patient index is disabled in system configuration | Bottom-right button always labelled **"Cancel"**; no switching to external list is possible |
+| Mode                  | When It Applies                                                               | Distinguishing Feature                                                                      |
+| --------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Local patient list    | Patient has records in the local system; external patient index is available  | Bottom-right button labelled **"PMI List"**                                                 |
+| External patient list | External patient index records have been loaded after the user requested them | Title suffixed with **(PMI List)**; bottom-right button labelled **"Cancel"**               |
+| PMI unavailable       | External patient index is disabled in system configuration                    | Bottom-right button always labelled **"Cancel"**; no switching to external list is possible |
 
 ---
 
