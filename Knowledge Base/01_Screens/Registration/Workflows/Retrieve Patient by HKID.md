@@ -277,16 +277,16 @@ sequenceDiagram
 ### Scenario 3: Close Indicator Behavior with PMI Patient
 
 #### Trigger
-User clicks "Close" indicator on "Select an Episode" panel when HKID exists in PMI
+User clicks the window close button (✕ / Close Indicator) on "Select an episode" panel when the patient's HKID exists in PMI
 
 #### Behavior
-1. System detects that patient HKID exists in PMI
-2. Instead of closing the panel, system automatically:
-   - Retrieves PMI episode records
-   - Displays "Select an Episode (PMI List)" panel
-   - Shows all PMI patient records matching the HKID
+1. `cancelButtonClickFunction()` fires → `isSelected = false` → dialogue closes
+2. `closePatientPopUpCallbackFunction()` is invoked
+3. System checks if patient HKID exists in PMI
+4. **If patient is in PMI:** system automatically retrieves PMI episode records and re-opens the dialogue as "Select an episode (PMI List)"
+5. **If patient is NOT in PMI:** Message 4274 shown on log monitor + Message 687 ("Create new Encounter case?") prompted to user
 
-**Note:** This provides a shortcut for users to access PMI records without explicitly clicking "PMI List" button.
+**Note:** The **"PMI List" button** (shown as the `cancelButtonPm` when PMI is enabled on the LIS list panel) has identical behaviour — clicking it also closes the panel and triggers PMI lookup via the same close callback.
 
 ---
 
@@ -305,8 +305,6 @@ User clicks "Close" indicator on "Select an Episode" panel when HKID exists in P
 2. **Error Messages**
    - **Message 4274** displayed on log monitor:
      > "Due to the unavailability of PMI service, the system cannot retrieve patient details for entered HKID at this moment."
-   
-   - **Message 687** prompted to user:
      > "Create new Encounter case?"
 
 3. **User Options**
@@ -506,17 +504,27 @@ public function handleCheckHkidError(fault:FaultEvent, trigger:HkidTextInputEven
 - Close indicator for cancellation
 
 ### PatientEpisodeSelectionDialoguePm
-**Presentation Model for the dialogue**
+**Presentation Model for the dialogue**  
+**Location:** `lisFlexLib/flex_src/hk/org/ha/lis/common/component/dialog/PatientEpisodeSelectionDialoguePm.as`
+
+> See [[Patient Selection Dialogue]] for full component documentation.
 
 **Key Properties:**
-- `patientRecords:ArrayCollection` - List of patient records
-- `selectedPatient:PatientVo` - Currently selected patient
-- `isPMIMode:Boolean` - Whether showing PMI records
+- `isSelected:Boolean` - `true` after user confirms selection; `false` if cancelled
+- `itemSelectedFunction:Function` - Callback `(item:PatientVo, newEncounterNo:String):void` fired on selection
+- `manualInputFunction:Function` - Callback for Manual Input Encounter button
+- `inputPm:LisTextInputPm` - Read-only text input showing generated encounter number
+- `generateNewButtonPm:LisButtonPm` - Generate Computer Encounter button PM
+- `cancelButtonPm:LisButtonPm` - Cancel / PMI List button PM (label is context-dependent)
+- `okButtonPm:LisButtonPm` - OK button PM
+- `manualInputButtonPm:LisButtonPm` - Manual Input Encounter button PM
 
-**Methods:**
-- `loadPatientRecords()` - Loads patient records into grid
-- `selectPatient()` - Handles patient selection
-- `switchToPMIMode()` - Switches to PMI record view
+**Key Methods:**
+- `setDialogData(patientList, patientType, isManuallyGeneratePatientEncounterAllowed, isPmiServerAvailable, manualInputEncounterFunction)` - Initialises title, button labels, data source
+- `setItemBySelectedIndex()` - Sets `isSelected = true` and calls `itemSelectedFunction`
+- `gridDoubleClickHandler()` - Calls `setItemBySelectedIndex()` and closes
+- `getTitle()` - Returns `"Select an episode"` (overrideable)
+- `getDisplayColumns()` - Returns grid column definitions (overrideable)
 
 ---
 
@@ -645,15 +653,13 @@ public function handleCheckHkidError(fault:FaultEvent, trigger:HkidTextInputEven
 - Display error message on log monitor
 - Prompt user to create new encounter
 - Fallback to local records only
-
-#### 5. Merged HKID Detected
 **Behavior:** System retrieves records for both old and new HKID  
 **Action:** Display warning, show all related records
 
 #### 6. PMI Patient Not Found
 **Error Code:** `687`  
 **Message:** "Create new Encounter case?"  
-**Trigger:** User clicks "PMI List" or "Close" but HKID doesn't exist in PMI  
+**Trigger:** User clicks Cancel/Close on "Select an episode" panel but HKID doesn't exist in PMI  
 **Additional Message:** Message `4274` also displayed on log monitor  
 **Action:** 
 - Prompt user to create new encounter
