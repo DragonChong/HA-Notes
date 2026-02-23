@@ -345,37 +345,6 @@ UI Update
 
 ---
 
-## Modification History
-
-| Date | Developer | Reference | Changes |
-|------|-----------|-----------|---------|
-| 22 Sep 2011 | Christie Tse | - | Initial creation |
-| 09 Feb 2012 | Christie Tse | - | Add logic for HKID component |
-| 01 Mar 2012 | Christie Tse | - | Amend verifyCheckDigit |
-| 20 Mar 2012 | Christie Tse | - | Add checkMergeHkid feature |
-| 05 Apr 2012 | Kaiser | - | Add enableHkidMerge |
-| 18 Apr 2012 | Christie Tse | - | Fire modifiedComplete event |
-| 20 Apr 2012 | Richard Shiu (ASL) | CEO-45179 | Dispatch LisValidationResultEvent |
-| 15 Mar 2013 | Christie Tse | - | Add text length check |
-| 18 Mar 2013 | Kasim | - | Amend validateCheckDigit |
-| 22 Jul 2013 | Tony Chong | - | Amend parameter in verifyCheckDigit |
-| 04 Sep 2013 | CHAN Hoi Chung | - | Implements LisSyncComponentInterface |
-| 29 May 2017 | Tony Chong | CEO-80963 | Amend checkMergeHkid |
-| 02 Jan 2020 | Henry Chan | LIS-1219 | Relocate checkPatientSubIdExistence from CPLC |
-| 06 Nov 2020 | Tony Chong | LIS-2603 | Implements LisHkidExecutorInterface |
-| 17 Nov 2020 | Jeremy | LIS-2603 | Add retrieveCumcNo function |
-| 22 Dec 2020 | Tony Chong | LIS-2970 | Amend getExecutor |
-| 18 Mar 2021 | Tony Chong | LIS-3170 | Add modifyHkid, Amend getExecutor |
-
----
-
-## Related Components
-- [[LisTextInputPm]] - Base text input component
-- [[LisEncounterNoTextInputPm]] - Encounter number input component
-- [[RegistrationUIComponents]] - Uses HKID component for patient identification
-
----
-
 ## Notes
 - HKID format: 1-2 letters + 6 digits + 1 check digit (e.g., A123456(7))
 - Check digit can be 0-9 or 'A'
