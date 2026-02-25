@@ -129,3 +129,4 @@ If the validated Request Number begins with a prefix designated as "urgent", the
 - [[Retrieve Patient by HKID]] — The panel activates as part of the final state reached by this workflow.
 - [[Retrieve Patient by Encounter Number]] — The panel activates with existing patient data pre-populated.
 - [[Create New Patient by HKID]] — The panel activates with default values for a new patient.
+- [[Default Request Info]] — Describes the default values applied to the Request Information Panel fields when a request number is first assigned, including Confidential, Bill, Urgency, Private, and the three datetime fields.
