@@ -110,3 +110,4 @@ The Test Panel is not visible when the screen first opens. It becomes visible an
 - [[Input Specimen No. Button]] — The Input Specimen No. button is disabled in the initial state and is only enabled after the screen reaches the Ready state with a non-USID request number.
 - [[Sendout Button]] — The Sendout button is either invisible (when the Sendout option is disabled) or visible but disabled (when the option is enabled) when the screen first opens, consistent with the overall initial disabled state.
 - [[No. of Label Panel]] — The No. of Label panel is either invisible (when the option is disabled) or visible but disabled when the screen first opens.
+- [[Print Tube Label Panel]] — The Print Tube Label panel is either invisible (when the option is disabled or the workstation is not authorised) or visible but disabled when the screen first opens.

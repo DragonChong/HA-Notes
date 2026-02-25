@@ -172,3 +172,4 @@ Once the user enters a valid request number, the screen transitions to the ready
 - [[Input Specimen No. Button]] — The Input Specimen No. button's enablement is evaluated when the registration reaches the Ready state after request number assignment.
 - [[Sendout Button]] — The Sendout button becomes enabled as part of the Ready state transition after a valid request number is assigned (when the Sendout option is enabled for the lab).
 - [[No. of Label Panel]] — The No. of Label panel becomes enabled as part of the Ready state transition after a valid request number is assigned (when the label print option is enabled for the lab).
+- [[Print Tube Label Panel]] — The Print Tube Label panel becomes enabled as part of the Ready state transition after a valid request number is assigned (when the option is enabled and the workstation is authorised).
