@@ -62,7 +62,7 @@ sequenceDiagram
     Registration Screen->>User: Display Cross-Check Request No. Dialogue
     User->>Registration Screen: Scan or type Req No. from printed label
     alt Req No. matches
-        Registration Screen->>Registration Screen: Mark label as printed; proceed
+        Registration Screen->>Registration Screen: Mark label as printed<br> proceed
         Registration Screen->>User: Registration completed
     else Req No. does not match
         Registration Screen->>User: Error — "Request Number NOT match!"
