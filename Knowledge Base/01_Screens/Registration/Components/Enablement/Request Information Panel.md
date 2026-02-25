@@ -75,12 +75,12 @@ Each of these dropdown fields resets to its system default ("No", "No", "No", "N
 
 ## Configuration
 
-| Setting | Purpose | Effect when enabled | Effect when disabled |
-|---------|---------|--------------------|--------------------|
-| Specimen Datetime Visibility | Controls whether the Request, Arrive, and Collect datetime fields are shown | Datetime fields are visible and editable | Datetime fields are hidden |
-| Datetime optional / default empty | Controls whether datetime fields default to current date/time or to blank | Defaults to blank | Defaults to current date/time |
+| Setting | Option Code | Purpose | Effect when enabled | Effect when disabled |
+|---------|------------|---------|--------------------|--------------------|
+| Specimen Datetime Visibility | `DATE_ATTRIBUTE` | Controls whether the Request, Arrive, and Collect datetime fields are shown. Each of the three datetime fields (Request, Arrive, Collect) is controlled independently by positional flags encoded within the option text. | Datetime field is visible and editable | Datetime field is hidden |
+| Datetime default as empty when optional | `DATE_ATTRIBUTE` | Controls whether optional datetime fields default to blank instead of the current date/time | Defaults to blank | Defaults to current date/time |
 
-> Datetime visibility is configured per lab prefix. A Request Number whose prefix matches a configured lab number will show or hide the datetime fields according to that lab's setting. Request, Arrive, and Collect can each be configured independently.
+> Both settings are derived from the same `DATE_ATTRIBUTE` option row. The option text encodes visibility and default-format flags per datetime type (Request, Arrival, Collection). The settings are evaluated per lab number — the lab number of the Request Number prefix determines which option row applies.
 
 ---
 
