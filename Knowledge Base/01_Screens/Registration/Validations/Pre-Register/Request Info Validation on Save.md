@@ -269,5 +269,6 @@ sequenceDiagram
 
 - [[Patient Info Validation on Save]] — Patient information fields are validated in a separate pass that runs alongside or before request info validations.
 - [[Request Doctor Validation on Save]] — Detailed breakdown of the doctor validity (497) and hospital mismatch warning (4064) checks.
+- [[Clinical Detail and Text Field Length Validation on Save]] — Detailed breakdown of the max-length checks for Clinical Detail (510 chars, message 3528), Reference (255 chars, message 552), and Request Comment (255 chars, message 552).
 - [[Default Request Location]] — Request Location is pre-populated by default rules; this validation runs after defaults have been applied.
 - [[Default Request Doctor]] — Requesting Doctor is pre-populated by default rules; this validation runs after defaults have been applied.
