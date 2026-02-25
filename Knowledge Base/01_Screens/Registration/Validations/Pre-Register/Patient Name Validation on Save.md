@@ -208,4 +208,4 @@ sequenceDiagram
 
 ## Related Workflows
 
-- [[Knowledge Base/01_Screens/Registration/Workflows/Patient Info Validation on Save]] — Covers the broader set of patient demographic field validations (Sex, Age Unit, Patient Location, Patient Category, Race, Age, DOB, Admission Date) that run as part of the same save-time pipeline. Patient Name format and length checks are part of this same pipeline.
+- [[Patient Info Validation on Save]] — Covers the broader set of patient demographic field validations (Sex, Age Unit, Patient Location, Patient Category, Race, Age, DOB, Admission Date) that run as part of the same save-time pipeline. Patient Name format and length checks are part of this same pipeline.
