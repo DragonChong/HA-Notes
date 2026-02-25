@@ -216,6 +216,7 @@ The following table lists every patient info validation performed at save time, 
 ## Related Workflows
 
 - [[Patient Name Validation on Save]] — Covers patient name format (comma structure) and length checks, which are part of the same save-time pipeline.
+- [[Patient Location Validation on Save]] — Covers the location existence check (497), inactive location warning (2514), and downstream Primary Report Copy location check (490).
 - [[Request No. Generation]] — Request number generation is a separate save-time step that precedes patient info validation.
 - [[Test Code Selection Behavior]] — Duplicate test code detection occurs at field level during data entry, independently of save-time patient info validations.
 - [[Retrieve Patient by HKID]] — Patient demographics are populated by patient retrieval; the patient location blank check applies to retrieved patients as well.
