@@ -10,6 +10,7 @@ When a registration is saved, the system validates the request information field
 
 - **[[CRST-104]]** - Registration - Pre-register: Request Info Validation - Mandatory & Validity
 - **[[CRST-536]]** - Registration - Pre-register: Request Info Validation - Request Doctor
+- **[[CRST-501]]** - Registration - Pre-register: Request Info Validation - Clinical Detail / Reference / Request Comment
 
 **Epic:** LISP-27
 
