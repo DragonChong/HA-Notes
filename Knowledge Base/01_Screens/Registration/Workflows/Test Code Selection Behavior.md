@@ -52,7 +52,7 @@ sequenceDiagram
     User->>Test Panel: Enters test code and moves focus away
     Test Panel->>Test Panel: Compares code against all existing entries
     Test Panel->>Registration Screen: No duplicate found — validation passes
-    Registration Screen->>User: No message shown; workflow continues normally
+    Registration Screen->>User: No message shown<br> workflow continues normally
 ```
 
 #### Step-by-Step Details
@@ -109,7 +109,7 @@ sequenceDiagram
     Test Panel->>Test Panel: Duplicate detected
     Test Panel->>User: Shows warning message 0909 (Yes / No)
     User->>Warning Popup: Clicks No
-    Warning Popup->>Test Panel: Closes popup; duplicate code retained in field
+    Warning Popup->>Test Panel: Closes popup<br> duplicate code retained in field
     Test Panel->>User: Focus returned to the field with the duplicate code highlighted
 ```
 
