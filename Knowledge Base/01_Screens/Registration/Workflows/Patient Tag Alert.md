@@ -165,6 +165,16 @@ Once the Patient Tag Warning Panel and/or alert text warnings are acknowledged:
 
 ---
 
+## Configuration
+
+| Setting | Option Code | Purpose | Effect when enabled | Effect when disabled |
+|---------|------------|---------|--------------------|--------------------|
+| Patient Alert | `PATIENT_ALERT_ENABLED` | Controls whether patient tag alerts are evaluated and displayed at all | Tags are evaluated; the indicator and warning pop-up are shown when relevant tags exist | No tag evaluation occurs; neither the indicator nor the warning pop-up is shown regardless of patient tags |
+
+> This setting is stored in the `LAB_OPTION` table under option group `PATIENT`.
+
+---
+
 ## Related Workflows
 
 - [[Retrieve Patient by HKID]] — Patient tags are loaded as part of patient retrieval
