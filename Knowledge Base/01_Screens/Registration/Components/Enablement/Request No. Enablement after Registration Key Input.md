@@ -169,3 +169,4 @@ Once the user enters a valid request number, the screen transitions to the ready
 - [[Default Opening Behaviour]] — Describes the screen state before any registration key input is made.
 - [[Patient Demographics Panel]] — Documents the enablement rules applied to the Patient Demographics Panel once the Req No. is assigned.
 - [[Request Information Panel]] — Documents the enablement rules applied to the Request Information Panel once the Req No. is assigned.
+- [[Input Specimen No. Button]] — The Input Specimen No. button's enablement is evaluated when the registration reaches the Ready state after request number assignment.

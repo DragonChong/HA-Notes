@@ -107,3 +107,4 @@ The Test Panel is not visible when the screen first opens. It becomes visible an
 
 - [[Retrieve Patient by HKID]] — The HKID field in the Registration Keys Panel is the entry point for patient lookup by identity card number.
 - [[Retrieve Patient by Encounter Number]] — The Enc No. field in the Registration Keys Panel is the entry point for patient lookup by encounter number.
+- [[Input Specimen No. Button]] — The Input Specimen No. button is disabled in the initial state and is only enabled after the screen reaches the Ready state with a non-USID request number.
