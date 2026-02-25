@@ -80,7 +80,7 @@ sequenceDiagram
     User->>Registration Keys Panel: Enter existing Enc No.
     Registration Keys Panel->>System: Validate input
     System-->>Registration Keys Panel: Existing patient record found
-    Registration Keys Panel->>User: Enc No. and HKID become non-editable; Req No. becomes editable
+    Registration Keys Panel->>User: Enc No. and HKID become non-editable<br> Req No. becomes editable
 ```
 
 #### Step-by-Step Details
@@ -111,7 +111,7 @@ sequenceDiagram
     Registration Keys Panel->>User: Patient Selection Dialogue displayed
     User->>Patient Selection Dialogue: Select patient record
     Patient Selection Dialogue-->>Registration Keys Panel: Selected patient returned
-    Registration Keys Panel->>User: Enc No. and HKID become non-editable; Req No. becomes editable
+    Registration Keys Panel->>User: Enc No. and HKID become non-editable<br> Req No. becomes editable
 ```
 
 #### Step-by-Step Details
