@@ -200,3 +200,4 @@ The **Gynae** button is visible and enabled only when the Gynae lab option is ac
 
 - [[Request No. Enablement after Registration Key Input]] — The ANAT Panel fields are disabled until the registration screen reaches the Ready state, which is triggered by successful request number assignment.
 - [[Requested Test Panel]] — The standard Requested Test Panel is hidden when the ANAT Panel is active; the two panels are mutually exclusive.
+- [[MICR VIRO Panel]] — A parallel discipline-specific panel for Microbiology and Virology requests, sharing the same state-driven enablement pattern.

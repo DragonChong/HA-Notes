@@ -240,3 +240,4 @@ When a valid patient is confirmed (Patient Ready state), the following data is l
 
 - [[Request No. Enablement after Registration Key Input]] — The BBNK Panel fields are disabled until the registration screen reaches the Ready state, triggered by successful request number assignment.
 - [[Requested Test Panel]] — The standard Requested Test Panel remains visible alongside the BBNK Panel for BBNK requests.
+- [[MICR VIRO Panel]] — A parallel discipline-specific panel for Microbiology and Virology requests, sharing the same state-driven enablement pattern.
