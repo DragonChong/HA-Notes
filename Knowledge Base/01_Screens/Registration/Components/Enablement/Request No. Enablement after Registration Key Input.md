@@ -175,3 +175,4 @@ Once the user enters a valid request number, the screen transitions to the ready
 - [[Print Tube Label Panel]] — The Print Tube Label panel becomes enabled as part of the Ready state transition after a valid request number is assigned (when the option is enabled and the workstation is authorised).
 - [[Default Request Info]] — Describes the default values loaded into the Request Information Panel as part of the Ready state transition triggered by request number assignment.
 - [[Default Patient Category]] — Describes the default value applied to the Patient Category field as part of the same Ready state transition.
+- [[Default Request Doctor]] — Describes the default value applied to the Req Doctor field as part of the same Ready state transition.
