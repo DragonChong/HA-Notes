@@ -209,7 +209,7 @@ The following table lists every patient info validation performed at save time, 
 9. The Primary Report Copy Location is checked only when primary report copies exist; if they do, the location field must be populated.
 10. The computed age value check (message 4121) is a final post-pipeline step that runs after all field-level validations pass. It guards against edge cases where date calculations produce a negative age.
 11. Clicking **OK** on any hard-stop error message dismisses the popup only. The save is not retried automatically; the user must correct the field and click **Save** again.
-12. These validations are not the only save-time checks — request info (requesting location, urgency, request date, etc.) is validated separately by the Request Info validation rules.
+12. These validations are not the only save-time checks — request info (requesting location, urgency, request date, etc.) is validated separately by the [[Request Info Validation on Save]] rules.
 
 ---
 
@@ -219,6 +219,7 @@ The following table lists every patient info validation performed at save time, 
 - [[Patient Location Validation on Save]] — Covers the location existence check (497), inactive location warning (2514), and downstream Primary Report Copy location check (490).
 - [[Patient Demographics Modified Validation on Save]] — Covers the message 2192 confirmation prompt shown when PMI-sourced demographic fields are changed by a user with the Edit PMI Patient Data right.
 - [[Age Value Validation on Save]] — Covers the final post-pipeline check (message 4121) that fires when the computed Age Value is null or negative.
+- [[Request Info Validation on Save]] — Request information fields (requesting location, urgency, request date, etc.) are validated in a separate parallel pass covering CRST-104.
 - [[Request No. Generation]] — Request number generation is a separate save-time step that precedes patient info validation.
 - [[Test Code Selection Behavior]] — Duplicate test code detection occurs at field level during data entry, independently of save-time patient info validations.
 - [[Retrieve Patient by HKID]] — Patient demographics are populated by patient retrieval; the patient location blank check applies to retrieved patients as well.
