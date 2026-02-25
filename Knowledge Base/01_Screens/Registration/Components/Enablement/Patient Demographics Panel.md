@@ -121,3 +121,4 @@ When the panel enters "Existing Patient with New Encounter" mode, the Name (Engl
 - [[Patient Name Validation on Save]] — The Patient Name field on this panel is subject to format (comma structure) and length checks when the user clicks Save for a new patient.
 - [[Patient Location Validation on Save]] — The Patient Location field on this panel is subject to existence, inactive status, and Primary Report Copy location checks when the user clicks Save.
 - [[Patient Demographics Modified Validation on Save]] — When the panel is used for a new patient with PMI-sourced data and the user has the Edit PMI Patient Data right, any changes to Name, Chinese Name, Sex, DOB, or Race trigger a confirmation prompt at save time.
+- [[Age Value Validation on Save]] — The Date of Birth field on this panel feeds the server-side Age Value calculation; an invalid result triggers message 4121 at save time.
