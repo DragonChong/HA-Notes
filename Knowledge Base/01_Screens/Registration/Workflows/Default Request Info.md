@@ -194,3 +194,4 @@ The **Date Attribute** option (`DATE_ATTRIBUTE`) controls visibility, mandatory 
 
 - [[Request No. Enablement after Registration Key Input]] — This workflow is triggered as part of the same Ready state transition in which default request info is loaded.
 - [[Request Information Panel]] — Documents the full layout, field states, and interaction rules of the Request Information Panel that receives these defaults.
+- [[Default Patient Category]] — Describes the parallel default applied to the Patient Category field at the same Ready state transition.
