@@ -9,6 +9,7 @@ When a registration is saved, the system validates the request information field
 ## Related User Stories
 
 - **[[CRST-104]]** - Registration - Pre-register: Request Info Validation - Mandatory & Validity
+- **[[CRST-536]]** - Registration - Pre-register: Request Info Validation - Request Doctor
 
 **Epic:** LISP-27
 
@@ -266,5 +267,6 @@ sequenceDiagram
 ## Related Workflows
 
 - [[Patient Info Validation on Save]] — Patient information fields are validated in a separate pass that runs alongside or before request info validations.
+- [[Request Doctor Validation on Save]] — Detailed breakdown of the doctor validity (497) and hospital mismatch warning (4064) checks.
 - [[Default Request Location]] — Request Location is pre-populated by default rules; this validation runs after defaults have been applied.
 - [[Default Request Doctor]] — Requesting Doctor is pre-populated by default rules; this validation runs after defaults have been applied.
