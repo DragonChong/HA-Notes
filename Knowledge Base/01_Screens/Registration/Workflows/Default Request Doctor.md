@@ -301,3 +301,4 @@ sequenceDiagram
 - [[Retrieve Patient by HKID]] — The patient's attending doctor is retrieved as part of this workflow and becomes available for the doctor default logic.
 - [[Retrieve Patient by Encounter Number]] — The patient's attending doctor is also retrieved via this alternative lookup path.
 - [[Create New Patient by HKID]] — When a new patient is created, no attending doctor exists; doctor defaults to blank (or configured default).
+- [[Default Request Location]] — Describes the parallel default applied to the Request Specialty and Request Location fields at the same request number assignment event; also shares the `REQ_PAT_CAT_DERIVED_BY_REQ_LOCN_ENABLED` option.

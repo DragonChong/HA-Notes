@@ -196,3 +196,4 @@ The **Date Attribute** option (`DATE_ATTRIBUTE`) controls visibility, mandatory 
 - [[Request Information Panel]] — Documents the full layout, field states, and interaction rules of the Request Information Panel that receives these defaults.
 - [[Default Patient Category]] — Describes the parallel default applied to the Patient Category field at the same Ready state transition.
 - [[Default Request Doctor]] — Describes the parallel default applied to the Req Doctor field at the same Ready state transition.
+- [[Default Request Location]] — Describes the parallel default applied to the Request Specialty and Request Location fields at the same Ready state transition; also shares the `REQ_PAT_CAT_DERIVED_BY_REQ_LOCN_ENABLED` option.

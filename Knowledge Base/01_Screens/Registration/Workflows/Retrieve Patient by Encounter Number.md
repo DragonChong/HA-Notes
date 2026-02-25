@@ -352,3 +352,4 @@ If the user clicks **No** on message **687**, the encounter number is cleared fr
 - [[Patient Tag Alert]] — Evaluated after a patient is loaded, if the patient has tagged alert records.
 - [[Default Patient Category]] — Describes how the Patient Category field is defaulted when a request number is assigned for the retrieved patient.
 - [[Default Request Doctor]] — Describes how the Req Doctor field is defaulted when a request number is assigned; the patient's attending doctor retrieved here is the data source used by that workflow.
+- [[Default Request Location]] — Describes how the Request Specialty and Request Location fields are defaulted at the same request number assignment event; the patient's location retrieved here is the data source used by that workflow.
