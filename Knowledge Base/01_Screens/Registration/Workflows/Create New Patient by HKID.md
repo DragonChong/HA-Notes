@@ -327,3 +327,4 @@ sequenceDiagram
 - [[Retrieve Patient by Encounter Number]] — Alternative patient lookup; may also trigger new episode creation when no local or PMI record is found.
 - [[Patient Tag Alert]] — Evaluated after a patient is loaded. For new patients, no tags will exist yet, so no alert is triggered.
 - [[Default Patient Category]] — Describes the Patient Category default applied when a request number is assigned; for brand-new patients, this always defaults to In-Patient.
+- [[Default Request Doctor]] — Describes the Req Doctor default applied at the same event; for brand-new patients, the Doctor Code defaults to blank (or the configured default doctor if set) because no attending doctor record exists.

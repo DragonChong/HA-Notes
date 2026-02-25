@@ -131,3 +131,4 @@ If the validated Request Number begins with a prefix designated as "urgent", the
 - [[Create New Patient by HKID]] — The panel activates with default values for a new patient.
 - [[Default Request Info]] — Describes the default values applied to the Request Information Panel fields when a request number is first assigned, including Confidential, Bill, Urgency, Private, and the three datetime fields.
 - [[Default Patient Category]] — Describes the parallel default applied to the Patient Category field at the same Ready state transition.
+- [[Default Request Doctor]] — Describes the parallel default applied to the Req Doctor field at the same Ready state transition.

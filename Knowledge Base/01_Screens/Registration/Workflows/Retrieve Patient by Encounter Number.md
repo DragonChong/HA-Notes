@@ -351,3 +351,4 @@ If the user clicks **No** on message **687**, the encounter number is cleared fr
 - [[Create New Patient by HKID]] — Triggered when neither local records nor PMI contain the patient; registers a completely new patient.
 - [[Patient Tag Alert]] — Evaluated after a patient is loaded, if the patient has tagged alert records.
 - [[Default Patient Category]] — Describes how the Patient Category field is defaulted when a request number is assigned for the retrieved patient.
+- [[Default Request Doctor]] — Describes how the Req Doctor field is defaulted when a request number is assigned; the patient's attending doctor retrieved here is the data source used by that workflow.

@@ -197,3 +197,4 @@ In addition to the default applied at request number assignment, the **Patient C
 - [[Retrieve Patient by HKID]] — The patient retrieval pathway that provides the patient record used in Scenario 2.
 - [[Retrieve Patient by Encounter Number]] — The patient retrieval pathway that provides the patient record used in Scenario 2.
 - [[Create New Patient by HKID]] — The new patient pathway that results in the In-Patient default (Scenario 1).
+- [[Default Request Doctor]] — Describes the parallel default applied to the Req Doctor field at the same request number assignment event; also shares the `REQ_PAT_CAT_DERIVED_BY_REQ_LOCN_ENABLED` option.
