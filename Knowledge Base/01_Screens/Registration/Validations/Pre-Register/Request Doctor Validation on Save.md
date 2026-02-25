@@ -82,7 +82,7 @@ sequenceDiagram
     Validation Engine-->>Registration Screen: Doctor not found or inactive
     Registration Screen->>User: Show message 497 "Invalid Request Doctor."
     User->>Message: Click OK
-    Message-->>Registration Screen: Message dismissed; save blocked
+    Message-->>Registration Screen: Message dismissed<br> save blocked
     Registration Screen->>User: Focus returned to Requesting Doctor field
 ```
 
@@ -110,14 +110,14 @@ sequenceDiagram
 sequenceDiagram
     User->>Registration Screen: Click Save
     Registration Screen->>Validation Engine: Validate Request Doctor
-    Validation Engine-->>Registration Screen: Doctor valid; hospital mismatch detected
+    Validation Engine-->>Registration Screen: Doctor valid<br> hospital mismatch detected
     Registration Screen->>User: Show warning 4064 "Request Doctor Hosp. and Request Location Hosp. mismatched. Continue?"
     alt User selects Yes
         User->>Message: Click Yes
-        Message-->>Registration Screen: Warning acknowledged; save continues
+        Message-->>Registration Screen: Warning acknowledged<br> save continues
     else User selects No
         User->>Message: Click No
-        Message-->>Registration Screen: Message closed; save cancelled
+        Message-->>Registration Screen: Message closed<br> save cancelled
         Registration Screen->>User: User can re-edit Request Doctor Hospital and Doctor code
     end
 ```
