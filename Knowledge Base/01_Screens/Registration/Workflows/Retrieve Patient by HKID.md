@@ -337,3 +337,4 @@ sequenceDiagram
 - [[Create New Patient by HKID]] — Triggered when the entered HKID is not found in local records or PMI; allows registration of a brand new patient.
 - [[Create New Episode]] — Triggered when a patient is found but no suitable episode exists, or when PMI is unavailable and the user chooses to create a new encounter.
 - [[Patient Tag Alert]] — Evaluated immediately after a patient is loaded, if the patient has tagged alert records.
+- [[Default Patient Category]] — Describes how the Patient Category field is defaulted when a request number is assigned for the retrieved patient.

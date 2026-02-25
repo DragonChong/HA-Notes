@@ -326,3 +326,4 @@ sequenceDiagram
 - [[Retrieve Patient by HKID]] — The workflow that leads into this one: if the HKID lookup finds an existing patient, that workflow handles the retrieval instead.
 - [[Retrieve Patient by Encounter Number]] — Alternative patient lookup; may also trigger new episode creation when no local or PMI record is found.
 - [[Patient Tag Alert]] — Evaluated after a patient is loaded. For new patients, no tags will exist yet, so no alert is triggered.
+- [[Default Patient Category]] — Describes the Patient Category default applied when a request number is assigned; for brand-new patients, this always defaults to In-Patient.
