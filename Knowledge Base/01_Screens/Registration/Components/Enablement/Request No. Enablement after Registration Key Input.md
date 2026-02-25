@@ -170,3 +170,4 @@ Once the user enters a valid request number, the screen transitions to the ready
 - [[Patient Demographics Panel]] — Documents the enablement rules applied to the Patient Demographics Panel once the Req No. is assigned.
 - [[Request Information Panel]] — Documents the enablement rules applied to the Request Information Panel once the Req No. is assigned.
 - [[Input Specimen No. Button]] — The Input Specimen No. button's enablement is evaluated when the registration reaches the Ready state after request number assignment.
+- [[Sendout Button]] — The Sendout button becomes enabled as part of the Ready state transition after a valid request number is assigned (when the Sendout option is enabled for the lab).
