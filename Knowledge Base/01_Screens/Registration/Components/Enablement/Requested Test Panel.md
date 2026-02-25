@@ -116,3 +116,4 @@ Tests shown are those registrable for the request lab (`testreg_labno` matching 
 
 - [[Request No. Enablement after Registration Key Input]] — The Test Panel becomes visible only after the ready state is reached, which requires a valid request number to have been entered.
 - [[Default Opening Behaviour]] — On screen open, the Test Panel is invisible by default.
+- [[Test Code Selection Behavior]] — When a test code is entered or a profile checkbox is selected, the system checks for duplicates against all existing Test Panel entries and prompts the user if a duplicate is detected.
