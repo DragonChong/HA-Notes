@@ -117,3 +117,4 @@ When the panel enters "Existing Patient with New Encounter" mode, the Name (Engl
 - [[Retrieve Patient by HKID]] — The panel activates as the final step of this workflow, after the HKID and Encounter Number are validated.
 - [[Retrieve Patient by Encounter Number]] — The panel activates in Existing Patient mode at the conclusion of this workflow.
 - [[Create New Patient by HKID]] — The panel activates in New Patient mode after the user confirms creation of a new patient and the Request Number is validated.
+- [[Patient Info Validation on Save]] — The fields on this panel are subject to mandatory and validity checks when the user clicks Save.
