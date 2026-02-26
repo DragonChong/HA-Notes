@@ -270,3 +270,4 @@ An audit text is generated for each field that changed (before → after), and i
 - [[Registration Worksheet Printing]] — Triggered as part of post-registration processing after the save succeeds.
 - [[Request No Label Printing]] — Triggered as part of post-registration processing after worksheet printing.
 - [[Registration Worksheet Printing]] — After the request is saved successfully, the system determines and prints any configured Registration Worksheets as step 13 of the save sequence.
+- [[Clear Screen]] — After all post-registration processing, the screen is cleared and reset ready for the next registration (step 15 of the save sequence).
