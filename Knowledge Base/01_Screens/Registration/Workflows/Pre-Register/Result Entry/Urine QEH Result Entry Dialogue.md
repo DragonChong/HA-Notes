@@ -55,7 +55,7 @@ sequenceDiagram
 
     User->>Dialogue: Open dialogue (from save workflow)
     Dialogue->>System: Look up urine volume test (URINE option or fallback key 4204)
-    System-->>Dialogue: Test found; keyword group and unit label loaded
+    System-->>Dialogue: Test found, keyword group and unit label loaded
     Dialogue-->>User: Display URINE_SPOT drop-down + unit label
 
     User->>Dialogue: Select or type urine volume (number or SPOT)
@@ -63,9 +63,9 @@ sequenceDiagram
 
     Dialogue->>System: Validate selection (non-empty, numeric or SPOT)
     System-->>Dialogue: Valid
-    Dialogue->>System: Derive stored value (SPOT→0; numeric saved as-is)
+    Dialogue->>System: Derive stored value (SPOT→0, numeric saved as-is)
     Dialogue->>System: Save Urine Volume record to working result table
-    System-->>User: Dialogue closes; registration continues
+    System-->>User: Dialogue closes, registration continues
 ```
 
 #### Step-by-Step Details

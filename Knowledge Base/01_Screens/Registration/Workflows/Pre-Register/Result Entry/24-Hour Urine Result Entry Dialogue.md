@@ -2,7 +2,7 @@
 
 ## Overview
 
-The 24-Hour Urine Result Entry Dialogue (titled "Urine Test Specific") is a compact modal dialogue used to capture a **Urine Volume** value at the point of registration for 24-hour urine collection tests. It is opened during the registration save workflow when a request includes a test whose specimen is configured to trigger 24-hour Urine result entry. The user types a numeric volume value into a text input field; the unit label displayed alongside the field is configured per lab. If the urine test cannot be found in the test dictionary, the dialogue closes automatically without prompting the user.
+The 24-Hour Urine Result Entry Dialogue (titled "Urine Test Specific") is a compact modal dialogue used to capture a **Urine Volume** measurement for 24-hour urine collection tests at the point of registration. Unlike the CRCL urine variant, this dialogue presents a **free-text numeric input field** rather than a keyword combo box, reflecting that 24-hour collections always produce a measured numeric volume. The dialogue is opened during the registration save workflow when a request includes a test whose specimen is configured to trigger 24-hour Urine result entry (`w_lis_ur_24hr_popup`). If the urine test is not configured for the current lab, the dialogue closes silently.
 
 ---
 
@@ -17,17 +17,17 @@ The 24-Hour Urine Result Entry Dialogue (titled "Urine Test Specific") is a comp
 
 ## Key Concepts
 
-### 24-Hour Urine Volume
-The total volume of urine collected over a 24-hour period. Unlike the CRCL or spot-urine dialogues, this dialogue uses a **free-text numeric input** rather than a keyword combo box — the value must be a non-blank, numeric entry.
+### isDefaultAsSpot = false
+For the 24-hour Urine dialogue, the Urine Volume is always presented as a **free-text numeric input**, not a keyword combo box. This is because a 24-hour collection is never a "spot" sample — it produces a measured volume that must be typed in.
 
-### URINE Lab Option
-A single `LAB_OPTION` row (group: `REQUEST_REGISTRATION`, code: `URINE`) controls three things for this dialogue:
-- `option_text[0]` — the unit label displayed next to the input field (e.g., "mL")
-- `option_text[1]` — the test code identifying which test to record the result against (if absent, test key 4204 is used as a fallback)
-- `option_value` — the authorize flag for the saved result
+### isSkipZeroSpot = false
+A Urine Volume of zero or blank is **not** silently skipped for this dialogue. If the field is empty or non-numeric, an error is shown and the dialogue remains open.
 
-### Fallback Test Key
-If the `URINE` lab option does not specify a test code, the system falls back to test dictionary key **4204** to identify the urine volume test.
+### isValueDividedByThousand = false
+The value entered by the user is stored exactly as typed — it is not divided by 1000 before being saved.
+
+### Urine Volume Unit
+The unit label displayed next to the input field (e.g. "mL") is taken from the first element of the `URINE` lab option text array. This unit is purely a display label; the value is stored as a plain number.
 
 ---
 
@@ -42,7 +42,7 @@ The dialogue is opened from the Registration screen when the operator saves a re
 ### Scenario 1: Normal Entry — Volume Entered and Saved
 
 #### Prerequisites
-- The urine volume test is identifiable (either from the `URINE` lab option test code or fallback key 4204).
+- The Urine Volume test is configured for the current lab (either via the `URINE` lab option test code, or via the fallback test key 4204).
 - The dialogue is open.
 
 #### Process Flow
@@ -54,14 +54,15 @@ sequenceDiagram
     participant System as Registration System
 
     User->>Dialogue: Open dialogue (from save workflow)
-    Dialogue->>System: Look up urine volume test (from URINE option or fallback key 4204)
-    System-->>Dialogue: Test dictionary found; unit label loaded from URINE option
-    Dialogue-->>User: Display numeric text input + unit label (e.g. "mL")
+    Dialogue->>System: Look up Urine Volume test configuration
+    System-->>Dialogue: Test found; unit label loaded
+    Note over Dialogue: Pre-fill from prior result if available;<br/>set focus to Urine Volume text input
+    Dialogue-->>User: Display Urine Volume text input + unit label
 
-    User->>Dialogue: Type urine volume value
-    User->>Dialogue: Click Done (or press Enter)
+    User->>Dialogue: Type numeric Urine Volume value
+    User->>Dialogue: Click Done
 
-    Dialogue->>System: Validate input (non-blank, numeric)
+    Dialogue->>System: Validate input (not blank, numeric)
     System-->>Dialogue: Valid
     Dialogue->>System: Save Urine Volume record to working result table
     System-->>User: Dialogue closes; registration continues
@@ -69,18 +70,24 @@ sequenceDiagram
 
 #### Step-by-Step Details
 
-1. The dialogue opens and looks up the urine volume test using the test code from the `URINE` lab option (`option_text[1]`). If no test code is configured, test dictionary key 4204 is used instead.
-2. If no urine test can be found, the dialogue closes immediately without displaying anything to the user (see Scenario 3).
-3. The dialogue is displayed with a single titled border section **"Urine Volume"**, containing:
-   - A **numeric text input** field (approximately 100 pixels wide).
-   - A **unit label** (approximately 100 pixels wide) to the right of the input, showing the unit loaded from `option_text[0]` of the `URINE` lab option (e.g., "mL").
-4. If a prior result exists for this test on the current request, the text input is pre-filled with that value.
-5. Focus is set to the text input on open.
-6. The user types the urine volume as a numeric value.
-7. The user clicks **Done** (or presses Enter, as Done is the default button).
+1. The dialogue opens and loads the Urine Volume test configuration from the `URINE` lab option:
+   - The unit label (e.g. "mL") is taken from the first element of the option text array.
+   - The test code is taken from the second element of the option text array. If no test code is defined, the test with key 4204 is used as a fallback.
+2. If no urine test can be found (the option text is null and key 4204 does not exist), the dialogue closes silently (see Scenario 3).
+3. The dialogue is displayed with a single **"Urine Vol"** bordered section containing:
+   - A **Urine Volume** text input field (numeric, approximately 100 pixels wide).
+   - A **unit label** to the right of the input, showing the configured unit (e.g. "mL").
+4. The combo box variant of the Urine Volume field is hidden — only the text input is shown for 24-hour Urine.
+5. If a prior result exists for this test on the current request, the **Urine Volume** field is pre-filled with that value.
+6. Focus is set to the **Urine Volume** text input on open.
+7. The user types a numeric value and clicks **Done**.
 8. The system validates the input:
-   - If the field is blank or the value is not a valid number → error message 1579 "Please enter non-zero urine volume!!" is shown; focus returns to the text input; the dialogue remains open.
-9. If validation passes, the urine volume record is constructed using the request number, the urine test dictionary entry, the entered value (stored as-is, without unit conversion), and the authorize flag from the `URINE` lab option.
+   - If the field is blank or the value is not a valid number → error message 1579 "Please enter non-zero urine volume !!" is shown; focus returns to the text input; the dialogue remains open.
+9. If validation passes, the system constructs a Urine Volume result record using:
+   - The request number.
+   - The configured Urine Volume test dictionary.
+   - The entered numeric value (stored as-is, without division).
+   - The authorize flag from the `URINE` lab option.
 10. The record is written to the working result table (`TRANS_TESTRSLT_WKT`).
 11. The dialogue closes and the registration save workflow continues.
 
@@ -98,22 +105,25 @@ sequenceDiagram
     participant User
     participant Dialogue as 24-Hour Urine Result Entry Dialogue
 
-    User->>Dialogue: Click Cancel
-    Dialogue-->>User: Dialogue closes with no record saved
+    User->>Dialogue: Click Done (default button) or Cancel
+    Note over Dialogue: Cancel path shown
+    Dialogue-->>User: Dialogue closes with no records saved
 ```
 
 #### Step-by-Step Details
 
 1. The user clicks **Cancel**.
-2. The dialogue closes. No record is written to the working result table.
+2. The dialogue closes. No records are written to the working result table.
 3. The registration save workflow is interrupted; the request is not saved.
+
+> **Note:** The **Done** button is configured as the default button for this dialogue — pressing Enter activates it.
 
 ---
 
-### Scenario 3: Urine Test Not Found — Silent Close
+### Scenario 3: Urine Test Not Configured — Silent Close
 
 #### Prerequisites
-- The `URINE` lab option specifies no test code and the fallback test key 4204 does not resolve to a valid test for the current lab.
+- The `URINE` lab option text array is null and the fallback test key 4204 does not exist for the current lab.
 
 #### Process Flow
 
@@ -123,36 +133,34 @@ sequenceDiagram
     participant Dialogue as 24-Hour Urine Result Entry Dialogue
 
     System->>Dialogue: Open dialogue
-    Dialogue->>System: Look up urine volume test
+    Dialogue->>System: Look up Urine Volume test
     System-->>Dialogue: No test found (null)
     Dialogue-->>System: Close immediately (no user interaction)
 ```
 
 #### Step-by-Step Details
 
-1. The dialogue attempts to resolve the urine test from configuration.
-2. No valid test is found for the current lab.
-3. The dialogue closes silently and the save workflow continues as if the dialogue had been submitted.
+1. The dialogue checks the urine test dictionary on opening.
+2. The urine test is null.
+3. The dialogue closes silently and the save workflow continues without writing any record.
 
 ---
 
 ## Visual Layout
 
-The dialogue is titled **"Urine Test Specific"** and is approximately 300 × 220 pixels. It contains one titled border section:
+The dialogue is titled **"Urine Test Specific"** and is approximately 300 × 220 pixels. It contains a single titled border section:
 
-- **"Urine Volume"** — a numeric text input field (approximately 100 pixels wide) followed by a unit label to its right (e.g., "mL").
+- **"Urine Vol"** section: a numeric **text input** field (approximately 100 pixels wide) and a **unit label** (e.g. "mL") to its right. The keyword combo box variant of this field is present in the component but hidden for the 24-hour Urine variant.
 
-> The combo box present in the shared layout is hidden for this dialogue variant. Only the text input is shown.
-
-A **Done** button (left-aligned) and a **Cancel** button (right-aligned) are displayed below the border section. The **Done** button is the default action — pressing Enter activates it.
+A **Done** button (left-aligned) and a **Cancel** button (right-aligned) are at the bottom of the dialogue. Done is the default button (activated by pressing Enter).
 
 ---
 
 ## Buttons and Actions
 
 ### Done
-- **When visible:** Always visible; also the default button (activated by pressing Enter).
-- **What it does:** Validates the urine volume input. If valid, the result record is constructed and saved to the working result list; the dialogue closes.
+- **When visible:** Always visible; configured as the default button (Enter key activates it).
+- **What it does:** Validates the Urine Volume input. If valid, saves the result to the working result table and closes the dialogue.
 
 ### Cancel
 - **When visible:** Always visible.
@@ -164,29 +172,29 @@ A **Done** button (left-aligned) and a **Cancel** button (right-aligned) are dis
 
 | Message | Text | Trigger | User Options |
 |---------|------|---------|-------------|
-| 1579 | "Please enter non-zero urine volume!!" | Urine volume text input is blank or contains a non-numeric value | Dismiss; focus returns to text input |
+| 1579 | "Please enter non-zero urine volume !!" | Urine Volume field is blank or contains a non-numeric value | Dismiss; focus returns to Urine Volume text input |
 
 ---
 
 ## Summary Tables
 
-### Behaviour Comparison with Other Urine Dialogue Variants
+### Comparison with Other Urine Dialogue Variants
 
-| Feature | 24-Hour Urine (CRST-561) | CRCL Urine component | Urine (CRST-564) |
-|---------|--------------------------|---------------------|-----------------|
-| Input control | Text input | Keyword combo | Keyword combo |
-| SPOT / 0 silently skipped | No | Yes | No |
-| Value divided by 1000 before save | No | No | Varies by variant |
-| Validation error | 1579 (blank or non-numeric) | 1560 (invalid keyword) | Varies |
-| Default as combo | No (text input shown) | Yes (combo shown) | No |
+| Feature | 24-Hour Urine (CRST-561) | CRCL Urine (CRST-559) |
+|---------|-------------------------|----------------------|
+| Input control | Text input (numeric) | Keyword combo box |
+| SPOT/zero skip | No — zero triggers error 1579 | Yes — SPOT/0 silently skipped |
+| Value divided by 1000 | No | No |
+| Collection Time field | No | Yes (additional CTIME field) |
+| Enter Code | `w_lis_ur_24hr_popup` | `w_lis_crcl_popup` |
 
 ### Saved Record Fields
 
 | Field | Source |
 |-------|--------|
 | Request Number | Current registration request |
-| Test | Urine volume test (from `URINE` option_text[1] or fallback key 4204) |
-| Result value | Numeric value entered in the text input |
+| Test | Urine Volume test from `URINE` option, or fallback key 4204 |
+| Result value | Numeric value entered in the text input (stored as-is) |
 | Authorize flag | `URINE` lab option value (boolean) |
 
 ---
@@ -195,10 +203,10 @@ A **Done** button (left-aligned) and a **Cancel** button (right-aligned) are dis
 
 | Data | Source |
 |------|--------|
-| Urine volume test | Test code from `URINE` option_text[1]; fallback to test key 4204 |
-| Unit label | First element of `URINE` option_text array (`option_text[0]`) |
-| Authorize flag | `URINE` option_value (boolean) |
-| Prior result (pre-fill) | Existing working result for the urine test on the same request, if present |
+| Urine Volume test definition | Test code from `URINE` lab option text array element [1]; fallback to test key 4204 |
+| Urine Volume unit label | First element of `URINE` lab option text array ([0]) |
+| Authorize flag | `URINE` lab option value (boolean) |
+| Prior Urine Volume result | Retrieved from any existing working result for the configured urine test on the same request |
 
 ---
 
@@ -206,24 +214,26 @@ A **Done** button (left-aligned) and a **Cancel** button (right-aligned) are dis
 
 | Setting | Option Code | Purpose | Effect when enabled | Effect when disabled |
 |---------|------------|---------|--------------------|--------------------|
-| Urine Authorize | `URINE` (option_value, group: `REQUEST_REGISTRATION`) | Controls whether the saved result is marked as authorised | Result record is flagged as authorised | Result record is saved without authorisation |
-| Urine Unit and Test Code | `URINE` (option_text_array, group: `REQUEST_REGISTRATION`) | Defines the unit label (`[0]`) and test code (`[1]`) for the urine volume field | Configured unit shown; configured test code used | Falls back to test key 4204; no unit label shown |
+| Urine Authorize | `URINE` (option_value, group: `REQUEST_REGISTRATION`) | Controls whether the saved Urine Volume result is marked as authorised | Result record is flagged as authorised | Result record is saved without authorisation |
+| Urine Unit and Test Code | `URINE` (option_text_array, group: `REQUEST_REGISTRATION`) | Defines the unit label and test code for the Urine Volume field | Unit label shown next to input; specified test code used for saving | Falls back to test key 4204; no unit label configured |
 
 ---
 
 ## Business Rules
 
-1. The input field accepts only numeric values. A blank entry or any non-numeric text triggers error message 1579.
-2. Unlike some other urine dialogue variants, a value of "0" or a blank entry is **not** silently skipped — it is treated as an error.
-3. The entered value is stored as-is in the working result table without unit conversion (not divided by 1000).
-4. If no urine test can be resolved for the current lab (from either the option or the fallback key), the dialogue closes silently and the save continues.
-5. If a prior result already exists for the urine test on the same request, the text input is pre-filled with that value when the dialogue opens.
+1. For 24-hour Urine, the volume is always entered as a free-text numeric value — the keyword combo box variant of the field is not used.
+2. A blank or non-numeric Urine Volume is an error (message 1579) — unlike the CRCL variant, zero and empty values are not silently skipped.
+3. The entered volume is stored exactly as typed; no unit conversion (e.g., divide by 1000) is applied.
+4. If the `URINE` lab option does not specify a test code, the system falls back to the test with key 4204.
+5. If no urine test can be resolved (option null and key 4204 absent), the dialogue closes silently and the save workflow continues without a urine record.
+6. If a prior result already exists for the urine test on the same request, the text input is pre-filled with that value when the dialogue opens.
+7. The Done button is the default button — pressing Enter submits the form.
 
 ---
 
 ## Related Workflows
 
 - [[Result Entry on Save]] — The 24-Hour Urine Result Entry Dialogue is invoked as part of the result entry step within the registration save workflow.
-- [[CRCL Result Entry Dialogue]] — Uses the same `URINE` lab option for the urine volume component, but shows a keyword combo instead of a text input (CRST-559).
-- [[TOX Result Entry Dialogue]] — Another specialised result entry dialogue in the same save workflow (CRST-560).
+- [[CRCL Result Entry Dialogue]] — Also uses `RegRsltEnUrinePm` as its base class for the urine volume portion, but presents the combo box variant and adds a Collection Time field (CRST-559).
+- [[TOX Result Entry Dialogue]] — Another specialised result entry dialogue for toxicology specimen type capture (CRST-560).
 - [[Fluid Result Entry Dialogue]] — Fluid result entry dialogue (CRST-555).
