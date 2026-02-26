@@ -16,7 +16,7 @@ When a registration is saved, the system checks whether any of the requested tes
 - [[CRST-555]] — [[Fluid Result Entry Dialogue]]
 - [[CRST-556]] — [[TIMH Result Entry Dialogue]]
 - [[CRST-557]] — [[ABG Result Entry Dialogue]]
-- [[CRST-558]] — Result Entry (ABG3)
+- [[CRST-558]] — [[ABG3 Result Entry Dialogue]]
 - [[CRST-559]] — Result Entry (CRCL)
 - [[CRST-560]] — Result Entry (TOX)
 - [[CRST-561]] — Result Entry (24-hour Urine)
@@ -48,7 +48,7 @@ Each Enter Code maps to a specific dialogue:
 | `w_lis_fluid_popup` | [[Fluid Result Entry Dialogue]] | [[CRST-555]] |
 | `w_lis_timh_pwh_popup` | [[TIMH Result Entry Dialogue]] | [[CRST-556]] |
 | `w_lis_abg_popup` | [[ABG Result Entry Dialogue]] | [[CRST-557]] |
-| `w_lis_abg3_popup` | ABG3 Result Entry | [[CRST-558]] |
+| `w_lis_abg3_popup` | [[ABG3 Result Entry Dialogue]] | [[CRST-558]] |
 | `w_lis_crcl_popup` | CRCL (Creatinine Clearance) Result Entry | [[CRST-559]] |
 | `w_lis_tox_popup` | Toxicology Result Entry | [[CRST-560]] |
 | `w_lis_ur_24hr_popup` | 24-hour Urine Result Entry | [[CRST-561]] |
@@ -218,7 +218,7 @@ In the current system, each Result Entry dialogue is a sequential modal pop-up. 
 - [[Fluid Result Entry Dialogue]] — Detail for Fluid Result Entry (CRST-555).
 - [[TIMH Result Entry Dialogue]] — Detail for TIMH Result Entry (CRST-556).
 - [[ABG Result Entry Dialogue]] — Detail for ABG Result Entry (CRST-557).
-- [[CRST-558]] — ABG3 Result Entry dialogue detail.
+- [[ABG3 Result Entry Dialogue]] — Detail for ABG3 Result Entry (CRST-558).
 - [[CRST-559]] — CRCL Result Entry dialogue detail.
 - [[CRST-560]] — Toxicology Result Entry dialogue detail.
 - [[CRST-561]] — 24-hour Urine Result Entry dialogue detail.
