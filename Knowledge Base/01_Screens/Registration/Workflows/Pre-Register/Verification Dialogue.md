@@ -225,3 +225,4 @@ Additional lab-specific data may be included for certain labs via extended confi
 - [[Pre-Register Save Sequence]] — The Verification Dialogue is the last step before the server save in the save sequence.
 - [[Private Change Reason Dialogue]] — An earlier step in the same save sequence.
 - [[Result Entry on Save]] — The step that immediately precedes the Verification Dialogue in the save sequence.
+- [[Register Request]] — The data conversion and server submission step that follows immediately after the Verification Dialogue.
