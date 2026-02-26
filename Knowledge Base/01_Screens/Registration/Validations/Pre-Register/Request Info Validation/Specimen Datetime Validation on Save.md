@@ -90,7 +90,7 @@ sequenceDiagram
     Validation Engine-->>Registration Screen: Hard error condition met
     Registration Screen->>User: Show message 551 / 543 / 544 / 547 / 548
     User->>Registration Screen: Click OK
-    Registration Screen->>User: Message closes; focus returns to invalid field
+    Registration Screen->>User: Message closes<br> focus returns to invalid field
 ```
 
 #### Step-by-Step Details
@@ -123,7 +123,7 @@ sequenceDiagram
         Registration Screen->>System: Continue save
     else User clicks No
         User->>Registration Screen: Dismiss warning
-        Registration Screen->>User: Message closes; field unchanged
+        Registration Screen->>User: Message closes<br> field unchanged
     end
 ```
 
@@ -155,7 +155,7 @@ sequenceDiagram
         Registration Screen->>System: Continue save
     else User clicks Cancel
         User->>Registration Screen: Dismiss
-        Registration Screen->>User: Message closes; field unchanged
+        Registration Screen->>User: Message closes<br> field unchanged
     end
 ```
 
