@@ -1,0 +1,7 @@
+2026-02-25 09:49:39.386 (gcrSpecAckRegister() : Transaction Begin)
+25/02/2026 09:49:39:45	(Reqeuest Register time)
+2026-02-25 09:49:39.491 (BbsGcrSpecAckDataConvertor.printTsRemark)
+2026-02-25 09:49:39.544 (printReport() : Transaction Begin)
+2026-02-25 09:49:39.564 (Exception)
+2026-02-25 09:49:39.836 (gcrSpecAckRegister() : Transaction Commit)
+25/02/2026 09:49:39:546	(CRS worker time)
