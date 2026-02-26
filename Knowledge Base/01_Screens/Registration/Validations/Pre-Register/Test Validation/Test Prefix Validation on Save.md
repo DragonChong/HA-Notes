@@ -97,16 +97,16 @@ sequenceDiagram
 
 ## Summary Table — Messages
 
-| Message | Text | Type | User Options | Condition |
-|---------|------|------|-------------|-----------|
-| 504 | *(Send Out location not provided — exact message text from system)* | Hard error | OK | A test with the Send Out prefix is present but no Send Out location has been set |
+| Message | Text                                                                | Type       | User Options | Condition                                                                        |
+| ------- | ------------------------------------------------------------------- | ---------- | ------------ | -------------------------------------------------------------------------------- |
+| 504     | *(Send Out location not provided — exact message text from system)* | Hard error | OK           | A test with the Send Out prefix is present but no Send Out location has been set |
 
 ---
 
 ## Configuration
 
-| Setting | Option Code | Purpose | Effect when configured | Effect when not configured |
-|---------|------------|---------|----------------------|--------------------------|
+| Setting              | Option Code            | Purpose                                                                                | Effect when configured                                                        | Effect when not configured                                                  |
+| -------------------- | ---------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
 | Send Out Test Prefix | `SEND_OUT_TEST_PREFIX` | Defines the prefix string that identifies send-out test codes; stored in `option_text` | Any test code beginning with this prefix triggers the send-out location check | No tests are subject to the send-out prefix check; validation always passes |
 
 ---
