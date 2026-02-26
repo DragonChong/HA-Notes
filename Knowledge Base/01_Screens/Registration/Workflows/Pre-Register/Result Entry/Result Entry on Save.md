@@ -215,6 +215,7 @@ In the current system, each Result Entry dialogue is a sequential modal pop-up. 
 ## Related Workflows
 
 - [[Pre-Register Save Sequence]] — Result Entry is one step in the overall save sequence, positioned after Private Change Reason and before Verification.
+- [[Private Change Reason Dialogue]] — The step that immediately precedes Result Entry in the save sequence.
 - [[Fluid Result Entry Dialogue]] — Detail for Fluid Result Entry (CRST-555).
 - [[TIMH Result Entry Dialogue]] — Detail for TIMH Result Entry (CRST-556).
 - [[ABG Result Entry Dialogue]] — Detail for ABG Result Entry (CRST-557).

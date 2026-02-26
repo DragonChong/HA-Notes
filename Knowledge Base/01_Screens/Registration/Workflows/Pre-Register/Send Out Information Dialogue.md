@@ -231,4 +231,5 @@ When the user confirms the dialogue, the following data is written to the send-o
 
 - [[Send Out Information Dialogue (CRST-41)]] — Governs most field rules for the Send Out dialogue; the Registration version differs only in the Request No display and ePR checkbox configuration source.
 - [[Pre-Register Save Sequence]] — The Send Out Information Dialogue is one step within this sequence; it runs when the Send Out checkbox is checked.
+- [[Private Change Reason Dialogue]] — Another save-sequence step that runs in the same save operation, positioned before Result Entry.
 - [[Amend Request - Send Out Dialogue (CRST-886)]] — The Amend Request version of this dialogue; shares the same underlying PM.
