@@ -22,7 +22,7 @@ When a registration is saved, the system checks whether any of the requested tes
 - [[CRST-561]] — [[24-Hour Urine Result Entry Dialogue]]
 - [[CRST-562]] — [[Urine PYN Result Entry Dialogue]]
 - [[CRST-563]] — [[Urine QEH Result Entry Dialogue]]
-- [[CRST-564]] — Result Entry (Urine)
+- [[CRST-564]] — [[Urine Result Entry Dialogue]]
 
 ---
 
@@ -54,7 +54,7 @@ Each Enter Code maps to a specific dialogue:
 | `w_lis_ur_24hr_popup` | [[24-Hour Urine Result Entry Dialogue]] | [[CRST-561]] |
 | `w_lis_ur_pyn_popup` | [[Urine PYN Result Entry Dialogue]] | [[CRST-562]] |
 | `w_lis_ur_qeh_popup` | [[Urine QEH Result Entry Dialogue]] | [[CRST-563]] |
-| `w_lis_urine_popup` | Urine Result Entry | [[CRST-564]] |
+| `w_lis_urine_popup` | [[Urine Result Entry Dialogue]] | [[CRST-564]] |
 
 ### Deduplication of Dialogues
 If multiple test profiles on the same registration request the same type of Result Entry dialogue (i.e., they share the same Enter Code), the dialogue is shown only once — not once per test profile. The dialogue receives all test profiles as context.
@@ -224,4 +224,4 @@ In the current system, each Result Entry dialogue is a sequential modal pop-up. 
 - [[24-Hour Urine Result Entry Dialogue]] — Detail for 24-Hour Urine Result Entry (CRST-561).
 - [[Urine PYN Result Entry Dialogue]] — Detail for Urine PYN Result Entry (CRST-562).
 - [[Urine QEH Result Entry Dialogue]] — Detail for Urine QEH Result Entry (CRST-563).
-- [[CRST-564]] — Urine Result Entry dialogue detail.
+- [[Urine Result Entry Dialogue]] — Detail for Urine Result Entry (CRST-564).
