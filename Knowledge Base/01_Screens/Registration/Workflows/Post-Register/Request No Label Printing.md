@@ -163,4 +163,4 @@ The following information is printed on each Request Number label:
 ## Related Workflows
 
 - [[Register Request]] — Label printing is triggered after the registration request has been saved successfully to the server.
-- [[Registration Worksheet Printing]] — Also triggered as part of the post-registration process; runs before label printing in the save sequence.
+- [[Knowledge Base/01_Screens/Registration/Workflows/Pre-Register/Registration Worksheet Printing]] — Also triggered as part of the post-registration process; runs before label printing in the save sequence.
