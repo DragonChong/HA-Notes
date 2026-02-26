@@ -128,4 +128,4 @@ sequenceDiagram
 
 - [[Test Existence Validation on Save]] — Runs before this validation; confirms at least one test has been entered.
 - [[Test Prefix Validation on Save]] — Runs in the same validation sequence; checks Send Out prefix rules.
-- [[Request Info Validation on Save]] — Parent validation flow that coordinates all pre-register save checks.
+- [[Test Valid Period Validation on Save]] — Runs after this check; warns the user when the specimen collection time has exceeded a test's configured Valid Specimen Period.
