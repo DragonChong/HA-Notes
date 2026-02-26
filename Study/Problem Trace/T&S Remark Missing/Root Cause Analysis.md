@@ -224,7 +224,7 @@ This removes the dependency on `this.actions`, `this.actionIndex`, etc. and make
 
 ### Diagram 1 — Normal Sequential Flow (How the Chain Is Designed to Work)
 
-```other
+```mermaid
 sequenceDiagram
     participant Chain as processFunction<br/>(UIComponentUtil)
     participant PS as processSave
@@ -264,7 +264,7 @@ sequenceDiagram
 
 ### Diagram 2 — The Race Condition (State Corruption Path)
 
-```other
+```mermaid
 sequenceDiagram
     participant Chain as processFunction
     participant PS as processSave
@@ -306,7 +306,7 @@ sequenceDiagram
 
 ### Diagram 3 — Root Cause: Closure vs. Shared State Comparison
 
-```other
+```mermaid
 flowchart TB
     subgraph SAFE["✅ SAFE — serverCallSave uses closure capture"]
         direction TB
@@ -340,7 +340,7 @@ flowchart TB
 
 ### Diagram 4 — All Async Save Actions and Their Shared-State Exposure Windows
 
-```other
+```mermaid
 gantt
     title Save Action Chain — Shared State Exposure Windows (⚠️ = vulnerable)
     dateFormat  X
