@@ -19,7 +19,7 @@ When a registration is saved, the system checks whether any of the requested tes
 - [[CRST-558]] — [[ABG3 Result Entry Dialogue]]
 - [[CRST-559]] — [[CRCL Result Entry Dialogue]]
 - [[CRST-560]] — [[TOX Result Entry Dialogue]]
-- [[CRST-561]] — Result Entry (24-hour Urine)
+- [[CRST-561]] — [[24-Hour Urine Result Entry Dialogue]]
 - [[CRST-562]] — Result Entry (Urine PYN)
 - [[CRST-563]] — Result Entry (Urine QEH)
 - [[CRST-564]] — Result Entry (Urine)
@@ -51,7 +51,7 @@ Each Enter Code maps to a specific dialogue:
 | `w_lis_abg3_popup` | [[ABG3 Result Entry Dialogue]] | [[CRST-558]] |
 | `w_lis_crcl_popup` | [[CRCL Result Entry Dialogue]] | [[CRST-559]] |
 | `w_lis_tox_popup` | [[TOX Result Entry Dialogue]] | [[CRST-560]] |
-| `w_lis_ur_24hr_popup` | 24-hour Urine Result Entry | [[CRST-561]] |
+| `w_lis_ur_24hr_popup` | [[24-Hour Urine Result Entry Dialogue]] | [[CRST-561]] |
 | `w_lis_ur_pyn_popup` | Urine (PYN) Result Entry | [[CRST-562]] |
 | `w_lis_ur_qeh_popup` | Urine (QEH) Result Entry | [[CRST-563]] |
 | `w_lis_urine_popup` | Urine Result Entry | [[CRST-564]] |
@@ -221,7 +221,7 @@ In the current system, each Result Entry dialogue is a sequential modal pop-up. 
 - [[ABG3 Result Entry Dialogue]] — Detail for ABG3 Result Entry (CRST-558).
 - [[CRCL Result Entry Dialogue]] — Detail for CRCL Result Entry (CRST-559).
 - [[TOX Result Entry Dialogue]] — Detail for TOX Result Entry (CRST-560).
-- [[CRST-561]] — 24-hour Urine Result Entry dialogue detail.
+- [[24-Hour Urine Result Entry Dialogue]] — Detail for 24-Hour Urine Result Entry (CRST-561).
 - [[CRST-562]] — Urine (PYN) Result Entry dialogue detail.
 - [[CRST-563]] — Urine (QEH) Result Entry dialogue detail.
 - [[CRST-564]] — Urine Result Entry dialogue detail.
