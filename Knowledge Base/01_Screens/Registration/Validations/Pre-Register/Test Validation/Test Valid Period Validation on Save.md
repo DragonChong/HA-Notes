@@ -190,5 +190,6 @@ When the user clicks **Comment**:
 ## Related Workflows
 
 - [[Test Registrable Validation on Save]] — Runs immediately before this check; verifies each test is in the registrable catalogue.
+- [[Test Duplication Validation on Save]] — Runs after this check; warns when the same tests have already been registered for the patient within the configured duplication period.
 - [[Test Existence Validation on Save]] — First check in the test validation sequence.
 - [[Request Info Validation on Save]] — Parent validation flow that coordinates all pre-register save checks, including the test validation sequence.

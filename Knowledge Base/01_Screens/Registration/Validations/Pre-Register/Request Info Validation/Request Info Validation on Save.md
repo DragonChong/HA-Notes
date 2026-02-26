@@ -276,5 +276,6 @@ sequenceDiagram
 - [[Test Prefix Validation on Save]] — Second check in the test validation sequence; ensures send-out tests have a Send Out location before saving.
 - [[Test Registrable Validation on Save]] — Third check in the test validation sequence; verifies each entered test exists in the registrable catalogue and is accessible for the current user.
 - [[Test Valid Period Validation on Save]] — Fourth check in the test validation sequence; warns the user when the specimen collection time has exceeded a test's configured Valid Specimen Period.
+- [[Test Duplication Validation on Save]] — Fifth check in the test validation sequence; warns when the same tests have already been registered for the patient within the configured duplication period.
 - [[Default Request Location]] — Request Location is pre-populated by default rules; this validation runs after defaults have been applied.
 - [[Default Request Doctor]] — Requesting Doctor is pre-populated by default rules; this validation runs after defaults have been applied.
