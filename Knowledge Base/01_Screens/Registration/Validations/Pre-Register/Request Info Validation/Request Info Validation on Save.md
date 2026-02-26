@@ -273,5 +273,6 @@ sequenceDiagram
 - [[Clinical Detail and Text Field Length Validation on Save]] — Detailed breakdown of the max-length checks for Clinical Detail (510 chars, message 3528), Reference (255 chars, message 552), and Request Comment (255 chars, message 552).
 - [[Specimen Datetime Validation on Save]] — Detailed breakdown of all datetime chronological checks and configurable future/expiry warnings for Request, Collection, and Arrival dates.
 - [[Test Existence Validation on Save]] — First check in the test validation sequence; ensures at least one test is present before the save is allowed to proceed.
+- [[Test Prefix Validation on Save]] — Second check in the test validation sequence; ensures send-out tests have a Send Out location before saving.
 - [[Default Request Location]] — Request Location is pre-populated by default rules; this validation runs after defaults have been applied.
 - [[Default Request Doctor]] — Requesting Doctor is pre-populated by default rules; this validation runs after defaults have been applied.
