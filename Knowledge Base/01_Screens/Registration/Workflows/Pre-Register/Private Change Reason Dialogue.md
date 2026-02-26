@@ -81,7 +81,7 @@ sequenceDiagram
     User->>Private Change Reason Dialogue: Click OK
     Private Change Reason Dialogue->>Private Change Reason Dialogue: Validate reason not blank
     Private Change Reason Dialogue-->>Registration Screen: Reason accepted
-    Registration Screen->>Registration Screen: Save reason as audit; continue save sequence
+    Registration Screen->>Registration Screen: Save reason as audit, continue save sequence
 ```
 
 #### Step-by-Step Details
