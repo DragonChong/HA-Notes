@@ -558,7 +558,7 @@ timeline
         .429 [S183] : checkCrossLabRequest response → existed=false
         .436 [S183] : checkCrossLabRequest COMMIT → ❌ callback fires with wrong actionIndex
     section .510 — .570
-        .516 [S173] : INSERT 26BB002610 registeredDate=(0949:39.45 UNCOMMITTED)
+        .516 [S173] : INSERT 26BB002610 registeredDate=(09 49 39.45 UNCOMMITTED)
         .536 [S198] : Security check for printReport
         .544 [S198] : printReport T2 BEGIN (called from Flex via BlazeDS!)
         .546 [S198] : createReport TS_REMARK_REPORT starts
@@ -572,7 +572,45 @@ timeline
 
 ### Diagram 3 — The Shared State Corruption Mechanism (Root Cause)
 
-💥 Corrupted Callback — Session 183 returnsBefore processSave — Session 173❌ Server Failure — Session 198Too lateprintReport queries 26BB002610from DB viaselectRequestInfoByRequestNoAndLabNoQuery returns EMPTY Vector(T1 not committed, data invisible)Vector.get(0) throwsArrayIndexOutOfBoundsException!(.564)T1 commits at .836— 292ms after T2 already failedcheckCrossLabRequest returns (.436)callback calls processNextAction()processNextAction() readsthis.actionIndex = saveScreenValuesToParam❌ WRONG! Should read 'processSave'Chain jumps PAST processSave:saveScreenValuesToParam →postRegistrationProcess (.491) →printRegistrationWorksheet →printReport via BlazeDS (.544)⚠️ Race Window — Two concurrent actionsSession 183:checkCrossLabRequest(.377)(triggered from popUpResultEntryDialogueor a save chain step that wasalso async-pending)sets actionIndex → processSaveSession 173:processSave starts (.386)gcrSpecAckRegister T1 begins❌ setActionParameters OVERWRITES:actionIndex → saveScreenValuesToParamcheckCrossLabRequest() called(session 173, .123)setActionParameters:actionIndex → processSavecheckCrossLabRequest returns (.181)callback → processNextAction()→ advances chain toward processSave
+```mermaid
+flowchart TD
+    subgraph BEFORE_SAVE["Before processSave — Session 173"]
+        A1["checkCrossLabRequest() called\n(session 173, .123)\nsetActionParameters:\nactionIndex → processSave"]
+        A2["checkCrossLabRequest returns (.181)\ncallback → processNextAction()\n→ advances chain toward processSave"]
+    end
+
+    subgraph RACE_WINDOW["⚠️ Race Window — Two concurrent actions"]
+        direction LR
+        B1["Session 183:\ncheckCrossLabRequest(.377)\n(triggered from popUpResultEntryDialogue\nor a save chain step that was\nalso async-pending)\nsets actionIndex → processSave"]
+        B2["Session 173:\nprocessSave starts (.386)\ngcrSpecAckRegister T1 begins\n❌ setActionParameters OVERWRITES:\nactionIndex → saveScreenValuesToParam"]
+        B1 ~~~ B2
+    end
+
+    subgraph CORRUPT_CALLBACK["💥 Corrupted Callback — Session 183 returns"]
+        C1["checkCrossLabRequest returns (.436)\ncallback calls processNextAction()"]
+        C2["processNextAction() reads\nthis.actionIndex = saveScreenValuesToParam\n❌ WRONG! Should read 'processSave'"]
+        C3["Chain jumps PAST processSave:\nsaveScreenValuesToParam →\npostRegistrationProcess (.491) →\nprintRegistrationWorksheet →\nprintReport via BlazeDS (.544)"]
+    end
+
+    subgraph FAILURE["❌ Server Failure — Session 198"]
+        D1["printReport queries 26BB002610\nfrom DB via\nselectRequestInfoByRequestNoAndLabNo"]
+        D2["Query returns EMPTY Vector\n(T1 not committed, data invisible)"]
+        D3["Vector.get(0) throws\nArrayIndexOutOfBoundsException!\n(.564)"]
+        D4["T1 commits at .836\n— 292ms after T2 already failed"]
+    end
+
+    A1 --> A2 --> RACE_WINDOW
+    RACE_WINDOW --> CORRUPT_CALLBACK
+    C1 --> C2 --> C3 --> FAILURE
+    D1 --> D2 --> D3
+    D4 -.->|"Too late"| D1
+
+    style B2 fill:#ff6666,color:#fff
+    style C2 fill:#ff6666,color:#fff
+    style D3 fill:#ff4444,color:#fff
+    style RACE_WINDOW fill:#fff0f0
+    style CORRUPT_CALLBACK fill:#ffe0e0
+```
 
 ---
 
