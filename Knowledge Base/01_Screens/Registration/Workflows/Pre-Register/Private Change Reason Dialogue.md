@@ -200,4 +200,5 @@ The Private Change Reason step occupies the following position in the Registrati
 
 - [[Pre-Register Save Sequence]] — The Private Change Reason Dialogue is one step in the overall save sequence, positioned between Validation and Result Entry.
 - [[Result Entry on Save]] — The step that follows immediately after the Private Change Reason step when result entry is also required.
+- [[Verification Dialogue]] — The step that follows Result Entry in the save sequence; requires staff to confirm registration details before the request is committed.
 - [[Send Out Information Dialogue]] — Another save-sequence step that also appears in the stepper for the same save operation.
