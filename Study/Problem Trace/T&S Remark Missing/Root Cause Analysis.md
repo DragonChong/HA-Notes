@@ -199,26 +199,18 @@ serverCallSave(packing, capturedNextAction, capturedNextActionFail);
 This removes the dependency on `this.actions`, `this.actionIndex`, etc. and makes the continuation immune to any subsequent `setActionParameters` calls. The same pattern should be applied to any other async save action where the gap between `setActionParameters` and the eventual `processNextAction()` call is long (especially those involving server calls or multi-step dialogs).
 
 ---
-
 ### Summary Table
 
-| Layer | What can corrupt state | Window of exposure |
+|Layer|What can corrupt state|Window of exposure|
+|---|---|---|
+|processFreeze|Fast — freeze completes quickly|Minimal|
+|gatherServerInformationForValidation|EJB call in-flight|Medium|
+|preRegistrationProcess|EJB call in-flight|Medium|
+|popUpVerificationDialogue / popUpPrivateChangeReasonDialogue / popUpResultEntryDialogue|Waiting for user|Long — user interaction time|
+|processSave|Dialog 1 → EJB call → Dialog 2|Very long — 3 async layers deep|
+|postRegistrationProcess|EJB call in-flight|Medium|
 
-| --- | --- | --- |
-
-| `processFreeze` | Fast — freeze completes quickly | Minimal |
-
-| `gatherServerInformationForValidation` | EJB call in-flight | Medium |
-
-| `preRegistrationProcess` | EJB call in-flight | Medium |
-
-| `popUpVerificationDialogue` / `popUpPrivateChangeReasonDialogue` / `popUpResultEntryDialogue` | Waiting for user | Long — user interaction time |
-
-| **`processSave`** | **Dialog 1 → EJB call → Dialog 2** | **Very long — 3 async layers deep** |
-
-| `postRegistrationProcess` | EJB call in-flight | Medium |
-
-`processSave` has the **longest exposure window** and is the most dangerous step. Any action between the moment Dialog 1 is shown and the moment Dialog 2 is dismissed that writes to the six shared instance fields will cause the sequence to skip steps or advance prematurely — which is exactly the symptom observed (`postRegistrationProcess` running before `processSave` completes).
+processSave has the l
 
 ---
 
