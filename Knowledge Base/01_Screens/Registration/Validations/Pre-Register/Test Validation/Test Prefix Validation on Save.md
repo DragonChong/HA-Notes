@@ -125,3 +125,4 @@ sequenceDiagram
 ## Related Workflows
 
 - [[Test Existence Validation on Save]] — Runs immediately before this check; confirms at least one test is present.
+- [[Test Registrable Validation on Save]] — Runs after this check; verifies each entered test is registrable and accessible for the current user.
