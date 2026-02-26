@@ -221,3 +221,149 @@ This removes the dependency on `this.actions`, `this.actionIndex`, etc. and make
 `processSave` has the **longest exposure window** and is the most dangerous step. Any action between the moment Dialog 1 is shown and the moment Dialog 2 is dismissed that writes to the six shared instance fields will cause the sequence to skip steps or advance prematurely — which is exactly the symptom observed (`postRegistrationProcess` running before `processSave` completes).
 
 ---
+
+### Diagram 1 — Normal Sequential Flow (How the Chain Is Designed to Work)
+
+```other
+sequenceDiagram
+    participant Chain as processFunction<br/>(UIComponentUtil)
+    participant PS as processSave
+    participant SCS as serverCallSave
+    participant REG as register()
+    participant EJB as EJB Server
+    participant SharedState as SharedState<br/>(actions/actionIndex/...)
+
+    Chain->>PS: call processSave(functions, N, cb, ecb, pnf)
+    PS->>SharedState: setActionParameters()<br/>actionIndex = N<br/>(next = saveScreenValuesToParam)
+    PS->>SCS: serverCallSave(packing, processNextAction, processNextActionFail)
+
+    Note over SCS: Dialog 1: "Confirm save?"
+    SCS-->>SCS: promptMessage("0000537", startMsgHandler)
+    Note over SCS: ⏳ ASYNC WAIT — user clicks OK
+
+    SCS->>REG: register(packing, registerCallbackHandler, ...)
+    REG->>SharedState: saveCallbackFunction = registerCallbackHandler
+    REG->>EJB: dispatchEvent(REGISTER)
+    Note over EJB: ⏳ ASYNC WAIT — EJB call in-flight
+
+    EJB-->>REG: registerHandler(SUCCESS)
+    REG->>REG: handleRegistrationResult(result)
+    REG->>SCS: registerCallbackHandler(true)
+
+    Note over SCS: Dialog 2: "Saved successfully!"
+    SCS-->>SCS: promptMessage("0000553", endMsgHandler)
+    Note over SCS: ⏳ ASYNC WAIT — user clicks OK
+
+    SCS->>SharedState: reads actionIndex = N (correct ✅)
+    SCS->>Chain: processNextAction()<br/>→ advance to saveScreenValuesToParam
+    Chain->>Chain: saveScreenValuesToParam
+    Chain->>Chain: postRegistrationProcess
+```
+
+---
+
+### Diagram 2 — The Race Condition (State Corruption Path)
+
+```other
+sequenceDiagram
+    participant Chain as processFunction
+    participant PS as processSave
+    participant SCS as serverCallSave
+    participant REG as register()
+    participant EJB as EJB Server
+    participant HRR as handleRegistrationResult()<br/>(subclass override / side effect)
+    participant SharedState as ⚠️ SharedState<br/>(actions / actionIndex / ...)
+
+    Chain->>PS: call processSave(functions, N, cb, ecb, pnf)
+    PS->>SharedState: setActionParameters()<br/>✅ actionIndex = N<br/>(next = saveScreenValuesToParam)
+    PS->>SCS: serverCallSave(packing, processNextAction, ...)
+
+    Note over SCS: Dialog 1 — promptMessage("0000537")
+    Note over SCS: ⏳ WAIT (user clicks OK)
+
+    SCS->>REG: register(packing, registerCallbackHandler, ...)
+    REG->>EJB: dispatchEvent(REGISTER)
+    Note over EJB: ⏳ WAIT (EJB in-flight)
+
+    EJB-->>REG: registerHandler(SUCCESS)
+
+    rect rgb(255, 220, 220)
+        Note over HRR,SharedState: ⚠️ DANGER ZONE — processNextAction not yet called,<br/>but shared state is about to be corrupted
+        REG->>HRR: handleRegistrationResult(result) ← runs BEFORE saveCallbackFunction(true)
+        HRR->>SharedState: setActionParameters()<br/>💥 actionIndex OVERWRITTEN<br/>(now points to step M > N)
+    end
+
+    REG->>SCS: saveCallbackFunction(true) → registerCallbackHandler(true)
+    Note over SCS: Dialog 2 — promptMessage("0000553")
+    Note over SCS: ⏳ WAIT (user clicks OK)
+
+    SCS->>SharedState: reads actionIndex = M ❌ (CORRUPTED!)
+    SCS->>Chain: processNextAction()<br/>→ jumps to step M, SKIPPING saveScreenValuesToParam!
+    Chain->>Chain: ❌ postRegistrationProcess runs<br/>BEFORE processSave chain<br/>is properly completed!
+```
+
+---
+
+### Diagram 3 — Root Cause: Closure vs. Shared State Comparison
+
+```other
+flowchart TB
+    subgraph SAFE["✅ SAFE — serverCallSave uses closure capture"]
+        direction TB
+        A1["processSave calls serverCallSave(packing, processNextAction, processNextActionFail)"]
+        A2["serverCallSave captures callbackFunction\nin local closure variable\n(endMessageCallbackHandler)"]
+        A3["No matter what happens to shared state,\nendMessageCallbackHandler always calls\nthe ORIGINAL processNextAction reference"]
+        A1 --> A2 --> A3
+    end
+
+    subgraph UNSAFE["❌ UNSAFE — processNextAction reads shared mutable state"]
+        direction TB
+        B1["processSave calls setActionParameters()\n→ writes actionIndex=N into this.actionIndex"]
+        B2["serverCallSave starts async chain\n(Dialog 1 → EJB → Dialog 2)"]
+        B3["⏳ During async wait, handleRegistrationResult()\nor any other code path calls setActionParameters()\n→ this.actionIndex is OVERWRITTEN to M"]
+        B4["endMessageCallbackHandler eventually fires\n→ callbackFunction() = processNextAction()"]
+        B5["processNextAction() reads this.actionIndex = M ❌\n→ advances to WRONG step\n→ postRegistrationProcess runs prematurely!"]
+        B1 --> B2 --> B3 --> B4 --> B5
+    end
+
+    subgraph FIX["🔧 FIX — Capture continuation in closure inside processSave"]
+        direction TB
+        C1["processSave captures functions/index/cb/ecb/pnf\nin LOCAL closure variables at call time"]
+        C2["var capturedNextAction = function():void {\n    processNextFunction(functions, index, cb, ecb, true)\n}"]
+        C3["serverCallSave(packing, capturedNextAction, capturedNextActionFail)"]
+        C4["Even if shared state is overwritten later,\ncapturedNextAction always holds the correct\nfunctions+index for THIS call — immune to corruption ✅"]
+        C1 --> C2 --> C3 --> C4
+    end
+```
+
+---
+
+### Diagram 4 — All Async Save Actions and Their Shared-State Exposure Windows
+
+```other
+gantt
+    title Save Action Chain — Shared State Exposure Windows (⚠️ = vulnerable)
+    dateFormat  X
+    axisFormat %s
+
+    section Action Sequence
+    processFreeze           :done,    f,  0, 1
+    resetRequestLabs        :done,    r,  1, 2
+    gatherServerInfo ⚠️     :active,  g,  2, 4
+    convertDataForSave      :done,    c,  4, 5
+    validate ⚠️             :active,  v,  5, 7
+    preRegistrationProcess ⚠️ :active, pr, 7, 9
+    popUpPrivateReason ⚠️   :active,  pp, 9, 12
+    popUpResultEntry ⚠️     :active,  pe, 12, 16
+    popUpVerification ⚠️    :active,  pv, 16, 20
+    processSave ⚠️⚠️⚠️      :crit,    ps, 20, 30
+    saveScreenValuesToParam :done,    ss, 30, 31
+    postRegistrationProcess ⚠️ :active, po, 31, 34
+    printWorksheet          :active,  pw, 34, 37
+    processUnfreeze         :done,    pu, 37, 38
+    processClear            :done,    pc, 38, 39
+    retainScreenValues      :done,    rs, 39, 40
+    returnToScreen          :done,    rt, 40, 41
+```
+
+The key insight across all four diagrams: `processSave` has the **longest exposure window** (three nested async layers: Dialog 1 → EJB call → Dialog 2) and is the only step where an extensibility hook (`handleRegistrationResult`) runs synchronously **between** the EJB response arriving and `processNextAction()` being called — making it the most likely point of state corruption.
