@@ -204,7 +204,7 @@ This removes the dependency on `this.actions`, `this.actionIndex`, etc. and make
 
 | Layer | What can corrupt state | Window of exposure |
 
-|---|---|---|
+| --- | --- | --- |
 
 | `processFreeze` | Fast — freeze completes quickly | Minimal |
 
