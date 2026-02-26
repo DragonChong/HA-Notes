@@ -478,3 +478,106 @@ gantt
 ```
 
 The key insight across all four diagrams: `processSave` has the **longest exposure window** (three nested async layers: Dialog 1 → EJB call → Dialog 2) and is the only step where an extensibility hook (`handleRegistrationResult`) runs synchronously **between** the EJB response arriving and `processNextAction()` being called — making it the most likely point of state corruption.
+
+---
+### Diagram 1 — Exact Log Timeline with All Server Sessions
+
+DatabaseSession 198(printReport)Session 183(checkCrossLabRequest)Session 173(gcrSpecAckRegister)Flex Client(BlazeDS)DatabaseSession 198(printReport)Session 183(checkCrossLabRequest)Session 173(gcrSpecAckRegister)Flex Client(BlazeDS)── Pre-save steps (simplified) ──.123 BEGIN.181 COMMIT⚠️ Action chain is advancing toward processSave.377 BEGINsame requestNo!.386 BEGIN T1.516 insertCrsRequestregisteredDate=09:49:39.45par[Concurrent EJB calls triggered simultaneously]processSave called setActionParameters()❌ actionIndex NOW points to saveScreenValuesToParam.429 checkCrossLabRequest response.436 COMMIT⚠️ SESSION 183 CALLBACK FIRES!calls processNextAction()reads actionIndex = saveScreenValuesToParam (CORRUPTED!)chain jumps past processSave!.544 BEGIN T2.546 createReport[TS_REMARK_REPORT] starts❌ 26BB002610 NOT VISIBLET1 (session 173) not committed!.564 EXCEPTION!selectRequestInfoByRequestNoAndLabNoArray index out of range: 0T1 still processing...✅ Should have waited HEREbefore calling printReportcheckCrossLabRequest(26BB002610)existed=falseprocessNextAction() → advances chaincheckCrossLabRequest(26BB002610)gcrSpecAckRegister(packing)INSERT request 26BB002610(UNCOMMITTED in T1)existed=falsesaveScreenValuesToParam()postRegistrationProcess()BbsGcrSpecAckDataConvertor.printTsRemark() [.491]printRegistrationWorksheet()printReport(TS_REMARK_REPORT, 26BB002610)SELECT * FROM crs_requestWHERE reqno='26BB002610'Empty result (size=0)Vector.get(0)→ ArrayIndexOutOfBoundsExceptionINSERT audit, GCR data... (.563)COMMIT T1 (.836)gcrSpecAckRegister response
+
+---
+
+### Diagram 2 — Exact Log Line Evidence
+
+Mermaid Syntax Error
+
+View diagram source
+
+timeline
+    title Server Log Evidence  (2026-02-25 09:49:39.xxx, Session IDs in brackets)
+    section .118 — .200
+        .118 [S198] : Security check — new session 198 preparing
+        .123 [S173] : checkCrossLabRequest BEGIN (req 26BB002610)
+        .172 [S173] : checkCrossLabRequest response → existed=false
+        .181 [S173] : checkCrossLabRequest COMMIT
+    section .370 — .450
+        .372 [S183] : Security check — new session 183 preparing
+        .377 [S183] : checkCrossLabRequest BEGIN (SAME req 26BB002610!)
+        .378 [S173] : Security check — session 173 preparing next EJB
+        .386 [S173] : gcrSpecAckRegister T1 BEGIN ⚡ CONCURRENT with S183!
+        .429 [S183] : checkCrossLabRequest response → existed=false
+        .436 [S183] : checkCrossLabRequest COMMIT → ❌ callback fires with wrong actionIndex
+    section .510 — .570
+        .516 [S173] : INSERT 26BB002610 registeredDate=09:49:39.45 (UNCOMMITTED)
+        .536 [S198] : Security check for printReport
+        .544 [S198] : printReport T2 BEGIN (called from Flex via BlazeDS!)
+        .546 [S198] : createReport TS_REMARK_REPORT starts
+        .563 [S173] : INSERT GCR audit data (still in T1!)
+        .564 [S198] : EXCEPTION ArrayIndexOutOfBoundsException
+    section .830+
+        .836 [S173] : gcrSpecAckRegister T1 COMMIT — 292ms TOO LATE
+
+---
+
+### Diagram 3 — The Shared State Corruption Mechanism (Root Cause)
+
+💥 Corrupted Callback — Session 183 returnsBefore processSave — Session 173❌ Server Failure — Session 198Too lateprintReport queries 26BB002610from DB viaselectRequestInfoByRequestNoAndLabNoQuery returns EMPTY Vector(T1 not committed, data invisible)Vector.get(0) throwsArrayIndexOutOfBoundsException!(.564)T1 commits at .836— 292ms after T2 already failedcheckCrossLabRequest returns (.436)callback calls processNextAction()processNextAction() readsthis.actionIndex = saveScreenValuesToParam❌ WRONG! Should read 'processSave'Chain jumps PAST processSave:saveScreenValuesToParam →postRegistrationProcess (.491) →printRegistrationWorksheet →printReport via BlazeDS (.544)⚠️ Race Window — Two concurrent actionsSession 183:checkCrossLabRequest(.377)(triggered from popUpResultEntryDialogueor a save chain step that wasalso async-pending)sets actionIndex → processSaveSession 173:processSave starts (.386)gcrSpecAckRegister T1 begins❌ setActionParameters OVERWRITES:actionIndex → saveScreenValuesToParamcheckCrossLabRequest() called(session 173, .123)setActionParameters:actionIndex → processSavecheckCrossLabRequest returns (.181)callback → processNextAction()→ advances chain toward processSave
+
+---
+
+### Diagram 4 — The Two Key Concurrent EJB Calls Proven by Session IDs
+
+Mermaid Syntax Error
+
+View diagram source
+
+block-beta
+  columns 4
+  block:timeline["Timeline ms"]:1
+    t386[".386"]
+    t436[".436"]
+    t516[".516"]
+    t544[".544"]
+    t564[".564"]
+    t836[".836"]
+  end
+  block:s173["Session 173\n(gcrSpecAckRegister T1)"]:1
+    r1["T1 BEGIN\ngcrSpecAckRegister\nline 131"]
+    space
+    r3["INSERT 26BB002610\nregisteredDate=.45\nline 168"]
+    space
+    space
+    r6["T1 COMMIT\nline ~200+\n.836"]
+  end
+  block:s183["Session 183\n(checkCrossLabRequest)"]:1
+    space
+    r2["COMMIT .436\n❌ callback fires\nwrong actionIndex\nline 135"]
+    space
+    space
+    space
+    space
+  end
+  block:s198["Session 198\n(printReport T2)"]:1
+    space
+    space
+    space
+    r4["T2 BEGIN\nprintReport\nline 173"]
+    r5["EXCEPTION!\nArrayIndexOutOfBounds\nVector.get(0)\nline 190"]
+    space
+  end
+
+---
+
+### Summary: What the Log Proves
+
+|Evidence|Log Line|Significance|
+|---|---|---|
+|gcrSpecAckRegister T1 starts|line 131 .386|T1 begins|
+|INSERT 26BB002610 with registeredDate=09:49:39.45|line 168 .516|Data written but NOT committed|
+|Session 183 checkCrossLabRequest same requestNo|line 129 .377|Concurrent with T1 — will fire callback with corrupted state|
+|Session 183 callback fires|line 135 .436|processNextAction() reads actionIndex pointing to saveScreenValuesToParam|
+|printReport called via BlazeDS|line 234 in stacktrace|Flex client called this — NOT from within gcrSpecAckRegister|
+|selectRequestInfoByRequestNoAndLabNo returns empty|line 192 stacktrace|26BB002610 not visible — T1 uncommitted|
+|Vector.get(0) → ArrayIndexOutOfBoundsException|line 191|Exception caused by empty DB result|
+|T1 commits at .836|292ms after T2 failed|Too late|
+
+The fix must ensure that Session 183's checkCrossLabRequest callback, when it fires, cannot advance the chain past processSave by capturing its own continuation state in a closure rather than relying on the shared actionIndex instance field.
