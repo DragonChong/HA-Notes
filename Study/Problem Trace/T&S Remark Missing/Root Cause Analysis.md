@@ -616,10 +616,7 @@ flowchart TD
 
 ### Diagram 4 — The Two Key Concurrent EJB Calls Proven by Session IDs
 
-Mermaid Syntax Error
-
-View diagram source
-
+```mermaid
 block-beta
   columns 4
   block:timeline["Timeline ms"]:1
@@ -654,6 +651,7 @@ block-beta
     r5["EXCEPTION!\nArrayIndexOutOfBounds\nVector.get(0)\nline 190"]
     space
   end
+```
 
 ---
 
