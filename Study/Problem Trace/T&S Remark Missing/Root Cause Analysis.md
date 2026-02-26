@@ -12,7 +12,7 @@ For **synchronous steps** this is straightforward. For **async steps**, the patt
 
 3. When the async op finishes, the callback fires `processNextAction()`, which reads back from those saved instance fields and advances the chain.
 
-\---
+---
 
 ### 2. The Fundamental Structural Flaw: Shared Mutable Instance State
 
@@ -30,7 +30,7 @@ And `processNextAction()` reads from these at **call time**, not at capture time
 
 **This is safe only if exactly one async operation is in-flight at a time.** If the instance-level state is overwritten between `setActionParameters` being called (in step N) and `processNextAction()` being invoked (completing step N), then `processNextAction()` will use the wrong `actionIndex` and jump to the wrong step.
 
-\---
+---
 
 ### 3. The Specific Vulnerability in `processSave` → `serverCallSave`
 
@@ -76,7 +76,7 @@ promptMessage("0000537", ...)        ← Dialog 1: "Confirm save?"
 
 `processNextAction()` is only called at the **very end** of this entire chain. Between `setActionParameters` running (at the start of `processSave`) and `processNextAction()` being called (at the end of Dialog 2), there are **three asynchronous waits** during which the shared instance state is exposed.
 
-\---
+---
 
 ### 4. The Concrete Race Condition
 
@@ -116,7 +116,7 @@ This is called **synchronously inside `registerHandler`**, BEFORE `saveCallbackF
 
 If any subclass overrides `handleRegistrationResult` and inside it calls **any method that invokes `setActionParameters`** — directly or indirectly (e.g., via another `processFunctions()` call, via triggering another save-like action, or via dispatching another `RegistrationEvent` whose response handler calls `setActionParameters`) — then by the time `saveCallbackFunction(true)` → ... → `processNextAction()` is finally called, the `this.actionIndex` has already been overwritten to point to a later step, and `postRegistrationProcess` runs before the `processSave` chain has cleanly completed.
 
-\---
+---
 
 ### 5. Secondary Flaw: `processNextAction` Is Not a Safe Closure
 
@@ -150,7 +150,7 @@ callbackFunction();
 
 The same safety that was correctly applied in `serverCallSave` (capturing callbacks in closures) was NOT applied to the `setActionParameters` / `processNextAction` pattern used by `processSave` and all other async save actions.
 
-\---
+---
 
 ### 6. The Fix
 
@@ -198,9 +198,9 @@ serverCallSave(packing, capturedNextAction, capturedNextActionFail);
 
 This removes the dependency on `this.actions`, `this.actionIndex`, etc. and makes the continuation immune to any subsequent `setActionParameters` calls. The same pattern should be applied to any other async save action where the gap between `setActionParameters` and the eventual `processNextAction()` call is long (especially those involving server calls or multi-step dialogs).
 
-\---
+---
 
-\### Summary Table
+### Summary Table
 
 | Layer | What can corrupt state | Window of exposure |
 
