@@ -1,5 +1,8 @@
 ## Root Cause Analysis: `postRegistrationProcess` Running Before `processSave` Completes
 
+
+
+
 ### 1. The Design Pattern: How the Chain Normally Works
 
 `UIComponentUtil.processFunction` passes itself as the `processNextFunction` argument to each step. Each step receives `(functions, index, callbackFunction, errorCallbackFunction, processNextFunction)` and is responsible for calling `processNextFunction(...)` when it finishes (either directly or via callback).
