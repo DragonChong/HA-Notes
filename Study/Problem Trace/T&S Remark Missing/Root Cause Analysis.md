@@ -558,7 +558,7 @@ timeline
         .429 [S183] : checkCrossLabRequest response → existed=false
         .436 [S183] : checkCrossLabRequest COMMIT → ❌ callback fires with wrong actionIndex
     section .510 — .570
-        .516 [S173] : INSERT 26BB002610 registeredDate=09:49:39.45 (UNCOMMITTED)
+        .516 [S173] : INSERT 26BB002610 registeredDate<br>(09:49:39 UNCOMMITTED)
         .536 [S198] : Security check for printReport
         .544 [S198] : printReport T2 BEGIN (called from Flex via BlazeDS!)
         .546 [S198] : createReport TS_REMARK_REPORT starts
