@@ -13,7 +13,7 @@ When a registration is saved, the system checks whether any of the requested tes
 **Epic:** LISP-27 [CRST][DEV] Registration - Register Workflow
 
 **Related Result Entry variant stories:**
-- [[CRST-555]] — Result Entry (Fluid)
+- [[CRST-555]] — [[Fluid Result Entry Dialogue]]
 - [[CRST-556]] — Result Entry (TIMH)
 - [[CRST-557]] — Result Entry (ABG)
 - [[CRST-558]] — Result Entry (ABG3)
@@ -45,7 +45,7 @@ Each Enter Code maps to a specific dialogue:
 
 | Enter Code | Dialogue Type | Story |
 |---|---|---|
-| `w_lis_fluid_popup` | Fluid Result Entry | [[CRST-555]] |
+| `w_lis_fluid_popup` | [[Fluid Result Entry Dialogue]] | [[CRST-555]] |
 | `w_lis_timh_pwh_popup` | TIMH Result Entry | [[CRST-556]] |
 | `w_lis_abg_popup` | ABG Result Entry | [[CRST-557]] |
 | `w_lis_abg3_popup` | ABG3 Result Entry | [[CRST-558]] |
