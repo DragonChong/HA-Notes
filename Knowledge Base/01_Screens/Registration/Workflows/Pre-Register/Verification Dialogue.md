@@ -71,7 +71,7 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     Registration Screen->>Verification Dialogue: Open (lab 1)
-    Verification Dialogue->>User: Show registration summary + test list; Save disabled
+    Verification Dialogue->>User: Show registration summary + test list, Save disabled
     User->>Verification Dialogue: Tick "Check to Verify Request" checkbox
     Verification Dialogue-->>Registration Screen: Close (verified = true)
     Registration Screen->>Verification Dialogue: Open (lab 2, if applicable)
