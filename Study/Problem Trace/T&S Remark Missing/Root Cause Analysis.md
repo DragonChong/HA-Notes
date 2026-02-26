@@ -482,16 +482,67 @@ The key insight across all four diagrams: `processSave` has the **longest exposu
 ---
 ### Diagram 1 — Exact Log Timeline with All Server Sessions
 
-DatabaseSession 198(printReport)Session 183(checkCrossLabRequest)Session 173(gcrSpecAckRegister)Flex Client(BlazeDS)DatabaseSession 198(printReport)Session 183(checkCrossLabRequest)Session 173(gcrSpecAckRegister)Flex Client(BlazeDS)── Pre-save steps (simplified) ──.123 BEGIN.181 COMMIT⚠️ Action chain is advancing toward processSave.377 BEGINsame requestNo!.386 BEGIN T1.516 insertCrsRequestregisteredDate=09:49:39.45par[Concurrent EJB calls triggered simultaneously]processSave called setActionParameters()❌ actionIndex NOW points to saveScreenValuesToParam.429 checkCrossLabRequest response.436 COMMIT⚠️ SESSION 183 CALLBACK FIRES!calls processNextAction()reads actionIndex = saveScreenValuesToParam (CORRUPTED!)chain jumps past processSave!.544 BEGIN T2.546 createReport[TS_REMARK_REPORT] starts❌ 26BB002610 NOT VISIBLET1 (session 173) not committed!.564 EXCEPTION!selectRequestInfoByRequestNoAndLabNoArray index out of range: 0T1 still processing...✅ Should have waited HEREbefore calling printReportcheckCrossLabRequest(26BB002610)existed=falseprocessNextAction() → advances chaincheckCrossLabRequest(26BB002610)gcrSpecAckRegister(packing)INSERT request 26BB002610(UNCOMMITTED in T1)existed=falsesaveScreenValuesToParam()postRegistrationProcess()BbsGcrSpecAckDataConvertor.printTsRemark() [.491]printRegistrationWorksheet()printReport(TS_REMARK_REPORT, 26BB002610)SELECT * FROM crs_requestWHERE reqno='26BB002610'Empty result (size=0)Vector.get(0)→ ArrayIndexOutOfBoundsExceptionINSERT audit, GCR data... (.563)COMMIT T1 (.836)gcrSpecAckRegister response
+```mermaid
+sequenceDiagram
+    participant FC as Flex Client<br/>(BlazeDS)
+    participant S173 as Session 173<br/>(gcrSpecAckRegister)
+    participant S183 as Session 183<br/>(checkCrossLabRequest)
+    participant S198 as Session 198<br/>(printReport)
+    participant DB as Database
+
+    Note over FC,DB: ── Pre-save steps (simplified) ──
+
+    FC->>S173: checkCrossLabRequest(26BB002610)
+    Note over S173: .123 BEGIN
+    S173-->>FC: existed=false
+    Note over S173: .181 COMMIT
+    FC->>FC: processNextAction() → advances chain
+
+    Note over FC: ⚠️ Action chain is advancing toward processSave
+
+    par Concurrent EJB calls triggered simultaneously
+        FC->>S183: checkCrossLabRequest(26BB002610)
+        Note over S183: .377 BEGIN<br/>same requestNo!
+    and
+        FC->>S173: gcrSpecAckRegister(packing)
+        Note over S173: .386 BEGIN T1
+        S173->>DB: INSERT request 26BB002610<br/>(UNCOMMITTED in T1)
+        Note over S173: .516 insertCrsRequest<br/>registeredDate=09:49:39.45
+    end
+
+    Note over FC: processSave called setActionParameters()<br/>❌ actionIndex NOW points to saveScreenValuesToParam
+    Note over S183: .429 checkCrossLabRequest response
+
+    S183-->>FC: existed=false
+    Note over S183: .436 COMMIT
+
+    rect rgb(255, 180, 180)
+        Note over FC: ⚠️ SESSION 183 CALLBACK FIRES!<br/>calls processNextAction()<br/>reads actionIndex = saveScreenValuesToParam (CORRUPTED!)<br/>chain jumps past processSave!
+        FC->>FC: saveScreenValuesToParam()
+        FC->>FC: postRegistrationProcess()<br/>BbsGcrSpecAckDataConvertor.printTsRemark() [.491]
+        FC->>FC: printRegistrationWorksheet()
+        FC->>S198: printReport(TS_REMARK_REPORT, 26BB002610)
+        Note over S198: .544 BEGIN T2
+        Note over S198: .546 createReport[TS_REMARK_REPORT] starts
+        S198->>DB: SELECT * FROM crs_request<br/>WHERE reqno='26BB002610'
+        Note over DB: ❌ 26BB002610 NOT VISIBLE<br/>T1 (session 173) not committed!
+        DB-->>S198: Empty result (size=0)
+        S198->>S198: Vector.get(0)<br/>→ ArrayIndexOutOfBoundsException
+        Note over S198: .564 EXCEPTION!<br/>selectRequestInfoByRequestNoAndLabNo<br/>Array index out of range: 0
+    end
+
+    Note over S173: T1 still processing...
+    S173->>DB: INSERT audit, GCR data... (.563)
+    S173->>DB: COMMIT T1 (.836)
+    S173-->>FC: gcrSpecAckRegister response
+    Note over FC: ✅ Should have waited HERE<br/>before calling printReport
+```
 
 ---
 
 ### Diagram 2 — Exact Log Line Evidence
 
-Mermaid Syntax Error
-
-View diagram source
-
+```mermaid
 timeline
     title Server Log Evidence  (2026-02-25 09:49:39.xxx, Session IDs in brackets)
     section .118 — .200
@@ -515,6 +566,7 @@ timeline
         .564 [S198] : EXCEPTION ArrayIndexOutOfBoundsException
     section .830+
         .836 [S173] : gcrSpecAckRegister T1 COMMIT — 292ms TOO LATE
+```
 
 ---
 
