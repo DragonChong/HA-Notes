@@ -267,3 +267,4 @@ An audit text is generated for each field that changed (before → after), and i
 - [[Private Change Reason Dialogue]] — The private referral audit text captured here is included in the Process Parameter of the packing.
 - [[Result Entry on Save]] — Test results captured in Result Entry dialogues are included in the packing's test results list.
 - [[Verification Dialogue]] — The packing is submitted to the server immediately after the Verification step confirms the registration.
+- [[Registration Worksheet Printing]] — After the request is saved successfully, the system determines and prints any configured Registration Worksheets as step 13 of the save sequence.
