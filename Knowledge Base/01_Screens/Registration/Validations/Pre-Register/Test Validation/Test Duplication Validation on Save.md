@@ -170,5 +170,6 @@ Multiple duplicate entries are displayed as separate lines within the same messa
 ## Related Workflows
 
 - [[Test Valid Period Validation on Save]] — Runs immediately before this check; warns when the specimen collection time exceeds a test's Valid Specimen Period.
+- [[Test Validity Validation on Save]] — Runs after this check; validates patient sex and age against each test's validity setup when SEX_AGE_TEST_CHECK_ENABLED is active.
 - [[Test Existence Validation on Save]] — First check in the test validation sequence.
 - [[Request Info Validation on Save]] — Parent validation flow that coordinates all pre-register save checks, including the test validation sequence.
