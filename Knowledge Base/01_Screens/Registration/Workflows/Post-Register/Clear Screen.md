@@ -195,6 +195,7 @@ sequenceDiagram
 ## Related Workflows
 
 - [[Register Request]] — The clear screen workflow is the final step (step 15) in the full registration save sequence.
+- [[Clear Button]] — The manual clear action available at any time. Performs the same field reset as the post-save clear, but requires user confirmation first.
 - [[Screen Object Focus]] — The focus progression rules (default focus, post-encounter focus, post-request-no focus) are defined as part of this related workflow.
 - [[Registration Worksheet Printing]] — Occurs in the save sequence immediately before the clear step.
 - [[Request No Label Printing]] — Occurs earlier in the save sequence (within post-registration processing) before the clear step.
