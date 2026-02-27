@@ -177,5 +177,6 @@ sequenceDiagram
 
 ## Related Workflows
 
+- [[Copy Patient Location to Request Location]] — When patient location changes are not disabled by configuration, the patient location is first copied to the request location before the private referral check runs.
 - [[Screen Object Focus]] — The Request Location and Patient Location fields are part of the Registration screen tab sequence.
 - [[Retain]] — The Private dropdown value can be retained across Clear operations if included in the active Retain group.
