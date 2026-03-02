@@ -60,6 +60,10 @@ The **Amend Request** screen allows authorised laboratory staff to modify the re
 - **[[CRST-814]]** - Amend Request - Doctor Modified Alert
 - **[[CRST-815]]** - Amend Request - Report Printed in TB/DH Form Alert
 - **[[CRST-816]]** - Amend Request - Create PHLC Lab Order
+- **[[CRST-817]]** - Amend Request - USID Input Dialogue
+- **[[CRST-818]]** - Amend Request - USID Not Found Alert
+- **[[CRST-819]]** - Amend Request - USID Data Conversion
+- **[[CRST-820]]** - Amend Request - USID Audit
 
 **Epic:** LISP-220 [CRST][DEV] Amend Request - Layout | LISP-222 [CRST][DEV] Amend Request - Screen Object Interaction | LISP-223 [CRST][DEV] Amend Request - Amend Action | LISP-229 [CRST][DEV] Amend Request - Request Retrieval
 
