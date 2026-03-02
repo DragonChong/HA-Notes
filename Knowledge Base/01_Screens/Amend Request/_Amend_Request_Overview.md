@@ -17,8 +17,9 @@ The **Amend Request** screen allows authorised laboratory staff to modify the re
 - **[[CRST-775]]** - Amend Request - Buttons
 - **[[CRST-776]]** - Amend Request - Data Retention Selection Panel
 - **[[CRST-778]]** - Amend Request - Object Enablement After Retrieval
+- **[[CRST-779]]** - Amend Request - Retrieve Request
 
-**Epic:** LISP-220 [CRST][DEV] Amend Request - Layout | LISP-222 [CRST][DEV] Amend Request - Screen Object Interaction
+**Epic:** LISP-220 [CRST][DEV] Amend Request - Layout | LISP-222 [CRST][DEV] Amend Request - Screen Object Interaction | LISP-229 [CRST][DEV] Amend Request - Request Retrieval
 
 ---
 
@@ -126,4 +127,4 @@ See [[Data Retention Panel]] for full details.
 
 ## Related Workflows
 
-*(To be documented when workflow US are processed.)*
+- [[Retrieve Request]] — The workflow that populates all three panels and enables the action buttons when a request number is entered.

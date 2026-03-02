@@ -16,10 +16,10 @@ The **Patient Panel** (Patient Demographic panel) displays the demographic detai
 - **[[CRST-86]]** - Registration - Patient Demographic Panel *(shared component origin)*
 - **[[CRST-96]]** - Registration - Patient Demographic Panel *(shared component)*
 - **[[CRST-777]]** - Amend Request - Retrieve Request
-- **[[CRST-778]]** - Amend Request - Amend Request Action
-- **[[CRST-779]]** - Amend Request - Clear Action
+- **[[CRST-778]]** - Amend Request - Object Enablement After Retrieval
+- **[[CRST-779]]** - Amend Request - Retrieve Request *(data mapping)*
 
-**Epic:** LISP-220 [CRST][DEV] Amend Request - Layout
+**Epic:** LISP-220 [CRST][DEV] Amend Request - Layout | LISP-229 [CRST][DEV] Amend Request - Request Retrieval
 
 ---
 
@@ -31,15 +31,17 @@ The Patient Panel is a vertically stacked panel occupying the left or upper-left
 
 ## Fields
 
-| Field | Data Displayed |
-|-------|---------------|
-| HKID | Patient's Hong Kong Identity Card number |
-| Encounter | Hospital encounter number linked to the retrieved request |
-| Name (English) | Patient's full name in English |
-| Name (Chinese) | Patient's full name in Chinese characters |
-| Sex | Patient's sex |
-| Age | Patient's age at the time of the request |
-| Age Unit | Unit associated with the age value (e.g., years, months, days) |
+All fields are populated on retrieval from the `REQUEST` table and are non-editable.
+
+| Field | Table | Column | Data Type |
+|-------|-------|--------|-----------|
+| HKID | `REQUEST` | `req_pid` | char(12) |
+| Encounter | `REQUEST` | `req_encounter` | char(15) |
+| Name (English) | `REQUEST` | `req_name` | varchar(81) |
+| Name (Chinese) | `REQUEST` | `req_cname` | varchar(60) |
+| Sex | `REQUEST` | `req_sex` | char(1) |
+| Age | `REQUEST` | `req_age` | tinyint |
+| Age Unit | `REQUEST` | `req_age_unit` | tinyint |
 
 ---
 
@@ -67,7 +69,7 @@ On the Registration screen, the Patient Demographic panel fields may be populate
 
 ## Related Workflows
 
-*(To be documented when workflow US are processed.)*
+- [[Retrieve Request]] — This panel is populated as part of the request retrieval workflow.
 
 ---
 

@@ -17,9 +17,9 @@ The **Request Info Panel** (Request Information panel) displays and allows editi
 - **[[CRST-455]]** - Registration - Request Information Panel *(shared component)*
 - **[[CRST-777]]** - Amend Request - Retrieve Request
 - **[[CRST-778]]** - Amend Request - Object Enablement After Retrieval
-- **[[CRST-779]]** - Amend Request - Clear Action
+- **[[CRST-779]]** - Amend Request - Retrieve Request *(data mapping)*
 
-**Epic:** LISP-220 [CRST][DEV] Amend Request - Layout
+**Epic:** LISP-220 [CRST][DEV] Amend Request - Layout | LISP-229 [CRST][DEV] Amend Request - Request Retrieval
 
 ---
 
@@ -33,33 +33,33 @@ The Request Info Panel occupies the main body of the Amend Request screen, to th
 
 After a request is retrieved, fields fall into two categories: those that are editable (the user may change the value) and those that are visible but non-editable (displayed for reference only).
 
-| Field | Editable After Retrieval | Description |
-|-------|:------------------------:|-------------|
-| Category | ✅ Yes | Patient category for this request (e.g., in-patient, out-patient) |
-| Pay Code | ❌ No | Billing pay code — displayed for reference only; cannot be changed via Amend Request |
-| Clinical Detail | ✅ Yes | Free-text field for clinical background or presenting information |
-| Reference | ✅ Yes | Free-text reference text |
-| Comment | ✅ Yes | Free-text comment for the request |
-| Bill | ✅ Yes | Billing indicator or billing-related flag |
-| Urgency | ✅ Yes | Urgency level of the request |
-| Confidential | ✅ Yes | Flag indicating the request is confidential |
-| Private | ✅ Yes | Flag indicating the patient is a private patient |
-| Bed | ✅ Yes | Patient's bed location at the time of the request |
-| Request Doctor — Hospital | ✅ Yes | Hospital identifier for the requesting doctor |
-| Request Doctor — Code | ✅ Yes | Code identifying the requesting doctor |
-| Request Doctor — Full Name | ❌ No | Doctor's full name — auto-populated when a doctor code is selected; displayed for reference only |
-| Request Location — Hospital | ✅ Yes | Hospital from which the request originates |
-| Request Location — Specialty | ✅ Yes | Specialty from which the request originates |
-| Request Location — Ward / Clinic | ✅ Yes | Ward or clinic from which the request originates |
-| Report Location — Hospital | ✅ Yes | Hospital to which the laboratory report is sent |
-| Report Location — Specialty | ✅ Yes | Specialty to which the laboratory report is sent |
-| Report Location — Ward / Clinic | ✅ Yes | Ward or clinic to which the laboratory report is sent |
-| Report Copy — Hospital | ✅ Yes | Hospital for the additional report copy recipient |
-| Report Copy — Specialty | ✅ Yes | Specialty for the additional report copy recipient |
-| Report Copy — Ward / Clinic | ✅ Yes | Ward or clinic for the additional report copy recipient |
-| Specimen Collection Datetime | ✅ Yes | Date and time the specimen was collected from the patient |
-| Specimen Request Datetime | ✅ Yes | Date and time the request was submitted |
-| Specimen Arrival Datetime | ✅ Yes | Date and time the specimen arrived at the laboratory |
+| Field | Editable After Retrieval | Table | Column | Data Type |
+|-------|:------------------------:|-------|--------|-----------|
+| Category | ✅ Yes | `REQUEST` | `req_category` | tinyint |
+| Pay Code | ❌ No | `PATIENT` | `pat_type` | char(3) |
+| Clinical Detail | ✅ Yes | `REQUEST` | `req_cdetail` / `req_cdetail2` | varchar(255) |
+| Reference | ✅ Yes | `REQUEST` | `req_reference` | varchar(255) |
+| Comment | ✅ Yes | `REQUEST` | `req_comment` | varchar(255) |
+| Bill | ✅ Yes | `REQUEST` | `req_bill` | tinyint |
+| Urgency | ✅ Yes | `REQUEST` | `req_urgency` | tinyint |
+| Confidential | ✅ Yes | `REQUEST` | `req_confidential` | tinyint |
+| Private | ✅ Yes | `REQUEST` | `req_lab_only` | tinyint |
+| Bed | ✅ Yes | `REQUEST` | `req_bed` | varchar(8) |
+| Request Doctor — Hospital | ✅ Yes | `REQUEST` | `req_reqdoc_hosp` | char(12) |
+| Request Doctor — Code | ✅ Yes | `REQUEST` | `req_doc` | smallint |
+| Request Doctor — Full Name | ❌ No | `OFFICE` | `office_name` | varchar(40) |
+| Request Location — Hospital | ✅ Yes | `REQUEST` | `req_locn_hosp` | char(12) |
+| Request Location — Specialty | ✅ Yes | `REQUEST` | `req_unit` | smallint |
+| Request Location — Ward / Clinic | ✅ Yes | `REQUEST` | `req_locn` | smallint |
+| Report Location — Hospital | ✅ Yes | `REQUEST` | `req_rept_dest_hosp` | char(12) |
+| Report Location — Specialty | ✅ Yes | N/A | N/A | Not stored separately |
+| Report Location — Ward / Clinic | ✅ Yes | `REQUEST` | `req_rept_dest` | smallint |
+| Report Copy — Hospital | ✅ Yes | `REQUEST_COPY_HIST` | `reqcp_office_hosp` | char(12) |
+| Report Copy — Specialty | ✅ Yes | N/A | N/A | Not stored separately |
+| Report Copy — Ward / Clinic | ✅ Yes | `REQUEST_COPY_HIST` | `reqcp_office` | smallint |
+| Specimen Collection Datetime | ✅ Yes | `REQUEST` | `req_collected_date` | smalldatetime |
+| Specimen Request Datetime | ✅ Yes | `REQUEST` | `req_requested_date` | smalldatetime |
+| Specimen Arrival Datetime | ✅ Yes | `REQUEST` | `req_arrived_date` | smalldatetime |
 
 ---
 
@@ -120,7 +120,7 @@ On the Registration screen, the Request Information panel is populated by the us
 
 ## Related Workflows
 
-*(To be documented when workflow US are processed.)*
+- [[Retrieve Request]] — This panel is populated as part of the request retrieval workflow; editability of fields is governed by the retrieval outcome.
 
 ---
 
