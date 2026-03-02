@@ -82,7 +82,7 @@ This check runs automatically whenever a DFT test is entered for an existing pat
 
 1. The check is based on the patient's identity group, not an individual patient record. Patients sharing the same identity group are treated as the same individual for this purpose.
 2. The check uses the test profile code, not the individual test items, to match orders.
-3. Only incomplete orders trigger this message. Completed DFT orders are handled separately by [[Validation - Message 1509 (Completed DFT Order)]].
+3. Only incomplete orders trigger this message. Completed DFT orders are handled separately by [[Validation - Completed DFT Order]].
 4. Existing rows loaded from the previous order are always read-only regardless of test series; only the empty rows added in the current session are editable.
 5. For DFTS and DFTT, the Time Flag column on remaining rows is not editable even when adding to an existing order, because time flags for these series are fixed by the test attribute configuration.
 6. For DFTC, the Time Flag on remaining rows remains editable because the user defines the time flags manually.
@@ -91,7 +91,7 @@ This check runs automatically whenever a DFT test is entered for an existing pat
 
 ## Related Workflows
 
-- [[DFT Panel Enablement - DFTT]] — Describes the standard editability rules for DFTT rows.
-- [[DFT Panel Enablement - DFTS]] — Describes the standard editability rules for DFTS rows.
-- [[DFT Panel Enablement - DFTC]] — Describes the standard editability rules for DFTC rows.
-- [[Validation - Message 1509 (Completed DFT Order)]] — Handles the case where a previously completed DFT order exists within the checking period.
+- [[DFT Panel - DFTT]] — Describes the standard editability rules for DFTT rows.
+- [[DFT Panel - DFTS]] — Describes the standard editability rules for DFTS rows.
+- [[DFT Panel - DFTC]] — Describes the standard editability rules for DFTC rows.
+- [[Validation - Completed DFT Order]] — Handles the case where a previously completed DFT order exists within the checking period.

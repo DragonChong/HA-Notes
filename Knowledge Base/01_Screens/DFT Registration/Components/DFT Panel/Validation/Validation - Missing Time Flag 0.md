@@ -71,7 +71,7 @@ The message panel closes. The DFT Panel is still active and editable. The user m
 
 ## Related Workflows
 
-- [[DFT Panel Enablement - DFTT]] — Describes how rows are enabled/populated for the DFTT series.
-- [[DFT Panel Enablement - DFTS]] — Describes how rows are enabled/populated for the DFTS series.
-- [[DFT Panel Enablement - DFTC]] — Describes how rows are enabled/populated for the DFTC series.
-- [[Validation - Message 1466 (Invalid Time Flag)]] — A related save-time validation for DFTC that checks for invalid or missing time flag values on individual rows.
+- [[DFT Panel - DFTT]] — Describes how rows are enabled/populated for the DFTT series.
+- [[DFT Panel - DFTS]] — Describes how rows are enabled/populated for the DFTS series.
+- [[DFT Panel - DFTC]] — Describes how rows are enabled/populated for the DFTC series.
+- [[Validation - Invalid Time Flag]] — A related save-time validation for DFTC that checks for invalid or missing time flag values on individual rows.

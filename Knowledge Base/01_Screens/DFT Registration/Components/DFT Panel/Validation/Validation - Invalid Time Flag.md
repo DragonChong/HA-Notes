@@ -16,7 +16,7 @@ When the user attempts to save a DFTC (Custom) DFT request, the system validates
 
 ## Trigger Point
 
-Occurs when the user clicks **Save** on the DFT Registration screen, and the DFT test is of the DFTC (Custom) series. This validation runs after the anchor time flag check ([[Validation - Message 1515 (Missing Time Flag 0)]]) has passed.
+Occurs when the user clicks **Save** on the DFT Registration screen, and the DFT test is of the DFTC (Custom) series. This validation runs after the anchor time flag check ([[Validation - Missing Time Flag 0]]) has passed.
 
 ---
 
@@ -73,6 +73,6 @@ The message panel closes. The cursor moves to the Time Flag field of the row tha
 
 ## Related Workflows
 
-- [[DFT Panel Enablement - DFTC]] — Describes how DFTC rows are enabled and how the user enters time flags manually.
-- [[Validation - Message 1515 (Missing Time Flag 0)]] — The preceding save-time validation that checks for the anchor time flag row; must pass before message 1466 is evaluated.
-- [[Validation - Message 1467 (Invalid Datetime Order)]] — A related save-time validation for datetime sequence ordering, which applies to DFTT and DFTS (not DFTC).
+- [[DFT Panel - DFTC]] — Describes how DFTC rows are enabled and how the user enters time flags manually.
+- [[Validation - Missing Time Flag 0]] — The preceding save-time validation that checks for the anchor time flag row; must pass before message 1466 is evaluated.
+- [[Validation - Invalid Datetime Order]] — A related save-time validation for datetime sequence ordering, which applies to DFTT and DFTS (not DFTC).

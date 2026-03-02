@@ -83,7 +83,7 @@ The number of days in the checking period is stored as a value in the option tex
 ## Business Rules
 
 1. This check only applies when the `CHECKING_PERIOD_FOR_COMPLETE_DFT_REQ` lab option is enabled and has a period value configured.
-2. The check is for **completed** DFT orders only. Active (incomplete) DFT orders are handled by [[Validation - Message 1508 (Active DFT Order)]].
+2. The check is for **completed** DFT orders only. Active (incomplete) DFT orders are handled by [[Validation - Active DFT Order]].
 3. The screen is cleared **before** the user dismisses the message — this is intentional and prevents the user from accidentally saving a duplicate DFT order.
 4. The checking period is measured in days and is compared against the collection datetime of the previous completed order, not its registration date.
 5. The purpose of the message is to prompt staff to check with the laboratory whether a new DFT is actually required, given that a recent one has been completed.
@@ -92,7 +92,7 @@ The number of days in the checking period is stored as a value in the option tex
 
 ## Related Workflows
 
-- [[Validation - Message 1508 (Active DFT Order)]] — Handles the complementary case where a DFT order is still active (not yet complete) for the same patient and profile.
-- [[DFT Panel Enablement - DFTT]] — Describes the standard registration flow for DFTT tests.
-- [[DFT Panel Enablement - DFTS]] — Describes the standard registration flow for DFTS tests.
-- [[DFT Panel Enablement - DFTC]] — Describes the standard registration flow for DFTC tests.
+- [[Validation - Active DFT Order]] — Handles the complementary case where a DFT order is still active (not yet complete) for the same patient and profile.
+- [[DFT Panel - DFTT]] — Describes the standard registration flow for DFTT tests.
+- [[DFT Panel - DFTS]] — Describes the standard registration flow for DFTS tests.
+- [[DFT Panel - DFTC]] — Describes the standard registration flow for DFTC tests.

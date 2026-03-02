@@ -126,6 +126,6 @@ No message is displayed and no recalculation occurs regardless of the Force sett
 
 ## Related Workflows
 
-- [[DFT Panel Enablement - DFTT]] — Describes how DFTT rows and time flags are configured.
-- [[DFT Panel Enablement - DFTC]] — Describes how DFTC rows and time flags are entered manually.
-- [[Validation - Message 1467 (Invalid Datetime Order)]] — Save-time validation that checks the resulting datetime sequence is in non-decreasing order.
+- [[DFT Panel - DFTT]] — Describes how DFTT rows and time flags are configured.
+- [[DFT Panel - DFTC]] — Describes how DFTC rows and time flags are entered manually.
+- [[Validation - Invalid Datetime Order]] — Save-time validation that checks the resulting datetime sequence is in non-decreasing order.

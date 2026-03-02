@@ -16,7 +16,7 @@ When the user attempts to save a DFT request, the system validates that the coll
 
 ## Trigger Point
 
-Occurs when the user clicks **Save** on the DFT Registration screen. This validation runs after the anchor time flag check ([[Validation - Message 1515 (Missing Time Flag 0)]]) has passed.
+Occurs when the user clicks **Save** on the DFT Registration screen. This validation runs after the anchor time flag check ([[Validation - Missing Time Flag 0]]) has passed.
 
 ---
 
@@ -75,17 +75,17 @@ The message panel closes. The cursor moves to the Collection Date/Time field of 
 1. Datetime comparison is performed in minutes — a difference of less than one minute in the wrong direction triggers the message.
 2. Rows without a Request No. are skipped during this check.
 3. Rows without a collection datetime are also flagged as invalid for DFTT and DFTS series (a row with a Request No. must have a collection datetime).
-4. DFTC rows with no collection datetime are handled separately — they do not trigger message 1467 for DFTC; the time flag validation ([[Validation - Message 1466 (Invalid Time Flag)]]) is the primary save-time guard for DFTC rows.
+4. DFTC rows with no collection datetime are handled separately — they do not trigger message 1467 for DFTC; the time flag validation ([[Validation - Invalid Time Flag]]) is the primary save-time guard for DFTC rows.
 5. Validation stops at the first failing row; the user must fix and retry to discover any further out-of-order rows.
-6. For DFTT and DFTS, the cascade recalculation prompt ([[Validation - Message 1510 (Cascade Datetime Prompt)]]) may help users maintain correct ordering by auto-calculating datetimes from the anchor row.
+6. For DFTT and DFTS, the cascade recalculation prompt ([[Validation - Cascade Datetime Prompt]]) may help users maintain correct ordering by auto-calculating datetimes from the anchor row.
 
 ---
 
 ## Related Workflows
 
-- [[DFT Panel Enablement - DFTT]] — Describes how DFTT row datetimes are populated.
-- [[DFT Panel Enablement - DFTS]] — Describes how DFTS row datetimes are populated.
-- [[DFT Panel Enablement - DFTC]] — Describes how DFTC row datetimes are entered manually.
-- [[Validation - Message 1515 (Missing Time Flag 0)]] — The first save-time validation; must pass before message 1467 is evaluated.
-- [[Validation - Message 1466 (Invalid Time Flag)]] — Save-time validation for DFTC that checks for missing time flag values.
-- [[Validation - Message 1510 (Cascade Datetime Prompt)]] — Edit-time prompt that recalculates datetimes from the anchor row, which helps prevent this error.
+- [[DFT Panel - DFTT]] — Describes how DFTT row datetimes are populated.
+- [[DFT Panel - DFTS]] — Describes how DFTS row datetimes are populated.
+- [[DFT Panel - DFTC]] — Describes how DFTC row datetimes are entered manually.
+- [[Validation - Missing Time Flag 0]] — The first save-time validation; must pass before message 1467 is evaluated.
+- [[Validation - Invalid Time Flag]] — Save-time validation for DFTC that checks for missing time flag values.
+- [[Validation - Cascade Datetime Prompt]] — Edit-time prompt that recalculates datetimes from the anchor row, which helps prevent this error.
