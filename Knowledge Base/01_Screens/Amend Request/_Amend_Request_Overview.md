@@ -30,6 +30,10 @@ The **Amend Request** screen allows authorised laboratory staff to modify the re
 - **[[CRST-788]]** - Amend Request - Urgency Color
 - **[[CRST-789]]** - Amend Request - Copy Request Date to Collection Date
 - **[[CRST-790]]** - Amend Request - Doctor Description
+- **[[CRST-791]]** - Amend Request - Location Interaction - Change Doctor Hospital
+- **[[CRST-792]]** - Amend Request - Location Interaction - Private Referral
+- **[[CRST-793]]** - Amend Request - Report Copy Input Dialogue
+- **[[CRST-794]]** - Amend Request - Clear Button
 
 **Epic:** LISP-220 [CRST][DEV] Amend Request - Layout | LISP-222 [CRST][DEV] Amend Request - Screen Object Interaction | LISP-229 [CRST][DEV] Amend Request - Request Retrieval
 
