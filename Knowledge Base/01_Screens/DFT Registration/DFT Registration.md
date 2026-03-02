@@ -9,6 +9,7 @@ The DFT Registration screen is a specialised request registration screen used to
 ## Related User Stories
 
 - **[[CRST-686]]** - DFT Registration - Panel Layout
+- **[[CRST-767]]** - DFT Registration - General
 
 **Epic:** LISP-210 [CRST][DEV] DFT Registration
 
@@ -144,6 +145,10 @@ The system displays an error message indicating that only DFT tests are permitte
 
 The DFT Sequence Panel is cleared and disabled. The Save button becomes disabled. The system resets to the "patient ready" state (Request Information and Requested Tests editable, DFT Sequence disabled).
 
+#### Default request comment is applied on save (CHEM lab only)
+
+When the `DFT_REQ_COMMENT` lab option is configured with a comment text for the CHEM lab, the system automatically attaches that comment to every DFT request saved from the CHEM lab DFT Registration screen. The comment is not visible on the DFT Registration screen itself (the Comment field is hidden). It can be viewed by opening the registered request in the Request Amendment screen.
+
 ---
 
 ## Configuration
@@ -151,11 +156,12 @@ The DFT Sequence Panel is cleared and disabled. The Save button becomes disabled
 | Setting | Option Code | Purpose | Effect when enabled | Effect when disabled |
 |---------|-------------|---------|--------------------|--------------------|
 | DFT Registration menu access | *(source: TOP_MENU table, menu_code for DFT Registration)* | Controls whether DFT Registration appears in the Request menu | Screen is accessible from the Request menu | Screen does not appear in the menu |
-| Force recalculation of DFT collection datetime | *(source: dictionaryParam — isForceReCalculationOfDftColDtmEnabled)* | Controls whether collection datetimes are forcibly recalculated when the test code is re-entered | Collection datetimes are recalculated on test code entry | Existing collection datetimes are preserved |
-| Auto-calculation of DFT collection datetime | *(source: dictionaryParam — isAutoCalculationOfDftColDtmEnabled)* | Controls whether the system automatically calculates collection datetimes for each sequence based on the first collection time | Datetimes are auto-calculated from the first collection time using the time flag offsets | All sequence datetimes default to the first collection time without offset calculation |
-| DFT series that disable auto-calculation | *(source: dictionaryParam — dftSeriesThatDisableAutoCalculationOfDftColDtm)* | Specifies which DFT series types override the auto-calculation setting | Auto-calculation is disabled for the listed series, regardless of the general setting | No override; general auto-calculation setting applies |
-| Checking period for completed DFT requests | *(source: dictionaryParam — checkingPeriodForCompleteDftRequest)* | Sets the lookback period (in days) to check for recently completed DFT orders before allowing a new one | System prompts for first collection datetime and validates against recently completed orders within the period | No check is performed; user proceeds directly to DFT panel |
-| Default first DFT collection time | *(source: dictionaryParam — defaultDftColTm)* | Provides the default time value used when prompting the user for the first collection datetime | Dialogue pre-populated with this time | Not applicable |
+| Force recalculation of DFT collection datetime | `FORCE_RECALCULATION_DFT_COL_DTM_ENABLED` | Controls whether collection datetimes are forcibly recalculated when the test code is re-entered | Collection datetimes are recalculated on test code entry | Existing collection datetimes are preserved |
+| Auto-calculation of DFT collection datetime | `AUTO_CALCULATION_DFT_COL_DTM_ENABLED` | Controls whether the system automatically calculates collection datetimes for each sequence based on the first collection time | Datetimes are auto-calculated from the first collection time using the time flag offsets | All sequence datetimes default to the first collection time without offset calculation |
+| DFT series that disable auto-calculation | `DFT_SERIES_TO_DISABLE_AUTO_CALCULATION` | Specifies which DFT series types override the auto-calculation setting | Auto-calculation is disabled for the listed series, regardless of the general setting | No override; general auto-calculation setting applies |
+| Checking period for completed DFT requests | `CHECKING_PERIOD_FOR_COMPLETE_DFT_REQ` | Sets the lookback period (in days) to check for recently completed DFT orders before allowing a new one | System prompts for first collection datetime and validates against recently completed orders within the period | No check is performed; user proceeds directly to DFT panel |
+| Default first DFT collection time | `DEFAULT_DFT_COL_DTM` | Provides the default time value used when prompting the user for the first collection datetime | Dialogue pre-populated with this time | Not applicable |
+| Default DFT request comment | `DFT_REQ_COMMENT` | Sets a default comment text to be automatically added to all DFT requests registered through the CHEM lab DFT Registration screen | The configured comment text is saved with every new DFT request; it is visible in the Request Amendment screen after registration | No default comment is added |
 
 ---
 
