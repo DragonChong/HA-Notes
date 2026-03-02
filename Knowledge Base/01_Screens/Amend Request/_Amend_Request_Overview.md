@@ -34,8 +34,10 @@ The **Amend Request** screen allows authorised laboratory staff to modify the re
 - **[[CRST-792]]** - Amend Request - Location Interaction - Private Referral
 - **[[CRST-793]]** - Amend Request - Report Copy Input Dialogue
 - **[[CRST-794]]** - Amend Request - Clear Button
+- **[[CRST-795]]** - Amend Request - Age Calculation *(stub)*
+- **[[CRST-796]]** - Amend Request - Data Conversion *(stub)*
 
-**Epic:** LISP-220 [CRST][DEV] Amend Request - Layout | LISP-222 [CRST][DEV] Amend Request - Screen Object Interaction | LISP-229 [CRST][DEV] Amend Request - Request Retrieval
+**Epic:** LISP-220 [CRST][DEV] Amend Request - Layout | LISP-222 [CRST][DEV] Amend Request - Screen Object Interaction | LISP-223 [CRST][DEV] Amend Request - Amend Action | LISP-229 [CRST][DEV] Amend Request - Request Retrieval
 
 ---
 
