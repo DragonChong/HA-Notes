@@ -36,6 +36,7 @@ The **Amend Request** screen allows authorised laboratory staff to modify the re
 - **[[CRST-794]]** - Amend Request - Clear Button
 - **[[CRST-795]]** - Amend Request - Age Calculation *(stub)*
 - **[[CRST-796]]** - Amend Request - Data Conversion *(stub)*
+- **[[CRST-797]]** - Amend Request - Validation (AmendRequestDataValidator)
 
 **Epic:** LISP-220 [CRST][DEV] Amend Request - Layout | LISP-222 [CRST][DEV] Amend Request - Screen Object Interaction | LISP-223 [CRST][DEV] Amend Request - Amend Action | LISP-229 [CRST][DEV] Amend Request - Request Retrieval
 
@@ -146,3 +147,4 @@ See [[Data Retention Panel]] for full details.
 ## Related Workflows
 
 - [[Retrieve Request]] — The workflow that populates all three panels and enables the action buttons when a request number is entered.
+- [[Amend Request Validation]] — The validation checks that run when the Amend button is clicked, covering category, age, Private Referral, Lab Only, and Clinical Detail rules.
