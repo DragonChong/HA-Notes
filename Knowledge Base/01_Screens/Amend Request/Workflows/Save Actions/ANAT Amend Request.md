@@ -6,7 +6,7 @@ status: draft
 
 ## Overview
 
-When the Amend button is clicked for a retrieved ANAT lab request, the system performs a set of ANAT-specific core data processing steps in addition to the standard amend process. These steps ensure that the Specimen Collection Date is synchronised with the effective date, and that change flags are set correctly for downstream processing of Test and Path/Tech modifications.
+When the Amend button is clicked for a retrieved ANAT lab request, the system performs a set of ANAT-specific core data processing steps in addition to the standard amend process. These steps derive the effective date from the collection or arrival time, and set change flags for downstream processing of Test and Path/Tech modifications.
 
 ---
 
@@ -26,14 +26,19 @@ The Amend button is clicked for a retrieved ANAT lab request, after all validati
 
 ## Core Processing Steps
 
-### 1. Specimen Collection Datetime — Effective Date Synchronisation
+### 1. Effective Date Derivation
 
-If the Specimen Collection Datetime has been updated on the Amend Request screen, the system updates `REQUEST.req_effective_date` to match the new `REQUEST.req_collected_date`.
+During ANAT amend processing, the system derives the **Effective Date** (`REQUEST.req_effective_date`) using the following priority:
 
-| Field Changed | Database Column Updated |
-|---------------|------------------------|
-| Specimen Collection Datetime | `REQUEST.req_collected_date` |
-| *(Derived automatically)* | `REQUEST.req_effective_date` ← set to new `req_collected_date` |
+1. If the Specimen Collection Date has a non-zero time component, the Effective Date is set to the Specimen Collection Date.
+2. Otherwise, if the Arrival Date has a non-zero time component, the Effective Date is set to the Arrival Date.
+3. Otherwise, the Effective Date is set to the Registered Datetime.
+
+| Condition | `REQUEST.req_effective_date` is set to |
+|-----------|---------------------------------------|
+| Specimen Collection Date has non-zero time | Specimen Collection Date |
+| Collection Date has no time; Arrival Date has non-zero time | Arrival Date |
+| Neither has a time component | Registered Datetime |
 
 ### 2. ANAT Test Code Change Detection
 
@@ -41,6 +46,8 @@ The system compares the existing ANAT Test Code (from `AP_REQUEST.req_test`) wit
 
 - If they differ: the **ANAT Test Modified** flag is set, indicating that downstream ANAT-specific processing (such as change audits) should treat the Test as changed.
 - If they are the same: the flag is not set and no test change processing is triggered.
+
+> The comparison falls back to the label of the selected item when the test code is null, ensuring accurate change detection in all cases.
 
 Reference: [[CRST-605]] (BENCH_TEST and TEST lookup)
 
@@ -51,7 +58,7 @@ The system compares the existing Path/Tech value (from `AP_REQUEST.req_resp_path
 - If they differ: the **Path/Tech Modified** flag is set.
 - If they are the same: the flag is not set.
 
-> The system handles cases where either the existing or newly selected value may be null, ensuring that comparisons do not produce errors.
+> The comparison falls back to the label of the selected item when the user code is null. The system handles cases where either the existing or newly selected value may be null, ensuring that comparisons do not produce errors.
 
 Reference: [[CRST-590]]
 

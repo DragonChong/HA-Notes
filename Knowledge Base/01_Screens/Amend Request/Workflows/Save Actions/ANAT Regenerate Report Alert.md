@@ -6,7 +6,7 @@ status: draft
 
 ## Overview
 
-After an ANAT lab request is amended, the system checks whether certain fields that affect the printed report have been changed. If they have, and the request's result group is in **Printed** status, the system displays an alert (message 3121) informing staff which fields changed and advising them to reprint the report if necessary. Clicking OK saves the amendment and clears the screen.
+After an ANAT lab request is amended, the system checks whether certain fields that affect the printed report have been changed. If they have, and the request's result group is in a **Printed** status, the system displays an alert (message 3121) informing staff which fields changed and advising them to reprint the report if necessary. Clicking OK saves the amendment and clears the screen.
 
 ---
 
@@ -22,7 +22,7 @@ After an ANAT lab request is amended, the system checks whether certain fields t
 
 The alert is shown when **all** of the following are true:
 
-- The result group for the registered ANAT lab request is in **Printed** status
+- The result group for the registered ANAT lab request is in a **Printed** status (see Printed Result Group below)
 - At least one of the following fields has been amended:
   - Report Location
   - Report Copy Location
@@ -81,11 +81,21 @@ Please choose the report to print in Report Generation screen if it is necessary
 #### OK
 The amendment is saved. The ANAT lab request information is updated in the database. The Amend Request screen is cleared. Message **501** ("Request Updated.") is shown.
 
+#### Cancel (or closing the alert without clicking OK)
+The save does not proceed. The user remains on the Amend Request screen with their changes intact.
+
 ---
 
 ## Printed Result Group
 
-The alert is only triggered when the result group status is **Printed**. The applicable result group types are: Provisional, Final, Amend, Supplementary.
+The alert is only triggered when the result group is in a **Printed** status. This includes:
+
+| Status | Description |
+|--------|-------------|
+| Printed | The result group has been printed (status = Printed) |
+| Amended-and-Printed | The result group has been amended and re-printed (status = Amended-and-Printed) |
+
+> Result groups that are only Authorised (but not yet printed) do **not** trigger this alert.
 
 ---
 
