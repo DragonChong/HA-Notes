@@ -145,11 +145,11 @@ Reference: [[CRST-608]]
 |---------|-------------|---------|--------------------|--------------------|
 | Specimen Type Bench | `SPECIMEN_TYPE_BENCH` | Controls whether Spec Type field is active for a given bench | Spec Type enabled if bench matches | Spec Type disabled |
 | Auth By | `AUTH_BY` | Controls whether Auth By field is shown | Auth By field enabled (subject to result state) | Auth By field disabled |
-| Allow Responsible Person Change After Auth | `ALLOW_RESP_PERSON_CHANGE_AFTER_AUTH` | Controls whether Path/Tech and Auth By remain editable after authorisation | Path/Tech and Auth By remain enabled | Path/Tech and Auth By disabled when authorised result group exists |
+| Allow Responsible Person Change After Auth | `ALLOW_RESP_PERSON_CHANGE_AFTER_AUTH` *(option_group = 'RESULT_ENTRY')* | Controls whether Path/Tech and Auth By remain editable after authorisation | Path/Tech and Auth By remain enabled | Path/Tech and Auth By disabled when authorised result group exists |
 | X-ray No. Enabled | `XRAY_NO_ENABLED` | Controls whether X-ray No. is editable for autopsy requests | X-ray No. enabled for autopsy requests | X-ray No. disabled |
 | Gynae More | `MORE` *(option_group = 'GYNAE')* | Controls whether the Gynae Clinical Data button is shown | Button shown and enabled | Button not shown |
 
-*Source: `LAB_OPTION` table — `SPECIMEN_TYPE_BENCH`, `AUTH_BY`, `ALLOW_RESP_PERSON_CHANGE_AFTER_AUTH`, `XRAY_NO_ENABLED` use `option_group = 'REQUEST_REGISTRATION'`; `ALLOW_RESP_PERSON_CHANGE_AFTER_AUTH` uses `option_group = 'RESULT_ENTRY'`; `MORE` uses `option_group = 'GYNAE'`*
+*Source: `LAB_OPTION` table — `SPECIMEN_TYPE_BENCH`, `AUTH_BY`, `XRAY_NO_ENABLED` use `option_group = 'REQUEST_REGISTRATION'`; `ALLOW_RESP_PERSON_CHANGE_AFTER_AUTH` uses `option_group = 'RESULT_ENTRY'`; `MORE` uses `option_group = 'GYNAE'`*
 
 ---
 
