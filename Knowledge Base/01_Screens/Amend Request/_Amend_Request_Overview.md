@@ -55,6 +55,11 @@ The **Amend Request** screen allows authorised laboratory staff to modify the re
 - **[[CRST-807]]** - Amend Request - Report Copy Determination
 - **[[CRST-808]]** - Amend Request - Amend Action Result Message
 - **[[CRST-810]]** - Amend Request - Clear Screen
+- **[[CRST-812]]** - Amend Request - Amend Action - Print Send Out Form
+- **[[CRST-813]]** - Amend Request - Amend Action - Print Send Out Button
+- **[[CRST-814]]** - Amend Request - Doctor Modified Alert
+- **[[CRST-815]]** - Amend Request - Report Printed in TB/DH Form Alert
+- **[[CRST-816]]** - Amend Request - Create PHLC Lab Order
 
 **Epic:** LISP-220 [CRST][DEV] Amend Request - Layout | LISP-222 [CRST][DEV] Amend Request - Screen Object Interaction | LISP-223 [CRST][DEV] Amend Request - Amend Action | LISP-229 [CRST][DEV] Amend Request - Request Retrieval
 
