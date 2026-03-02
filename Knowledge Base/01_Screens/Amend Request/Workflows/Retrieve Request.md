@@ -16,6 +16,7 @@ The **Retrieve Request** workflow loads an existing registered lab request onto 
 - **[[CRST-780]]** - Amend Request - Initial Values of Request
 - **[[CRST-781]]** - Amend Request - Not Supported Lab Message
 - **[[CRST-782]]** - Amend Request - Request Cancelled Message
+- **[[CRST-783]]** - Amend Request - Request Not Found Message
 - **[[CRST-778]]** - Amend Request - Object Enablement After Retrieval
 - **[[CRST-771]]** - Amend Request - Patient Demographic Panel
 - **[[CRST-772]]** - Amend Request - Request Information Panel
@@ -154,6 +155,42 @@ sequenceDiagram
 
 ---
 
+### Scenario 4: Request Number Not Found in the Database
+
+#### Prerequisites
+- The Amend Request screen is open.
+- The user enters a request number that does not exist in the `REQUEST` table (e.g., never registered, mistyped, or belongs to a different system).
+- This scenario applies to all application variants (General Lab and CRS application).
+
+#### Process Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Screen as Amend Request Screen
+    participant DB as Database
+
+    User->>Screen: Enter request number in Req. No. field
+    Screen->>DB: Query REQUEST table for matching req_reqno
+    DB-->>Screen: No matching record found
+    Screen->>User: Display message 164 "Request not found : [request number]"
+    User->>Screen: Click OK to dismiss
+    Screen->>Screen: Clear entire screen (all panels reset to blank state)
+    Screen->>User: Focus set to Req. No. field
+```
+
+#### Step-by-Step Details
+
+1. The user enters a request number into the **Req. No.** field. The system queries the `REQUEST` table for a matching record.
+
+2. If no record is found, the system displays message **164**: *"Request not found : [request number]"*, with the entered number substituted into the message text. No data is loaded.
+
+3. The user clicks **OK** to dismiss the message. The **entire screen** is cleared — all panels reset to their blank default state — and focus returns to the **Req. No.** field.
+
+> **Note:** Unlike Scenarios 2 and 3, which clear only the **Req. No.** field on dismiss, this path performs a full screen clear. See [[Request Not Found Message]] for full details.
+
+---
+
 ## Data Mapping
 
 The following table lists every field populated during retrieval, including the exact source table and column name.
@@ -245,3 +282,4 @@ The following table lists every field populated during retrieval, including the 
 - [[Initial Values Snapshot]] — The before-image snapshot recorded at the end of each retrieval, used for change comparison and value restoration.
 - [[Not Supported Lab Message]] — Error path triggered when the entered request number belongs to a CRS-restricted lab (CRS app only).
 - [[Request Cancelled Message]] — Error path triggered when the entered request number belongs to a request that has already been cancelled.
+- [[Request Not Found Message]] — Error path triggered when the entered request number does not exist in the database.
