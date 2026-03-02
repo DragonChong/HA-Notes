@@ -45,6 +45,7 @@ The **Amend Request** screen allows authorised laboratory staff to modify the re
 - **[[CRST-898]]** - Amend Request - Urgency Validation Checking
 - **[[CRST-899]]** - Amend Request - Lab Only Validation Checking
 - **[[CRST-900]]** - Amend Request - Clinical Detail on Sendout Request Validation Checking
+- **[[CRST-894]]** - Amend Request - Request Doctor Validation Checking
 
 **Epic:** LISP-220 [CRST][DEV] Amend Request - Layout | LISP-222 [CRST][DEV] Amend Request - Screen Object Interaction | LISP-223 [CRST][DEV] Amend Request - Amend Action | LISP-229 [CRST][DEV] Amend Request - Request Retrieval
 
