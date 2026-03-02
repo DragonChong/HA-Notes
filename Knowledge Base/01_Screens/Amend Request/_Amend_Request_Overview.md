@@ -76,6 +76,12 @@ The **Amend Request** screen allows authorised laboratory staff to modify the re
 - **[[CRST-831]]** - Amend Request - BBNK: Amend Request
 - **[[CRST-832]]** - Amend Request - BBNK: Change Audit
 - **[[CRST-833]]** - Amend Request - Special Blood Dialogue
+- **[[CRST-829]]** - Amend Request - MICR/VIRO Panel - Enablement
+- **[[CRST-834]]** - Amend Request - MICR/VIRO Panel - Load Data
+- **[[CRST-835]]** - Amend Request - MICR/VIRO Panel - Tab Sequence
+- **[[CRST-836]]** - Amend Request - MICR/VIRO Validation
+- **[[CRST-837]]** - Amend Request - MICR/VIRO: Amend Request
+- **[[CRST-838]]** - Amend Request - MICR/VIRO: Change Audit
 
 **Epic:** LISP-220 [CRST][DEV] Amend Request - Layout | LISP-222 [CRST][DEV] Amend Request - Screen Object Interaction | LISP-223 [CRST][DEV] Amend Request - Amend Action | LISP-229 [CRST][DEV] Amend Request - Request Retrieval
 
