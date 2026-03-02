@@ -16,8 +16,9 @@ The **Amend Request** screen allows authorised laboratory staff to modify the re
 - **[[CRST-772]]** - Amend Request - Request Information Panel
 - **[[CRST-775]]** - Amend Request - Buttons
 - **[[CRST-776]]** - Amend Request - Data Retention Selection Panel
+- **[[CRST-778]]** - Amend Request - Object Enablement After Retrieval
 
-**Epic:** LISP-220 [CRST][DEV] Amend Request - Layout
+**Epic:** LISP-220 [CRST][DEV] Amend Request - Layout | LISP-222 [CRST][DEV] Amend Request - Screen Object Interaction
 
 ---
 
