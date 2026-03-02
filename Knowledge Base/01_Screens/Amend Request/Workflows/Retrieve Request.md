@@ -14,6 +14,7 @@ The **Retrieve Request** workflow loads an existing registered lab request onto 
 
 - **[[CRST-779]]** - Amend Request - Retrieve Request
 - **[[CRST-780]]** - Amend Request - Initial Values of Request
+- **[[CRST-781]]** - Amend Request - Not Supported Lab Message
 - **[[CRST-778]]** - Amend Request - Object Enablement After Retrieval
 - **[[CRST-771]]** - Amend Request - Patient Demographic Panel
 - **[[CRST-772]]** - Amend Request - Request Information Panel
