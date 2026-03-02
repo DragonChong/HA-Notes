@@ -78,6 +78,42 @@ sequenceDiagram
 
 ---
 
+### Scenario 2: Request Belongs to a Not Supported Lab (CRS App Only)
+
+#### Prerequisites
+- The CRS application Amend Request screen is open.
+- The `SCREEN_NOTSUPPORTLABS` lab option is configured with one or more restricted lab code prefixes.
+- The user enters a request number whose lab code prefix matches a restricted entry.
+
+#### Process Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Screen as Amend Request Screen (CRS App)
+
+    User->>Screen: Enter request number in Req. No. field
+    Screen->>Screen: Check lab code prefix against SCREEN_NOTSUPPORTLABS configuration
+    Screen->>User: Display message 4134 ("[LAB] request is not supported in CRS. Please proceed in [LAB] application.")
+    User->>Screen: Click OK to dismiss
+    Screen->>Screen: Clear request number from Req. No. field
+    Screen->>User: Focus set to Req. No. field
+```
+
+#### Step-by-Step Details
+
+1. The user enters a request number into the **Req. No.** field. The system extracts the lab code prefix and checks it against the list of restricted lab codes in the `SCREEN_NOTSUPPORTLABS` lab option.
+
+2. If the lab code matches a restricted entry, the system immediately displays message **4134**: *"[LAB] request is not supported in CRS. Please proceed in [LAB] application."* The lab name is substituted into both placeholders in the message text.
+
+3. No request data is loaded. The screen remains in its pre-retrieval blank state.
+
+4. The user clicks **OK** to dismiss the message. The **Req. No.** field is cleared and focus returns to it, allowing the user to enter a different request number.
+
+> See [[Not Supported Lab Message]] for full details on configuration, message text, and business rules.
+
+---
+
 ## Data Mapping
 
 The following table lists every field populated during retrieval, including the exact source table and column name.
@@ -167,3 +203,4 @@ The following table lists every field populated during retrieval, including the 
 
 - [[Object Enablement After Retrieval]] — Defines which fields and buttons become enabled or remain disabled once retrieval completes.
 - [[Initial Values Snapshot]] — The before-image snapshot recorded at the end of each retrieval, used for change comparison and value restoration.
+- [[Not Supported Lab Message]] — Error path triggered when the entered request number belongs to a CRS-restricted lab (CRS app only).
