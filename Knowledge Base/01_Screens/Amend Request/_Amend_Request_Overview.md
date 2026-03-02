@@ -24,6 +24,12 @@ The **Amend Request** screen allows authorised laboratory staff to modify the re
 - **[[CRST-783]]** - Amend Request - Request Not Found Message
 - **[[CRST-784]]** - Amend Request - Request Retrieval from Other Screen
 - **[[CRST-856]]** - Amend Request - Laboratory Selection
+- **[[CRST-785]]** - Amend Request - Default Focus (Initial)
+- **[[CRST-786]]** - Amend Request - Default Focus after Request No.
+- **[[CRST-787]]** - Amend Request - Tab Sequence
+- **[[CRST-788]]** - Amend Request - Urgency Color
+- **[[CRST-789]]** - Amend Request - Copy Request Date to Collection Date
+- **[[CRST-790]]** - Amend Request - Doctor Description
 
 **Epic:** LISP-220 [CRST][DEV] Amend Request - Layout | LISP-222 [CRST][DEV] Amend Request - Screen Object Interaction | LISP-229 [CRST][DEV] Amend Request - Request Retrieval
 
