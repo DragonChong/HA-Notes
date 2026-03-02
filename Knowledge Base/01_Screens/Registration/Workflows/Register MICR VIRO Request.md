@@ -46,15 +46,15 @@ sequenceDiagram
 
 1. The system reads the following fields from the MICR/VIRO Panel and assembles them into a single Microbiology request record:
 
-| Field Saved | Source in Panel | Notes |
-|-------------|----------------|-------|
-| Chemotherapy | **Chemotherapy** text area | Free text; saved as entered |
-| Microbiologist | **Microbiologist** dropdown | If no selection is made, the value is recorded as 0 |
-| Patient identifier | Derived from the identified patient | Not entered directly by the user |
-| Request Number | Derived from the entered request number | Not re-entered here |
-| Site | **Site** text area | Required field |
-| Specimen Type | **Specimen Type** dropdown | Keyword-based selection |
-| Treatment Category | **Treatment Category** dropdown | If no selection is made, the value is recorded as 0; field may be hidden depending on configuration |
+| Field Saved | Column (`mb_request`) | Source in Panel | Notes |
+|-------------|----------------------|----------------|-------|
+| Chemotherapy | `req_chemotherapy` | **Chemotherapy** text area | Free text; saved as entered |
+| Microbiologist | `req_microbiologist` | **Microbiologist** dropdown | If no selection is made, the value is recorded as 0 |
+| Patient identifier | `req_pid_group` | Derived from the identified patient | Not entered directly by the user |
+| Request Number | `req_reqno` | Derived from the entered request number | Not re-entered here |
+| Site | `req_site` | **Site** text area | Required field |
+| Specimen Type | `req_specimen` | **Specimen Type** dropdown | Keyword-based selection |
+| Treatment Category | `req_treatment` | **Treatment Category** dropdown | If no selection is made, the value is recorded as 0; field may be hidden depending on configuration |
 
 2. The assembled record is wrapped in a collection and passed to the registration process for submission to the server along with all other registration data.
 

@@ -123,57 +123,65 @@ sequenceDiagram
 
 ### Data Written to ANAT Request Table (`CRS_AP_REQUEST`)
 
-| Field | Value Written |
-|-------|--------------|
-| Lab Request No. | The assigned request number |
-| Bench Test | The selected bench test code |
-| Date of Death (DOD) | DOD date/time if entered; null if not entered |
-| Coroner | **Y** if the Coroner checkbox was checked; **N** otherwise |
-| Collection Time Unknown | **Y** if the Collection Time Unknown checkbox was checked; **N** otherwise |
-| Responsible Person | User code of the selected responsible person; null if not selected |
-| Authorise By | User code of the selected authorising person; null if not selected |
-| X-Ray No. | X-Ray number if entered; null if not entered |
-| Specimen Type | Specimen type if entered; null if not entered |
-| Create Date/Time | Current date/time at registration |
-| Create By | User code of the registering user |
-| Update Date/Time | Current date/time at registration |
-| Update By | User code of the registering user |
-| Create Workstation | Workstation code of the terminal used |
-| Update Workstation | Workstation code of the terminal used |
-| Registration Date/Time | Date/time the request was registered |
-| Comp Code | Computed component code (derived from bench/test configuration) |
-| Comp Unit | Computed component unit (derived from bench/test configuration) |
-| Bill, Keep Spec, Keep Specimen, Keep Frozen, Proforma, Slide Bank, QA, Autopsy Type, Batch Report | All stored as **N** (default values) |
+| Field | Column (`crs_ap_request`) | Value Written |
+|-------|--------------------------|---------------|
+| Lab Request No. | `req_labno` | The assigned request number |
+| Bench Test | `req_test` | The selected bench test code |
+| Date of Death (DOD) | `req_dod` | DOD date/time if entered; null if not entered |
+| Coroner | `req_coroner` | **Y** if the Coroner checkbox was checked; **N** otherwise |
+| Collection Time Unknown | `req_col_time_null` | **Y** if the Collection Time Unknown checkbox was checked; **N** otherwise |
+| Responsible Person | `req_resp_path` | User code of the selected responsible person; null if not selected |
+| Authorise By | `req_auth_by` | User code of the selected authorising person; null if not selected |
+| X-Ray No. | `req_xray` | X-Ray number if entered; null if not entered |
+| Specimen Type | `req_specimen_type` | Specimen type if entered; null if not entered |
+| Create Date/Time | `req_create_date` | Current date/time at registration |
+| Create By | `req_create_by` | User code of the registering user |
+| Update Date/Time | `req_update_date` | Current date/time at registration |
+| Update By | `req_update_by` | User code of the registering user |
+| Create Workstation | `req_create_ws` | Workstation code of the terminal used |
+| Update Workstation | `req_update_ws` | Workstation code of the terminal used |
+| Registration Date/Time | `req_registered_date` | Date/time the request was registered |
+| Comp Code | `req_comp_code` | Computed component code (derived from bench/test configuration) |
+| Comp Unit | `req_comp_unit` | Computed component unit (derived from bench/test configuration) |
+| Bill | `req_bill` | Stored as **N** (default value) |
+| Keep Spec | `req_keep_spec` | Stored as **N** (default value) |
+| Keep Specimen | `req_keep_specimen` | Stored as **N** (default value) |
+| Keep Frozen | `req_keep_frozen` | Stored as **N** (default value) |
+| Proforma | `req_proforma` | Stored as **N** (default value) |
+| Slide Bank | `req_slide_bank` | Stored as **N** (default value) |
+| QA | `req_qa` | Stored as **N** (default value) |
+| Autopsy Type | `req_autopsy_type` | Stored as **N** (default value) |
+| Batch Report | `req_batch_report` | Stored as **N** (default value) |
 
 ### Data Written to Transient Table (`CRS_AP_TRANSIENT`)
 
-| Transaction Type | When Inserted | Fields Written |
-|-----------------|--------------|----------------|
-| **P** (Previous Request) | Always, when a Manual Registration ANAT request is saved | Lab request no., type = P, workstation code, registration date/time |
-| **C** (Cytology Print List) | Only when: (1) the request is a Cytology case AND (2) the Print Cytology List option is enabled | Lab request no., type = C, workstation code, registration date/time |
+| Transaction Type | When Inserted | Fields Written (`crs_ap_transient`) |
+|-----------------|--------------|--------------------------------------|
+| **P** (Previous Request) | Always, when a Manual Registration ANAT request is saved | Lab request no. (`tran_labno`), type = P (`tran_type`), workstation code (`tran_station`), registration date/time (`tran_registered_date`) |
+| **C** (Cytology Print List) | Only when: (1) the request is a Cytology case AND (2) the Print Cytology List option is enabled | Lab request no. (`tran_labno`), type = C (`tran_type`), workstation code (`tran_station`), registration date/time (`tran_registered_date`) |
 
 ### Data Written to Gynae Clinical Data Table (`CRS_AP_G_REQUEST`)
 
-| Field | Value Written |
-|-------|--------------|
-| Lab Request No. | The assigned request number |
-| Cervix Appearance | Entered cervix appearance value; null if no gynae data entered |
-| Registration Date/Time | Date/time the request was registered |
-| All other gynae fields | Entered clinical data values as per [[Gynae Clinical Data Request Panel]] |
+| Field | Column (`crs_ap_g_request`) | Value Written |
+|-------|----------------------------|---------------|
+| Lab Request No. | `greq_reqno` | The assigned request number |
+| Cervix Appearance | `greq_cervix_app` | Entered cervix appearance value; null if no gynae data entered |
+| Registration Date/Time | `greq_registered_date` | Date/time the request was registered |
+| All other gynae fields | Various `greq_*` columns | Entered clinical data values as per [[Gynae Clinical Data Request Panel]] |
 
 *(No record is inserted if the registration clerk did not open or save the Gynae Clinical Data panel.)*
 
 ### Data Written to Site Table (`CRS_SITE`)
 
-| Field | Freetext Mode | Non-Freetext Mode |
-|-------|--------------|-------------------|
-| Lab Request No. | Assigned request number | Assigned request number |
-| Site Sequence | Display sequence number | Display sequence number |
-| SNOMED Code | Null | SNOMED site code |
-| SNOMED Class | Null | SNOMED class code |
-| SNOMED Sequence | Null | SNOMED sequence |
-| Site Text | Entered free-text site description | Null |
-| Registration Date/Time | Registration date/time | Registration date/time |
+| Field | Column (`crs_site`) | Freetext Mode | Non-Freetext Mode |
+|-------|---------------------|--------------|-------------------|
+| Lab Request No. | `site_labno` | Assigned request number | Assigned request number |
+| Site Sequence | `site_seq` | Display sequence number | Display sequence number |
+| SNOMED Code | `site_tsite` | Null | SNOMED site code |
+| SNOMED Class | `site_tclass` | Null | SNOMED class code |
+| SNOMED Sequence | `site_tseq` | Null | SNOMED sequence |
+| Site Text | `site_text` | Entered free-text site description | Null |
+| Registration Date/Time | `site_registered_date` | Registration date/time | Registration date/time |
 
 *(No records are inserted if no specimen site was entered.)*
 
