@@ -103,4 +103,4 @@ The alert is only triggered when the result group is in a **Printed** status. Th
 
 - [[ANAT Amend Request]] — Core data processing runs before this alert is evaluated.
 - [[Regenerate Report Determination]] — General report regeneration logic for non-ANAT requests; this ANAT alert is the equivalent for ANAT-specific fields ([[CRST-801]]).
-- [[Clear Screen]] — Executed after the alert is acknowledged and the save completes.
+- [[Knowledge Base/01_Screens/Amend Request/Workflows/Save Actions/Clear Screen]] — Executed after the alert is acknowledged and the save completes.
