@@ -100,17 +100,34 @@ sequenceDiagram
 
 ## Data Written to TMP_DFT_LINK and DFT_LINK
 
-Each DFT request row results in one record in `TMP_DFT_LINK` (and, after conversion, one record in `DFT_LINK`). The fields written are identical in both tables:
+Each DFT request row results in one record in `TMP_DFT_LINK` (and, after conversion, one record in `DFT_LINK`).
 
-| Field | Description | Value Inserted |
-|-------|-------------|----------------|
-| DFT Order No. | Groups all request rows for the same DFT registration session | New order no. for new registrations; existing order no. when continuing a previous incomplete order |
-| Patient Identity Group | The registered patient's identity group | Patient's identity group |
-| Request No. | The lab request number for this DFT row | The Request No. entered or assigned on the DFT Panel row |
-| DFT Status | Completion status of the DFT order | Always **0** (Incomplete) for newly registered requests |
-| Time Flag | The time flag value assigned to this DFT row | The time flag value from the DFT Panel row (positive or negative integer) |
-| Test Profile | Identifies which DFT test profile this row belongs to | The test code key of the DFT test selected on the registration screen |
-| Sample Flag | Indicates whether this row belongs to a DFTS (sample-type) registration | **1** for DFTS; **0** for DFTT and DFTC |
+The fields written to each table are listed below. Note that `dft_complete` exists in `DFT_LINK` only — it is not a column in `TMP_DFT_LINK`.
+
+### TMP_DFT_LINK
+
+| Field | Column (`tmp_dft_link`) | Description | Value Inserted |
+|-------|------------------------|-------------|----------------|
+| DFT Order No. | `dft_order_no` | Groups all request rows for the same DFT registration session | New order no. for new registrations; existing order no. when continuing a previous incomplete order |
+| Patient Identity Group | `dft_pid_gp` | The registered patient's identity group | Patient's identity group |
+| Request No. | `dft_reqno` | The lab request number for this DFT row | The Request No. entered or assigned on the DFT Panel row |
+| Time Flag | `dft_time_flag` | The time flag value assigned to this DFT row | The time flag value from the DFT Panel row (positive or negative integer) |
+| Test Profile | `dft_profile` | Identifies which DFT test profile this row belongs to | The test code key of the DFT test selected on the registration screen |
+| Sample Flag | `dft_sample` | Indicates whether this row belongs to a DFTS (sample-type) registration | **1** for DFTS; **0** for DFTT and DFTC |
+
+> **Note:** `TMP_DFT_LINK` does not have a `dft_complete` status column. The status column exists only in `DFT_LINK`.
+
+### DFT_LINK
+
+| Field | Column (`dft_link`) | Description | Value Inserted |
+|-------|---------------------|-------------|----------------|
+| DFT Order No. | `dft_order_no` | Groups all request rows for the same DFT registration session | New order no. for new registrations; existing order no. when continuing a previous incomplete order |
+| Patient Identity Group | `dft_pid_gp` | The registered patient's identity group | Patient's identity group |
+| Request No. | `dft_reqno` | The lab request number for this DFT row | The Request No. entered or assigned on the DFT Panel row |
+| DFT Status | `dft_complete` | Completion status of the DFT order | Always **0** (Incomplete) for newly registered requests |
+| Time Flag | `dft_time_flag` | The time flag value assigned to this DFT row | The time flag value from the DFT Panel row (positive or negative integer) |
+| Test Profile | `dft_profile` | Identifies which DFT test profile this row belongs to | The test code key of the DFT test selected on the registration screen |
+| Sample Flag | `dft_sample` | Indicates whether this row belongs to a DFTS (sample-type) registration | **1** for DFTS; **0** for DFTT and DFTC |
 
 > **Note:** Time flag values may be positive, negative, or zero. All values are stored as entered.
 
