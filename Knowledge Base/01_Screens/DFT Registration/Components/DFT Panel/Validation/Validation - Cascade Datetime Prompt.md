@@ -9,6 +9,7 @@ When the user modifies the collection datetime on the anchor row of a DFT time s
 ## Related User Stories
 
 - **[[CRST-754]]** - Registration - DFT Time Sequence Panel - Message 1510
+- **[[CRST-843]]** - DFT Registration - DFT Re-calculate Collected Date
 
 **Epic:** LISP-23 [CRST][DEV] Registration - Patient Handling
 
@@ -75,7 +76,7 @@ The offset unit (minutes, hours, etc.) is determined by the time unit configured
 | 60 | 27-Jan-2025 02:00 |
 | 120 | 27-Jan-2025 03:00 |
 
-> **Special case — DFTS-style unit (no explicit unit):** When the test has no unit defined and the time flag value is between 1 and 15 inclusive, all other rows receive the same datetime as the anchor row (no offset is applied).
+> **Special case — NULL unit:** When the test has no unit defined (`TEST_DICT.test_units` is NULL) and the time flag value is greater than 0 and less than 16 (values 1 through 15 inclusive), all other rows with a time flag in that range receive the same datetime as the anchor row (no offset is applied). Time flag values of 0, 16, or above are calculated normally with the offset.
 
 ### On "No"
 No other rows are changed. The anchor row retains its new datetime but all other rows keep their existing collection datetimes unchanged.

@@ -9,6 +9,7 @@ After the DFT test code and order number have been resolved, the system populate
 ## Related User Stories
 
 - **[[CRST-774]]** - DFT Registration - Load DFT data to Components
+- **[[CRST-843]]** - DFT Registration - DFT Re-calculate Collected Date
 
 **Epic:** LISP-210 [CRST][DEV] DFT Registration
 
@@ -145,18 +146,20 @@ sequenceDiagram
 
 ## Summary: Collection Datetime Initialisation by Configuration
 
-| DFT Series | `DFT_SERIES_TO_DISABLE_AUTO_CALCULATION` includes this series | `AUTO_CALCULATION_DFT_COL_DTM_ENABLED` | Initial Collection Datetime | Time-flag offset applied | Re-calculate when Time Flag 0 edited |
-|------------|--------------------------------------------------------------|---------------------------------------|----------------------------|--------------------------|--------------------------------------|
-| DFTT | Yes | Yes | Current date 00:00 | No | Yes |
-| DFTT | No | Yes | Current date 00:00 | Yes | Yes |
-| DFTT | Yes | No | Current date 00:00 | No | No |
-| DFTT | No | No | Current datetime | No | No |
-| DFTS | Yes | Yes | Current date 00:00 | No | N/A |
-| DFTS | No | Yes | Current date 00:00 | Yes | N/A |
-| DFTS | Yes | No | Current date 00:00 | No | N/A |
-| DFTS | No | No | Current datetime | No | N/A |
-| DFTC | N/A | Yes | Current date 00:00 | No | N/A |
-| DFTC | N/A | No | Current datetime | No | N/A |
+| DFT Series | `DFT_SERIES_TO_DISABLE_AUTO_CALCULATION` includes this series | `AUTO_CALCULATION_DFT_COL_DTM_ENABLED` | `FORCE_RECALCULATION_DFT_COL_DTM_ENABLED` | Initial Collection Datetime | Time-flag offset applied on load | Re-calculate when anchor row edited |
+|------------|--------------------------------------------------------------|---------------------------------------|------------------------------------------|----------------------------|----------------------------------|-------------------------------------|
+| DFTT | Yes | Yes | N/A | Current date 00:00 | No | Yes (with prompt) |
+| DFTT | No | Yes | N/A | Current date 00:00 | Yes | Yes (with prompt) |
+| DFTT | Yes | No | N/A | Current date 00:00 | No | No |
+| DFTT | No | No | N/A | Current datetime | No | No |
+| DFTS | Yes | Yes | N/A | Current date 00:00 | No | N/A |
+| DFTS | No | Yes | N/A | Current date 00:00 | Yes | N/A |
+| DFTS | Yes | No | N/A | Current date 00:00 | No | N/A |
+| DFTS | No | No | N/A | Current datetime | No | N/A |
+| DFTC | N/A | Yes | Yes | Current date 00:00 | No | Yes (silent) |
+| DFTC | N/A | Yes | No | Current date 00:00 | No | Yes (with prompt) |
+| DFTC | N/A | No | Yes | Current datetime | No | No |
+| DFTC | N/A | No | No | Current datetime | No | No |
 
 > The collection datetime fields in the DFT Time Sequence Panel are always editable by the user, regardless of the auto-calculation settings.
 
@@ -183,7 +186,7 @@ All options are stored in `LAB_OPTION` with `option_group = 'REQUEST_REGISTRATIO
 5. Existing order rows (loaded from a previously incomplete DFT order) always override the calculated defaults — their stored request numbers and collection datetimes are restored exactly.
 6. Collection datetime fields in the DFT Time Sequence Panel remain editable by the user at all times.
 7. For DFTC (custom series), the time flag offset calculation is not applied. All rows are initialised to the same default datetime; the panel does not auto-calculate offsets between rows on initial load.
-8. If the DFT unit is null and a time flag value is between 1 and 15 (inclusive), the collection datetime for that row is set equal to the default datetime rather than adding the flag as a unit offset. This prevents unexpected large date offsets when no unit is defined.
+8. If the DFT unit is null and a time flag value is greater than 0 and less than 16 (i.e., values 1 through 15 inclusive), the collection datetime for that row is set equal to the default datetime rather than adding the flag as a unit offset. This prevents unexpected large date offsets when no unit is defined. Time flag values of 0, 16, or above are calculated normally (offset applied).
 
 ---
 
