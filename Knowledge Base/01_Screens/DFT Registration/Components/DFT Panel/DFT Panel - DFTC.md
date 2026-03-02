@@ -174,5 +174,5 @@ sequenceDiagram
 ## Related Workflows
 
 - [[DFT Registration]] — The parent screen within which this enablement occurs.
-- [[DFT Panel Enablement - DFTS]] — Comparable enablement behaviour for the DFTS (DFT Sample) series.
-- [[DFT Panel Enablement - DFTT]] — Comparable enablement behaviour for the DFTT (DFT Timed) series.
+- [[DFT Panel - DFTS]] — Comparable enablement behaviour for the DFTS (DFT Sample) series.
+- [[DFT Panel - DFTT]] — Comparable enablement behaviour for the DFTT (DFT Timed) series.

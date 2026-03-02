@@ -126,5 +126,5 @@ sequenceDiagram
 ## Related Workflows
 
 - [[DFT Registration]] — The parent screen within which this enablement occurs.
-- [[DFT Panel Enablement - DFTS]] — Comparable enablement behaviour for the DFTS (DFT Sample) series.
-- [[DFT Panel Enablement - DFTC]] — Enablement behaviour for the DFTC (DFT Custom) series, where time flags are editable.
+- [[DFT Panel - DFTS]] — Comparable enablement behaviour for the DFTS (DFT Sample) series.
+- [[DFT Panel - DFTC]] — Enablement behaviour for the DFTC (DFT Custom) series, where time flags are editable.
