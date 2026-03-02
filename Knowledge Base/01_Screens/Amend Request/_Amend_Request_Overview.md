@@ -70,6 +70,12 @@ The **Amend Request** screen allows authorised laboratory staff to modify the re
 - **[[CRST-824]]** - Amend Request - ANAT: Amend Request
 - **[[CRST-825]]** - Amend Request - ANAT: Change Audit
 - **[[CRST-826]]** - Amend Request - ANAT: Regenerate Report Alert
+- **[[CRST-827]]** - Amend Request - BBNK Panel - Enablement
+- **[[CRST-828]]** - Amend Request - BBNK Panel - Load Data
+- **[[CRST-830]]** - Amend Request - BBNK Panel - Tab Sequence
+- **[[CRST-831]]** - Amend Request - BBNK: Amend Request
+- **[[CRST-832]]** - Amend Request - BBNK: Change Audit
+- **[[CRST-833]]** - Amend Request - Special Blood Dialogue
 
 **Epic:** LISP-220 [CRST][DEV] Amend Request - Layout | LISP-222 [CRST][DEV] Amend Request - Screen Object Interaction | LISP-223 [CRST][DEV] Amend Request - Amend Action | LISP-229 [CRST][DEV] Amend Request - Request Retrieval
 
