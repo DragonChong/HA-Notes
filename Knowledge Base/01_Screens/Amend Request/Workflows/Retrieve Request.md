@@ -17,6 +17,7 @@ The **Retrieve Request** workflow loads an existing registered lab request onto 
 - **[[CRST-781]]** - Amend Request - Not Supported Lab Message
 - **[[CRST-782]]** - Amend Request - Request Cancelled Message
 - **[[CRST-783]]** - Amend Request - Request Not Found Message
+- **[[CRST-784]]** - Amend Request - Request Retrieval from Other Screen
 - **[[CRST-778]]** - Amend Request - Object Enablement After Retrieval
 - **[[CRST-771]]** - Amend Request - Patient Demographic Panel
 - **[[CRST-772]]** - Amend Request - Request Information Panel
@@ -283,3 +284,4 @@ The following table lists every field populated during retrieval, including the 
 - [[Not Supported Lab Message]] — Error path triggered when the entered request number belongs to a CRS-restricted lab (CRS app only).
 - [[Request Cancelled Message]] — Error path triggered when the entered request number belongs to a request that has already been cancelled.
 - [[Request Not Found Message]] — Error path triggered when the entered request number does not exist in the database.
+- [[Request Retrieval from Other Screen]] — Alternative retrieval path where the Amend Request screen is opened from another screen with the request number pre-populated.
