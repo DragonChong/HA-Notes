@@ -64,6 +64,12 @@ The **Amend Request** screen allows authorised laboratory staff to modify the re
 - **[[CRST-818]]** - Amend Request - USID Not Found Alert
 - **[[CRST-819]]** - Amend Request - USID Data Conversion
 - **[[CRST-820]]** - Amend Request - USID Audit
+- **[[CRST-821]]** - Amend Request - ANAT Panel - Enablement
+- **[[CRST-822]]** - Amend Request - ANAT Panel - Load Data
+- **[[CRST-823]]** - Amend Request - ANAT Panel - Tab Sequence
+- **[[CRST-824]]** - Amend Request - ANAT: Amend Request
+- **[[CRST-825]]** - Amend Request - ANAT: Change Audit
+- **[[CRST-826]]** - Amend Request - ANAT: Regenerate Report Alert
 
 **Epic:** LISP-220 [CRST][DEV] Amend Request - Layout | LISP-222 [CRST][DEV] Amend Request - Screen Object Interaction | LISP-223 [CRST][DEV] Amend Request - Amend Action | LISP-229 [CRST][DEV] Amend Request - Request Retrieval
 
