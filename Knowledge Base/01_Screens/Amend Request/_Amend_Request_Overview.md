@@ -47,6 +47,14 @@ The **Amend Request** screen allows authorised laboratory staff to modify the re
 - **[[CRST-900]]** - Amend Request - Clinical Detail on Sendout Request Validation Checking
 - **[[CRST-894]]** - Amend Request - Request Doctor Validation Checking
 - **[[CRST-798]]** - Amend Request - User Validation
+- **[[CRST-799]]** - Amend Request - Private Change Reason Dialogue
+- **[[CRST-800]]** - Amend Request - Change Reason Dialogue
+- **[[CRST-801]]** - Amend Request - Regenerate Report Determination
+- **[[CRST-803]]** - Amend Request - Change Audit
+- **[[CRST-806]]** - Amend Request - Operation Audit
+- **[[CRST-807]]** - Amend Request - Report Copy Determination
+- **[[CRST-808]]** - Amend Request - Amend Action Result Message
+- **[[CRST-810]]** - Amend Request - Clear Screen
 
 **Epic:** LISP-220 [CRST][DEV] Amend Request - Layout | LISP-222 [CRST][DEV] Amend Request - Screen Object Interaction | LISP-223 [CRST][DEV] Amend Request - Amend Action | LISP-229 [CRST][DEV] Amend Request - Request Retrieval
 
