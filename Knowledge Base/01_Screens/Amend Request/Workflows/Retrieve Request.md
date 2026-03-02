@@ -13,6 +13,7 @@ The **Retrieve Request** workflow loads an existing registered lab request onto 
 ## Related User Stories
 
 - **[[CRST-779]]** - Amend Request - Retrieve Request
+- **[[CRST-780]]** - Amend Request - Initial Values of Request
 - **[[CRST-778]]** - Amend Request - Object Enablement After Retrieval
 - **[[CRST-771]]** - Amend Request - Patient Demographic Panel
 - **[[CRST-772]]** - Amend Request - Request Information Panel
@@ -55,6 +56,7 @@ sequenceDiagram
     Screen->>User: Populate Request Information panel (editable)
     Screen->>User: Populate Data Retention panel (if user has access right)
     Screen->>User: Enable Amend button and other applicable buttons
+    Screen->>Screen: Record Initial Values snapshot (before image of all tracked fields)
 ```
 
 #### Step-by-Step Details
@@ -70,6 +72,8 @@ sequenceDiagram
 5. The **Req. No.** field itself is set to non-editable — the retrieved request number is displayed but cannot be changed without clearing the screen.
 
 6. The **Amend** button is enabled. Other buttons (**Input Specimen No.**, **Send Out**, **Print Send Out**, **Print Form**) are enabled according to their individual conditions as described in [[Buttons]].
+
+7. The system immediately records an **Initial Values snapshot** — a before-image of all tracked request fields held in memory for the duration of the session. This snapshot is used to identify changed fields when the amendment is submitted, and ensures original values are restored if the user clears without amending. See [[Initial Values Snapshot]] for full details.
 
 ---
 
@@ -161,3 +165,4 @@ The following table lists every field populated during retrieval, including the 
 ## Related Workflows
 
 - [[Object Enablement After Retrieval]] — Defines which fields and buttons become enabled or remain disabled once retrieval completes.
+- [[Initial Values Snapshot]] — The before-image snapshot recorded at the end of each retrieval, used for change comparison and value restoration.
