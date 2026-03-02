@@ -24,7 +24,7 @@ The **ANAT Panel** on the Amend Request screen displays Anatomical Pathology (AN
 A lab result that has been saved but not yet authorised.
 
 ### Authorised Result Group
-A result group in any of the following statuses: Provisional, Final, Amend, or Supplementary.
+A result group in any of the following statuses: Authorised, Printed, Amended-and-Authorised, or Amended-and-Printed.
 
 ### Autopsy Case
 A registered ANAT lab request classified as an autopsy (as opposed to a surgical or cytology case).
