@@ -20,6 +20,7 @@ The **Amend Request** screen allows authorised laboratory staff to modify the re
 - **[[CRST-779]]** - Amend Request - Retrieve Request
 - **[[CRST-780]]** - Amend Request - Initial Values of Request
 - **[[CRST-781]]** - Amend Request - Not Supported Lab Message
+- **[[CRST-782]]** - Amend Request - Request Cancelled Message
 
 **Epic:** LISP-220 [CRST][DEV] Amend Request - Layout | LISP-222 [CRST][DEV] Amend Request - Screen Object Interaction | LISP-229 [CRST][DEV] Amend Request - Request Retrieval
 

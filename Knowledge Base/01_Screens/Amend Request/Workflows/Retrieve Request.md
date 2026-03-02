@@ -15,6 +15,7 @@ The **Retrieve Request** workflow loads an existing registered lab request onto 
 - **[[CRST-779]]** - Amend Request - Retrieve Request
 - **[[CRST-780]]** - Amend Request - Initial Values of Request
 - **[[CRST-781]]** - Amend Request - Not Supported Lab Message
+- **[[CRST-782]]** - Amend Request - Request Cancelled Message
 - **[[CRST-778]]** - Amend Request - Object Enablement After Retrieval
 - **[[CRST-771]]** - Amend Request - Patient Demographic Panel
 - **[[CRST-772]]** - Amend Request - Request Information Panel
@@ -114,6 +115,45 @@ sequenceDiagram
 
 ---
 
+### Scenario 3: Retrieving a Cancelled Request
+
+#### Prerequisites
+- The Amend Request screen is open.
+- The user enters a request number for a request that has been cancelled — the Cancel Lab Request test key (configured via the `CANCEL_COMMENT` option) has been applied as a test result record on the request.
+- This scenario applies to all application variants (General Lab and CRS application).
+
+#### Process Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Screen as Amend Request Screen
+    participant DB as Database
+
+    User->>Screen: Enter request number in Req. No. field
+    Screen->>DB: Retrieve request record and lab result data
+    DB-->>Screen: Return request data (including test result records)
+    Screen->>Screen: Check whether Cancel Lab Request test key (CANCEL_COMMENT) exists on the request
+    Screen->>User: Display message 655 "Request already cancelled."
+    User->>Screen: Click OK to dismiss
+    Screen->>Screen: Clear request number from Req. No. field
+    Screen->>User: Focus set to Req. No. field
+```
+
+#### Step-by-Step Details
+
+1. The user enters a request number into the **Req. No.** field. The system retrieves the request data and its associated test result records from the database.
+
+2. The system looks up the **Cancel Lab Request** test key for the request's laboratory (via the `CANCEL_COMMENT` option under the `CANCEL` option group) and checks whether a matching test result record (counter 1) is present on the retrieved request.
+
+3. If the cancellation marker is found, the system displays message **655**: *"Request already cancelled."* The request panels are **not** populated — no data is loaded onto the screen.
+
+4. The user clicks **OK** to dismiss the message. The **Req. No.** field is cleared and focus returns to it.
+
+> See [[Request Cancelled Message]] for full details on the cancelled request check, configuration, and business rules.
+
+---
+
 ## Data Mapping
 
 The following table lists every field populated during retrieval, including the exact source table and column name.
@@ -204,3 +244,4 @@ The following table lists every field populated during retrieval, including the 
 - [[Object Enablement After Retrieval]] — Defines which fields and buttons become enabled or remain disabled once retrieval completes.
 - [[Initial Values Snapshot]] — The before-image snapshot recorded at the end of each retrieval, used for change comparison and value restoration.
 - [[Not Supported Lab Message]] — Error path triggered when the entered request number belongs to a CRS-restricted lab (CRS app only).
+- [[Request Cancelled Message]] — Error path triggered when the entered request number belongs to a request that has already been cancelled.
