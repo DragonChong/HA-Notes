@@ -43,7 +43,7 @@ The **Cancel Request** screen allows authorised laboratory staff to cancel an ex
 - **[[CRST-980]]** - Cancel Request - Retrieve Cancel Request Reason
 - **[[CRST-981]]** - Cancel Request - Retrieve Lab Request by its Assigned Lab No.
 
-**Epic:** LISP-244 [CRST][DEV] Cancel Request - Layout | LISP-245 [CRST][DEV] Cancel Request - Screen Object Interaction | LISP-246 [CRST][DEV] Cancel Request - Cancel Action | LISP-247 [CRST][DEV] Cancel Request - Request Retrieval
+**Epic:** LISP-244 [CRST][DEV] Cancel Request - Layout | LISP-245 [CRST][DEV] Cancel Request - Request Retrieval | LISP-246 [CRST][DEV] Cancel Request - Cancel Action | LISP-247 [CRST][DEV] Cancel Request - Screen Object Interaction
 
 ---
 
