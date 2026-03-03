@@ -1,3 +1,7 @@
+---
+epic: LISP-245
+status: draft
+---
 # Retrieve Request
 
 ## Overview
