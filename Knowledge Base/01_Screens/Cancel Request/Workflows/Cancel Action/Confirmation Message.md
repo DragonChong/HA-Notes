@@ -70,4 +70,4 @@ The confirmation prompt closes. The cancellation process continues to the next s
 - [[Object Enablement After Retrieval]] — Defines when the Cancel Request Button is enabled, which is the prerequisite for this prompt to appear.
 - [[Validation]] — The next substantive step after the user confirms.
 - [[Ask for Confirmation]] — A subsequent confirmation step that follows validation.
-- [[Cancel Request Action]] — The full cancellation pipeline of which this confirmation is the first step.
+- [[Cancel Request (Action)]] — The full cancellation pipeline of which this confirmation is the first step.

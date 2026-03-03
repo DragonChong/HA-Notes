@@ -95,6 +95,6 @@ The validation runs as step 2 of the cancel action pipeline:
 ## Related Workflows
 
 - [[Cancel Request (Action)]] — The full 8-step pipeline within which blood inventory validation runs as step 2.
-- [[User Access Right Checking (BBNK)]] — The access-right check that determines whether warnings or errors are shown for reserved/allocated/analyser-ordered blood units.
-- [[Blood Released Message (BBNK)]] — The confirmation message shown after successful cancellation when blood units have been released.
+- [[User Access Right Checking]] — The access-right check that determines whether warnings or errors are shown for reserved/allocated/analyser-ordered blood units.
+- [[Blood Released Message]] — The confirmation message shown after successful cancellation when blood units have been released.
 - [[Validation]] — The general test-level validation that runs after blood inventory validation in the pipeline.

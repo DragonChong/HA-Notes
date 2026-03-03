@@ -71,6 +71,6 @@ The cancel action pipeline for a BBNK request with blood to release:
 
 ## Related Workflows
 
-- [[Blood Inventory Validation (BBNK)]] — The earlier pipeline step that checks for blood unit states and determines whether the cancellation can proceed.
-- [[User Access Right Checking (BBNK)]] — The access-right check that gates which users are permitted to release blood units by cancelling the request.
+- [[Blood Inventory Validation]] — The earlier pipeline step that checks for blood unit states and determines whether the cancellation can proceed.
+- [[User Access Right Checking]] — The access-right check that gates which users are permitted to release blood units by cancelling the request.
 - [[Cancel Request (Action)]] — The full cancellation pipeline; message 3256 is shown at the completion step.

@@ -73,7 +73,7 @@ The screen is cleared silently without any message.
 |---|---|---|---|---|
 | Amend Cancel Comment | `AMEND_CANCEL_COMMENT` | Controls whether a previously saved cancel reason can be edited after retrieval | Message 654 shown (if user has right); Cancel Reason field editable | Message 655 shown (if user has right); Cancel Reason field non-editable |
 
-> **ANAT override:** For ANAT (Anatomical Pathology) requests, `AMEND_CANCEL_COMMENT` is always treated as disabled for already-cancelled requests, regardless of the lab option setting. See [[Object Enablement After Retrieval (ANAT)]] for details.
+> **ANAT override:** For ANAT (Anatomical Pathology) requests, `AMEND_CANCEL_COMMENT` is always treated as disabled for already-cancelled requests, regardless of the lab option setting. See [[Special Lab Workflow/ANAT/Object Enablement After Retrieval|Object Enablement After Retrieval (ANAT)]] for details.
 
 ---
 
@@ -94,6 +94,6 @@ The screen is cleared silently without any message.
 - [[Cancel Comment Test]] — The mechanism by which the system identifies that a request has already been cancelled.
 - [[Retrieve Request]] — The retrieval step that precedes this message path.
 - [[Object Enablement After Retrieval]] — The full screen object enablement logic applied after the message is dismissed.
-- [[Object Enablement After Retrieval (ANAT)]] — The ANAT-specific override that unconditionally blocks amending a cancelled request.
+- [[Special Lab Workflow/ANAT/Object Enablement After Retrieval|Object Enablement After Retrieval (ANAT)]] — The ANAT-specific override that unconditionally blocks amending a cancelled request.
 - [[Update Reason]] — The workflow available when the user has the appropriate right and amend is permitted.
 - [[Authorize Cancel Reason]] — The workflow available when the user has the authorise right and amend is permitted.
