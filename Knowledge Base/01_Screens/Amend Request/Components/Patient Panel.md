@@ -15,7 +15,6 @@ The **Patient Panel** (Patient Demographic panel) displays the demographic detai
 - **[[CRST-771]]** - Amend Request - Patient Demographic Panel
 - **[[CRST-86]]** - Registration - Patient Demographic Panel *(shared component origin)*
 - **[[CRST-96]]** - Registration - Patient Demographic Panel *(shared component)*
-- **[[CRST-777]]** - Amend Request - Retrieve Request
 - **[[CRST-778]]** - Amend Request - Object Enablement After Retrieval
 - **[[CRST-779]]** - Amend Request - Retrieve Request *(data mapping)*
 

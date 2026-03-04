@@ -15,7 +15,6 @@ The **Request Info Panel** (Request Information panel) displays and allows editi
 - **[[CRST-772]]** - Amend Request - Request Information Panel
 - **[[CRST-87]]** - Registration - Request Information Panel *(shared component origin)*
 - **[[CRST-455]]** - Registration - Request Information Panel *(shared component)*
-- **[[CRST-777]]** - Amend Request - Retrieve Request
 - **[[CRST-778]]** - Amend Request - Object Enablement After Retrieval
 - **[[CRST-779]]** - Amend Request - Retrieve Request *(data mapping)*
 
@@ -87,7 +86,7 @@ After a request is retrieved, fields fall into two categories: those that are ed
 ## Configuration
 
 | Setting | Option Code | Purpose | Effect when enabled | Effect when disabled |
-|---------|-------------|---------|--------------------|--------------------|
+|---------|-------------|---------|--------------------|---------------------|
 | Multiple Doctor Not Ready | `OFFICE_TABLE_MULTIPLE_DOCTOR_NOT_READY` *(option_group = `REQUEST_REGISTRATION`)* | Controls whether the New Doctor Code button is disabled for the lab | **New Doctor Code** button disabled after retrieval | **New Doctor Code** button enabled after retrieval |
 
 > This option is permanently disabled in production operation. As a result, the **New Doctor Code** button is always enabled after request retrieval in practice.
