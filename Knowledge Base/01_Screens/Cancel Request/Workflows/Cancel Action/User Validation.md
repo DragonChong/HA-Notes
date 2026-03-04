@@ -14,7 +14,7 @@ After all validation checks pass, the system may require a secondary user authen
 
 - **[[CRST-939]]** — Cancel Request — User Validation
 
-**Epic:** LISP-247 [CRST][DEV] Cancel Action
+**Epic:** LISP-247 [CRST][DEV] Cancel Request - Cancel Action
 
 ---
 

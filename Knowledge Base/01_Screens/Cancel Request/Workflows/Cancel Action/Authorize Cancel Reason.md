@@ -14,7 +14,7 @@ The **Authorize Reason** button allows a suitably privileged operator to save an
 
 - **[[CRST-944]]** — Cancel Request — Authorize Cancel Reason
 
-**Epic:** LISP-247 [CRST][DEV] Cancel Action
+**Epic:** LISP-247 [CRST][DEV] Cancel Request - Cancel Action
 
 ---
 
