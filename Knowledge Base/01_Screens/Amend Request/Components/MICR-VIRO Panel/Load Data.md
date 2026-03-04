@@ -1,8 +1,12 @@
-# MICR/VIRO Panel — Load Data
+---
+epic: LISP-228
+status: draft
+---
+# MICR-VIRO Panel — Load Data
 
 ## Overview
 
-When an MBS or VRS request is retrieved on the Amend Request screen, the MICR/VIRO Panel is populated with the microbiology/virology-specific data stored against that request. Each field is pre-filled from the corresponding column in the `mb_request` database table. A special case applies for the Display-only Specimen Type field, which is sourced from the USID relation data when the Target Specimen Selection option is active.
+When an MBS or VRS request is retrieved on the Amend Request screen, the MICR-VIRO Panel is populated with the microbiology/virology-specific data stored against that request. Each field is pre-filled from the corresponding column in the `mb_request` database table. A special case applies for the Display-only Specimen Type field, which is sourced from the USID relation data when the Target Specimen Selection option is active.
 
 ---
 
@@ -44,5 +48,5 @@ The warning label text is always constructed on load from the pair specimen requ
 
 ## Related Workflows
 
-- [[MICR/VIRO Panel Enablement]] — Defines which components are visible and editable after data is loaded.
-- [[MICR/VIRO Amend Request]] — The save workflow that collects the panel data after the user has made amendments.
+- [[MICR-VIRO Panel — Enablement]] — Defines which components are visible and editable after data is loaded.
+- [[MICR-VIRO Amend Request]] — The save workflow that collects the panel data after the user has made amendments.

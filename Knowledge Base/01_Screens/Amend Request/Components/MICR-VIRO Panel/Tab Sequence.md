@@ -1,8 +1,12 @@
-# MICR/VIRO Panel — Tab Sequence
+---
+epic: LISP-228
+status: draft
+---
+# MICR-VIRO Panel — Tab Sequence
 
 ## Overview
 
-The MICR/VIRO Panel supports keyboard navigation via the Tab key. The tab sequence follows a fixed order beginning with the Microbiologist drop-down, proceeding through the specimen and text fields, and ending with the Treatment Category drop-down. Components that are hidden due to lab option configuration are skipped automatically.
+The MICR-VIRO Panel supports keyboard navigation via the Tab key. The tab sequence follows a fixed order beginning with the Microbiologist drop-down, proceeding through the specimen and text fields, and ending with the Treatment Category drop-down. Components that are hidden due to lab option configuration are skipped automatically.
 
 ---
 
@@ -16,7 +20,7 @@ The MICR/VIRO Panel supports keyboard navigation via the Tab key. The tab sequen
 
 ## Standard Tab Order (All Components Visible)
 
-Starting from the **Microbiologist** drop-down, the tab sequence within the MICR/VIRO Panel is:
+Starting from the **Microbiologist** drop-down, the tab sequence within the MICR-VIRO Panel is:
 
 1. Microbiologist drop-down
 2. Specimen Type drop-down
@@ -56,4 +60,4 @@ When the Specimen Type drop-down is hidden (replaced by the Display-only Specime
 
 ## Related Workflows
 
-- [[MICR/VIRO Panel Enablement]] — Defines the visibility conditions for each component.
+- [[MICR-VIRO Panel — Enablement]] — Defines the visibility conditions for each component.

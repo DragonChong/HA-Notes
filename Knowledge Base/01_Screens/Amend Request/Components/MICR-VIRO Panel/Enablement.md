@@ -1,8 +1,12 @@
-# MICR/VIRO Panel — Enablement
+---
+epic: LISP-228
+status: draft
+---
+# MICR-VIRO Panel — Enablement
 
 ## Overview
 
-The **MICR/VIRO Panel** is a lab-specific panel that appears on the Amend Request screen when a Microbiology (MBS, lab no. 7) or Virology (VRS, lab no. 8) request is retrieved. The panel is labelled **"Micro-specific information"** for MBS requests and **"Virology-specific information"** for VRS requests. It exposes fields specific to microbiology and virology requests that can be amended. The panel is hidden when no MBS/VRS request is loaded and is fully disabled when the Clear button is clicked.
+The **MICR-VIRO Panel** is a lab-specific panel that appears on the Amend Request screen when a Microbiology (MBS, lab no. 7) or Virology (VRS, lab no. 8) request is retrieved. The panel is labelled **"Micro-specific information"** for MBS requests and **"Virology-specific information"** for VRS requests. It exposes fields specific to microbiology and virology requests that can be amended. The panel is hidden when no MBS/VRS request is loaded and is fully disabled when the Clear button is clicked.
 
 ---
 
@@ -32,7 +36,7 @@ A lab option that replaces the editable Specimen Type drop-down with a read-only
 
 ## Panel Visibility
 
-| State | MICR/VIRO Panel Visibility |
+| State | MICR-VIRO Panel Visibility |
 |-------|---------------------------|
 | Amend Request screen opened (no request loaded) | **Invisible** |
 | MBS request retrieved | **Visible** (labelled "Micro-specific information") |
@@ -67,7 +71,7 @@ The warning label is hidden when no pair exists.
 ## Configuration
 
 | Setting | Option Code | Purpose | Effect when enabled | Effect when disabled / absent |
-|---------|-------------|---------|--------------------|-----------------------------|
+|---------|-------------|---------|--------------------|-------------------------------|
 | Target Specimen Selection | `TARGET_SPECIMEN_SELECTION` *(option_group = 'REQUEST_REGISTRATION')* | Switches from editable Specimen Type to display-only mode | Specimen Type drop-down **invisible**; display-only text input **visible** | Specimen Type drop-down **visible** and editable; display-only text input **invisible** |
 | Treatment Category Visible | `TREATMENT_CATEGORY_VISIBLE` *(option_group = 'REQUEST_REGISTRATION')* | Controls whether the Treatment Category field is shown | Treatment Category drop-down and label **visible** | Treatment Category drop-down and label **invisible** |
 | Lab Prefixes to Enable Treatment Category | `LAB_PREFIXS_TO_ENABLE_TREATMENT_CATEGORY` *(option_group = 'REQUEST_REGISTRATION')* | Controls which request number prefixes allow Treatment Category editing | Treatment Category **enabled** if the retrieved request's prefix is in the `option_text` list | Treatment Category **disabled** even if visible |
@@ -76,5 +80,5 @@ The warning label is hidden when no pair exists.
 
 ## Related Workflows
 
-- [[MICR/VIRO Load Data]] — Populates the panel fields when an MBS/VRS request is retrieved.
-- [[MICR/VIRO Amend Request]] — The save workflow that collects panel data for persistence.
+- [[MICR-VIRO Panel — Load Data]] — Populates the panel fields when an MBS/VRS request is retrieved.
+- [[MICR-VIRO Amend Request]] — The save workflow that collects panel data for persistence.
