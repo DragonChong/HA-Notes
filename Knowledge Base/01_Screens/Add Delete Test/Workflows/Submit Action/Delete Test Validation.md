@@ -10,7 +10,7 @@ This workflow describes the validation applied at Submit time when tests have be
 
 - **[[CRST-1037]]** - Add Delete Test - Delete Test Validation
 
-**Epic:** LISP-266 [CRST][DEV] Add/Delete Test - Submit Action
+**Epic:** LISP-265 [CRST][DEV] Add/Delete Test - Submit Action
 
 ---
 

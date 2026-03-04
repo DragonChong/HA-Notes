@@ -10,7 +10,7 @@ When the Input Specimen No. button is clicked on the Add Delete Test screen, the
 
 - **[[CRST-1031]]** - Add Delete Test - Create Specimen Profile Relation from Request
 
-**Epic:** LISP-265 [CRST][DEV] Add/Delete Test - USID
+**Epic:** LISP-266 [CRST][DEV] Add/Delete Test - USID
 
 ---
 

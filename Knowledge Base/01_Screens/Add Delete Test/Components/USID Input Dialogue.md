@@ -10,7 +10,7 @@ The USID Input Dialogue (labelled "Input Specimen Number") allows lab staff to c
 
 - **[[CRST-1032]]** - Add Delete Test - USID Input Dialogue
 
-**Epic:** LISP-265 [CRST][DEV] Add/Delete Test - USID
+**Epic:** LISP-266 [CRST][DEV] Add/Delete Test - USID
 
 ---
 

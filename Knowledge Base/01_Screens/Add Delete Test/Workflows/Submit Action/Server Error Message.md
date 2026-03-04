@@ -10,7 +10,7 @@ This workflow describes the error handling behaviour on the Add Delete Test scre
 
 - **[[CRST-1040]]** - Add Delete Test - Server Error Message
 
-**Epic:** LISP-266 [CRST][DEV] Add/Delete Test - Submit Action
+**Epic:** LISP-265 [CRST][DEV] Add/Delete Test - Submit Action
 
 ---
 

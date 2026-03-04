@@ -10,7 +10,7 @@ The Change Reason Dialogue is a modal prompt that appears during the Submit proc
 
 - **[[CRST-1038]]** - Add Delete Test - Change Reason Dialogue
 
-**Epic:** LISP-266 [CRST][DEV] Add/Delete Test - Submit Action
+**Epic:** LISP-265 [CRST][DEV] Add/Delete Test - Submit Action
 
 ---
 

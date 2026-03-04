@@ -10,7 +10,7 @@ This workflow describes the access right check performed at Submit time when a n
 
 - **[[CRST-1035]]** - Add Delete Test - Add Test User Access Right Validation
 
-**Epic:** LISP-266 [CRST][DEV] Add/Delete Test - Submit Action
+**Epic:** LISP-265 [CRST][DEV] Add/Delete Test - Submit Action
 
 ---
 

@@ -10,7 +10,7 @@ This workflow describes the full Submit action on the Add Delete Test screen —
 
 - **[[CRST-1039]]** - Add Delete Test - Add/Delete Test
 
-**Epic:** LISP-266 [CRST][DEV] Add/Delete Test - Submit Action
+**Epic:** LISP-265 [CRST][DEV] Add/Delete Test - Submit Action
 
 ---
 

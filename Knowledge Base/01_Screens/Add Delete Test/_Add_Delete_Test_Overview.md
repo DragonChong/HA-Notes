@@ -19,8 +19,8 @@ This section documents the **Add/Delete Test** screen (also referred to as **Tes
 | LISP-264 | Add/Delete Test — Screen Object Interaction | Clear button, default focus, tab sequence, mark test to delete (including order check and user access right validation) |
 | LISP-265 | Add/Delete Test — Submit Action | Add/delete test action, add test validation, delete test validation, add test user access right validation, change reason dialogue, server error message |
 | LISP-266 | Add/Delete Test — USID | USID input dialogue, profile not mapped to specimen message, USID not found alert, create specimen profile relation from request |
-| LISP-267 | Add/Delete Test — Special Lab Workflow (BBNK) | BBNK: get patient blood history, mark test to delete, check cross match group, test code determination |
-| LISP-268 | Add/Delete Test — Special Lab Workflow (CHEM) | CHEM: mark test to delete, check DFT, check TIS correlation |
+| LISP-267 | Add/Delete Test — Special Lab Workflow (CHEM) | CHEM: mark test to delete, check DFT, check TIS correlation |
+| LISP-268 | Add/Delete Test — Special Lab Workflow (BBNK) | BBNK: get patient blood history, mark test to delete, check cross match group, test code determination |
 | LISP-269 | Add/Delete Test — Special Lab Workflow (MICR) | MICR: retrieve request, mark test to delete, culture or sensitivity check |
 
 ---
@@ -84,21 +84,21 @@ Key differences from Cancel/Wipeout Request:
 - [[Profile Not Mapped to Specimen Message]] — CRST-1033
 - [[USID Not Found Alert]] — CRST-1034
 
-### LISP-267 — Special Lab Workflow (BBNK)
+### LISP-267 — Special Lab Workflow (CHEM)
 
-- [[BBNK - Get Patient Blood History]] — CRST-1046
-- [[BBNK - Mark Test to Delete]] — CRST-1044
-- [[BBNK - Mark Test to Delete - Check Cross Match Group]] — CRST-1045
-- [[BBNK - Test Code Determination]] — CRST-1047
+- [[CHEM Mark Test to Delete]] — CRST-1041
+- [[CHEM Mark Test to Delete - Check DFT]] — CRST-1042
+- [[CHEM Mark Test to Delete - Check TIS Correlation]] — CRST-1043
 
-### LISP-268 — Special Lab Workflow (CHEM)
+### LISP-268 — Special Lab Workflow (BBNK)
 
-- [[CHEM - Mark Test to Delete]] — CRST-1041
-- [[CHEM - Mark Test to Delete - Check DFT]] — CRST-1042
-- [[CHEM - Mark Test to Delete - Check TIS Correlation]] — CRST-1043
+- [[BBNK Get Patient Blood History]] — CRST-1046
+- [[BBNK Mark Test to Delete]] — CRST-1044
+- [[BBNK Mark Test to Delete - Check Cross Match Group]] — CRST-1045
+- [[BBNK Test Code Determination]] — CRST-1047
 
 ### LISP-269 — Special Lab Workflow (MICR)
 
-- [[MICR - Retrieve Request]] — CRST-1048
-- [[MICR - Mark Test to Delete]] — CRST-1049
-- [[MICR - Mark Test to Delete - Culture or Sensitivity Check]] — CRST-1050
+- [[MICR Retrieve Request]] — CRST-1048
+- [[MICR Mark Test to Delete]] — CRST-1049
+- [[MICR Mark Test to Delete - Culture or Sensitivity Check]] — CRST-1050

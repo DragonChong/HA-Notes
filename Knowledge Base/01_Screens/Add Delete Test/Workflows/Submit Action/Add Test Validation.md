@@ -10,7 +10,7 @@ This workflow describes the set of content-based validations applied at Submit t
 
 - **[[CRST-1036]]** - Add Delete Test - Add Test Validation
 
-**Epic:** LISP-266 [CRST][DEV] Add/Delete Test - Submit Action
+**Epic:** LISP-265 [CRST][DEV] Add/Delete Test - Submit Action
 
 ---
 
