@@ -2,7 +2,7 @@
 epic: LISP-250
 status: draft
 ---
-# Display MICR/VIRO Information
+# Display MICR-VIRO Information
 
 ## Overview
 

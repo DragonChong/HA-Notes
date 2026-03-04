@@ -2,7 +2,7 @@
 epic: LISP-258
 status: draft
 ---
-# Default Focus — Initial
+# Default Focus - Initial
 
 ## Overview
 

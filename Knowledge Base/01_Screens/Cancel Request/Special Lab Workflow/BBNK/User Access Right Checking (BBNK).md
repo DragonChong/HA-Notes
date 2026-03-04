@@ -81,7 +81,7 @@ The check only has an effect when the blood inventory validation (step 2) has id
 
 ## Related Workflows
 
-- [[Blood Inventory Validation]] — The server-side check that determines whether any blood units are in a restricted state and loads the flags used by this access-right check.
-- [[Blood Released Message]] — The confirmation message shown after successful cancellation when blood units have been released.
+- [[Blood Inventory Validation (BBNK)]] — The server-side check that determines whether any blood units are in a restricted state and loads the flags used by this access-right check.
+- [[Blood Released Message (BBNK)]] — The confirmation message shown after successful cancellation when blood units have been released.
 - [[Validation]] — The standard validation pipeline step that this BBNK-specific check extends.
 - [[Cancel Request (Action)]] — The full cancellation pipeline.
