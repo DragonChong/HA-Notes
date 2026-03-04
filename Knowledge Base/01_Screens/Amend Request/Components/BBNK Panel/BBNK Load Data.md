@@ -1,4 +1,8 @@
-# BBNK Panel — Load Data
+---
+epic: LISP-227
+status: draft
+---
+# BBNK Load Data
 
 ## Overview
 
@@ -34,7 +38,7 @@ A product reservation record linked to the request, holding the requested produc
 The Blood Category button font style reflects whether the loaded special blood requirement differs from the system default:
 
 | Condition | Blood Category Button Style |
-|-----------|-----------------------------|
+|-----------|------------------------------|
 | Special blood requirement is the same as the system default | Normal |
 | Special blood requirement differs from the system default | **Italic** |
 

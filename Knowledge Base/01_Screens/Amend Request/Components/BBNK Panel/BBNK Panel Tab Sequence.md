@@ -1,4 +1,8 @@
-# BBNK Panel — Tab Sequence
+---
+epic: LISP-227
+status: draft
+---
+# BBNK Panel Tab Sequence
 
 ## Overview
 
@@ -53,7 +57,7 @@ The tab sequence adjusts automatically when components are hidden by lab option 
 ## Field Inclusion Rules
 
 | Component | Included in Tab Sequence |
-|-----------|--------------------------|
+|-----------|-----------------------------|
 | Blood Category button | Always |
 | Operation Code input | Only when Operation & Indication Code fields are visible |
 | Indication Code input | Only when Operation & Indication Code fields are visible |

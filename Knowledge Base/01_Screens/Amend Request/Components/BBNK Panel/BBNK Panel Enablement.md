@@ -1,4 +1,8 @@
-# BBNK Panel — Enablement
+---
+epic: LISP-227
+status: draft
+---
+# BBNK Panel Enablement
 
 ## Overview
 
