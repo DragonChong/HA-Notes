@@ -16,7 +16,7 @@ Whether the cancel reason may be edited after retrieval depends on a separate la
 
 - **[[CRST-980]]** - Cancel Request - Retrieve Cancel Request Reason
 
-**Epic:** LISP-245 Cancel Request - Request Retrieval
+**Epic:** LISP-245 [CRST][DEV] Cancel Request - Request Retrieval
 
 ---
 
@@ -167,7 +167,7 @@ sequenceDiagram
 ## Configuration
 
 | Setting | Option Code | Purpose | Effect when enabled | Effect when disabled |
-|---------|------------|---------|--------------------|--------------------|
+|---------|------------|---------|--------------------|----------------------|
 | Cancel Comment Test Key | `CANCEL_COMMENT` (`option_group = 'CANCEL'`) | Identifies the test result key used to store and retrieve the cancel reason | System searches for a matching test result and loads the cancel reason | Cancel reason is never retrieved; message **219** shown on screen initialisation if null |
 | Amend Cancel Comment | `AMEND_CANCEL_COMMENT` (`option_group = 'CANCEL'`) | Controls whether staff may edit the cancel reason of an already-cancelled request | Cancel/Reject Reason panel is editable after retrieval | Cancel/Reject Reason panel is read-only after retrieval |
 

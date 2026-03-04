@@ -16,7 +16,7 @@ This check applies to the CRS application only and does not apply to the General
 
 - **[[CRST-930]]** - Cancel Request - Not Supported Lab Message
 
-**Epic:** LISP-245 Cancel Request - Request Retrieval
+**Epic:** LISP-245 [CRST][DEV] Cancel Request - Request Retrieval
 
 ---
 

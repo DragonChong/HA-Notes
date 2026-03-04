@@ -14,7 +14,7 @@ When a request is successfully retrieved in the Cancel Request screen, the syste
 
 - **[[CRST-927]]** - Cancel Request - Test Result
 
-**Epic:** LISP-245 Cancel Request - Request Retrieval
+**Epic:** LISP-245 [CRST][DEV] Cancel Request - Request Retrieval
 
 ---
 

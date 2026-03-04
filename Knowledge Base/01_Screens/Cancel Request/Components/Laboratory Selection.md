@@ -14,7 +14,7 @@ The **Laboratory Selection** control allows staff to specify which laboratory's 
 
 - **[[CRST-929]]** - Cancel Request - Laboratory Selection
 
-**Epic:** LISP-245 Cancel Request - Request Retrieval
+**Epic:** LISP-245 [CRST][DEV] Cancel Request - Request Retrieval
 
 ---
 
