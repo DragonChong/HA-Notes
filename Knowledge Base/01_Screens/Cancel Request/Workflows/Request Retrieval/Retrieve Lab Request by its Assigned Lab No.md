@@ -2,7 +2,7 @@
 epic: LISP-245
 status: draft
 ---
-# Retrieve Lab Request by its Assigned Lab No.
+# Retrieve Lab Request by its Assigned Lab No
 
 ## Overview
 
@@ -14,7 +14,7 @@ When a user enters a request number on the Cancel Request screen, the system ide
 
 - **[[CRST-981]]** - Cancel Request - Retrieve Lab Request by its Assigned Lab No.
 
-**Epic:** LISP-245 Cancel Request - Request Retrieval
+**Epic:** LISP-245 [CRST][DEV] Cancel Request - Request Retrieval
 
 ---
 
