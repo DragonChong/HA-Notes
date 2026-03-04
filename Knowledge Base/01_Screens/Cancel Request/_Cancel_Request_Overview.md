@@ -29,7 +29,7 @@ The **Cancel Request** screen allows authorised laboratory staff to cancel an ex
 - **[[CRST-938]]** - Cancel Request - Validation
 - **[[CRST-939]]** - Cancel Request - User Validation
 - **[[CRST-940]]** - Cancel Request - Ask for Confirmation
-- **[[CRST-941]]** - Cancel Request - Cancel Request
+- **[[CRST-941]]** - Cancel Request - Cancel Request (Action)
 - **[[CRST-942]]** - Cancel Request - Failure Message
 - **[[CRST-943]]** - Cancel Request - Server Error Message
 - **[[CRST-944]]** - Cancel Request - Authorize Cancel Reason
@@ -103,4 +103,4 @@ An optional label displayed at the bottom of the screen, sourced from the `CANCE
 
 - [[Retrieve Request]] — The workflow that loads request data and enables the action controls when a valid request number is entered.
 - [[Object Enablement After Retrieval]] — Describes which controls become active after a request is successfully retrieved.
-- [[Cancel Request]] — The workflow that executes when the user confirms the cancellation.
+- [[Cancel Request (Action)]] — The workflow that executes when the user confirms the cancellation.
