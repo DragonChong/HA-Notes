@@ -13,7 +13,7 @@ The action buttons on the Amend Request screen are located near the **Request No
 ## Related User Stories
 
 - **[[CRST-775]]** - Amend Request - Buttons
-- **[[CRST-777]]** - Amend Request - Retrieve Request
+- **[[CRST-779]]** - Amend Request - Retrieve Request
 - **[[CRST-778]]** - Amend Request - Object Enablement After Retrieval
 
 **Epic:** LISP-220 [CRST][DEV] Amend Request - Layout
@@ -133,7 +133,7 @@ The table below summarises when each button is present (shown/hidden by lab opti
 ## Configuration
 
 | Setting | Option Code | Purpose | Effect when enabled | Effect when disabled |
-|---------|-------------|---------|--------------------|--------------------|
+|---------|-------------|---------|--------------------|---------------------|
 | USID Enable | `ENABLE` *(option_group = `USID`, option_labno = 9)* | Controls whether specimen number input is available | **Input Specimen No.** button shown; enabled for USID format requests | Button hidden |
 | Sendout Function | `SENDOUT_FUNCTION_ENABLED` *(option_group = `REQUEST_REGISTRATION`)* | Controls whether sendout-related actions are available | **Send Out**, **Print Send Out**, and **Print Form** controls shown | All three hidden |
 | Sendout Form Printing on Amend | `SENDOUT_FORM_PRINTING_ENABLED_ON_AMEND` *(option_group = `REQUEST_REGISTRATION`)* | Controls whether the Print Form checkbox is enabled on Amend Request | **Print Form** checkbox enabled and checked by default after retrieval | **Print Form** checkbox disabled |

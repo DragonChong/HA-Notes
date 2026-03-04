@@ -13,8 +13,8 @@ The **Data Retention Panel** is a control panel unique to the Amend Request scre
 ## Related User Stories
 
 - **[[CRST-776]]** - Amend Request - Data Retention Selection Panel
-- **[[CRST-777]]** - Amend Request - Retrieve Request
-- **[[CRST-778]]** - Amend Request - Amend Request Action
+- **[[CRST-779]]** - Amend Request - Retrieve Request
+- **[[CRST-778]]** - Amend Request - Object Enablement After Retrieval
 
 **Epic:** LISP-220 [CRST][DEV] Amend Request - Layout
 
