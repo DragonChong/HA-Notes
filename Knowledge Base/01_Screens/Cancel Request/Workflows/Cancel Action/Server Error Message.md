@@ -14,7 +14,7 @@ When the backend throws an exception during the cancel request process, the syst
 
 - **[[CRST-943]]** — Cancel Request — Server Error Message
 
-**Epic:** LISP-247 [CRST][DEV] Cancel Action
+**Epic:** LISP-247 [CRST][DEV] Cancel Request - Cancel Action
 
 ---
 

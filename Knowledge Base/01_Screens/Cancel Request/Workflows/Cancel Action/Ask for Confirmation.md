@@ -14,7 +14,7 @@ Step 5 of the eight-step cancel pipeline runs after user validation and before t
 
 - **[[CRST-940]]** — Cancel Request — Ask for Confirmation
 
-**Epic:** LISP-247 [CRST][DEV] Cancel Action
+**Epic:** LISP-247 [CRST][DEV] Cancel Request - Cancel Action
 
 ---
 

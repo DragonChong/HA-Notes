@@ -14,7 +14,7 @@ When the backend processes the cancel request and returns a failure state (a non
 
 - **[[CRST-942]]** — Cancel Request — Failure Message
 
-**Epic:** LISP-247 [CRST][DEV] Cancel Action
+**Epic:** LISP-247 [CRST][DEV] Cancel Request - Cancel Action
 
 ---
 
