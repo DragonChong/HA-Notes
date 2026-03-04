@@ -11,7 +11,7 @@ The ANAT Panel is the Anatomical Pathology–specific request entry panel that a
 - **[[CRST-461]]** - Registration - ANAT Panel Enablement
 - **[[CRST-118]]** - Registration - ANAT Panel - Specimen Collect Time Unknown Checkbox
 
-**Epic:** LISP-23 [CRST][DEV] Registration - Patient Handling
+**Epic:** LISP-25 [CRST][DEV] Registration - Screen Object Enablement
 
 ---
 

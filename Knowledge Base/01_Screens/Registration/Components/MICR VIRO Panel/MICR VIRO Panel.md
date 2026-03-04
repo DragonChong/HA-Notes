@@ -1,4 +1,4 @@
-# MICR/VIRO Panel
+# MICR VIRO Panel
 
 ## Overview
 

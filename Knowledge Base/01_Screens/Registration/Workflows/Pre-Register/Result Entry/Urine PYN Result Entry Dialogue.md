@@ -10,7 +10,7 @@ The Urine PYN Result Entry Dialogue is a modal dialogue that allows registration
 
 - **[[CRST-562]]** - Registration - Urine PYN Specific Result Entry
 
-**Epic:** LISP-23 [CRST][DEV] Registration - Patient Handling
+**Epic:** LISP-27 [CRST][DEV] Registration - Register Workflow
 
 ---
 

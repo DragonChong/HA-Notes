@@ -1,4 +1,4 @@
-# Register MICR/VIRO Request
+# Register MICR VIRO Request
 
 ## Overview
 

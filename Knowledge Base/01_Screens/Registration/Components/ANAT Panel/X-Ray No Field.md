@@ -1,4 +1,4 @@
-# X-Ray No. Field
+# X-Ray No Field
 
 ## Overview
 

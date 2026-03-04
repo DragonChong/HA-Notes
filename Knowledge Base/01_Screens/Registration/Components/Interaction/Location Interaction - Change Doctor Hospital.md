@@ -1,4 +1,4 @@
-# Location Interaction — Change Doctor Hospital
+# Location Interaction - Change Doctor Hospital
 
 ## Overview
 
@@ -10,7 +10,7 @@ When a user updates the **Request Hospital** or **Request Location** on the Regi
 
 - **[[CRST-539]]** - Registration - Location Interaction - Change Doctor Hospital
 
-**Epic:** LISP-25 [CRST][DEV] Registration - Screen Object Enablement
+**Epic:** LISP-29 [CRST][DEV] Registration - Screen Object Interaction
 
 ---
 

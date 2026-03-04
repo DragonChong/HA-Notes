@@ -1,4 +1,4 @@
-# Date of Death (DOD) Field
+# Date of Death Field
 
 ## Overview
 

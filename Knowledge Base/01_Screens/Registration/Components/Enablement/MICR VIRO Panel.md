@@ -1,4 +1,4 @@
-# MICR / VIRO Panel
+# MICR VIRO Panel
 
 ## Overview
 
@@ -11,7 +11,7 @@ The MICR Panel and VIRO Panel are discipline-specific information panels that ap
 - **[[CRST-463]]** - Registration - MICR/VIRO Panel Enablement
 - **[[CRST-459]]** - Registration - MICR/VIRO Panel (field content detail)
 
-**Epic:** LISP-23 [CRST][DEV] Registration - Patient Handling
+**Epic:** LISP-25 [CRST][DEV] Registration - Screen Object Enablement
 
 ---
 

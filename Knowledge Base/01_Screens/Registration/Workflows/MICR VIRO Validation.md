@@ -1,4 +1,4 @@
-# MICR/VIRO Validation
+# MICR VIRO Validation
 
 ## Overview
 

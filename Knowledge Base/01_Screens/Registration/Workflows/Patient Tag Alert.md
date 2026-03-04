@@ -1,4 +1,4 @@
-# Patient Tag Alert Workflow
+# Patient Tag Alert
 
 ## Overview
 

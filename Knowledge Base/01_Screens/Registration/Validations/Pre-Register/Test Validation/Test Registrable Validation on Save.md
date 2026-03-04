@@ -10,7 +10,7 @@ When the user saves a registration request, the system validates that every test
 
 - **[[CRST-505]]** - Registration - Pre-register: Test Validation - Test Registrable
 
-**Epic:** LISP-23 [CRST][DEV] Registration - Patient Handling
+**Epic:** LISP-27 [CRST][DEV] Registration - Register Workflow
 
 ---
 

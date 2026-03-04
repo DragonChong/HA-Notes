@@ -1,4 +1,4 @@
-# BBNK Panel – Blood Category
+# BBNK Panel - Blood Category
 
 ## Overview
 

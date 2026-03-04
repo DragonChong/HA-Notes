@@ -1,4 +1,4 @@
-# BBNK Panel – Patient Results
+# BBNK Panel - Patient Results
 
 ## Overview
 

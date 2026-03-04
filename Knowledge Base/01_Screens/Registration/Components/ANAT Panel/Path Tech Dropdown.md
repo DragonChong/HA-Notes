@@ -1,4 +1,4 @@
-# Path/Tech Dropdown
+# Path Tech Dropdown
 
 ## Overview
 

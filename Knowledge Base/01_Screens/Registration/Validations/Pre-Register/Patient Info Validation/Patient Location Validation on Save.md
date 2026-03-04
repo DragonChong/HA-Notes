@@ -10,7 +10,7 @@ When a registration request is saved, the system performs up to three sequential
 
 - **[[CRST-533]]** - Registration - Pre-register: Patient Info Validation - Patient Location
 
-**Epic:** LISP-27 [CRST][DEV] Registration - Pre-register
+**Epic:** LISP-27 [CRST][DEV] Registration - Register Workflow
 
 ---
 

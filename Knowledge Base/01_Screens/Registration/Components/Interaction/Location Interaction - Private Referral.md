@@ -1,4 +1,4 @@
-# Location Interaction — Private Referral
+# Location Interaction - Private Referral
 
 ## Overview
 

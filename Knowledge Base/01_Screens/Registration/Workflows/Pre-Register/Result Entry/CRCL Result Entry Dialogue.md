@@ -10,7 +10,7 @@ The CRCL Result Entry Dialogue is a compact modal dialogue used to capture two m
 
 - **[[CRST-559]]** - Registration - Result Entry (CRCL)
 
-**Epic:** LISP-23 [CRST][DEV] Registration - Patient Handling
+**Epic:** LISP-27 [CRST][DEV] Registration - Register Workflow
 
 ---
 

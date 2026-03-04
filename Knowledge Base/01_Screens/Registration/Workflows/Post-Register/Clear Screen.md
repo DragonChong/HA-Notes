@@ -15,7 +15,7 @@ After a request has been successfully registered and saved, the Registration scr
 - **[[CRST-111]]** - Registration - Post-register: Clear Screen
 - **[[CRST-116]]** - Registration - Screen Object Focus
 
-**Epic:** LISP-27 [CRST][DEV] Registration - Post Register
+**Epic:** LISP-27 [CRST][DEV] Registration - Register Workflow
 
 ---
 
