@@ -2,7 +2,7 @@
 epic: LISP-224
 status: draft
 ---
-# Print Send Out Form (Auto on Amend)
+# Print Send Out Form
 
 ## Overview
 
@@ -98,7 +98,7 @@ When auto-print is triggered, the following steps occur in order:
 ## Configuration
 
 | Setting | Option Code | Option Group | Purpose | Effect when enabled (= 1) |
-|---------|------------|-------------|---------|--------------------------|
+|---------|------------|-------------|---------|---------------------------|
 | Create PHLC Lab Order on Amend | `CREATE_PHLC_LAB_ORDER_AMD` | `SEND_OUT` | Enables PHLC order creation and gates Condition 3 / TB-DH alert | Doctor Modified Alert and PHLC order processing are active |
 
 *Source: `LAB_OPTION` table.*

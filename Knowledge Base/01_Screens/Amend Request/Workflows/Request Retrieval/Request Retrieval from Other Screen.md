@@ -1,5 +1,5 @@
 ---
-epic: LISP-220
+epic: LISP-229
 status: draft
 ---
 # Request Retrieval from Other Screen
@@ -14,7 +14,7 @@ The Amend Request screen supports an alternative retrieval path where a request 
 
 - **[[CRST-784]]** - Amend Request - Request Retrieval from Other Screen
 
-**Epic:** LISP-220 [CRST][DEV] Amend Request - Layout
+**Epic:** LISP-229 [CRST][DEV] Amend Request - Request Retrieval
 
 ---
 
