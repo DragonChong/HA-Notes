@@ -14,7 +14,7 @@ Before the cancel action is committed to the server, the system runs a two-phase
 
 - **[[CRST-938]]** — Cancel Request — Validation
 
-**Epic:** LISP-247 [CRST][DEV] Cancel Action
+**Epic:** LISP-247 [CRST][DEV] Cancel Request - Cancel Action
 
 ---
 
