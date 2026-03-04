@@ -23,7 +23,7 @@ The Chemistry laboratory (CPS lab, lab number 1) within the CRS application. Als
 A type of test that forms a timed series of related requests under a single DFT order. The first request in the series (DFT Time Flag = 0) has a restriction on full deletion — see [[CHEM Mark Test to Delete - Check DFT]].
 
 ### TIS Correlation
-A linkage between a TIS lab request and another request. If the `CHECK_TIS_CORRELATION` lab option is enabled, the system prevents deletion of tests on a request that has an active TIS correlation — see [[CHEM: Mark Test to Delete - Check TIS Correlation]].
+A linkage between a TIS lab request and another request. If the `CHECK_TIS_CORRELATION` lab option is enabled, the system prevents deletion of tests on a request that has an active TIS correlation — see [[CHEM Mark Test to Delete - Check TIS Correlation]].
 
 ---
 
