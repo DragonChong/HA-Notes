@@ -1,8 +1,12 @@
-# MICR/VIRO Change Audit
+---
+epic: LISP-228
+status: draft
+---
+# MICR-VIRO Change Audit
 
 ## Overview
 
-When an MBS or VRS request is amended, the system compares the previous and new values for each MICR/VIRO-specific field. For any field whose value has changed, an audit entry is appended to the amendment's audit log. Each entry records the field name, the old value, and the new value in a human-readable format. This provides a traceable history of all Microbiologist, Specimen Type, Site, Chemotherapy, and Treatment Category changes made to the request.
+When an MBS or VRS request is amended, the system compares the previous and new values for each MICR-VIRO-specific field. For any field whose value has changed, an audit entry is appended to the amendment's audit log. Each entry records the field name, the old value, and the new value in a human-readable format. This provides a traceable history of all Microbiologist, Specimen Type, Site, Chemotherapy, and Treatment Category changes made to the request.
 
 ---
 
@@ -16,7 +20,7 @@ When an MBS or VRS request is amended, the system compares the previous and new 
 
 ## Trigger Point
 
-Runs as part of the standard Amend Request save sequence, after the MICR/VIRO data has been prepared but before the audit log is persisted. Each MICR/VIRO field is evaluated for change independently.
+Runs as part of the standard Amend Request save sequence, after the MICR-VIRO data has been prepared but before the audit log is persisted. Each MICR-VIRO field is evaluated for change independently.
 
 ---
 
@@ -48,5 +52,5 @@ The system evaluates the following five fields. An audit entry is only written w
 
 ## Related Workflows
 
-- [[MICR/VIRO Amend Request]] — The save workflow that triggers this audit logging step.
+- [[MICR-VIRO Amend Request]] — The save workflow that triggers this audit logging step.
 - [[BBNK Change Audit]] — Equivalent audit workflow for the BBNK panel, for comparison.

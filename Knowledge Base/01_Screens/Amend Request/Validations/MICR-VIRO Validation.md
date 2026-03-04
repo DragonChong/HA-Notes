@@ -1,8 +1,12 @@
-# MICR/VIRO Validation
+---
+epic: LISP-228
+status: draft
+---
+# MICR-VIRO Validation
 
 ## Overview
 
-When the user clicks the Amend button with an MBS or VRS request loaded, the system validates the MICR/VIRO Panel fields before proceeding with the save. The Specimen Type drop-down is mandatory when it is visible. The Microbiologist and Treatment Category fields are optional but must contain a valid list value if a value has been typed.
+When the user clicks the Amend button with an MBS or VRS request loaded, the system validates the MICR-VIRO Panel fields before proceeding with the save. The Specimen Type drop-down is mandatory when it is visible. The Microbiologist and Treatment Category fields are optional but must contain a valid list value if a value has been typed.
 
 ---
 
@@ -57,5 +61,5 @@ When the user clicks the Amend button with an MBS or VRS request loaded, the sys
 
 ## Related Workflows
 
-- [[MICR/VIRO Amend Request]] — The save workflow that these validations gate.
-- [[MICR/VIRO Panel Enablement]] — Defines when the Specimen Type drop-down is visible (and therefore mandatory).
+- [[MICR-VIRO Amend Request]] — The save workflow that these validations gate.
+- [[MICR-VIRO Panel — Enablement]] — Defines when the Specimen Type drop-down is visible (and therefore mandatory).

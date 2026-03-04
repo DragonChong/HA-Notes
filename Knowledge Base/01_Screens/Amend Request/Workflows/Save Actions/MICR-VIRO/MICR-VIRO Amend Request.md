@@ -1,8 +1,12 @@
-# MICR/VIRO Amend Request
+---
+epic: LISP-228
+status: draft
+---
+# MICR-VIRO Amend Request
 
 ## Overview
 
-When the user confirms an amendment to an MBS or VRS request, the system gathers the MICR/VIRO Panel data and prepares it for saving to the database. The data collected includes the Microbiologist, Specimen Type, Site, Chemotherapy used, and Treatment Category fields, together with the patient identifier and request number. The effective date is also recalculated using the standard three-way priority rule. For VRS requests where the Target Specimen Selection mode is active, an additional pre-save specimen setup check is performed before data is written.
+When the user confirms an amendment to an MBS or VRS request, the system gathers the MICR-VIRO Panel data and prepares it for saving to the database. The data collected includes the Microbiologist, Specimen Type, Site, Chemotherapy used, and Treatment Category fields, together with the patient identifier and request number. The effective date is also recalculated using the standard three-way priority rule. For VRS requests where the Target Specimen Selection mode is active, an additional pre-save specimen setup check is performed before data is written.
 
 ---
 
@@ -16,7 +20,7 @@ When the user confirms an amendment to an MBS or VRS request, the system gathers
 
 ## Trigger Point
 
-Initiated as part of the standard Amend Request save sequence after input validation has passed. The MICR/VIRO-specific data preparation runs before the request record is persisted to the database.
+Initiated as part of the standard Amend Request save sequence after input validation has passed. The MICR-VIRO-specific data preparation runs before the request record is persisted to the database.
 
 ---
 
@@ -26,7 +30,7 @@ Initiated as part of the standard Amend Request save sequence after input valida
 
 #### Prerequisites
 - An MBS or VRS request has been retrieved.
-- The user has made changes in the MICR/VIRO Panel.
+- The user has made changes in the MICR-VIRO Panel.
 - Input validation has passed.
 
 #### Process Flow
@@ -35,18 +39,18 @@ Initiated as part of the standard Amend Request save sequence after input valida
 sequenceDiagram
     participant User
     participant Amend Request Screen
-    participant MICR/VIRO Data Convertor
+    participant MICR-VIRO Data Convertor
     participant Save Service
 
     User->>Amend Request Screen: Click Amend button
-    Amend Request Screen->>MICR/VIRO Data Convertor: Pre-save specimen check (if Target Specimen Selection active)
+    Amend Request Screen->>MICR-VIRO Data Convertor: Pre-save specimen check (if Target Specimen Selection active)
     alt Specimen setup invalid
-        MICR/VIRO Data Convertor-->>Amend Request Screen: Show error message (4181 or 4180)
+        MICR-VIRO Data Convertor-->>Amend Request Screen: Show error message (4181 or 4180)
         Amend Request Screen-->>User: Save blocked
     else Specimen setup valid
-        MICR/VIRO Data Convertor->>MICR/VIRO Data Convertor: Calculate effective date
-        MICR/VIRO Data Convertor->>MICR/VIRO Data Convertor: Gather MBS/VRS fields
-        MICR/VIRO Data Convertor->>Save Service: Submit amended request data
+        MICR-VIRO Data Convertor->>MICR-VIRO Data Convertor: Calculate effective date
+        MICR-VIRO Data Convertor->>MICR-VIRO Data Convertor: Gather MBS/VRS fields
+        MICR-VIRO Data Convertor->>Save Service: Submit amended request data
         Save Service-->>Amend Request Screen: Save confirmed
     end
 ```
@@ -63,7 +67,7 @@ sequenceDiagram
    | 2 | Arrival Date is not null and time portion is not 00:00 | Arrival Date |
    | 3 | (Fallback) | Registered Datetime |
 
-3. **Data gathered for saving:** The following fields are collected from the MICR/VIRO Panel and written to the `mb_request` record for this request:
+3. **Data gathered for saving:** The following fields are collected from the MICR-VIRO Panel and written to the `mb_request` record for this request:
 
 | Field Label | Table | Column | Notes |
 |-------------|-------|--------|-------|
@@ -96,7 +100,7 @@ sequenceDiagram
 
 ## Related Workflows
 
-- [[MICR/VIRO Panel Enablement]] — Defines when the panel is active and accepting input.
-- [[MICR/VIRO Load Data]] — Populates the panel when an MBS/VRS request is first retrieved.
-- [[MICR/VIRO Change Audit]] — Records the audit log for any MICR/VIRO fields changed during the amendment.
-- [[MICR/VIRO Validation]] — The validation checks that must pass before this workflow runs.
+- [[MICR-VIRO Panel — Enablement]] — Defines when the panel is active and accepting input.
+- [[MICR-VIRO Panel — Load Data]] — Populates the panel when an MBS/VRS request is first retrieved.
+- [[MICR-VIRO Change Audit]] — Records the audit log for any MICR-VIRO fields changed during the amendment.
+- [[MICR-VIRO Validation]] — The validation checks that must pass before this workflow runs.
