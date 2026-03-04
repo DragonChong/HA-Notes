@@ -1,3 +1,7 @@
+---
+epic: LISP-227
+status: draft
+---
 # Special Blood Dialogue
 
 ## Overview

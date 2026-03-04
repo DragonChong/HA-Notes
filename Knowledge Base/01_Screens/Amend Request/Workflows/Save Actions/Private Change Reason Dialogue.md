@@ -22,7 +22,7 @@ When a registered lab request involves a change in private location status, the 
 ## Key Concepts
 
 ### Private Location
-A location designated as a private clinic or private ward (see [[CRST-792 - Location Interaction - Private Referral]] for how private location affects Request Location). When a request is associated with a private location, it may have a **Private Referral** status or a **Lab Only** status.
+A location designated as a private clinic or private ward (see [[Location Interaction - Private Referral]] for how private location affects Request Location). When a request is associated with a private location, it may have a **Private Referral** status or a **Lab Only** status.
 
 ### Lab Only Request
 A request at a private location where the requester is a lab-only contact. See [[Lab Only Validation]] for the validation rules.
