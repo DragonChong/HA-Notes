@@ -20,7 +20,7 @@ This workflow describes the sequence of checks performed when a user double-clic
 The Chemistry laboratory (CPS lab, lab number 1) within the CRS application. Also covers TIS (Therapeutic Index Service) requests handled through the CPS processor.
 
 ### DFT (Drug Function Test)
-A type of test that forms a timed series of related requests under a single DFT order. The first request in the series (DFT Time Flag = 0) has a restriction on full deletion — see [[CHEM: Mark Test to Delete - Check DFT]].
+A type of test that forms a timed series of related requests under a single DFT order. The first request in the series (DFT Time Flag = 0) has a restriction on full deletion — see [[CHEM Mark Test to Delete - Check DFT]].
 
 ### TIS Correlation
 A linkage between a TIS lab request and another request. If the `CHECK_TIS_CORRELATION` lab option is enabled, the system prevents deletion of tests on a request that has an active TIS correlation — see [[CHEM: Mark Test to Delete - Check TIS Correlation]].
@@ -56,9 +56,9 @@ sequenceDiagram
 
 | Step | Check | Described in |
 |---|---|---|
-| 1 | TIS Correlation Check (only if `CHECK_TIS_CORRELATION` option is enabled) | [[CHEM: Mark Test to Delete - Check TIS Correlation]] |
+| 1 | TIS Correlation Check (only if `CHECK_TIS_CORRELATION` option is enabled) | [[CHEM Mark Test to Delete - Check TIS Correlation]] |
 | 2 | User Access Right Validation | [[Mark Test to Delete - User Access Right Validation]] |
-| 3 | DFT Test Check | [[CHEM: Mark Test to Delete - Check DFT]] |
+| 3 | DFT Test Check | [[CHEM Mark Test to Delete - Check DFT]] |
 | 4 | Assign Delete Flag (standard delete/un-delete behaviour) | [[Mark Test to Delete]] |
 
 3. If any check fails (i.e., a blocking message is shown and the user clicks OK), the sequence is aborted and the delete flag is **not** assigned. The test data remains unchanged.
@@ -76,7 +76,7 @@ sequenceDiagram
 
 ## Related Workflows
 
-- [[CHEM: Mark Test to Delete - Check TIS Correlation]] — Step 1: checks whether the request has an active TIS correlation that blocks deletion.
+- [[CHEM Mark Test to Delete - Check TIS Correlation]] — Step 1: checks whether the request has an active TIS correlation that blocks deletion.
 - [[Mark Test to Delete - User Access Right Validation]] — Step 2: checks whether the user has sufficient access rights to delete the selected test.
-- [[CHEM: Mark Test to Delete - Check DFT]] — Step 3: checks whether the selected test is the last deletable test on a first-DFT-series request.
+- [[CHEM Mark Test to Delete - Check DFT]] — Step 3: checks whether the selected test is the last deletable test on a first-DFT-series request.
 - [[Mark Test to Delete]] — Step 4: the standard delete flag assignment logic applied after all checks pass.

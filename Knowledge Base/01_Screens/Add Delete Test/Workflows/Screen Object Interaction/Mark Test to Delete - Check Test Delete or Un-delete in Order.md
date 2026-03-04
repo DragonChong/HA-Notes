@@ -247,4 +247,4 @@ sequenceDiagram
 
 - [[Mark Test to Delete]] — This order check is performed as part of every double-click interaction in the Mark Test to Delete workflow.
 - [[Mark Test to Delete - User Access Right Validation]] — Access rights are checked before this order check is performed.
-- [[Add Delete Test - Add/Delete Test (Action)]] — The Submit workflow that processes the Delete Flags accumulated by this workflow.
+- [[Add Delete Test (Action)]] — The Submit workflow that processes the Delete Flags accumulated by this workflow.

@@ -248,4 +248,4 @@ The columns displayed in the Test Grid are sourced as follows (varies by lab typ
 - [[Mark Test to Delete - Check Test Delete or Un-delete in Order]] — The order-of-manipulation check is performed as part of every double-click action in this workflow.
 - [[Mark Test to Delete - User Access Right Validation]] — Access rights are verified before any Delete Flag change is applied.
 - [[Object Enablement After Retrieval]] — Defines the screen state in which the Test Grid is interactive.
-- [[Add Delete Test - Add/Delete Test (Action)]] — The Submit workflow that processes the Delete Flags set by this workflow.
+- [[Add Delete Test (Action)]] — The Submit workflow that processes the Delete Flags set by this workflow.

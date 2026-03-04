@@ -10,7 +10,7 @@ This workflow describes the validation that occurs at Submit time when a new tes
 
 - **[[CRST-1033]]** - Add Delete Test - USID: Profile Not Mapped to Specimen Message
 
-**Epic:** LISP-265 [CRST][DEV] Add/Delete Test - USID
+**Epic:** LISP-266 [CRST][DEV] Add/Delete Test - USID
 
 ---
 

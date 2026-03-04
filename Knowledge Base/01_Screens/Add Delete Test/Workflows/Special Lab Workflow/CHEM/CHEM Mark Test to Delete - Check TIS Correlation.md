@@ -125,4 +125,4 @@ sequenceDiagram
 
 - [[CHEM Mark Test to Delete]] — The parent sequence; this check is step 1.
 - [[Mark Test to Delete - User Access Right Validation]] — Step 2, checked after this check passes.
-- [[CHEM: Mark Test to Delete - Check DFT]] — Step 3 of the same sequence.
+- [[CHEM Mark Test to Delete - Check DFT]] — Step 3 of the same sequence.

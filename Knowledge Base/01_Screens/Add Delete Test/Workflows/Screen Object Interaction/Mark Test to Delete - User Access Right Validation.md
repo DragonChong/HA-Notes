@@ -235,4 +235,4 @@ sequenceDiagram
 
 - [[Mark Test to Delete]] — This validation is the first check performed in every double-click interaction in that workflow.
 - [[Mark Test to Delete - Check Test Delete or Un-delete in Order]] — Order-of-manipulation check follows the access right validation.
-- [[Add Delete Test - Add/Delete Test (Action)]] — The Submit workflow that processes all Delete Flags set after this validation.
+- [[Add Delete Test (Action)]] — The Submit workflow that processes all Delete Flags set after this validation.

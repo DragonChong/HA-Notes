@@ -131,6 +131,6 @@ sequenceDiagram
 ## Related Workflows
 
 - [[CHEM Mark Test to Delete]] — The parent sequence; this check is step 3.
-- [[CHEM: Mark Test to Delete - Check TIS Correlation]] — Step 1, checked before this.
+- [[CHEM Mark Test to Delete - Check TIS Correlation]] — Step 1, checked before this.
 - [[Mark Test to Delete - User Access Right Validation]] — Step 2, checked before this.
 - [[Mark Test to Delete]] — Step 4: the standard delete flag assignment logic that runs after this check passes.
