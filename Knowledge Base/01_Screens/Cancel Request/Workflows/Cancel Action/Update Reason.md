@@ -14,7 +14,7 @@ The **Update Reason** button allows a suitably privileged operator to save an up
 
 - **[[CRST-945]]** — Cancel Request — Update Reason
 
-**Epic:** LISP-247 [CRST][DEV] Cancel Action
+**Epic:** LISP-247 [CRST][DEV] Cancel Request - Cancel Action
 
 ---
 

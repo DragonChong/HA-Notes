@@ -14,7 +14,7 @@ After all validation, user validation, and confirmation steps pass, the system c
 
 - **[[CRST-941]]** — Cancel Request — Cancel Request (Action)
 
-**Epic:** LISP-247 [CRST][DEV] Cancel Action
+**Epic:** LISP-247 [CRST][DEV] Cancel Request - Cancel Action
 
 ---
 
