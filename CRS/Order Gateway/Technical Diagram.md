@@ -20,7 +20,8 @@ flowchart TD
     Gateway -->|Secure Forward| API
     API -->|Update Order/Specimen| DB
     DB -->|Confirmation| API
-    API -->|JSON Response<br/>code: 200, ackCode: MA| GCRS
+    API -->|Gateway
+    Gateway -->| API
 
     %% Styling
     style GCRS fill:#FF99FF,stroke:#333,stroke-width:1px
