@@ -16,8 +16,21 @@ Frontend:
 		- Location Input
 		- Test Code Input
 	- Layout
-	- Screen Component Logics
-	- 
+	- Screen Components
+		- ANA Panel
+		- BBNK Panel
+		- MICR VIRO Panel
+		- USID Input Dialogue
+		- Patient Selection Dialogue
+		- Others
+	- Validation
+		- Patient Info
+		- Request Info
+		- Test
+	- Workflow
+		- Pre-register
+		- Register
+		- Post-register
 - Amend Request
 - Cancel Request
 - Wipeout Request
