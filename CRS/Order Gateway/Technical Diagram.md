@@ -20,8 +20,8 @@ flowchart TD
     Gateway -->|Secure Forward| API
     API -->|Update Order/Specimen| DB
     DB -->|Confirmation| API
-    API -->|Gateway
-    Gateway -->| API
+    API -->| Gateway
+    Gateway -->| GCRS
 
     %% Styling
     style GCRS fill:#FF99FF,stroke:#333,stroke-width:1px
