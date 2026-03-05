@@ -21,7 +21,7 @@ flowchart TD
     API -->|Update Order/Specimen| DB
     DB -->|Confirmation| API
     API --> |JSON Response<br/>code: 200, ackCode: MA| Gateway
-    Gateway --> GCRS
+    Gateway --> |Forward| GCRS
 
     %% Styling
     style GCRS fill:#FF99FF,stroke:#333,stroke-width:1px
@@ -32,7 +32,7 @@ flowchart TD
 
 # Sender
 ```mermaid
-flowchart TB
+flowchart TD
  subgraph LIS_Env["LIS Environment"]
         DB[("LIS Database<br>Oracle")]
         COMM_SCH["Common Scheduler"]
@@ -48,6 +48,8 @@ flowchart TB
     API --> |Retrieve message queues| DB
     API --> |POST JSON Request<br/>Payloads: AS1, RR1, JS1, etc<br/>Header: x-gateway-apikey, x-ha-hospcode| Gateway
     Gateway --> |Forward| GCRS
+    GCRS --> |JSON Response<br/>rtnCode: 0, ackCode: MA|Gateway
+    Gateway --> |Forward| API
 
     style DB fill:#DDD,stroke:#333
     style COMM_SCH fill:#FFE0B2
