@@ -1,4 +1,4 @@
-# Order
+# Receiver
 ```mermaid
 flowchart TD
     %% Node Definitions
@@ -16,11 +16,11 @@ flowchart TD
     end
 
     %% Connections
-    GCRS -->|1. POST JSON Request<br/>Payloads: PO1, CS1, AT3, etc<br/>Header: x-gateway-apikey| Gateway
-    Gateway -->|2. Secure Forward| API
-    API -->|3. Update Order/Specimen| DB
-    DB -->|4. Confirmation| API
-    API -->|5. JSON Response<br/>rtnCode: 0, ackCode: MA| GCRS
+    GCRS -->|POST JSON Request<br/>Payloads: PO1, CS1, AT3, etc<br/>Header: x-gateway-apikey| Gateway
+    Gateway -->|Secure Forward| API
+    API -->|Update Order/Specimen| DB
+    DB -->|Confirmation| API
+    API -->|JSON Response<br/>code: 200, ackCode: MA| GCRS
 
     %% Styling
     style GCRS fill:#FF99FF,stroke:#333,stroke-width:1px
@@ -28,3 +28,5 @@ flowchart TD
     style Gateway stroke-dasharray: 5 5
     style DB fill:#DDD,stroke:#333
 ```
+
+# Sender
