@@ -1,8 +1,12 @@
 CRS:
 Frontend:
 - Specimen Acknowledgement
-  - BE: data-source
-  - FE: new changes
+  - BE: 
+	  - data-source
+	  - lis-request-svc
+  - FE: 
+	  - new changes
+	  - Multi languages
 - CRS (other screens)
 - Registration
 	- Common Components
@@ -11,6 +15,9 @@ Frontend:
 		- Request No.
 		- Location Input
 		- Test Code Input
+	- Layout
+	- Screen Component Logics
+	- 
 - Amend Request
 - Cancel Request
 - Wipeout Request
