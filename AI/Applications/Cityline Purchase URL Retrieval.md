@@ -214,3 +214,23 @@ const CitylineBot = () => {
       </button>
 
       <div style={{ marginTop: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '4px', borderLeft: '4px solid #28a745' }}>
+        <strong>Status:</strong> <br/>
+        <span style={{ fontFamily: 'monospace', display: 'block', marginTop: '5px' }}>{status}</span>
+      </div>
+    </div>
+  );
+};
+
+export default CitylineBot;
+```
+
+-----
+
+## 4\. Local Testing & Vercel Deployment
+
+To test the serverless function and React app working together locally before pushing to production:
+
+1.  **Install Vercel CLI:** Open your terminal and run `npm i -g vercel`.
+2.  **Link your project:** Run `vercel link` in your project root to connect your local folder to your Vercel project.
+3.  **Start the Dev Server:** Run `vercel dev`. This command starts both your React frontend and sets up the `/api` folder environment, allowing the relative path `fetch('/api/proxy')` to work perfectly on your machine.
+4.  **Deploy:** When you are ready, run `vercel --prod` or simply commit and push your changes to your linked GitHub repository.
