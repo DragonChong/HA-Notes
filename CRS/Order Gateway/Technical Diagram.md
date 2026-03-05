@@ -31,11 +31,11 @@ flowchart TD
 
 # Sender
 ```mermaid
-flowchart TD
+flowchart TB
  subgraph LIS_Env["LIS Environment"]
-        API["LIS Restful API<br>(lis-crs-gcrOrderServices)"]
         DB[("LIS Database<br>Oracle")]
         COMM_SCH["Common Scheduler"]
+        API["LIS Restful API<br>(lis-crs-gcrOrderServices)"]
   end
  subgraph API_Mgmt["API Management"]
         Gateway["API Gateway<br>(Validation &amp; Routing)"]
@@ -43,16 +43,14 @@ flowchart TD
  subgraph GCRS_Env["GCRS Environment"]
         GCRS["GCRS"]
   end
-    COMM_SCH --> API
-    API -- "Post JSON Request<br>Payloads: PO1, CS1, AT3, etc<br>Header: x-gateway-apikey" --> Gateway
-    DB -- Confirmation --> API
-    Gateway -- Secure Forward --> GCRS
-    API -- Update Order/Specimen --> DB
-    GCRS -- JSON Response<br>code: 200, ackCode: MA --> API
+    COMM_SCH --> |Trigger by Send Hosp| API
+    API --> |Retrieve message queues| DB
+    API --> |POST JSON Request<br/>Payloads: AS1, RR1, JS1, etc<br/>Header: x-gateway-apikey, x-ha-hospcode| Gateway
+    Gateway --> |Forward| GCRS
 
-    style API fill:#90EE90,stroke:#333,stroke-width:1px
     style DB fill:#DDD,stroke:#333
     style COMM_SCH fill:#FFE0B2
+    style API fill:#90EE90,stroke:#333,stroke-width:1px
     style Gateway stroke-dasharray: 5 5
     style GCRS fill:#FF99FF,stroke:#333,stroke-width:1px
 ```
