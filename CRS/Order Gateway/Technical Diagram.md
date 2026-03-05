@@ -31,7 +31,7 @@ flowchart TD
 
 # Sender
 ```mermaid
-flowchart TB
+flowchart TD
  subgraph GCRS_Env["GCRS Environment"]
         GCRS["GCRS"]
   end
