@@ -17,7 +17,7 @@ flowchart TD
 
     %% Connections
     GCRS -->|POST JSON Request<br/>Payloads: PO1, CS1, AT3, etc<br/>Header: x-gateway-apikey| Gateway
-    Gateway -->|Secure Forward| API
+    Gateway -->|Forward| API
     API -->|Update Order/Specimen| DB
     DB -->|Confirmation| API
     API --> |JSON Response<br/>code: 200, ackCode: MA| Gateway
