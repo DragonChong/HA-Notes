@@ -239,7 +239,6 @@ Do u think the purchase URL could be retrieved a few seconds before the on sale 
 I am thinking if there may be difference from the client time and server time, so I could design a offset to allow retrieving purchase URL little bit earlier
 
 ---
-
 # gemini response
 
 You are absolutely on the right track with your thinking. Client clocks and server clocks are rarely perfectly synchronized. In fact, if you look closely at the `others.min.js` file you provided earlier, Cityline actually runs a function to sync the browser's time with their server exactly 20 seconds before the sale starts\!
@@ -310,3 +309,21 @@ const checkTimeInterval = setInterval(() => {
 Add this block right below your On-Sale Time input so you can tweak the timing.
 
 ```jsx
+<div style={{ marginBottom: '15px' }}>
+  <label style={{ display: 'block', fontWeight: 'bold' }}>Time Offset (ms):</label>
+  <input 
+    type="number" 
+    value={timeOffset} 
+    onChange={(e) => setTimeOffset(e.target.value)}
+    disabled={isRunning}
+    style={{ width: '100%', padding: '8px', boxSizing: 'border-box', marginTop: '5px' }}
+  />
+  <small style={{ color: '#666' }}>Negative values fetch early. Example: -200 means 0.2s early.</small>
+</div>
+```
+
+### The Missing Piece: Retry Logic
+
+Because you are playing a game of milliseconds, there is a very real chance your first request at `-200ms` results in a 404 because Cityline's server was a tiny bit slow to publish the file.
+
+If you are using an offset, your bot **must** be able to handle a failure and instantly retry until it gets a 200 Success status, effectively hammering the server until the file appears.
