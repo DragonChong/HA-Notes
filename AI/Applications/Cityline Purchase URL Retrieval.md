@@ -235,10 +235,14 @@ To test the serverless function and React app working together locally before pu
 3.  **Start the Dev Server:** Run `vercel dev`. This command starts both your React frontend and sets up the `/api` folder environment, allowing the relative path `fetch('/api/proxy')` to work perfectly on your machine.
 4.  **Deploy:** When you are ready, run `vercel --prod` or simply commit and push your changes to your linked GitHub repository.
 ----
+
+# you asked
+
 Do u think the purchase URL could be retrieved a few seconds before the on sale time?
 I am thinking if there may be difference from the client time and server time, so I could design a offset to allow retrieving purchase URL little bit earlier
 
 ---
+
 # gemini response
 
 You are absolutely on the right track with your thinking. Client clocks and server clocks are rarely perfectly synchronized. In fact, if you look closely at the `others.min.js` file you provided earlier, Cityline actually runs a function to sync the browser's time with their server exactly 20 seconds before the sale starts\!
