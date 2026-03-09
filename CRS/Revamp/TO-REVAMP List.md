@@ -7,6 +7,8 @@ Frontend:
   - FE: 
 	  - new changes
 	  - Multi languages
+	  - User permission
+	  - Worksheet Printing
 - CRS (other screens)
 - Registration
 	- Common Components
