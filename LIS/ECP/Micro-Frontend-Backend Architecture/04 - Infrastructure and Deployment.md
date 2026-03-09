@@ -31,10 +31,10 @@ Each repo has its Dockerfile in `.devops/config/Dockerfile`.
 ```mermaid
 graph LR
     subgraph "Stage 1: Builder"
-        N["node:18-alpine\nnpm ci\nnpm run build\n→ /app/build/"]
+        N["node:18-alpine<br>npm ci<br>npm run build<br>→ /app/build/"]
     end
     subgraph "Stage 2: Runtime"
-        NX["nginx:alpine\n+ custom nginx-spa.conf\n+ docker-entrypoint.sh\n→ sed URL injection"]
+        NX["nginx:alpine<br>+ custom nginx-spa.conf<br>+ docker-entrypoint.sh<br>→ sed URL injection"]
     end
     N -->|"COPY --from=builder /app/build"| NX
 ```
@@ -62,10 +62,10 @@ This means:
 ```mermaid
 graph LR
     subgraph "Stage 1: Builder"
-        M["maven:3.9-eclipse-temurin-17\nmvn package -DskipTests\n→ target/*.jar"]
+        M["maven:3.9-eclipse-temurin-17<br>mvn package -DskipTests<br>→ target/*.jar"]
     end
     subgraph "Stage 2: Runtime"
-        JVM["openjdk17:ecp-v25.11-openjdk17-17.0.17-conjur-13.0\n(HA internal base image)\nConjur sidecar agent built-in\nCOPY app.jar\nENTRYPOINT java -jar app.jar"]
+        JVM["openjdk17:ecp-v25.11-openjdk17-17.0.17-conjur-13.0<br>(HA internal base image)<br>Conjur sidecar agent built-in<br>COPY app.jar<br>ENTRYPOINT java -jar app.jar"]
     end
     M -->|"COPY --from=builder target/*.jar"| JVM
 ```
@@ -118,36 +118,36 @@ server {
 
 ```mermaid
 flowchart LR
-    Push["git push\nfeature/* branch"] --> Setup
-    Setup["1. Setup\nCDRA/workflow-template\nSetup@v1.6.1\nNode/Java version\nArtifactory credentials"] --> Build
-    Build["2. Build\nCDRA Build@v1.6.1\nnpm ci + npm run build\nOR mvn package"] --> BuildContainer
-    BuildContainer["3. BuildContainer\nCDRA BuildContainer@v1.6.1\ndocker build\ndocker push\n→ docker-dev-lis:{branch}-{sha}"] --> Deploy
-    Deploy["4. Deploy\nCDRA Deploy@v1.6.1\nHelm upgrade\n→ DEV (C1 cluster)\nvalues-DEV.yaml"]
+    Push["git push<br>feature/* branch"] --> Setup
+    Setup["1. Setup<br>CDRA/workflow-template<br>Setup@v1.6.1\nNode/Java version\nArtifactory credentials"] --> Build
+    Build["2. Build<br>CDRA Build@v1.6.1<br>npm ci + npm run build<br>OR mvn package"] --> BuildContainer
+    BuildContainer["3. BuildContainer<br>CDRA BuildContainer@v1.6.1\ndocker build<br>docker push<br>→ docker-dev-lis:{branch}-{sha}"] --> Deploy
+    Deploy["4. Deploy<br>CDRA Deploy@v1.6.1\nHelm upgrade<br>→ DEV (C1 cluster)<br>values-DEV.yaml"]
 ```
 
 ### Release Branch Pipeline (`.github/workflows/release.yaml`)
 
 ```mermaid
 flowchart LR
-    PushRel["git push\nrelease/* branch"] --> Setup
+    PushRel["git push<br>release/* branch"] --> Setup
     Setup["1. Setup"] --> Build
     Build["2. Build"] --> Test
-    Test["3. Test\nUnit tests\nJUnit/Jest"] --> ScanCode
-    ScanCode["4. ScanCode\nSonarQube SAST\nCode quality gate"] --> ScanOSS
-    ScanOSS["5. ScanOSS\nOSS license scan\nVulnerability check"] --> BuildContainer
-    BuildContainer["6. BuildContainer\ndocker push\n→ docker-rel-lis:{semver}"] --> DeploySIT
-    DeploySIT["7. Deploy SIT C1\nHelm upgrade\nvalues-SIT.yaml"] --> DeploySIT2
-    DeploySIT2["8. Deploy SIT C2\nHelm upgrade\nvalues-SIT.yaml"] --> DeployLPT
-    DeployLPT["9. Deploy LPT\nHelm upgrade\nvalues-LPT.yaml"] --> DeployDEVQA
-    DeployDEVQA["10. Deploy DEVQA\nHelm upgrade\nvalues-DEVQA.yaml"]
+    Test["3. Test<br>Unit tests<br>JUnit/Jest"] --> ScanCode
+    ScanCode["4. ScanCode<br>SonarQube SAST<br>Code quality gate"] --> ScanOSS
+    ScanOSS["5. ScanOSS\nOSS license scan<br>Vulnerability check"] --> BuildContainer
+    BuildContainer["6. BuildContainer\ndocker push<br>→ docker-rel-lis:{semver}"] --> DeploySIT
+    DeploySIT["7. Deploy SIT C1<br>Helm upgrade<br>values-SIT.yaml"] --> DeploySIT2
+    DeploySIT2["8. Deploy SIT C2<br>Helm upgrade<br>values-SIT.yaml"] --> DeployLPT
+    DeployLPT["9. Deploy LPT<br>Helm upgrade<br>values-LPT.yaml"] --> DeployDEVQA
+    DeployDEVQA["10. Deploy DEVQA<br>Helm upgrade<br>values-DEVQA.yaml"]
 ```
 
 ### Deploy ECP Dev Pipeline (`.github/workflows/deploy-ecp-dev.yaml`)
 
 ```mermaid
 flowchart LR
-    Manual["Manual trigger\n(workflow_dispatch)\nor PR merge"] --> Deploy
-    Deploy["CDRA Deploy@v1.6.1\nHelm upgrade --install\n→ DEV cluster\nvalues-DEV.yaml"]
+    Manual["Manual trigger<br>(workflow_dispatch)\nor PR merge"] --> Deploy
+    Deploy["CDRA Deploy@v1.6.1<br>Helm upgrade --install<br>→ DEV cluster<br>values-DEV.yaml"]
 ```
 
 ---
