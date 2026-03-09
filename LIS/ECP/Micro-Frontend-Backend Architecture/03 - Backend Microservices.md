@@ -1,12 +1,12 @@
 ---
-created: '2026-03-06'
+created: 2026-03-06
 status: final
 tags:
   - architecture
   - microservice
   - backend
   - LIS
-  - Spring Boot
+  - Spring-Boot
   - Keycloak
 ---
 # 03 — Backend Microservices
