@@ -91,24 +91,24 @@ crs-revamp/
 ```mermaid
 graph TB
     subgraph Browser
-        Hub["lis-hub-app\n(LisHubAppModule)\nShell Host\nPort 3000"]
-        CRS["lis-crs-common-app\n(CRS plugin)\nPort 3010\nremoteEntry.js"]
-        LAB["lab-crs-app\n(LabCrsSpecimenApp)\nPort 3001\nremoteEntry.js"]
-        APS["lis-aps-app\n(APS plugin)\nPort 3011"]
-        OTHERS["Other lab MFEs\n(GNS, HMS, IMS...)\n(hospMFUrl from login)"]
+        Hub["lis-hub-app<br>(LisHubAppModule)<br>Shell Host<br>Port 3000"]
+        CRS["lis-crs-common-app<br>(CRS plugin)<br>Port 3010<br>remoteEntry.js"]
+        LAB["lab-crs-app<br>(LabCrsSpecimenApp)<br>Port 3001<br>remoteEntry.js"]
+        APS["lis-aps-app<br>(APS plugin)<br>Port 3011"]
+        OTHERS["Other lab MFEs<br>(GNS, HMS, IMS...)<br>(hospMFUrl from login)"]
     end
 
-    Hub -->|"consumes CRS@:3010\ncraco.config.js"| CRS
+    Hub -->|"consumes CRS@:3010<br>craco.config.js"| CRS
     Hub -->|"consumes APS@:3011"| APS
-    Hub -->|"consumes hospMFUrl\n(dynamic, from BFF)"| OTHERS
-    CRS -->|"consumes LabCrsSpecimenApp@:3001\ncraco.config.js"| LAB
+    Hub -->|"consumes hospMFUrl<br>(dynamic, from BFF)"| OTHERS
+    CRS -->|"consumes LabCrsSpecimenApp@:3001<br>craco.config.js"| LAB
 
     subgraph "Exposes (lis-crs-common-app)"
-        E1["Manifest\n./ContextProvider\n./APS\n./NewBasicTheme\n./DateRequiredCom\n./MotherInfoCom\n./PatientResultsCom\n./BloodCategoryCom"]
+        E1["Manifest<br>./ContextProvider<br>./APS<br>./NewBasicTheme<br>./DateRequiredCom<br>./MotherInfoCom<br>./PatientResultsCom<br>./BloodCategoryCom"]
     end
 
     subgraph "Exposes (lab-crs-app)"
-        E2["./SpecimenAckPage\n(src/App.tsx)"]
+        E2["./SpecimenAckPage<br>(src/App.tsx)"]
     end
 
     CRS --> E1
@@ -125,8 +125,8 @@ sequenceDiagram
     participant Hub as lis-hub-app
     participant CRS as lis-crs-common-app
     participant KC as Keycloak / SAM3
-    participant HubSvc as lis-hub-svc\n(Port 5000)
-    participant SpecAck as lis-crs-spec-ack-svc\n(Port 8118)
+    participant HubSvc as lis-hub-svc<br>(Port 5000)
+    participant SpecAck as lis-crs-spec-ack-svc<br>(Port 8118)
     participant DB as PostgreSQL / Oracle / Sybase
 
     U->>Hub: navigate /
@@ -189,12 +189,12 @@ sequenceDiagram
 
 ```mermaid
 graph LR
-    DEV["DEV\n(ECP Cluster C1)\nimage: docker-dev-lis\nAuto-deploy on feature branch"]
-    DEVQA["DEVQA\n(ECP)\nimage: docker-rel-lis\nDeploy on release branch"]
-    SIT1["SIT C1\n(ECP Cluster C1)\nimage: docker-rel-lis\nAuto-deploy on release"]
-    SIT2["SIT C2\n(ECP Cluster C2)\nimage: docker-rel-lis\nAuto-deploy on release"]
-    LPT["LPT\n(ECP Cluster C2)\nimage: docker-rel-lis\nDeploy on release branch"]
-    PROD["PROD\n(Manual gate)"]
+    DEV["DEV<br>(ECP Cluster C1)<br>image: docker-dev-lis<br>Auto-deploy on feature branch"]
+    DEVQA["DEVQA<br>(ECP)<br>image: docker-rel-lis<br>Deploy on release branch"]
+    SIT1["SIT C1<br>(ECP Cluster C1)<br>image: docker-rel-lis<br>Auto-deploy on release"]
+    SIT2["SIT C2<br>(ECP Cluster C2)<br>image: docker-rel-lis<br>Auto-deploy on release"]
+    LPT["LPT<br>(ECP Cluster C2)<br>image: docker-rel-lis<br>Deploy on release branch"]
+    PROD["PROD<br>(Manual gate)"]
 
     DEV -->|"release branch cut"| DEVQA
     DEV -->|"release branch cut"| SIT1
@@ -221,15 +221,15 @@ Each repo has separate Helm values files:
 
 ```mermaid
 graph LR
-    Browser["Browser\n(lis-hub-app)"] -->|"Bearer JWT"| HubSvc
-    CRS["CRS Plugin"] -->|"No auth header\n(relies on network)"| SpecAck
+    Browser["Browser<br>(lis-hub-app)"] -->|"Bearer JWT"| HubSvc
+    CRS["CRS Plugin"] -->|"No auth header<br>(relies on network)"| SpecAck
 
     subgraph "lis-hub-svc (SECURED)"
-        SEC["ha-spring-boot-starter-security\nOAuth2 Resource Server\nJWT validation\nCustomOAuthClientService\nSecurityServiceImpl (812 lines ACL)"]
+        SEC["ha-spring-boot-starter-security<br>OAuth2 Resource Server<br>JWT validation<br>CustomOAuthClientService<br>SecurityServiceImpl (812 lines ACL)"]
     end
 
     subgraph "lis-crs-spec-ack-svc (UNSECURED)"
-        NOSEC["ha-spring-boot-starter-security\nCOMMENTED OUT in pom.xml\n@CrossOrigin(origins = \"*\")\nNetwork isolation only"]
+        NOSEC["ha-spring-boot-starter-security<br>COMMENTED OUT in pom.xml<br>@CrossOrigin(origins = \"*\")<br>Network isolation only"]
     end
 
     HubSvc --> SEC

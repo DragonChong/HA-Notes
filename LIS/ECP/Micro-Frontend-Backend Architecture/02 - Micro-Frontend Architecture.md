@@ -22,23 +22,23 @@ updated: '2026-03-09'
 ```mermaid
 graph TB
     subgraph "Shell (Host)"
-        Hub["lis-hub-app\nLisHubAppModule\nPort 3000\nOwns routing, auth, Zustand stores"]
+        Hub["lis-hub-app<br>LisHubAppModule<br>Port 3000<br>Owns routing, auth, Zustand stores"]
     end
 
     subgraph "Level-1 Remotes (Lab Plugins)"
-        CRS["lis-crs-common-app\npluginId: CRS\nPort 3010\nregisters views + menus into Hub"]
-        APS["lis-aps-app\npluginId: APS\nPort 3011"]
-        DYN["Other lab MFEs\nhospMFUrl\n(dynamic from login)"]
+        CRS["lis-crs-common-app<br>pluginId: CRS<br>Port 3010<br>registers views + menus into Hub"]
+        APS["lis-aps-app<br>pluginId: APS<br>Port 3011"]
+        DYN["Other lab MFEs<br>hospMFUrl<br>(dynamic from login)"]
     end
 
     subgraph "Level-2 Remotes (Sub-Remotes)"
-        LAB["lab-crs-app\nLabCrsSpecimenApp\nPort 3001\nconsumed ONLY by lis-crs-common-app"]
+        LAB["lab-crs-app<br>LabCrsSpecimenApp<br>Port 3001<br>consumed ONLY by lis-crs-common-app"]
     end
 
-    Hub -->|"webpack MF\ndynamic import"| CRS
-    Hub -->|"webpack MF\ndynamic import"| APS
-    Hub -->|"webpack MF\nhospMFUrl (runtime URL)"| DYN
-    CRS -->|"webpack MF\ndynamic import"| LAB
+    Hub -->|"webpack MF<br>dynamic import"| CRS
+    Hub -->|"webpack MF<br>dynamic import"| APS
+    Hub -->|"webpack MF<br>hospMFUrl (runtime URL)"| DYN
+    CRS -->|"webpack MF<br>dynamic import"| LAB
 ```
 
 ### Federation Configuration
@@ -59,23 +59,23 @@ graph TB
 sequenceDiagram
     participant Shell as Shell (System.tsx)
     participant HC as Hub.tsx / PluginHost
-    participant PH as @cmschassis/react-spa\nPluginHost
+    participant PH as @cmschassis/react-spa<br>PluginHost
     participant BIP as Built-in Plugin
-    participant Remote as lis-crs-common-app\n(CRS remote)
+    participant Remote as lis-crs-common-app<br>(CRS remote)
     participant API as lis-hub-svc
 
     Shell->>API: init() — workbench, user, menus, dictionaries
     Shell->>BIP: pluginLoader.loadPlugin(hubBuildInManifest)
-    Note over BIP: declare()\n contributes menus/views/commands to manifestStore
-    Note over BIP: activate(apiContext)\n registers command handlers
+    Note over BIP: declare()<br> contributes menus/views/commands to manifestStore
+    Note over BIP: activate(apiContext)<br> registers command handlers
     Shell->>HC: render <Hub plugins=[{id, scriptUrl}] />
     HC->>PH: render <PluginHost plugins=... />
     PH->>Remote: dynamic import(remoteEntry.js)
     Remote-->>PH: CmsPlugin module (Manifest export)
     PH->>HC: onPluginLoaded(descriptor, manifestModule)
     HC->>Shell: pluginLoader.loadPlugin(manifestModule)
-    Note over Remote: declare()\n contributes CRS views/menus to Hub manifestStore
-    Note over Remote: activate(apiProvider)\n registers CRS command handlers
+    Note over Remote: declare()<br> contributes CRS views/menus to Hub manifestStore
+    Note over Remote: activate(apiProvider)<br> registers CRS command handlers
     Shell->>Shell: isAllPluginsProcessed = true → render menu + tabs
 ```
 
@@ -137,7 +137,7 @@ sequenceDiagram
     ViewStore->>RootTabs: add view to tabs
     RootTabs->>Router: navigate(/land/CRS/QEH/crs-specimen-acknowledgment)
     Router->>Router: URL updates
-    Note over RootTabs: All views remain mounted\nActive shown, others display:none
+    Note over RootTabs: All views remain mounted<br>Active shown, others display:none
 ```
 
 **Key insight:** Views are **never unmounted** — switching tabs hides via CSS rather than unmounting React trees. This preserves unsaved form state but increases DOM memory footprint.
@@ -171,9 +171,9 @@ The **Shell owns all routing** via React Router v6. Remote MFEs do not have thei
 
 ```mermaid
 graph LR
-    A["/"] -->|"redirect"| B["/system-list\nSelect hospital/lab"]
-    B --> C["/land/:labCode/:hosCode\nSimpleLandingPage"]
-    C --> D["/land/:labCode/:hosCode/:viewId\nViewHandler\n→ RootTabs\n→ DOM node per view"]
+    A["/"] -->|"redirect"| B["/system-list<br>Select hospital/lab"]
+    B --> C["/land/:labCode/:hosCode<br>SimpleLandingPage"]
+    C --> D["/land/:labCode/:hosCode/:viewId<br>ViewHandler<br>→ RootTabs<br>→ DOM node per view"]
 ```
 
 **Route parameter semantics:**
@@ -194,20 +194,20 @@ Plugins receive `apiContext` via `activate(cms)`. Direct Zustand store imports a
 ```mermaid
 graph LR
     subgraph "Hub Zustand Stores (Shell private)"
-        G["useGlobalStore\n(hospMFUrl, labCode...)"]
-        A["useAuthStore\n(JWT, roles)"]
-        S["useSessionStore\n(hospital, workstation)"]
-        P["usePatientStore\n(selected patient)"]
-        D["useDictionaryStore\n(LIS dictionaries)"]
-        V["useViewStore\n(open views / tabs)"]
-        M["useMenuStore\n(contributed menus)"]
-        C["useCmdStore\n(command bus)"]
-        Pref["usePreferenceStore\n(theme, language)"]
-        Corr["useCorrelation\n(correlationId per route)"]
+        G["useGlobalStore<br>(hospMFUrl, labCode...)"]
+        A["useAuthStore<br>(JWT, roles)"]
+        S["useSessionStore<br>(hospital, workstation)"]
+        P["usePatientStore<br>(selected patient)"]
+        D["useDictionaryStore<br>(LIS dictionaries)"]
+        V["useViewStore<br>(open views / tabs)"]
+        M["useMenuStore<br>(contributed menus)"]
+        C["useCmdStore<br>(command bus)"]
+        Pref["usePreferenceStore<br>(theme, language)"]
+        Corr["useCorrelation<br>(correlationId per route)"]
     end
 
     subgraph "LisApiContext (plugin-facing API)"
-        API["apiContext\n.patient — select/switch HKID\n.ui — open/close views, MessageBox\n.auth — user roles, access rights\n.session — hospital, user key\n.command — register + execute\n.dictionary — LIS reference data\n.global — lab URL, profile code\n.preference — theme, language\n.request — configured Axios\n.translation — i18n\n.globalRequest — error-handled Axios"]
+        API["apiContext<br>.patient — select/switch HKID<br>.ui — open/close views, MessageBox<br>.auth — user roles, access rights<br>.session — hospital, user key<br>.command — register + execute<br>.dictionary — LIS reference data<br>.global — lab URL, profile code<br>.preference — theme, language<br>.request — configured Axios<br>.translation — i18n<br>.globalRequest — error-handled Axios"]
     end
 
     G & A & S & P & D & V & M & C & Pref & Corr --> API
@@ -249,15 +249,15 @@ window.$lisHubApp = {
 ```mermaid
 graph TB
     subgraph "Webpack Federation Singletons (requiredVersion enforced)"
-        R["react 18.2.0\nsingleton: true, requiredVersion: '^18'"]
-        RD["react-dom 18.2.0\nsingleton: true"]
+        R["react 18.2.0<br>singleton: true, requiredVersion: '^18'"]
+        RD["react-dom 18.2.0<br>singleton: true"]
     end
 
     subgraph "Shared via private NPM (version-locked)"
-        RSPA["@cmschassis/react-spa\nPluginHost runtime"]
-        CMS["@cmschassis/cms-js\nApiContext / command bus"]
-        CUI["@cmschassis/react-ui\nMUI component library"]
-        LIB["@lis/lis-hub-lib\nMUI themes: lisBaseThemeLight/Dark\nShared fonts + type defs"]
+        RSPA["@cmschassis/react-spa<br>PluginHost runtime"]
+        CMS["@cmschassis/cms-js<br>ApiContext / command bus"]
+        CUI["@cmschassis/react-ui<br>MUI component library"]
+        LIB["@lis/lis-hub-lib<br>MUI themes: lisBaseThemeLight/Dark<br>Shared fonts + type defs"]
         MUI["@mui/material v5"]
         ZU["zustand 4.5.1"]
         AX["axios 1.11.0"]
@@ -298,11 +298,11 @@ graph TB
 ```mermaid
 sequenceDiagram
     participant U as User
-    participant Hub as lis-hub-app\n(keycloak-js)
+    participant Hub as lis-hub-app<br>(keycloak-js)
     participant KC as Keycloak / SAM3
 
     U->>Hub: navigate /
-    Hub->>KC: OIDC Authorization Code Flow\n(realm=lis, client=lis-hub-app)
+    Hub->>KC: OIDC Authorization Code Flow<br>(realm=lis, client=lis-hub-app)
     KC-->>U: Login page
     U->>KC: credentials
     KC-->>Hub: JWT access_token + refresh_token

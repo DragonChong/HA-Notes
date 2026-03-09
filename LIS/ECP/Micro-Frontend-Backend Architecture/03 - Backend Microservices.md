@@ -38,24 +38,24 @@ updated: '2026-03-09'
 
 ```mermaid
 graph TB
-    Browser["Browser\n(lis-hub-app + CRS Plugin)"]
+    Browser["Browser<br>(lis-hub-app + CRS Plugin)"]
 
     subgraph "lis-hub-svc (SECURED — Port 5000)"
-        SEC1["ha-spring-boot-starter-security\nOAuth2 Resource Server\nJWT validation (Keycloak/SAM3)"]
-        SEC2["SecurityServiceImpl (812 lines)\nisGranted(destination, method)\nhasRight(userId, functionId, labId)\nisEnquiryAuthorized(scope, dept)"]
-        SEC3["CustomOAuthClientService\nextends OAuthClientService\nOAuth2 Client Credentials\nCalls UAM/SAM3 REST API"]
-        SEC4["LisClientResolver\nExtracts X-HA-ProfileCode header"]
+        SEC1["ha-spring-boot-starter-security<br>OAuth2 Resource Server<br>JWT validation (Keycloak/SAM3)"]
+        SEC2["SecurityServiceImpl (812 lines)<br>isGranted(destination, method)<br>hasRight(userId, functionId, labId)<br>isEnquiryAuthorized(scope, dept)"]
+        SEC3["CustomOAuthClientService<br>extends OAuthClientService<br>OAuth2 Client Credentials<br>Calls UAM/SAM3 REST API"]
+        SEC4["LisClientResolver<br>Extracts X-HA-ProfileCode header"]
     end
 
     subgraph "lis-crs-spec-ack-svc (UNSECURED — Port 8118)"
-        NOSEC["ha-spring-boot-starter-security\n⚠️ COMMENTED OUT in pom.xml\n\nAll controllers: @CrossOrigin(origins='*')\nNo JWT validation\nNo ACL checks\nNetwork isolation only"]
+        NOSEC["ha-spring-boot-starter-security<br>⚠️ COMMENTED OUT in pom.xml<br><br>All controllers: @CrossOrigin(origins='*')<br>No JWT validation<br>No ACL checks<br>Network isolation only"]
     end
 
-    KC["Keycloak / SAM3\nOIDC + OAuth2"]
-    UAM["UAM Service\nACL / Role API"]
+    KC["Keycloak / SAM3<br>OIDC + OAuth2"]
+    UAM["UAM Service<br>ACL / Role API"]
 
-    Browser -->|"Bearer JWT\n+ X-HA-ProfileCode\n+ ServiceParameterVo"| SEC1
-    Browser -->|"Direct REST\n(no auth header)"| NOSEC
+    Browser -->|"Bearer JWT<br>+ X-HA-ProfileCode<br>+ ServiceParameterVo"| SEC1
+    Browser -->|"Direct REST<br>(no auth header)"| NOSEC
     SEC3 -->|"OAuth2 Client Credentials"| KC
     SEC2 -->|"REST ACL check"| UAM
 ```
@@ -68,14 +68,14 @@ graph TB
 
 ```mermaid
 flowchart TD
-    Request["Incoming Request\nServiceParameterVo:\n{ serverName: 'QEH-CRS', labNo: 3, hospital: 'QEH' }"]
-    Aspect["DataSourceAspect\n@Around AOP"]
-    Holder["DataSourceContextHolder\n(ThreadLocal<ServerInfo>)"]
-    Resolver["DataSource Resolver\ndataSourceMap.get(key)"]
+    Request["Incoming Request<br>ServiceParameterVo:<br>{ serverName: 'QEH-CRS', labNo: 3, hospital: 'QEH' }"]
+    Aspect["DataSourceAspect<br>@Around AOP"]
+    Holder["DataSourceContextHolder<br>(ThreadLocal<ServerInfo>)"]
+    Resolver["DataSource Resolver<br>dataSourceMap.get(key)"]
 
-    DB_PG["PostgreSQL\n(COMMON_USED_LAB: CPS, HMS, IMS, APS, BBS, MBS, VRS, CRS)"]
-    DB_ORA["Oracle\n(legacy hospital systems)"]
-    DB_SYB["Sybase\n(legacy lab systems, jtds 1.2.2)"]
+    DB_PG["PostgreSQL<br>(COMMON_USED_LAB: CPS, HMS, IMS, APS, BBS, MBS, VRS, CRS)"]
+    DB_ORA["Oracle<br>(legacy hospital systems)"]
+    DB_SYB["Sybase<br>(legacy lab systems, jtds 1.2.2)"]
 
     Request --> Aspect
     Aspect --> Holder
@@ -170,10 +170,10 @@ uam-config:
 graph LR
     HubSvc["lis-hub-svc"]
 
-    HubSvc -->|"OAuth2 Client Creds\nRestTemplate"| KC["Keycloak/SAM3\ntoken endpoint"]
-    HubSvc -->|"Bearer token + ACL query\nRestTemplate"| UAM["UAM Service\n/uam/access-rights"]
-    HubSvc -->|"PAS patient lookup\nRestTemplate\n(if OPTION PAS/SERVER enabled)"| PAS["PAS System\n(Hospital Patient Admin)"]
-    HubSvc -->|"cross-lab result aggregation\n/api/resultEnquiry/remote/*"| OtherLab["Peer lis-hub-svc\n(other lab instance)"]
+    HubSvc -->|"OAuth2 Client Creds<br>RestTemplate"| KC["Keycloak/SAM3<br>token endpoint"]
+    HubSvc -->|"Bearer token + ACL query<br>RestTemplate"| UAM["UAM Service<br>/uam/access-rights"]
+    HubSvc -->|"PAS patient lookup<br>RestTemplate<br>(if OPTION PAS/SERVER enabled)"| PAS["PAS System<br>(Hospital Patient Admin)"]
+    HubSvc -->|"cross-lab result aggregation<br>/api/resultEnquiry/remote/*"| OtherLab["Peer lis-hub-svc<br>(other lab instance)"]
 ```
 
 ### `PasApiServiceImpl` — PAS Integration
@@ -237,8 +237,8 @@ graph LR
     Service["CRS Service"]
     
     subgraph "Repositories"
-        Temp["repository/temp/\n(PostgreSQL — migration target)"]
-        Legacy["repository/\n(Oracle + Sybase — legacy)"]
+        Temp["repository/temp/<br>(PostgreSQL — migration target)"]
+        Legacy["repository/<br>(Oracle + Sybase — legacy)"]
     end
 
     DB_PG["PostgreSQL"]
