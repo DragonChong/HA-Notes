@@ -3,63 +3,84 @@ tags:
   - architecture
   - LIS
   - ECP
+  - CRS
   - micro-frontend
   - microservice
-created: '2026-03-06'
+  - overview
+created: '2026-03-09'
+updated: '2026-03-09'
 status: final
 ---
-# LIS ECP — Micro-Frontend / Micro-Backend Architecture Overview
+# 00 — CRS Revamp System Overview
 
-This document set provides a comprehensive architectural reference for the **LIS Hub Application** (`lis-hub-app`) and its surrounding ecosystem, covering:
-
-| Section | Topic |
-|---|---|
-| [[01 - System Architecture]] | High-level system topology, repository structure, components |
-| [[02 - Micro-Frontend Architecture]] | Module Federation, plugin system, routing, state sharing |
-| [[03 - Backend Microservices]] | Service catalogue, communication patterns, auth/authz |
-| [[04 - Infrastructure and Deployment]] | Containerisation, CI/CD pipeline, environment management |
+> **Scope:** The `crs-revamp` workspace (`D:\ECPath5_revamp\crs-revamp\`) contains **5 co-located polyrepos** forming the Hospital Authority LIS (Laboratory Information System) — CRS Revamp ecosystem. This document provides a system-at-a-glance reference.
 
 ---
 
-## System at a Glance
+## System Map
 
 ```mermaid
 graph TB
-    subgraph Browser["Browser (Clinician / Lab User)"]
-        Shell["lis-hub-app\n(React Shell / MFE Host)"]
-        P1["CRS Plugin\n(Remote MFE)"]
-        P2["APS Plugin\n(Remote MFE)"]
-        Pn["...other Lab Plugins\n(Remote MFE)"]
+    subgraph "Browser"
+        Hub["lis-hub-app\n(Shell Host MFE)\nReact + MUI + Zustand\nPort 3000"]
+        CRS["lis-crs-common-app\n(CRS Remote MFE)\nReact Plugin\nPort 3010"]
+        LAB["lab-crs-app\n(Specimen Ack Remote MFE)\nReact\nPort 3001"]
     end
 
-    subgraph Platform["HA ECP (OpenShift)"]
-        Nginx["nginx:5000\n(SPA + Reverse Proxy)"]
-        Hub["lis-hub-svc\n(BFF / Common API)"]
-        Ref["lis-reference-svc"]
-        Order["lis-lab-order-svc"]
-        Result["lis-lab-result-svc"]
-        Patient["lis-patient-svc"]
-        Test["lis-lab-test-svc"]
-        Print["lis-lab-print-svc"]
-        Aux["lis-aux-adaptor-svc"]
-        Mock["lis-mock-svc"]
-        Keycloak["Keycloak / SAM3\n(OIDC / OAuth2)"]
+    subgraph "Backend Services"
+        HubSvc["lis-hub-svc\n(Hub BFF)\nSpring Boot 3.3.13\nPort 5000"]
+        SpecAck["lis-crs-spec-ack-svc\n(Specimen Ack Service)\nSpring Boot\nPort 8118"]
     end
 
-    Shell -->|"loads remoteEntry.js\nat runtime"| P1
-    Shell -->|"loads remoteEntry.js\nat runtime"| P2
-    Shell -->|"loads remoteEntry.js\nat runtime"| Pn
-    Browser -->|HTTPS| Nginx
-    Nginx -->|"/api/*"| Hub
-    Nginx -->|"/lis-reference-svc-api/*"| Ref
-    Nginx -->|"/lis-lab-order-svc-api/*"| Order
-    Nginx -->|"/lis-lab-result-svc-api/*"| Result
-    Nginx -->|"/lis-patient-svc-api/*"| Patient
-    Nginx -->|"/lis-lab-test-svc-api/*"| Test
-    Nginx -->|"/lis-lab-print-svc-api/*"| Print
-    Nginx -->|"/lis-aux-adaptor-svc-api/*"| Aux
-    Shell -->|"OIDC Auth Code Flow"| Keycloak
+    subgraph "Persistence"
+        PG["PostgreSQL\n(lis-hub-svc)"]
+        ORA["Oracle\n(lis-hub-svc + spec-ack-svc)"]
+        SYB["Sybase\n(lis-hub-svc + spec-ack-svc)"]
+        REDIS["Redis\n(lis-hub-svc)"]
+    end
+
+    subgraph "Identity & Security"
+        KC["Keycloak / SAM3\nOIDC + OAuth2"]
+        UAM["UAM / SAM3 Admin\nRole / ACL API"]
+        CYB["CyberArk Conjur\nRuntime Secrets"]
+    end
+
+    subgraph "Build & Deploy"
+        GH["GitHub Actions\n+ CDRA Reusable Workflows"]
+        ART["JFrog Artifactory\ndocker-dev-lis / docker-rel-lis"]
+        OCP["HA ECP (OpenShift)\nHelm ha-app chart\nC1 / C2 clusters"]
+    end
+
+    Hub -->|"Webpack MF: dynamic import()"| CRS
+    CRS -->|"Webpack MF: dynamic import()"| LAB
+    Hub -->|"REST (Axios) Bearer JWT"| HubSvc
+    CRS -->|"REST (Axios)"| SpecAck
+    LAB -->|"REST (Axios)"| SpecAck
+    Hub -->|"OIDC Auth Code Flow"| KC
+    HubSvc -->|"OAuth2 Client Creds"| KC
+    HubSvc -->|"ACL check REST"| UAM
+    HubSvc --- PG
+    HubSvc --- ORA
+    HubSvc --- SYB
+    HubSvc --- REDIS
+    SpecAck --- ORA
+    SpecAck --- SYB
+    GH -->|"push image"| ART
+    ART -->|"pull image"| OCP
+    OCP -->|"inject secrets"| CYB
 ```
+
+---
+
+## Repository Inventory
+
+| Repository | Type | Role | Port | MF / Service Name |
+|---|---|---|---|---|
+| `lis-hub-app` | React MFE (Shell Host) | Portal shell; loads all lab plugins; owns routing & auth | 3000 | `LisHubAppModule` |
+| `lis-crs-common-app` | React MFE (Remote Plugin) | CRS domain screens (spec-ack, registration, APS, BBS) | 3010 | `CRS` (pluginId in cms-manifest) |
+| `lab-crs-app` | React MFE (Remote Plugin) | Specimen acknowledgment UI; sub-remote consumed by `lis-crs-common-app` | 3001 | `LabCrsSpecimenApp` |
+| `lis-hub-svc` | Spring Boot 3.3.13 / Java 17 | Hub BFF; aggregates DBs; full OAuth2/JWT security | 5000 | `LisApplication` |
+| `lis-crs-spec-ack-svc` | Spring Boot / Java 17 | CRS domain microservice; specimen ack/registration/search | 8118 | `LisCrsSpecAckSvcApplication` |
 
 ---
 
@@ -67,12 +88,57 @@ graph TB
 
 | Decision | Choice | Rationale |
 |---|---|---|
-| Frontend pattern | **Webpack 5 Module Federation** | Runtime plugin loading without full-page reload |
-| Shell framework | **React 18 + React Router v6** | SPA with nested routing per plugin |
-| State management | **Zustand** | Lightweight, no-boilerplate, selector-based subscriptions |
-| API communication | **REST (HTTP POST) via Axios** | Synchronous, uniform contract across all services |
-| Identity provider | **Keycloak (SAM3) — OIDC** | Per-lab scoped tokens; silent re-auth on lab switch |
-| Container runtime | **OpenShift ECP** | HA enterprise platform; two-cluster (C1/C2) HA topology |
-| Build/deploy | **GitHub Actions + Helm** | Centralised `CDRA/workflow-template`; immutable Helm chart |
-| Config injection | **nginx startup `sed` + K8s ConfigMap** | Single image, environment-specific behaviour at runtime |
-| Private registry | **JFrog Artifactory (air-gapped)** | HA internal; separate dev/rel repos with separate credentials |
+| **MFE framework** | Webpack 5 Module Federation + `@cmschassis/react-spa` plugin lifecycle | No Single-SPA or iframes; runtime URL loading from `hospMFUrl` |
+| **Plugin API** | `@cmschassis/cms-js` `ApiContext` / `LisApiContext` | Strict interface boundary; remote MFEs cannot directly import Hub Zustand stores |
+| **State management** | Zustand 4.5.1 in Shell; local state in remotes | 10+ Shell stores (manifest, view, command, auth, session, global, preference, patient, correlation, dictionary) |
+| **Cross-MFE isolation** | Each plugin creates its own React root + scoped Emotion cache (`key: pluginId.toLowerCase()`) | Prevents CSS class collisions across MFEs |
+| **Backend security** | `lis-hub-svc` fully secured (JWT + `ha-spring-boot-starter-security`); `lis-crs-spec-ack-svc` security **disabled** (relies on network isolation) | Asymmetric trust model — BFF acts as gateway |
+| **Multi-DB routing** | `DataSourceContextHolder` ThreadLocal routes per-request to PostgreSQL / Oracle / Sybase | No read replicas; thread-local set from `ServiceParameterVo` before each JDBC call |
+| **Polyrepo** | 5 independent git repositories sharing a root folder | Each repo has its own CI/CD pipeline and release cycle |
+| **Container registry** | JFrog Artifactory `artifactrepo.server.ha.org.hk:55743` | Air-gapped private registry; `docker-dev-lis` (dev) vs `docker-rel-lis` (release) |
+| **Orchestration** | HA ECP OpenShift with Helm `ha-app` chart | DEV (C1) → DEVQA → SIT (C1+C2) → LPT (C2) environment chain |
+| **Secrets** | CyberArk Conjur injected at pod startup | Base image `openjdk17:ecp-v25.11-openjdk17-17.0.17-conjur-13.0` runs Conjur sidecar |
+| **Frontend env injection** | nginx `docker-entrypoint.sh` `sed` rewrites `__PLACEHOLDER_*__` tokens in compiled JS at container start | Decouples build from environment |
+| **DB migration** | Sybase → PostgreSQL in progress | `repository/temp/` packages in both backend services |
+
+---
+
+## Technology Stack at a Glance
+
+### Frontend
+| Layer | Technology | Version |
+|---|---|---|
+| Language | TypeScript | ~5.x |
+| Framework | React | 18.2.0 |
+| Build | CRACO + Webpack 5 | craco 7.1.0 |
+| MFE | Webpack ModuleFederationPlugin | Webpack 5 |
+| Plugin chassis | `@cmschassis/react-spa`, `@cmschassis/cms-js` | Internal |
+| UI components | `@cmschassis/react-ui`, MUI v5 | Internal / v5 |
+| State | Zustand | 4.5.1 |
+| HTTP | Axios | 1.11.0 |
+| Routing | React Router | v6 |
+| Shared lib | `@lis/lis-hub-lib` | Internal private NPM |
+| Auth client | `keycloak-js` | — |
+| Styling | Emotion (scoped per plugin) | — |
+
+### Backend
+| Layer | Technology | Version |
+|---|---|---|
+| Language | Java | 17 |
+| Framework | Spring Boot | 3.3.13 (`lis-hub-svc`) |
+| Security | `ha-spring-boot-starter-security` | HA internal |
+| HTTP client | RestTemplate (synchronous) | Spring 6 |
+| ORM | Spring Data JPA + MyBatis | Mixed |
+| Databases | PostgreSQL + Oracle + Sybase + Redis | — |
+| Cache | Redis | `spring-data-redis` |
+| Observability | Micrometer Tracing | — |
+| API docs | SpringDoc OpenAPI 3 | — |
+
+---
+
+## Related Notes
+
+- [[01 - System Architecture]] — Polyrepo structure, MF loading chain, environment topology
+- [[02 - Micro-Frontend Architecture]] — Plugin lifecycle, routing, state management, command bus
+- [[03 - Backend Microservices]] — Spring Boot services, DB routing, auth chain, security asymmetry
+- [[04 - Infrastructure and Deployment]] — Dockerfiles, CI/CD pipelines, Helm, env variables, secrets
