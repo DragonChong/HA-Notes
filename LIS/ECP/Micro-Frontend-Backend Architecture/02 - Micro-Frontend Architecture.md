@@ -1,5 +1,5 @@
 ---
-created: 2026-03-06
+created: '2026-03-09'
 status: final
 tags:
   - architecture
@@ -7,247 +7,323 @@ tags:
   - Module-Federation
   - LIS
   - ECP
+  - Zustand
+  - React
+updated: '2026-03-09'
 ---
 # 02 — Micro-Frontend Architecture
 
-## 2.1 Orchestration Framework
+> **Framework:** Webpack 5 Module Federation + `@cmschassis/react-spa` plugin lifecycle. No Single-SPA, iframes, or other MFE frameworks.
 
-The system uses **Webpack 5 Module Federation** configured via **CRACO** (`@craco/craco`). There is no Single-SPA, iframes, or alternative MFE framework. The `@cmschassis/react-spa` chassis library wraps the low-level federation mechanics into a plugin lifecycle (`PluginHost`, `PluginDescriptor`, `loadPlugin`).
+---
+
+## 2.1 Host / Remote Hierarchy
 
 ```mermaid
 graph TB
-    subgraph "Shell: lis-hub-app (LisHubAppModule)"
-        Craco["CRACO / Webpack 5\nModuleFederationPlugin\nname: LisHubAppModule\nfilename: lisHubAppModule_remote.js"]
-        PluginHost["@cmschassis/react-spa\nPluginHost"]
-        CmsJs["@cmschassis/cms-js\nmanifest / command / ui API"]
+    subgraph "Shell (Host)"
+        Hub["lis-hub-app\nLisHubAppModule\nPort 3000\nOwns routing, auth, Zustand stores"]
     end
 
-    subgraph "Remote: crs-app"
-        CRS["remoteEntry.js\nport 3010 (local)"]
-    end
-    subgraph "Remote: aps-app"
-        APS["remoteEntry.js\nport 3011 (local)"]
-    end
-    subgraph "Remote: other lab apps"
-        Other["remoteEntry.js\n(URL from hospMFUrl)"]
+    subgraph "Level-1 Remotes (Lab Plugins)"
+        CRS["lis-crs-common-app\npluginId: CRS\nPort 3010\nregisters views + menus into Hub"]
+        APS["lis-aps-app\npluginId: APS\nPort 3011"]
+        DYN["Other lab MFEs\nhospMFUrl\n(dynamic from login)"]
     end
 
-    PluginHost -->|"dynamic import()\nat runtime"| CRS
-    PluginHost -->|"dynamic import()\nat runtime"| APS
-    PluginHost -->|"dynamic import()\nat runtime"| Other
-    Craco --> PluginHost
-    PluginHost --> CmsJs
+    subgraph "Level-2 Remotes (Sub-Remotes)"
+        LAB["lab-crs-app\nLabCrsSpecimenApp\nPort 3001\nconsumed ONLY by lis-crs-common-app"]
+    end
+
+    Hub -->|"webpack MF\ndynamic import"| CRS
+    Hub -->|"webpack MF\ndynamic import"| APS
+    Hub -->|"webpack MF\nhospMFUrl (runtime URL)"| DYN
+    CRS -->|"webpack MF\ndynamic import"| LAB
 ```
 
-**nginx cache-bust rule** in `nginx-spa.conf` always serves `remoteEntry.js` with `no-store, no-cache` headers — ensuring remote updates are picked up on next browser load.
+### Federation Configuration
 
----
-
-## 2.2 Host and Remotes
-
-| Role | Application | Federation Name | Entry |
+| App | MF Name | Exposes | Consumes |
 |---|---|---|---|
-| **Host / Shell** | `lis-hub-app` | `LisHubAppModule` | `lisHubAppModule_remote.js` |
-| **Built-in Plugin** | `lis-hub-buildin-plugin` | (bundled) | loaded synchronously before remotes |
-| **Remote: CRS** | `lis-crs-app` | set by remote | `remoteEntry.js` (port 3010 local) |
-| **Remote: APS** | `lis-aps-app` | set by remote | `remoteEntry.js` (port 3011 local) |
-| **Remote: Others** | CPS, GNS, HMS, IMS, SOS, TIS, TRL, VRS, BBNK, MICRO | set by remote | `hospMFUrl` from `Sam3LisApplicationVo` |
+| `lis-hub-app` | `LisHubAppModule` | `lisHubAppModule_remote.js` (self) | `CRS@:3010`, `APS@:3011`, `hospMFUrl` |
+| `lis-crs-common-app` | _(pluginId=CRS)_ | `Manifest`, `./ContextProvider`, `./APS`, `./NewBasicTheme`, `./DateRequiredCom`, `./MotherInfoCom`, `./PatientResultsCom`, `./BloodCategoryCom` | `LabCrsSpecimenApp@:3001` |
+| `lab-crs-app` | `LabCrsSpecimenApp` | `./SpecimenAckPage` (src/App.tsx) | `CRS@:3010` |
 
-Remote URLs are **fully dynamic**: after login, `lis-hub-svc` returns `hospMFUrl` per lab-hospital pair in `Sam3LisApplicationVo`. This URL is stored in `useGlobalStore.hospMFUrl` and passed to `PluginHost` — meaning no remote URL is hardcoded in the build.
+**nginx cache-bust rule:** `nginx-spa.conf` serves `remoteEntry.js` with `Cache-Control: no-store, no-cache` — ensures remote updates are picked up on next browser load without stale JS.
 
 ---
 
-## 2.3 Plugin Lifecycle
+## 2.2 Plugin Lifecycle (`@cmschassis/react-spa`)
 
 ```mermaid
 sequenceDiagram
-    participant User
     participant Shell as Shell (System.tsx)
-    participant Hub as Hub.tsx / useHubApp
-    participant PH as PluginHost (@cmschassis)
+    participant HC as Hub.tsx / PluginHost
+    participant PH as @cmschassis/react-spa\nPluginHost
     participant BIP as Built-in Plugin
-    participant Remote as Remote MFE (e.g. crs-app)
+    participant Remote as lis-crs-common-app\n(CRS remote)
     participant API as lis-hub-svc
 
-    User->>Shell: navigate /land/:labCode/:hosCode
-    Shell->>API: init() — workbench, user, menu, dictionary
+    Shell->>API: init() — workbench, user, menus, dictionaries
     Shell->>BIP: pluginLoader.loadPlugin(hubBuildInManifest)
-    Note over BIP: declare()\n contributeMenus/Views/Commands
+    Note over BIP: declare()\n contributes menus/views/commands to manifestStore
     Note over BIP: activate(apiContext)\n registers command handlers
-    Shell->>Hub: <Hub plugins=[{id, scriptUrl: hospMFUrl}] />
-    Hub->>PH: render <PluginHost plugins=... />
-    PH->>Remote: dynamic import(hospMFUrl + '/remoteEntry.js')
-    Remote-->>PH: CmsPlugin module
-    PH->>Hub: onPluginLoaded(descriptor, manifestModule)
-    Hub->>Shell: pluginLoader.loadPlugin(manifestModule)
-    Note over Remote: declare()\n contributeMenus/Views/Commands
-    Note over Remote: activate(apiProvider)\n registers command handlers
-    Hub->>Shell: isAllPluginsProcessed = true
-    Shell->>User: Render menu + tabs (Outlet → RootTabs)
+    Shell->>HC: render <Hub plugins=[{id, scriptUrl}] />
+    HC->>PH: render <PluginHost plugins=... />
+    PH->>Remote: dynamic import(remoteEntry.js)
+    Remote-->>PH: CmsPlugin module (Manifest export)
+    PH->>HC: onPluginLoaded(descriptor, manifestModule)
+    HC->>Shell: pluginLoader.loadPlugin(manifestModule)
+    Note over Remote: declare()\n contributes CRS views/menus to Hub manifestStore
+    Note over Remote: activate(apiProvider)\n registers CRS command handlers
+    Shell->>Shell: isAllPluginsProcessed = true → render menu + tabs
 ```
 
----
+### `cms-manifest.js` Structure (lis-crs-common-app)
 
-## 2.4 Routing Strategy
-
-The shell owns **all routing** via React Router v6. Remote MFEs do **not** have their own router.
-
-```mermaid
-graph LR
-    A["/"] -->|redirect| B["/system-list"]
-    B -->|user selects lab| C["/land/:labCode/:hosCode"]
-    C --> D["SimpleLandingPage (index)"]
-    C --> E["/land/:labCode/:hosCode/:viewId"]
-    E --> F["ViewHandler\n↓\nRootTabs\n↓\nActiveView DOM node"]
-```
-
-**How URL-to-view resolution works:**
-
-1. User clicks a menu item → `useCmdStore.execute(commandId)`
-2. Command handler calls `useViewStore.createView(viewGroupId, viewId, label)` which creates a raw `<div>` DOM node
-3. The remote plugin mounts its React app into that `<div>` via `createRoot`
-4. `useViewStore` adds the view to `rootViewGroup.views`
-5. React Router updates URL to `/land/:labCode/:hosCode/:viewId`
-6. `RootTabs` renders all open views; the active one is shown, others remain mounted (hidden via CSS)
-
-```mermaid
-sequenceDiagram
-    participant M as Menu Click
-    participant CS as useCmdStore
-    participant VS as useViewStore
-    participant Plugin as Remote Plugin (React)
-    participant RB as RootTabs
-    participant URL as Browser URL
-
-    M->>CS: execute("open.some.view", {viewId})
-    CS->>VS: createView(Root, viewId, label)
-    VS-->>Plugin: new <div> element provided
-    Plugin->>Plugin: createRoot(div).render(<MyPage />)
-    VS->>RB: views updated → render new tab
-    RB->>URL: navigate(/land/CRS/QEH/some.view)
-```
-
----
-
-## 2.5 Cross-MFE State Sharing & Communication
-
-### Three mechanisms used concurrently:
-
-#### A. `LisApiContext` — Official Plugin API Contract
-
-The shell constructs `apiProvider` and injects it via `plugin.activate(context)`. Remote MFEs **only** access shell state through this typed interface — direct Zustand store access is forbidden.
-
-```mermaid
-graph LR
-    subgraph "Shell Zustand Stores"
-        GS["useGlobalStore"]
-        AS["useAuthStore"]
-        SS["useSessionStore"]
-        PS["usePatientStore"]
-        DS["useDictionaryStore"]
-        VS["useViewStore"]
-        MS["useMenuStore"]
-        CS["useCmdStore"]
-    end
-
-    subgraph "LisApiContext (apiProvider)"
-        AP["apiProvider\n.patient\n.ui\n.auth\n.session\n.command\n.dictionary\n.global\n.preference\n.request\n.translation"]
-    end
-
-    subgraph "Plugins"
-        P1["Built-in Plugin"]
-        P2["Remote MFE A"]
-        P3["Remote MFE B"]
-    end
-
-    GS --> AP
-    AS --> AP
-    SS --> AP
-    PS --> AP
-    DS --> AP
-    VS --> AP
-    MS --> AP
-    CS --> AP
-    AP -->|"inject via activate()"| P1
-    AP -->|"inject via activate()"| P2
-    AP -->|"inject via activate()"| P3
-```
-
-Key namespaces on `LisApiContext`:
-
-| Namespace | Purpose |
-|---|---|
-| `context.patient` | Patient selection, switching, HKID lookup |
-| `context.ui` | Open/close views, menus, MessageBox, loading spinner |
-| `context.auth` | Auth state, user roles, access rights |
-| `context.session` | Hospital, workstation, user login ID |
-| `context.command` | `register(id, fn)` + `execute(id, arg)` — command bus |
-| `context.dictionary` | LIS data dictionaries (cached in IndexedDB) |
-| `context.global` | Lab API URL, service params, profile code |
-| `context.preference` | Theme, language settings |
-| `context.request` | Configured Axios instance |
-| `context.translation` | i18n function |
-| `context.globalRequest` | Pre-wired error-handling request wrapper |
-
-#### B. `window.$lisHubApp` — Global Object Bridge
-
-For legacy sub-systems or packages unable to consume Module Federation directly:
-
-```typescript
-window.$lisHubApp = {
-  api: { checkHkid, selectAccessRight, MessageBoxApi, ... },
-  getServiceParams(),
-  getDictionary(), subscribeTheme(), subscribeLanguage(),
-  getToken(), getProfileCode(), getCorrelation(),
-  request, securityUtils, libHubComUtils, useCommonHooks,
-  getViewStore()
+```javascript
+// src/cms-plugin/cms-manifest.js
+export default {
+  pluginId: "CRS",
+  views: [
+    { id: "crs-specimen-acknowledgment", menuRoute: "SpecimenAck", ... },
+    { id: "crs-registration",            menuRoute: "Registration", ... },
+    // ...
+  ],
+  menus: [ ... ],
+  commands: [ ... ]
 }
 ```
 
-#### C. Command Bus (`useCmdStore.execute`)
+### `plugin-manifest.module.ts` Lifecycle
 
-Any plugin or the shell can invoke cross-MFE actions without direct imports:
+```typescript
+// declare() — called once at plugin load
+declare(manifest, cms) {
+  manifest.views.forEach(view => cms.api.manifest.contributeView(view))
+  manifest.menus.forEach(menu => cms.api.manifest.contributeMenu(menu))
+}
+
+// activate() — called after all plugins declare()
+activate(cms) {
+  manifest.views.forEach(view => {
+    cms.api.ui.onWillDisplayView(view.id, (container) => {
+      const Component = await loadComponent(view.menuRoute)  // dynamic import
+      renderReactComponent(container, <Component />)
+    })
+  })
+}
+```
+
+---
+
+## 2.3 View Display & DOM Isolation
+
+### How `ViewHandler` + `createView` Works
 
 ```mermaid
 sequenceDiagram
-    participant PA as Plugin A
+    participant User as Menu Click
+    participant CmdStore as useCmdStore
+    participant ViewStore as useViewStore
+    participant Plugin as CRS Plugin
+    participant RootTabs as RootTabs
+    participant Router as React Router
+
+    User->>CmdStore: execute("open.crs.spec-ack", {viewId})
+    CmdStore->>ViewStore: createView(Root, "crs-specimen-acknowledgment", label)
+    ViewStore-->>Plugin: new <div id="view-xyz"> DOM element provided
+    Plugin->>Plugin: createRoot(div).render(<SpecimenAckPage />)
+    ViewStore->>RootTabs: add view to tabs
+    RootTabs->>Router: navigate(/land/CRS/QEH/crs-specimen-acknowledgment)
+    Router->>Router: URL updates
+    Note over RootTabs: All views remain mounted\nActive shown, others display:none
+```
+
+**Key insight:** Views are **never unmounted** — switching tabs hides via CSS rather than unmounting React trees. This preserves unsaved form state but increases DOM memory footprint.
+
+### `renderReactComponent` — Scoped Emotion Cache
+
+```typescript
+// src/cms-plugin/view-handler.tsx
+function renderReactComponent(container: HTMLElement, Component: React.FC) {
+  const cache = createCache({ key: "crs" })  // pluginId.toLowerCase()
+  const root = createRoot(container)
+  root.render(
+    <CacheProvider value={cache}>
+      <ContextProvider>
+        <Component />
+      </ContextProvider>
+    </CacheProvider>
+  )
+}
+```
+
+- **Scoped Emotion cache** (`key: "crs"`) prevents CSS class name collisions with Hub or other plugins
+- Each plugin has its own React root — fully isolated rendering tree
+- `renderReactComponentWithRoute()` variant wraps with `MemoryRouter` for plugin-internal routing
+
+---
+
+## 2.4 URL Routing Strategy
+
+The **Shell owns all routing** via React Router v6. Remote MFEs do not have their own router (use MemoryRouter if needed for internal navigation).
+
+```mermaid
+graph LR
+    A["/"] -->|"redirect"| B["/system-list\nSelect hospital/lab"]
+    B --> C["/land/:labCode/:hosCode\nSimpleLandingPage"]
+    C --> D["/land/:labCode/:hosCode/:viewId\nViewHandler\n→ RootTabs\n→ DOM node per view"]
+```
+
+**Route parameter semantics:**
+| Parameter | Example | Source |
+|---|---|---|
+| `:labCode` | `CRS` | Selected lab application code |
+| `:hosCode` | `QEH` | Selected hospital code |
+| `:viewId` | `crs-specimen-acknowledgment` | View ID from `manifestStore` |
+
+---
+
+## 2.5 Cross-MFE State & Communication
+
+### A. `LisApiContext` — Official Plugin API
+
+Plugins receive `apiContext` via `activate(cms)`. Direct Zustand store imports are forbidden.
+
+```mermaid
+graph LR
+    subgraph "Hub Zustand Stores (Shell private)"
+        G["useGlobalStore\n(hospMFUrl, labCode...)"]
+        A["useAuthStore\n(JWT, roles)"]
+        S["useSessionStore\n(hospital, workstation)"]
+        P["usePatientStore\n(selected patient)"]
+        D["useDictionaryStore\n(LIS dictionaries)"]
+        V["useViewStore\n(open views / tabs)"]
+        M["useMenuStore\n(contributed menus)"]
+        C["useCmdStore\n(command bus)"]
+        Pref["usePreferenceStore\n(theme, language)"]
+        Corr["useCorrelation\n(correlationId per route)"]
+    end
+
+    subgraph "LisApiContext (plugin-facing API)"
+        API["apiContext\n.patient — select/switch HKID\n.ui — open/close views, MessageBox\n.auth — user roles, access rights\n.session — hospital, user key\n.command — register + execute\n.dictionary — LIS reference data\n.global — lab URL, profile code\n.preference — theme, language\n.request — configured Axios\n.translation — i18n\n.globalRequest — error-handled Axios"]
+    end
+
+    G & A & S & P & D & V & M & C & Pref & Corr --> API
+    API -->|"injected via activate()"| Plugin1["CRS Plugin"]
+    API -->|"injected via activate()"| Plugin2["APS Plugin"]
+```
+
+### B. Command Bus (`useCmdStore`)
+
+```mermaid
+sequenceDiagram
+    participant PA as CRS Plugin
     participant CS as useCmdStore
-    participant PB as Plugin B
+    participant PB as Hub / Other Plugin
 
     Note over PB: activate() → context.command.register("patient.open", handler)
     PA->>CS: context.command.execute("patient.open", {hkid: "A123"})
     CS->>PB: handler({hkid: "A123"})
-    PB->>PB: opens patient panel
+    PB->>PB: opens patient panel / updates state
+```
+
+### C. `window.$lisHubApp` — Global Bridge (legacy compatibility)
+
+For packages that cannot consume Module Federation:
+
+```typescript
+window.$lisHubApp = {
+  api: { checkHkid, selectAccessRight, MessageBoxApi, ... },
+  getServiceParams(), getDictionary(), subscribeTheme(), subscribeLanguage(),
+  getToken(), getProfileCode(), getCorrelation(),
+  request, securityUtils, libHubComUtils, useCommonHooks, getViewStore()
+}
 ```
 
 ---
 
-## 2.6 Shared Dependencies
+## 2.6 Shared Dependencies & Singleton Management
 
 ```mermaid
 graph TB
-    subgraph "Webpack Federation Singletons"
-        R["react 18.2.0\n(singleton: true)"]
-        RD["react-dom 18.2.0\n(singleton: true)"]
+    subgraph "Webpack Federation Singletons (requiredVersion enforced)"
+        R["react 18.2.0\nsingleton: true, requiredVersion: '^18'"]
+        RD["react-dom 18.2.0\nsingleton: true"]
     end
 
-    subgraph "Shared via npm (same version expected)"
-        CUI["@cmschassis/react-ui\n(MUI component lib)"]
-        CMS["@cmschassis/cms-js\n(CMS Chassis core)"]
-        RSPA["@cmschassis/react-spa\n(PluginHost runtime)"]
-        LIB["@lis/lis-hub-lib\n(LIS shared utils)"]
+    subgraph "Shared via private NPM (version-locked)"
+        RSPA["@cmschassis/react-spa\nPluginHost runtime"]
+        CMS["@cmschassis/cms-js\nApiContext / command bus"]
+        CUI["@cmschassis/react-ui\nMUI component library"]
+        LIB["@lis/lis-hub-lib\nMUI themes: lisBaseThemeLight/Dark\nShared fonts + type defs"]
         MUI["@mui/material v5"]
         ZU["zustand 4.5.1"]
         AX["axios 1.11.0"]
     end
 
-    R -->|"shared singleton"| Shell
-    RD -->|"shared singleton"| Shell
-    CUI --> Shell
-    CUI --> RemoteMFE
-    CMS --> Shell
-    RSPA --> Shell
-    LIB --> RemoteMFE
-    MUI --> Shell
-    MUI --> RemoteMFE
+    R & RD -->|"shared singleton"| Hub
+    RSPA & CMS & CUI & LIB & MUI & ZU & AX -->|"shared via npm workspace"| Hub
+    LIB & CUI & MUI & ZU & AX -->|"peer deps"| CRS["lis-crs-common-app"]
+    LIB & CUI & MUI & ZU & AX -->|"peer deps"| LAB["lab-crs-app"]
 ```
+
+**`@lis/lis-hub-lib`** (private npm, `@lis` scope — JFrog Artifactory) contains:
+- `lisBaseThemeLight` / `lisBaseThemeDark` — MUI v5 theme objects
+- Shared custom fonts
+- Shared TypeScript type definitions for LIS domain objects
+
+---
+
+## 2.7 Zustand Store Catalog (Shell)
+
+| Store | File | Purpose |
+|---|---|---|
+| `useManifestStore` | `manifest-store.ts` | Registry of contributed views, menus, commands from all plugins |
+| `useViewStore` | `view/index.ts` | Open view tabs; `createView()` creates DOM `<div>`; `onWillDisplayView` callback |
+| `useCommandStore` | `command-store.ts` | Command bus: `register(id, fn)` + `execute(id, arg)` |
+| `useAuthStore` | `auth-store.ts` | JWT token, Keycloak instance, user roles, access rights |
+| `useSessionStore` | `session-store.ts` | Hospital code, workstation, active lab, logged-in user |
+| `useGlobalStore` | `global-store.ts` | `hospMFUrl`, `labCode`, service parameters, API base URLs |
+| `usePatientStore` | `patient-store.ts` | Selected patient HKID, encounter, patient panel state |
+| `usePreferenceStore` | `preference-store.ts` | Theme (light/dark), language setting |
+| `useCorrelation` | `correlation-store.ts` | `correlationId` per route (injected in every Axios request header) |
+| `useDictionaryStore` | `dictionary-store.ts` | LIS reference dictionaries cached in IndexedDB via `localforage` |
+
+---
+
+## 2.8 Auth Flow in Frontend
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant Hub as lis-hub-app\n(keycloak-js)
+    participant KC as Keycloak / SAM3
+
+    U->>Hub: navigate /
+    Hub->>KC: OIDC Authorization Code Flow\n(realm=lis, client=lis-hub-app)
+    KC-->>U: Login page
+    U->>KC: credentials
+    KC-->>Hub: JWT access_token + refresh_token
+    Hub->>Hub: store token in useAuthStore
+    Hub->>Hub: inject Bearer JWT via Axios request interceptor
+
+    Note over Hub,KC: Per-lab scope acquisition
+    Hub->>KC: createLoginUrl({ scope: "lis:lis-QEH-CRS", prompt: "none" })
+    KC-->>Hub: new JWT with lab-scoped claim
+
+    Note over Hub: Token lifecycle
+    Hub->>KC: keycloak.updateToken() before expiry (auto)
+    Hub->>KC: keycloak.logout() on 401 response (Axios interceptor)
+```
+
+### Axios Request Interceptor Headers
+
+| Header | Value | Purpose |
+|---|---|---|
+| `Authorization` | `Bearer {JWT}` | User identity |
+| `X-HA-ProfileCode` | `{profileCode}` | Hospital profile routing in BFF |
+| `ServiceParameterVo.*` | `serverName, serverLab, hospital, userKey, functionId` | Multi-tenant DB routing |
+| `correlationId` | Per-route UUID | Distributed tracing |
+| `transactionId` | Per-request UUID | Request-level tracing |

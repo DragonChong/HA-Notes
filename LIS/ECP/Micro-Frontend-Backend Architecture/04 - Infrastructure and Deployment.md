@@ -1,225 +1,353 @@
 ---
-created: '2026-03-06'
+created: '2026-03-09'
 status: final
 tags:
   - architecture
+  - LIS
+  - ECP
   - infrastructure
   - deployment
-  - CI/CD
+  - Docker
   - Kubernetes
-  - OpenShift
-  - LIS
+  - Helm
+  - CI-CD
+  - GitHub-Actions
+updated: '2026-03-09'
 ---
-# 04 — Infrastructure & Deployment
+# 04 — Infrastructure and Deployment
+
+> **Platform:** HA ECP (OpenShift Kubernetes) with Helm `ha-app` chart, GitHub Actions + CDRA reusable workflow templates, JFrog Artifactory private registry, CyberArk Conjur secrets injection.
 
 ---
 
 ## 4.1 Container Strategy
 
-### Two-Dockerfile Design
+### Dockerfile Patterns
 
-| Dockerfile | Location | Stage | Purpose |
-|---|---|---|---|
-| **Release image** | `Dockerfile` (root) | Single-stage | Pre-built artifact intake; used by CI/CD pipeline |
-| **Dev build image** | `.devops/config/Dockerfile` | Two-stage (build → runtime) | Full in-container build; used for initial scaffolding / reference |
+Each repo has its Dockerfile in `.devops/config/Dockerfile`.
 
-Both produce the same runtime image: `bitnami/nginx` serving `build/` as an SPA with runtime URL injection.
+#### Frontend Apps (lis-hub-app, lis-crs-common-app, lab-crs-app)
 
-#### Runtime URL Injection
+```mermaid
+graph LR
+    subgraph "Stage 1: Builder"
+        N["node:18-alpine\nnpm ci\nnpm run build\n→ /app/build/"]
+    end
+    subgraph "Stage 2: Runtime"
+        NX["nginx:alpine\n+ custom nginx-spa.conf\n+ docker-entrypoint.sh\n→ sed URL injection"]
+    end
+    N -->|"COPY --from=builder /app/build"| NX
+```
 
-The compiled JavaScript bundle contains placeholder strings. At container start, `sed` replaces them with values sourced from K8s ConfigMap environment variables:
-
+**Key technique — `docker-entrypoint.sh` URL injection:**
 ```bash
-sed -i "s|__REACT_APP_LIS_COMMON_URL__|${LIS_COMMON_ROOT_URL}|g"       /html/static/js/*.js
-sed -i "s|__REACT_APP_KEYCLOAK_SERVER_URL__|${KEYCLOAK_SERVER_URL}|g"  /html/static/js/*.js
-# ... repeated for each LIS_*_ROOT_URL
+#!/bin/sh
+# At container start, replace __PLACEHOLDER_*__ tokens in compiled JS/HTML
+for var in $(env | grep '^LIS_'); do
+  key="__PLACEHOLDER_${var%%=*}__"
+  value="${var#*=}"
+  find /usr/share/nginx/html -name "*.js" -o -name "*.html" | \
+    xargs sed -i "s|${key}|${value}|g"
+done
+exec nginx -g "daemon off;"
 ```
 
-This allows a **single Docker image** to be promoted across DEV → DEVQA → SIT → DEMO without rebuilds.
+This means:
+- **Build-time** (`npm run build`): `process.env.REACT_APP_*` values are baked in as `__PLACEHOLDER_LIS_*__` literals
+- **Runtime** (container start): `nginx/docker-entrypoint.sh` replaces these tokens with actual K8s ConfigMap env values
+- **Result:** A single Docker image works across ALL environments (DEV, SIT, LPT, PROD)
+
+#### Backend Apps (lis-hub-svc, lis-crs-spec-ack-svc)
+
+```mermaid
+graph LR
+    subgraph "Stage 1: Builder"
+        M["maven:3.9-eclipse-temurin-17\nmvn package -DskipTests\n→ target/*.jar"]
+    end
+    subgraph "Stage 2: Runtime"
+        JVM["openjdk17:ecp-v25.11-openjdk17-17.0.17-conjur-13.0\n(HA internal base image)\nConjur sidecar agent built-in\nCOPY app.jar\nENTRYPOINT java -jar app.jar"]
+    end
+    M -->|"COPY --from=builder target/*.jar"| JVM
+```
+
+**Conjur base image** `ecp-v25.11-openjdk17-17.0.17-conjur-13.0` contains:
+- Standard `openjdk17`
+- CyberArk Conjur sidecar agent that fetches secrets from Conjur vault before JVM startup
+- Secrets are written to env vars, overriding any ConfigMap values
 
 ---
 
-## 4.2 Environment Variable Model (Three-Tier)
+## 4.2 nginx Configuration
 
-```mermaid
-flowchart TD
-    A["Tier 1: Build-time\n.env / .env.local\nREACT_APP_* baked at npm run build\n(fixed: feature flags, app version)"]
-    B["Tier 2: Runtime Injection\nnginx startup sed\nReplaces __PLACEHOLDER__ with actual URL\n(varies per environment)"]
-    C["Tier 3: K8s ConfigMap\nvalues-{ENV}.yaml configmap.data\n(source of truth for URLs per env)"]
+```nginx
+# nginx-spa.conf (lis-hub-app)
+server {
+    listen 8080;
+    root /usr/share/nginx/html;
+    index index.html;
 
-    C -->|"injected as env vars"| B
-    A --> Build["Compiled JS bundle"]
-    B --> Deploy["Running container"]
-    C --> Deploy
+    # React Router — serve index.html for all unknown paths
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # CRITICAL: Never cache Module Federation entry points
+    location ~* remoteEntry\.js$ {
+        add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
+        expires off;
+    }
+
+    # Handle CORS preflight with 204
+    if ($request_method = OPTIONS) {
+        return 204;
+    }
+
+    # Static assets — long cache (content-hashed filenames)
+    location ~* \.(js|css|png|jpg|gif|ico|woff2?)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}
 ```
 
-### `.env` Variables (Build-time)
+---
 
-| Variable | Example Value |
-|---|---|
-| `REACT_APP_VER` | `local` |
-| `REACT_APP_ENV` | `local` |
-| `REACT_APP_LIS_COMMON_URL` | proxied locally; sed-replaced in prod |
-| `REACT_APP_KEYCLOAK_SERVER_URL` | Keycloak OIDC endpoint |
-| `REACT_APP_SESSION_TIMEOUT` | `900000` ms |
+## 4.3 CI/CD Pipeline Architecture
 
-### `values-{ENV}.yaml` ConfigMap Keys (Runtime)
+### Feature Branch Pipeline (`.github/workflows/feature-branch.yaml`)
 
-| Key | DEV | SIT |
+```mermaid
+flowchart LR
+    Push["git push\nfeature/* branch"] --> Setup
+    Setup["1. Setup\nCDRA/workflow-template\nSetup@v1.6.1\nNode/Java version\nArtifactory credentials"] --> Build
+    Build["2. Build\nCDRA Build@v1.6.1\nnpm ci + npm run build\nOR mvn package"] --> BuildContainer
+    BuildContainer["3. BuildContainer\nCDRA BuildContainer@v1.6.1\ndocker build\ndocker push\n→ docker-dev-lis:{branch}-{sha}"] --> Deploy
+    Deploy["4. Deploy\nCDRA Deploy@v1.6.1\nHelm upgrade\n→ DEV (C1 cluster)\nvalues-DEV.yaml"]
+```
+
+### Release Branch Pipeline (`.github/workflows/release.yaml`)
+
+```mermaid
+flowchart LR
+    PushRel["git push\nrelease/* branch"] --> Setup
+    Setup["1. Setup"] --> Build
+    Build["2. Build"] --> Test
+    Test["3. Test\nUnit tests\nJUnit/Jest"] --> ScanCode
+    ScanCode["4. ScanCode\nSonarQube SAST\nCode quality gate"] --> ScanOSS
+    ScanOSS["5. ScanOSS\nOSS license scan\nVulnerability check"] --> BuildContainer
+    BuildContainer["6. BuildContainer\ndocker push\n→ docker-rel-lis:{semver}"] --> DeploySIT
+    DeploySIT["7. Deploy SIT C1\nHelm upgrade\nvalues-SIT.yaml"] --> DeploySIT2
+    DeploySIT2["8. Deploy SIT C2\nHelm upgrade\nvalues-SIT.yaml"] --> DeployLPT
+    DeployLPT["9. Deploy LPT\nHelm upgrade\nvalues-LPT.yaml"] --> DeployDEVQA
+    DeployDEVQA["10. Deploy DEVQA\nHelm upgrade\nvalues-DEVQA.yaml"]
+```
+
+### Deploy ECP Dev Pipeline (`.github/workflows/deploy-ecp-dev.yaml`)
+
+```mermaid
+flowchart LR
+    Manual["Manual trigger\n(workflow_dispatch)\nor PR merge"] --> Deploy
+    Deploy["CDRA Deploy@v1.6.1\nHelm upgrade --install\n→ DEV cluster\nvalues-DEV.yaml"]
+```
+
+---
+
+## 4.4 Environment Configuration Strategy (4-Layer Model)
+
+```mermaid
+flowchart TB
+    L1["Layer 1: .env / .env.local\n(Developer local overrides)\nNever committed to git\nREACT_APP_LIS_COMMON_URL=http://localhost:5000"]
+
+    L2["Layer 2: Build-time (npm run build)\nREACT_APP_* vars baked into JS bundle\nas __PLACEHOLDER_LIS_*__ tokens\n(CRA/CRACO convention)"]
+
+    L3["Layer 3: K8s ConfigMap + Secret\n(values-DEV.yaml / values-SIT.yaml)\nconfigMapRef: lis-hub-app-config\nsecretRef: keycloak-config, redis-config...\nInjected as env vars at pod start"]
+
+    L4["Layer 4: CyberArk Conjur\n(Runtime injection, highest priority)\nConjur sidecar fetches all DB passwords,\nAPI keys, service credentials\nOverrides ConfigMap values\n(openjdk17 base image: conjur-13.0)"]
+
+    L1 -->|"developer machine only"| L2
+    L2 -->|"docker image (placeholder tokens)"| L3
+    L3 -->|"K8s pod env vars"| L4
+    L4 -->|"final JVM / nginx env"| App["Running Application"]
+```
+
+---
+
+## 4.5 Kubernetes / Helm Configuration
+
+### `values-DEV.yaml` Structure (lis-hub-svc example)
+
+```yaml
+# lis-hub-svc/values-DEV.yaml
+image:
+  repository: artifactrepo.server.ha.org.hk:55743/docker-dev-lis/lis-hub-svc
+  tag: latest
+
+service:
+  port: 5000
+
+monitoring:
+  enable: true
+
+# Environment variables injected into pod
+envFrom:
+  - configMapRef:
+      name: uam-config          # UAM API URLs
+  - secretRef:
+      name: uam-secret          # UAM client_id + client_secret
+  - secretRef:
+      name: keycloak-config     # Keycloak realm + client config
+  - secretRef:
+      name: redis-config        # Redis connection string
+  - secretRef:
+      name: postgresql-login    # PG credentials (Conjur-injected)
+  - secretRef:
+      name: oracle-login        # Oracle credentials (Conjur-injected)
+  - secretRef:
+      name: sybase-login        # Sybase credentials (Conjur-injected)
+  - secretRef:
+      name: pas-api-secret      # PAS integration credentials
+  - configMapRef:
+      name: als-config          # App Logging Service URL
+  - configMapRef:
+      name: correlation-config  # Correlation service config
+
+# Direct env vars (Kubernetes Downward API)
+env:
+  - name: MY_POD_NAME
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.name
+  - name: MY_NAMESPACE
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.namespace
+  - name: LOG_PRIVACY
+    value: "1"
+```
+
+### `values-SIT.yaml` Key Differences
+
+```yaml
+image:
+  repository: artifactrepo.server.ha.org.hk:55743/docker-rel-lis/lis-hub-svc
+  # Uses docker-rel-lis (release) instead of docker-dev-lis
+```
+
+### lis-crs-spec-ack-svc Secrets (values-DEV.yaml)
+
+```yaml
+envFrom:
+  - secretRef:
+      name: sybase-login        # Sybase DB credentials
+  - secretRef:
+      name: postgresql-login    # PostgreSQL credentials (migration target)
+  - secretRef:
+      name: oracle-login        # Oracle credentials
+```
+
+---
+
+## 4.6 JFrog Artifactory Registry
+
+| Registry | Path | Usage |
 |---|---|---|
-| `LIS_COMMON_ROOT_URL` | `http://lis-hub-svc:5000` | `http://lis-hub-svc-sit:5000` |
-| `KEYCLOAK_SERVER_URL` | `https://sam3-dev.ha.org.hk/auth` | `https://sam3-sit.ha.org.hk/auth` |
-| `LIS_CRS_ROOT_URL` | `http://crs-be-svc:5001` | `http://crs-be-svc-sit:5001` |
-| `LIS_APS_ROOT_URL` | `http://aps-be-svc:5002` | `http://aps-be-svc-sit:5002` |
+| **Dev registry** | `artifactrepo.server.ha.org.hk:55743/docker-dev-lis/` | Feature branch images; `:{branch}-{sha}` tags |
+| **Release registry** | `artifactrepo.server.ha.org.hk:55743/docker-rel-lis/` | Release branch images; `:{semver}` tags |
+
+- Air-gapped private registry (no internet access from ECP cluster)
+- GitHub Actions authenticates via `ARTIFACTORY_USER` + `ARTIFACTORY_PASSWORD` secrets
+- Maven builds also pull from Artifactory Maven repos (private HA internal jars: `ha-spring-boot-starter-*`)
 
 ---
 
-## 4.3 Container Registry
-
-```
-Registry: artifactrepo.server.ha.org.hk:55743   (JFrog Artifactory — air-gapped)
-
-DEV builds  → docker-dev-lis/lis-hub-app:{branch-name}
-REL builds  → docker-rel-lis/lis-hub-app:{branch-name}
-```
-
-- Separate Artifactory credentials for dev vs release builds
-- npm packages served from Artifactory npm proxy repo (`HA_UI_NPM_TOKEN`)
-- HA internal CA cert injected at build time via `CERT_HA_ROOT_CA` secret
-
----
-
-## 4.4 CI/CD Pipeline
-
-All pipelines use shared reusable workflows from `CDRA/workflow-template@v1.6.1`.
-
-### Feature Branch Pipeline
+## 4.7 CyberArk Conjur Secrets Management
 
 ```mermaid
-flowchart LR
-    Push["Push to feature/*"] --> Build["1. Build\nnpm ci + npm run build"]
-    Build --> Test["2. Test\nnpm run test"]
-    Test --> Container["3. BuildContainer\ndocker build + push\ndocker-dev-lis/:{branch}"]
-    Container --> DeployDEV["4. Deploy DEV\nhelm upgrade --install\nC1 lis-dev namespace"]
+sequenceDiagram
+    participant OCP as OpenShift Pod Scheduler
+    participant Base as Conjur Sidecar\n(in base image)
+    participant CV as CyberArk Conjur Vault
+    participant JVM as Spring Boot JVM
+
+    OCP->>Base: start pod (Conjur sidecar auto-runs first)
+    Base->>CV: authenticate (pod identity / service account)
+    CV-->>Base: authenticated session
+    Base->>CV: fetch secrets:\n  DB passwords\n  API keys\n  Service credentials
+    CV-->>Base: secret values
+    Base->>Base: write secrets to process env / files
+    Base->>JVM: start JVM after secrets are ready
+    JVM->>JVM: reads secrets from env as ${DB_PASSWORD} etc.
 ```
 
-### Release Pipeline
-
-```mermaid
-flowchart LR
-    Tag["Push release tag"] --> Build["1. Build"]
-    Build --> Test["2. Test"]
-    Test --> ScanCode["3. ScanCode\nSonarQube SAST"]
-    ScanCode --> ScanOSS["4. ScanOSS\nLicense + CVE scan"]
-    ScanOSS --> Container["5. BuildContainer\ndocker-rel-lis/:{tag}"]
-    Container --> Multi["6. Deploy\nDEVQA + SIT C1\n+ SIT C2 + LPT"]
-```
-
-### Dev Hotfix Pipeline
-
-Direct deploy-only; skips build using a pre-existing image tag from Artifactory.
+**Why Conjur over K8s Secrets?**
+- Secrets in K8s Secrets are base64-encoded, accessible to any cluster admin
+- Conjur enforces fine-grained ACL per application identity
+- Dynamic secret rotation without pod restart (re-fetched on next start)
+- Full audit trail of secret access
 
 ---
 
-## 4.5 Kubernetes / OpenShift Deployment
+## 4.8 Environment Matrix
 
-```mermaid
-graph TB
-    subgraph "GitHub Actions"
-        GH["Workflow Runner"]
-    end
-
-    subgraph "JFrog Artifactory"
-        Reg["docker-dev-lis / docker-rel-lis"]
-    end
-
-    subgraph "OpenShift ECP — Cluster C1"
-        NS_DEV["lis-dev"]
-        NS_SIT1["lis-sit"]
-    end
-
-    subgraph "OpenShift ECP — Cluster C2"
-        NS_SIT2["lis-sit"]
-        NS_LPT["lis-lpt"]
-        NS_DEVQA["lis-devqa"]
-    end
-
-    GH -->|"oc login SA token\nhelm upgrade"| NS_DEV
-    GH -->|"values-SIT C1"| NS_SIT1
-    GH -->|"values-SIT C2"| NS_SIT2
-    GH -->|"values-DEVQA"| NS_DEVQA
-    GH -->|"push image"| Reg
-    Reg -->|"imagePull"| NS_DEV
-    Reg -->|"imagePull"| NS_SIT1
-```
-
-### Helm Deployment
-
-```
-helm upgrade --install lis-hub-app ha-app \
-     -f values-{ENV}.yaml \
-     --set image.tag={branch-or-tag}
-```
-
-### Environment Matrix
-
-| Env | Cluster | Namespace | Trigger |
-|---|---|---|---|
-| **DEV** | C1 | `lis-dev` | feature push |
-| **DEVQA** | C2 | `lis-devqa` | release tag |
-| **SIT** | C1 + C2 | `lis-sit` | release tag (HA) |
-| **LPT** | C2 | `lis-lpt` | release tag |
-| **DEMO** | — | — | manual |
+| Environment | Cluster | Image Registry | Deploy Trigger | values file |
+|---|---|---|---|---|
+| **DEV** | ECP C1 | `docker-dev-lis` | Auto on feature branch push | `values-DEV.yaml` |
+| **DEVQA** | ECP | `docker-rel-lis` | Auto on release branch | `values-DEVQA.yaml` |
+| **SIT C1** | ECP C1 | `docker-rel-lis` | Auto on release branch | `values-SIT.yaml` |
+| **SIT C2** | ECP C2 | `docker-rel-lis` | Auto on release branch | `values-SIT.yaml` |
+| **LPT** | ECP C2 | `docker-rel-lis` | Auto on release branch | `values-LPT.yaml` |
+| **PROD** | ECP | `docker-rel-lis` | Manual gate | `values-PROD.yaml` |
 
 ---
 
-## 4.6 GitHub Actions Secrets
+## 4.9 GitHub Actions Secrets Required
 
-| Secret | Purpose |
-|---|---|
-| `ECP_SA_TOKEN_DEV` | OpenShift SA token — DEV namespace |
-| `ECP_SA_TOKEN_REL` | OpenShift SA token — SIT/DEVQA/LPT namespaces |
-| `ARTIFACTORY_USER_DEV` / `ARTIFACTORY_CRD_DEV` | JFrog docker-dev-lis push |
-| `ARTIFACTORY_USER_REL` / `ARTIFACTORY_CRD_REL` | JFrog docker-rel-lis push |
-| `HA_UI_NPM_TOKEN` | JFrog npm proxy auth |
-| `CERT_HA_ROOT_CA` | Internal CA cert for docker build |
-| `SONAR_TOKEN` | SonarQube SAST auth |
-
----
-
-## 4.7 Local Development
-
-```mermaid
-flowchart LR
-    Dev["npm start\nCRACO dev-server\nport 3000"] -->|"/api/* proxy"| BE["lis-hub-svc\nremote dev machine\nhttp://lis-chongkw-01:5000"]
-    Dev -->|"Module Federation\nremoteEntry.js"| CRS["CRS sub-app\nlocalhost:3010"]
-    Dev -->|"Module Federation\nremoteEntry.js"| APS["APS sub-app\nlocalhost:3011"]
-```
-
-- `.env.local` overrides backend URLs to dev machine
-- `localproxy.js` drives `devServer.proxy`: `{ '/api': process.env.REACT_APP_LIS_COMMON_URL }`
-- Each sub-app MFE runs independently on its own port
-- `getHospLocalDev(labName)` in `plugins.ts` maps lab name to localhost port
-
----
-
-## 4.8 Quality Gates
-
-| Tool | Stage | Config |
+| Secret | Used By | Purpose |
 |---|---|---|
-| **SonarQube** | Release `ScanCode` | `sonar-project.properties`; excludes `src/modules/api/generated/**` |
-| **OSSS** | Release `ScanOSS` | Dependency license + CVE scanning |
-| **ESLint** | Dev + CI | CRA built-in |
-| **TypeScript** | Dev + CI Build | `tsconfig.json` strict mode |
-| **commitlint** | Pre-push (husky) | `commitlint.config.js` — conventional commits |
+| `ARTIFACTORY_USER` | All repos | JFrog Artifactory pull/push auth |
+| `ARTIFACTORY_PASSWORD` | All repos | JFrog Artifactory pull/push auth |
+| `SONAR_TOKEN` | Release pipeline | SonarQube code quality scan |
+| `ECP_KUBECONFIG_DEV` | Feature branch | kubectl/Helm access to DEV cluster |
+| `ECP_KUBECONFIG_SIT` | Release pipeline | kubectl/Helm access to SIT cluster |
+| `NPM_AUTH_TOKEN` | Frontend repos | JFrog NPM registry (`@lis/lis-hub-lib`, `@cmschassis/*`) |
 
 ---
 
-## 4.9 nginx Configuration Highlights
+## 4.10 Local Development Setup
 
-| Rule | Purpose |
-|---|---|
-| `try_files $uri /index.html` | SPA client-side routing fallback |
-| `remoteEntry.js` → `no-store no-cache` | Module Federation remote always re-fetched on app load |
-| `OPTIONS` → `204` | CORS preflight handling |
-| `X-Frame-Options: SAMEORIGIN` | Clickjacking protection |
+```mermaid
+graph LR
+    Dev["Developer Machine"]
+
+    subgraph "Running locally"
+        Hub["lis-hub-app\n:3000\nnpm start\n(CRACO dev server)"]
+        CRS["lis-crs-common-app\n:3010\nnpm start"]
+        LAB["lab-crs-app\n:3001\nnpm start"]
+        HubSvc["lis-hub-svc\n:5000\nSpring Boot\nDevTools"]
+        SpecAck["lis-crs-spec-ack-svc\n:8118\nSpring Boot\nDevTools"]
+    end
+
+    subgraph "Remote (VPN required)"
+        REMDB["Hospital DB servers\n(Oracle / Sybase / PG)"]
+        REMKC["Keycloak / SAM3\n(DEV cluster)"]
+        REMUAM["UAM Service\n(DEV cluster)"]
+    end
+
+    Dev --> Hub
+    Hub -->|"localproxy.js:\n/api → :5000"| HubSvc
+    Hub -->|"craco .env.local:\nLIS_COMMON_URL=:5000"| HubSvc
+    Hub -->|"craco: CRS@:3010"| CRS
+    CRS -->|"craco: LabCrsSpecimenApp@:3001"| LAB
+    HubSvc --- REMDB
+    HubSvc --- REMKC
+    HubSvc --- REMUAM
+```
+
+**`.env.local` overrides for hub-svc proxy:**
+```bash
+# lis-hub-app/.env.local
+REACT_APP_LIS_COMMON_URL=http://lis-chongkw-01:5000
+
+# lis-crs-common-app/.env (local dev)
+# craco.config.js: consumes LabCrsSpecimenApp@http://lis-chongkw-01:3001
+```
