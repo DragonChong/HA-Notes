@@ -119,10 +119,10 @@ server {
 ```mermaid
 flowchart LR
     Push["git push<br>feature/* branch"] --> Setup
-    Setup["1. Setup<br>CDRA/workflow-template<br>Setup@v1.6.1\nNode/Java version\nArtifactory credentials"] --> Build
+    Setup["1. Setup<br>CDRA/workflow-template<br>Setup@v1.6.1<br>Node/Java version<br>Artifactory credentials"] --> Build
     Build["2. Build<br>CDRA Build@v1.6.1<br>npm ci + npm run build<br>OR mvn package"] --> BuildContainer
-    BuildContainer["3. BuildContainer<br>CDRA BuildContainer@v1.6.1\ndocker build<br>docker push<br>→ docker-dev-lis:{branch}-{sha}"] --> Deploy
-    Deploy["4. Deploy<br>CDRA Deploy@v1.6.1\nHelm upgrade<br>→ DEV (C1 cluster)<br>values-DEV.yaml"]
+    BuildContainer["3. BuildContainer<br>CDRA BuildContainer@v1.6.1<br>docker build<br>docker push<br>→ docker-dev-lis:{branch}-{sha}"] --> Deploy
+    Deploy["4. Deploy<br>CDRA Deploy@v1.6.1<br>Helm upgrade<br>→ DEV (C1 cluster)<br>values-DEV.yaml"]
 ```
 
 ### Release Branch Pipeline (`.github/workflows/release.yaml`)
@@ -134,8 +134,8 @@ flowchart LR
     Build["2. Build"] --> Test
     Test["3. Test<br>Unit tests<br>JUnit/Jest"] --> ScanCode
     ScanCode["4. ScanCode<br>SonarQube SAST<br>Code quality gate"] --> ScanOSS
-    ScanOSS["5. ScanOSS\nOSS license scan<br>Vulnerability check"] --> BuildContainer
-    BuildContainer["6. BuildContainer\ndocker push<br>→ docker-rel-lis:{semver}"] --> DeploySIT
+    ScanOSS["5. ScanOSS<br>OSS license scan<br>Vulnerability check"] --> BuildContainer
+    BuildContainer["6. BuildContainer<br>docker push<br>→ docker-rel-lis:{semver}"] --> DeploySIT
     DeploySIT["7. Deploy SIT C1<br>Helm upgrade<br>values-SIT.yaml"] --> DeploySIT2
     DeploySIT2["8. Deploy SIT C2<br>Helm upgrade<br>values-SIT.yaml"] --> DeployLPT
     DeployLPT["9. Deploy LPT<br>Helm upgrade<br>values-LPT.yaml"] --> DeployDEVQA
@@ -146,7 +146,7 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    Manual["Manual trigger<br>(workflow_dispatch)\nor PR merge"] --> Deploy
+    Manual["Manual trigger<br>(workflow_dispatch)<br>or PR merge"] --> Deploy
     Deploy["CDRA Deploy@v1.6.1<br>Helm upgrade --install<br>→ DEV cluster<br>values-DEV.yaml"]
 ```
 
@@ -156,13 +156,13 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    L1["Layer 1: .env / .env.local\n(Developer local overrides)\nNever committed to git\nREACT_APP_LIS_COMMON_URL=http://localhost:5000"]
+    L1["Layer 1: .env / .env.local<br>(Developer local overrides)<br>Never committed to git<br>REACT_APP_LIS_COMMON_URL=http://localhost:5000"]
 
-    L2["Layer 2: Build-time (npm run build)\nREACT_APP_* vars baked into JS bundle\nas __PLACEHOLDER_LIS_*__ tokens\n(CRA/CRACO convention)"]
+    L2["Layer 2: Build-time (npm run build)<br>REACT_APP_* vars baked into JS bundle<br>as __PLACEHOLDER_LIS_*__ tokens<br>(CRA/CRACO convention)"]
 
-    L3["Layer 3: K8s ConfigMap + Secret\n(values-DEV.yaml / values-SIT.yaml)\nconfigMapRef: lis-hub-app-config\nsecretRef: keycloak-config, redis-config...\nInjected as env vars at pod start"]
+    L3["Layer 3: K8s ConfigMap + Secret<br>(values-DEV.yaml / values-SIT.yaml)<br>configMapRef: lis-hub-app-config<br>secretRef: keycloak-config, redis-config...<br>Injected as env vars at pod start"]
 
-    L4["Layer 4: CyberArk Conjur\n(Runtime injection, highest priority)\nConjur sidecar fetches all DB passwords,\nAPI keys, service credentials\nOverrides ConfigMap values\n(openjdk17 base image: conjur-13.0)"]
+    L4["Layer 4: CyberArk Conjur<br>(Runtime injection, highest priority)<br>Conjur sidecar fetches all DB passwords,<br>API keys, service credentials<br>Overrides ConfigMap values<br>(openjdk17 base image: conjur-13.0)"]
 
     L1 -->|"developer machine only"| L2
     L2 -->|"docker image (placeholder tokens)"| L3
@@ -265,14 +265,14 @@ envFrom:
 ```mermaid
 sequenceDiagram
     participant OCP as OpenShift Pod Scheduler
-    participant Base as Conjur Sidecar\n(in base image)
+    participant Base as Conjur Sidecar<br>(in base image)
     participant CV as CyberArk Conjur Vault
     participant JVM as Spring Boot JVM
 
     OCP->>Base: start pod (Conjur sidecar auto-runs first)
     Base->>CV: authenticate (pod identity / service account)
     CV-->>Base: authenticated session
-    Base->>CV: fetch secrets:\n  DB passwords\n  API keys\n  Service credentials
+    Base->>CV: fetch secrets:<br>  DB passwords<br>  API keys<br>  Service credentials
     CV-->>Base: secret values
     Base->>Base: write secrets to process env / files
     Base->>JVM: start JVM after secrets are ready
@@ -320,22 +320,22 @@ graph LR
     Dev["Developer Machine"]
 
     subgraph "Running locally"
-        Hub["lis-hub-app\n:3000\nnpm start\n(CRACO dev server)"]
-        CRS["lis-crs-common-app\n:3010\nnpm start"]
-        LAB["lab-crs-app\n:3001\nnpm start"]
-        HubSvc["lis-hub-svc\n:5000\nSpring Boot\nDevTools"]
-        SpecAck["lis-crs-spec-ack-svc\n:8118\nSpring Boot\nDevTools"]
+        Hub["lis-hub-app<br>:3000<br>npm start<br>(CRACO dev server)"]
+        CRS["lis-crs-common-app<br>:3010<br>npm start"]
+        LAB["lab-crs-app<br>:3001<br>npm start"]
+        HubSvc["lis-hub-svc<br>:5000<br>Spring Boot<br>DevTools"]
+        SpecAck["lis-crs-spec-ack-svc<br>:8118<br>Spring Boot<br>DevTools"]
     end
 
     subgraph "Remote (VPN required)"
-        REMDB["Hospital DB servers\n(Oracle / Sybase / PG)"]
-        REMKC["Keycloak / SAM3\n(DEV cluster)"]
-        REMUAM["UAM Service\n(DEV cluster)"]
+        REMDB["Hospital DB servers<br>(Oracle / Sybase / PG)"]
+        REMKC["Keycloak / SAM3<br>(DEV cluster)"]
+        REMUAM["UAM Service<br>(DEV cluster)"]
     end
 
     Dev --> Hub
-    Hub -->|"localproxy.js:\n/api → :5000"| HubSvc
-    Hub -->|"craco .env.local:\nLIS_COMMON_URL=:5000"| HubSvc
+    Hub -->|"localproxy.js:<br>/api → :5000"| HubSvc
+    Hub -->|"craco .env.local:<br>LIS_COMMON_URL=:5000"| HubSvc
     Hub -->|"craco: CRS@:3010"| CRS
     CRS -->|"craco: LabCrsSpecimenApp@:3001"| LAB
     HubSvc --- REMDB
