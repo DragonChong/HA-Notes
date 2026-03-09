@@ -9,6 +9,7 @@ Frontend:
 	  - Multi languages
 	  - User permission
 	  - Worksheet Printing
+	  - Label Printing
 - CRS (other screens)
 - Registration
 	- Common Components
