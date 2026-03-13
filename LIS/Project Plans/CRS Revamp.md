@@ -15,7 +15,7 @@ gantt
     Label Printing                      : 1w
 
     section Registration
-    Setup new screen in local server    :         des1, 2026-03-09, 2d
+    Setup new screen in local server    :         des1, 2026-03-13, 2d
     Common Components:                  :         des2, after des1, 3d
     Layout                              : 3d
 ```
