@@ -334,12 +334,12 @@ All triggered when user clicks **Save**, before the request is sent to the serve
 
 #### 8A — Patient Retrieval
 
-| # | Task | Status | Reference |
-|---|---|---|---|
-| 8A.1 | **Retrieve Patient by HKID** | `[ ]` | [[Knowledge Base/01_Screens/Registration/Workflows/Retrieve Patient by HKID]] |
-| 8A.2 | **Retrieve Patient by Encounter Number** | `[ ]` | [[Knowledge Base/01_Screens/Registration/Workflows/Retrieve Patient by Encounter Number]] |
-| 8A.3 | **Create New Patient by HKID** | `[ ]` | [[Knowledge Base/01_Screens/Registration/Workflows/Create New Patient by HKID]] |
-| 8A.4 | **Patient Tag Alert** — show alert when patient has tags/flags | `[ ]` | [[Knowledge Base/01_Screens/Registration/Workflows/Patient Tag Alert]] |
+| #    | Task                                                           | Status | Reference                                                                                 |
+| ---- | -------------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------- |
+| 8A.1 | **Retrieve Patient by HKID**                                   | `[ ]`  | [[Knowledge Base/01_Screens/Registration/Workflows/Retrieve Patient by HKID]]             |
+| 8A.2 | **Retrieve Patient by Encounter Number**                       | `[ ]`  | [[Knowledge Base/01_Screens/Registration/Workflows/Retrieve Patient by Encounter Number]] |
+| 8A.3 | **Create New Patient by HKID**                                 | `[ ]`  | [[Knowledge Base/01_Screens/Registration/Workflows/Create New Patient by HKID]]           |
+| 8A.4 | **Patient Tag Alert** — show alert when patient has tags/flags | `[ ]`  | [[Knowledge Base/01_Screens/Registration/Workflows/Patient Tag Alert]]                    |
 
 #### 8B — Default Values
 
