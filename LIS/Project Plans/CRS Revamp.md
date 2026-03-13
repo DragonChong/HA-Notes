@@ -19,3 +19,7 @@ gantt
     Common Components:                  :         des2, after des1, 3d
     Layout                              : 3d
 ```
+
+## Specimen Acknowledgement
+### New Changes in ECPath
+- 
