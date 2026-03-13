@@ -8,8 +8,10 @@ gantt
 
     section Specimen Acknowledgement
     Use data-source for BE service      :active,  des1, 2026-03-02, 2d
-    New Changes in ECPath               :active,  des2, 2026-03-04, 7d
-    Revise registration API             :  des3, after des2, 5d
+    New Changes in ECPath               :active,  des2, 2026-03-04, 14d
+    Revise registration API             : 5d
+    Worksheet Printing                  : 2w
+    Label Printing                      : 1w
 
     section Registration
     Setup new screen in local server    :         des1, 2026-03-09, 2d
