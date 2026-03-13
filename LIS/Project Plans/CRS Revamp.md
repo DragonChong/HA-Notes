@@ -10,6 +10,7 @@ gantt
     Use data-source for BE service      :active,  des1, 2026-03-02, 2d
     New Changes in ECPath               :active,  des2, 2026-03-04, 14d
     Revise registration API             : 5d
+    User permission                     : 1w
     Worksheet Printing                  : 2w
     Label Printing                      : 1w
 
