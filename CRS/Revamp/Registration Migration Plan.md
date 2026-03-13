@@ -16,7 +16,7 @@ epic: LISP-21
 # Registration Screen — Migration Plan
 
 > [!info] Purpose
-> This document tracks the full migration of the legacy Adobe Flex **Manual Registration** screen to the React micro-frontend architecture (`lis-crs-common-app`). It serves as the living task list for AI-assisted coding and will be updated continuously as work progresses.
+> This document tracks the full migration of the legacy Adobe Flex **Manual Registration** screen to the React micro-frontend architecture (`lis-request-app`). It serves as the living task list for AI-assisted coding and will be updated continuously as work progresses.
 
 ## Architecture Reference
 
@@ -28,14 +28,29 @@ epic: LISP-21
 
 | Layer | Repository | Port | Notes |
 |---|---|---|---|
-| Frontend | `lis-crs-common-app` | 3010 | CRS Remote Plugin MFE; add Registration view under `cms-manifest.js` |
+| Frontend (new) | `lis-request-app` | TBD | New Remote Plugin MFE; owns Registration screen and related request screens |
+| Frontend (consumer) | `lis-crs-common-app` | 3010 | Consumes `lis-request-app` via Webpack Module Federation |
 | Backend | `lis-crs-spec-ack-svc` | 8118 | `CrsRegController` (~289 lines) — primary registration API |
 | Hub BFF | `lis-hub-svc` | 5000 | Auth, dictionary, default values via Hub API |
 
+**MFE Integration**
+
+`lis-request-app` follows the same sub-remote pattern as `lab-crs-app`:
+
+```
+lis-hub-app  →  lis-crs-common-app  →  lis-request-app
+  (Shell)          (Level-1 Remote)       (Level-2 Remote)
+```
+
+- `lis-request-app` exposes Registration screen (e.g. `./RegistrationPage`)
+- `lis-crs-common-app` consumes it via `craco.config.js` Module Federation config
+- `lis-crs-common-app` registers the `crs-registration` view in its `cms-manifest.js` and renders the consumed component
+
 **Key Constraints**
-- New screen must be registered as a view in `cms-manifest.js` (`id: "crs-registration"`)
-- React component wrapped with scoped Emotion cache (`key: "crs"`) via `renderReactComponent`
-- State access through `LisApiContext` only — no direct Zustand store imports
+- `lis-request-app` is a new Webpack Module Federation remote (`craco.config.js` with `ModuleFederationPlugin`)
+- `lis-crs-common-app` adds `lis-request-app` as a consumer in its `craco.config.js`
+- Registration screen component wrapped with scoped Emotion cache (`key: "request"`) via `renderReactComponent`
+- State access through `LisApiContext` only — no direct Zustand store imports from the Shell
 - All API calls via `apiContext.request` (configured Axios with Bearer JWT + `ServiceParameterVo` headers)
 - Backend responses follow `ResultDataResponse<T>` envelope; all data operations use `POST`
 
@@ -66,7 +81,15 @@ Legacy implementation: Adobe Flex (ActionScript/MXML), MVVM with Parsley DI, `Re
 
 ```mermaid
 graph TD
-    subgraph "Frontend — lis-crs-common-app"
+    subgraph "lis-hub-app (Shell)"
+        Shell[Shell Host]
+    end
+
+    subgraph "lis-crs-common-app (Level-1 Remote)"
+        Manifest[cms-manifest.js\ncrs-registration view]
+    end
+
+    subgraph "lis-request-app (Level-2 Remote)"
         A[Screen Layout & Shell]
         B[Common Input Components]
         C[Screen Enablement Logic]
@@ -77,13 +100,15 @@ graph TD
         H[Workflows]
     end
 
-    subgraph "Backend — lis-crs-spec-ack-svc"
+    subgraph "lis-crs-spec-ack-svc"
         I[Registration API Endpoints]
         J[Patient / Encounter Lookup]
         K[Test Validation APIs]
         L[Default Values APIs]
     end
 
+    Shell -->|"MF dynamic import"| Manifest
+    Manifest -->|"MF dynamic import\n./RegistrationPage"| A
     A --> B --> C --> D
     D --> E --> F --> G --> H
     H --> I
@@ -106,13 +131,26 @@ graph TD
 
 ### Phase 0 — Setup & View Registration
 
+#### 0A — New `lis-request-app` repository
+
 | # | Task | Status | Notes |
 |---|---|---|---|
-| 0.1 | Register `crs-registration` view in `cms-manifest.js` | `[ ]` | Add to `views[]` array; set `menuRoute: "Registration"` |
-| 0.2 | Create route entry and lazy-loaded component stub in `lis-crs-common-app` | `[ ]` | Dynamic import via `loadComponent("Registration")` in `plugin-manifest.module.ts` |
-| 0.3 | Scaffold `Registration/` folder structure under `src/screens/` | `[ ]` | Components, hooks, types, api sub-folders |
-| 0.4 | Configure Emotion scoped cache for Registration root | `[ ]` | Already handled by `renderReactComponent` — verify `key: "crs"` is in place |
-| 0.5 | Wire `apiContext` into Registration via React Context | `[ ]` | Use existing `ContextProvider` pattern from `cms-api-provider.ts` |
+| 0A.1 | Scaffold `lis-request-app` repository | `[ ]` | CRACO + Webpack 5 + TypeScript; mirror `lab-crs-app` structure |
+| 0A.2 | Configure `ModuleFederationPlugin` in `craco.config.js` | `[ ]` | MF name: `LisRequestApp`; expose `./RegistrationPage` |
+| 0A.3 | Add `lis-request-app` to `craco.config.js` consumer list in `lis-crs-common-app` | `[ ]` | e.g. `LisRequestApp@:PORT` |
+| 0A.4 | Add shared dependencies (`react`, `@cmschassis/*`, `@lis/lis-hub-lib`, MUI, Zustand, Axios) | `[ ]` | Match versions in `lis-crs-common-app`; use peer deps |
+| 0A.5 | Set up nginx `docker-entrypoint.sh` with `__PLACEHOLDER__` env injection | `[ ]` | Follow `lab-crs-app` pattern |
+| 0A.6 | Set up GitHub Actions CI/CD pipeline | `[ ]` | Follow CDRA reusable workflow templates |
+| 0A.7 | Scaffold `Registration/` folder structure under `src/screens/` | `[ ]` | Components, hooks, types, api sub-folders |
+| 0A.8 | Configure Emotion scoped cache for Registration root | `[ ]` | `key: "request"` in `renderReactComponent` |
+
+#### 0B — Integration into `lis-crs-common-app`
+
+| # | Task | Status | Notes |
+|---|---|---|---|
+| 0B.1 | Register `crs-registration` view in `cms-manifest.js` | `[ ]` | Add to `views[]` array; set `menuRoute: "Registration"` |
+| 0B.2 | Wire `onWillDisplayView` in `plugin-manifest.module.ts` to lazy-import `./RegistrationPage` from `LisRequestApp` | `[ ]` | `const Component = await import('LisRequestApp/RegistrationPage')` |
+| 0B.3 | Pass `apiContext` down to Registration component via prop or Context | `[ ]` | `LisRequestApp` cannot import `cms-api-provider.ts` directly — pass via props or window bridge |
 
 ---
 
@@ -423,7 +461,7 @@ RegistrationPacking
 
 | Phase | Total Tasks | Completed | In Progress | Pending |
 |---|---|---|---|---|
-| Phase 0 — Setup | 5 | 0 | 0 | 5 |
+| Phase 0 — Setup | 11 | 0 | 0 | 11 |
 | Phase 1 — Common Components | 7 | 0 | 0 | 7 |
 | Phase 2 — Screen Layout | 11 | 0 | 0 | 11 |
 | Phase 3 — Enablement | 12 | 0 | 0 | 12 |
@@ -434,7 +472,7 @@ RegistrationPacking
 | Phase 8 — Workflows | 15 | 0 | 0 | 15 |
 | Phase 9 — Backend API | 12 | 0 | 0 | 12 |
 | Phase 10 — Testing | 10 | 0 | 0 | 10 |
-| **Total** | **140** | **0** | **0** | **140** |
+| **Total** | **146** | **0** | **0** | **146** |
 
 ---
 
@@ -443,3 +481,4 @@ RegistrationPacking
 | Date | Change |
 |---|---|
 | 2026-03-13 | Initial document created — full task list from Knowledge Base analysis |
+| 2026-03-13 | Updated target repository — Registration screen to be built in new `lis-request-app` MFE, consumed by `lis-crs-common-app`; Phase 0 expanded to cover new repo scaffolding and MF integration |
