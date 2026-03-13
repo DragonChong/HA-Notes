@@ -22,4 +22,5 @@ gantt
 
 ## Specimen Acknowledgement
 ### New Changes in ECPath
-- 
+- LIS-9593
+- LIS-9610
