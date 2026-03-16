@@ -22,5 +22,9 @@ gantt
 
 ## Specimen Acknowledgement
 ### New Changes in ECPath
+- LIS-9567
 - LIS-9593
 - LIS-9610
+- LIS-9698
+- LIS-9767
+- LIS-9801
