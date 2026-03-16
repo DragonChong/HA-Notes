@@ -36,8 +36,8 @@ air_src [D:\ECPath5\Project\lis-ecpath5-app\lisAir\air_src]
 java_libs [D:\ECPath5\Project\lis-ecpath5-app\lisAir\java_libs]
 
 Directory of D:\ECPath5\Project\LIS_Integrated_flex\lisAirJava
-lib [D:\ECPath5\Project\LIS_Integrated_flex\lisAirJava\lib]
-src [D:\ECPath5\Project\LIS_Integrated_flex\lisAirJava\src]
+lib [D:\ECPath5\Project\lis-ecpath5-app\lisAirJava\lib]
+src [D:\ECPath5\Project\lis-ecpath5-app\lisAirJava\src]
 
 Directory of D:\ECPath5\Project\LIS_Integrated_flex\lisFlexLib
 flex_src [D:\ECPath5\Project\lis-ecpath5-app\lisFlexLib\flex_src]
