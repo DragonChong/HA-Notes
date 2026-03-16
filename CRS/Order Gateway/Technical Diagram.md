@@ -9,7 +9,9 @@ flowchart TD
     subgraph API_Mgmt [API Management]
         Gateway["API Gateway<br/>(Validation & Routing)"]
     end
-
+    
+    SAM3["SAM3"]
+    
     subgraph LIS_Env [LIS Environment]
         API["LIS Restful API<br/>(lis-crs-gcrOrderServices)"]
         DB[(LIS Database<br/>Oracle)]
@@ -22,6 +24,7 @@ flowchart TD
     DB -->|Confirmation| API
     API --> |JSON Response<br/>code: 200, ackCode: MA| Gateway
     Gateway --> |Forward| GCRS
+    Gateway --> |Authentication|SAM3
 
     %% Styling
     style GCRS fill:#FF99FF,stroke:#333,stroke-width:1px
