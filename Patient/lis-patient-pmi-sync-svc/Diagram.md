@@ -2,7 +2,7 @@
 
 ## Temp Table
 
-```bash
+```mermaid
 graph TD
     subgraph IOI
         E[PAS] --> F[CPI Transaction Table]
