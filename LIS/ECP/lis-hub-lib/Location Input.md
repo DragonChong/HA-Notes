@@ -12,12 +12,12 @@ The component is available from `@lis/lis-hub-lib` as `LisLocationBox`.
 
 The three fields operate as a group but can be shown or hidden independently via props. Common configurations used by parent screens:
 
-| Configuration | Hospital | Specialty | Location | Typical Use Case |
-|---|---|---|---|---|
-| Full (all three) | Visible | Visible | Visible | Registration screens requiring full location capture |
-| Hospital + Location | Visible | Hidden | Visible | Screens where specialty is irrelevant or pre-determined |
-| Location only | Hidden | Hidden | Visible | Screens where hospital context is already known |
-| Disabled hospital | Disabled | Enabled | Enabled | Pre-filled registration where hospital cannot be changed |
+| Configuration       | Hospital | Specialty | Location | Typical Use Case                                         |
+| ------------------- | -------- | --------- | -------- | -------------------------------------------------------- |
+| Full (all three)    | Visible  | Visible   | Visible  | Registration screens requiring full location capture     |
+| Hospital + Location | Visible  | Hidden    | Visible  | Screens where specialty is irrelevant or pre-determined  |
+| Location only       | Hidden   | Hidden    | Visible  | Screens where hospital context is already known          |
+| Disabled hospital   | Disabled | Enabled   | Enabled  | Pre-filled registration where hospital cannot be changed |
 
 ---
 
