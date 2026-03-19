@@ -1,93 +1,49 @@
 ```mermaid
 flowchart TD
+    classDef config fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#000
+    classDef app fill:#e1bee7,stroke:#8e24aa,stroke-width:2px,color:#000
+    classDef db fill:#e8f5e8,stroke:#43a047,stroke-width:2px,color:#000
+    classDef legacy fill:#ffcdd2,stroke:#e53935,stroke-width:2px,color:#000
 
-    classDef config fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#000
+    subgraph Phase1 [Phase 1: Suspend New Service Processing]
+        direction TB
+        S1["Step 1: Map Hospitals (OpenShift Config)"]
+        S2["Step 2: Disable Scheduler (SCHEDULER_ENABLED=false)"]
+        S3["Step 3: Restart App (lis-patient-pmi-sync-svc)"]
+        S1 --> S2 --> S3
+    end
 
-    classDef app fill:#e1bee7,stroke:#8e24aa,stroke-width:2px,color:#000
+    subgraph Phase2 [Phase 2: Database Prep & Legacy Shutdown]
+        direction TB
+        S4["Step 4: Clear Blocking Messages (FAILED/PENDING/RETRY to SKIP)"]
+        S5["Step 5: Remove PATIENT_BUS Option"]
+        S6["Step 6: Stop Legacy Application (IOI C Program)"]
+        S4 --> S5 --> S6
+    end
 
-    classDef db fill:#e8f5e8,stroke:#43a047,stroke-width:2px,color:#000
+    subgraph Phase3 [Phase 3: Overlap Detection & Cleanup]
+        direction TB
+        S7["Step 7: Confirm Queue/CPI Overlap (0-120s Window)"]
+        S8["Step 8: Skip Processed Messages (OUTSTANDING to SKIP)"]
+        S7 --> S8
+    end
 
-    classDef legacy fill:#ffcdd2,stroke:#e53935,stroke-width:2px,color:#000
+    subgraph Phase4 [Phase 4: Service Go-Live]
+        direction TB
+        S9["Step 9: Enable Scheduler (SCHEDULER_ENABLED=true)"]
+        S10["Step 10: Restart App (Start Processing)"]
+        S9 --> S10
+    end
 
-  
+    Phase1 --> Phase2
+    Phase2 --> Phase3
+    Phase3 --> Phase4
 
-    subgraph Phase1 [Phase 1: Suspend New Service Processing]
-
-        direction TB
-
-        S1["Step 1: Map Hospitals (OpenShift Config)"]
-
-        S2["Step 2: Disable Scheduler (SCHEDULER_ENABLED=false)"]
-
-        S3["Step 3: Restart App (lis-patient-pmi-sync-svc)"]
-
-        S1 --> S2 --> S3
-
-    end
-
-  
-
-    subgraph Phase2 [Phase 2: Database Prep & Legacy Shutdown]
-
-        direction TB
-
-        S4["Step 4: Clear Blocking Messages (FAILED/PENDING/RETRY to SKIP)"]
-
-        S5["Step 5: Remove PATIENT_BUS Option"]
-
-        S6["Step 6: Stop Legacy Application (IOI C Program)"]
-
-        S4 --> S5 --> S6
-
-    end
-
-  
-
-    subgraph Phase3 [Phase 3: Overlap Detection & Cleanup]
-
-        direction TB
-
-        S7["Step 7: Confirm Queue/CPI Overlap (0-120s Window)"]
-
-        S8["Step 8: Skip Processed Messages (OUTSTANDING to SKIP)"]
-
-        S7 --> S8
-
-    end
-
-  
-
-    subgraph Phase4 [Phase 4: Service Go-Live]
-
-        direction TB
-
-        S9["Step 9: Enable Scheduler (SCHEDULER_ENABLED=true)"]
-
-        S10["Step 10: Restart App (Start Processing)"]
-
-        S9 --> S10
-
-    end
-
-  
-
-    Phase1 --> Phase2
-
-    Phase2 --> Phase3
-
-    Phase3 --> Phase4
-
-  
-
-    %% Class Assignments
-
-    class S1,S2,S9 config
-
-    class S3,S10 app
-
-    class S4,S5,S7,S8 db
-
-    class S6 legacy
+    %% Class Assignments
+    class S1,S2,S9 config
+    class S3,S10 app
+    class S4,S5,S7,S8 db
+    class S6 legacy
 ```
 
 | Seqeunce | Type                                                         | Description                                                                                                                                 | SQL                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Remarks                                                                                                                        |
