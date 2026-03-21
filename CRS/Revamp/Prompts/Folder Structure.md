@@ -46,3 +46,15 @@ I want to scaffold the folder structure for `lis-request-app` — a new **Webpac
 3. Note any MFE-specific folders added beyond the standard skill (e.g., `cms-plugin/`)
 4. Suggested barrel export strategy for `features/registration/index.ts`
 5. Where the Zustand store for Registration local state lives (inside `features/registration/store/` — NOT top-level `stores/`)
+---
+## Revised recommendation per component
+
+| Component            | Wrapper?  | Reason                                                                                                                                                                         |
+| -------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `HkidInput`          | **Maybe** | Only if you want to pre-bind `hkidMergeEnabled` from `apiContext` lab options and standardise the merge callback                                                               |
+| `EncounterNumber`    | **No**    | Simple enough; use directly with `onModifiedAndBlur` wired in the panel                                                                                                        |
+| `RequestNumberInput` | **No**    | The ref API (`verifyAndFormatRequestNo`) is called procedurally at save time — a wrapper doesn't simplify this                                                                 |
+| `LisLocationBox`     | **Yes**   | Used in 4 places with shared ref pattern; a typed variant prop (`"patient" \| "request" \| "report" \| "copy"`) that sets the right disabled/display props is genuinely useful |
+| `LisDoctorSingleBox` | **Maybe** | Only if you need to pre-bind hospital context or normalise the `getDataSource()` caveat (it doesn't update on programmatic `setDoctor()`)                                      |
+| `DateTimeInput`      | **N/A**   | Custom build — this IS the component                                                                                                                                           |
+| `TestCodeInput`      | **N/A**   | Custom build — this IS the component                                                                                                                                           |
