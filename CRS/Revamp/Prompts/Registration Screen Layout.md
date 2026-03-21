@@ -15,8 +15,6 @@ wiring to shared library components from Phase 1.
 The screen has this vertical layout:
 
   ┌─────────────────────────────────────────────────────┐
-  │  [PatientPanel — from @lis/lis-hub-lib]             │  ← read-only demographics banner
-  ├─────────────────────────────────────────────────────┤
   │  Registration Keys Panel                            │  ← Enc No / Req No (read-only) / HKID
   ├────────────────────────┬────────────────────────────┤
   │  Patient Demographics  │  (col 2)                   │
