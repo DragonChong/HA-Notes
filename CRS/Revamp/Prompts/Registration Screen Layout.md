@@ -159,8 +159,6 @@ The actual colour lookup from KeywordVo will be wired in Phase 4.
 
 ## Legacy Source Reference
 
-[PASTE LEGACY MXML / AS SOURCE HERE]
-
 Analyse the legacy source to verify:
 - Exact field order within each column
 - Any non-obvious field groupings or visual separators
