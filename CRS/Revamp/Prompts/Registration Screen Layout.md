@@ -66,19 +66,18 @@ The screen has this vertical layout:
 
 Use these — do not re-implement them:
 
-| Field | Component | Source |
-|-------|-----------|--------|
-| HKID input | HkidInput | @lis/lis-hub-lib |
-| Encounter No. | EncounterNumber | @lis/lis-hub-lib |
-| Request No. (read-only) | RequestNumberInput | @lis/lis-hub-lib |
-| Patient Location | LisLocationBox | @lis/lis-hub-lib |
-| Req Loc / Rpt Loc / Copy | LisLocationBox | @lis/lis-hub-lib |
-| Doctor | LisDoctorSingleBox | @lis/lis-hub-lib |
-| Urgency | KeywordDropdown | @lis/lis-hub-lib |
-| Category / Confidential / Private / Bill | ConstantDropdown | @lis/lis-hub-lib |
-| Patient demographics banner | PatientPanel | @lis/lis-hub-lib |
-| Test Code input | TestCodeInput | local (Phase 1.6) |
-| DateTime + exact checkbox | DateTimeInput | local (Phase 1.7) |
+| Field                                    | Component          | Source            |
+| ---------------------------------------- | ------------------ | ----------------- |
+| HKID input                               | HkidInput          | @lis/lis-hub-lib  |
+| Encounter No.                            | EncounterNumber    | @lis/lis-hub-lib  |
+| Request No. (read-only)                  | RequestNumberInput | @lis/lis-hub-lib  |
+| Patient Location                         | LisLocationBox     | @lis/lis-hub-lib  |
+| Req Loc / Rpt Loc / Copy                 | LisLocationBox     | @lis/lis-hub-lib  |
+| Doctor                                   | LisDoctorSingleBox | @lis/lis-hub-lib  |
+| Urgency                                  | KeywordDropdown    | @lis/lis-hub-lib  |
+| Category / Confidential / Private / Bill | ConstantDropdown   | @lis/lis-hub-lib  |
+| Test Code input                          | TestCodeInput      | local (Phase 1.6) |
+| DateTime + exact checkbox                | DateTimeInput      | local (Phase 1.7) |
 
 ---
 
