@@ -58,3 +58,6 @@ I want to scaffold the folder structure for `lis-request-app` — a new **Webpac
 | `LisDoctorSingleBox` | **Maybe** | Only if you need to pre-bind hospital context or normalise the `getDataSource()` caveat (it doesn't update on programmatic `setDoctor()`)                                      |
 | `DateTimeInput`      | **N/A**   | Custom build — this IS the component                                                                                                                                           |
 | `TestCodeInput`      | **N/A**   | Custom build — this IS the component                                                                                                                                           |
+## Bottom line
+
+Drop the wrapper concept from the prompt as a blanket pattern. In `components/`, only create a wrapper when it encapsulates **real shared logic** — not just to have a layer of indirection. The only strong candidate right now is `LisLocationBox` given its 4-site reuse with variant configs.
