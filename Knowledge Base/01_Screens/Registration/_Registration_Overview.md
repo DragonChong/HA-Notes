@@ -11,14 +11,14 @@ The Manual Registration screen consists of **four main sections**:
 The Patient Panel is divided into two columns for patient demographic information:
 
 #### First Column
-| Field | Type | Description |
-|-------|------|-------------|
-| **Name** | Text field | Patient English Name |
-| **Chinese Name** | Text field | Patient Chinese Name |
-| **Loc** | 3 dropdown selectors | Patient Location (Hospital, Specialty, Sub Specialty) |
-| **Ward** | Dropdown | Ward selection |
-| **Bed** | Text field | Patient bed number |
-| **Admitted** | DateTime field | Patient admission date and time |
+| Field            | Type                 | Description                                           |
+| ---------------- | -------------------- | ----------------------------------------------------- |
+| **Name**         | Text field           | Patient English Name                                  |
+| **Chinese Name** | Text field           | Patient Chinese Name                                  |
+| **Loc**          | 3 dropdown selectors | Patient Location (Hospital, Specialty, Sub Specialty) |
+| **Ward**         | Dropdown             | Ward selection                                        |
+| **Bed**          | Text field           | Patient bed number                                    |
+| **Admitted**     | DateTime field       | Patient admission date and time                       |
 
 #### Second Column
 | Field | Type | Description |
