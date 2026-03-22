@@ -327,8 +327,8 @@ Tasks 2.7, 2.8, 2.9 are placeholders in Phase 2 — render the component shells 
 
 ### Open items for Phase 2
 
-|#|Item|Blocks|
-|---|---|---|
-|D.2|Confirm keyword group codes: `AGE_UNIT`, `RACE` (constant or keyword?), `BILL`, `CONFIDENTIAL`, `LAB_ONLY`|2.2, 2.3|
-|New|Confirm `onWillDisplayView` params shape — does it carry `menuItemClass` to determine font size variant?|2.10|
-|New|Confirm `DATE_ATTRIBUTE` option parsing — which positional flags control visibility of Collect / Arrive / Request datetime fields|2.3|
+| #   | Item                                                                                                                              | Blocks   |
+| --- | --------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| D.2 | Confirm keyword group codes: `AGE_UNIT`, `RACE` (constant or keyword?), `BILL`, `CONFIDENTIAL`, `LAB_ONLY`                        | 2.2, 2.3 |
+| New | Confirm `onWillDisplayView` params shape — does it carry `menuItemClass` to determine font size variant?                          | 2.10     |
+| New | Confirm `DATE_ATTRIBUTE` option parsing — which positional flags control visibility of Collect / Arrive / Request datetime fields | 2.3      |
