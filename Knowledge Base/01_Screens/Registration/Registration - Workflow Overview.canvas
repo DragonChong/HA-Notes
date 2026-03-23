@@ -17,8 +17,6 @@
 		{"id":"f1a2b3c4d5e60012","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/Request No. Generation.md","x":500,"y":1400,"width":440,"height":280},
 		{"id":"f1a2b3c4d5e60013","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/Test Code Selection Behavior.md","x":1000,"y":1400,"width":440,"height":280},
 		{"id":"f1a2b3c4d5e60014","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/Patient Tag Alert.md","x":1560,"y":1400,"width":440,"height":280},
-		{"id":"f1a2b3c4d5e6001d","type":"text","text":"## BBNK Panel\n5 components\n- Blood Category selection\n- Mother Results\n- Operation / Indication codes\n- Inventory reserve\n- Test type radio buttons","x":540,"y":2000,"width":490,"height":260},
-		{"id":"f1a2b3c4d5e6001e","type":"text","text":"## MICR VIRO Panel\n- Microbiologist\n- Specimen Type & Site\n- Chemotherapy\n- Treatment Category","x":540,"y":2320,"width":490,"height":260},
 		{"id":"f1a2b3c4d5e6001f","type":"text","text":"## Patient Info Validation\n- Name\n- Demographics modified\n- Age value\n- Info on save\n- Location","x":1130,"y":2000,"width":480,"height":260},
 		{"id":"f1a2b3c4d5e60020","type":"text","text":"## Test Validation\n- Existence\n- Registrability\n- Validity & Valid period\n- Prefix\n- Duplication","x":1660,"y":2000,"width":480,"height":260},
 		{"id":"f1a2b3c4d5e60021","type":"text","text":"## Request Info Validation\n- General request info\n- Doctor\n- Specimen datetime\n- Clinical detail / text field length","x":1130,"y":2320,"width":480,"height":260},
@@ -26,7 +24,6 @@
 		{"id":"f1a2b3c4d5e60016","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/Pre-Register/Verification Dialogue.md","x":0,"y":2900,"width":440,"height":280},
 		{"id":"f1a2b3c4d5e60017","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/Pre-Register/Send Out Information Dialogue.md","x":500,"y":2900,"width":440,"height":280},
 		{"id":"f1a2b3c4d5e60018","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/Pre-Register/Private Change Reason Dialogue.md","x":1000,"y":2900,"width":440,"height":280},
-		{"id":"f1a2b3c4d5e60023","type":"text","text":"## Result Entry Dialogues\n11 variants\nABG · ABG3 · CRCL\nFluid · TIMH · TOX\nUrine · Urine PYN · Urine QEH\n24-Hour Urine\nResult Entry on Save","x":1560,"y":2900,"width":440,"height":280},
 		{"id":"f1a2b3c4d5e60019","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/Post-Register/Clear Screen.md","x":0,"y":3500,"width":440,"height":280},
 		{"id":"f1a2b3c4d5e6001a","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/Post-Register/Request No Label Printing.md","x":500,"y":3500,"width":440,"height":280},
 		{"id":"f1a2b3c4d5e6001b","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/Post-Register/Registration Worksheet Printing.md","x":1060,"y":3500,"width":440,"height":280},
@@ -34,7 +31,10 @@
 		{"id":"f1a2b3c4d5e6000b","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/Create New Patient by HKID.md","x":1240,"y":200,"width":440,"height":280},
 		{"id":"f1a2b3c4d5e6000a","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/Retrieve Patient by Encounter Number.md","x":560,"y":200,"width":440,"height":280},
 		{"id":"f1a2b3c4d5e60015","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/MICR VIRO Validation.md","x":20,"y":2340,"width":480,"height":280},
-		{"id":"f1a2b3c4d5e6001c","type":"text","text":"## ANAT Panel\n14 components\n- Test dropdown\n- Specimen Site & Type\n- Path Tech, X-Ray No.\n- Date of Death, Gynae buttons\n- Coroner, Confidential bench\n- Auth dropdown\n- Save Validation","x":10,"y":2000,"width":490,"height":260}
+		{"id":"f1a2b3c4d5e6001c","type":"text","text":"## ANAT Panel\n14 components\n- Test dropdown\n- Specimen Site & Type\n- Path Tech, X-Ray No.\n- Date of Death, Gynae buttons\n- Coroner, Confidential bench\n- Auth dropdown\n- Save Validation","x":10,"y":2000,"width":490,"height":260},
+		{"id":"f1a2b3c4d5e6001e","type":"text","text":"## MICR VIRO Panel\n- Microbiologist\n- Specimen Type & Site\n- Chemotherapy\n- Treatment Category","x":510,"y":2340,"width":490,"height":260},
+		{"id":"f1a2b3c4d5e6001d","type":"text","text":"## BBNK Panel\n5 components\n- Blood Category selection\n- Mother Results\n- Operation / Indication codes\n- Inventory reserve\n- Test type radio buttons","x":510,"y":2000,"width":490,"height":260},
+		{"id":"f1a2b3c4d5e60023","type":"text","text":"## Result Entry Dialogues\n11 variants\nABG · ABG3 · CRCL\nFluid · TIMH · TOX\nUrine · Urine PYN · Urine QEH\n24-Hour Urine\nResult Entry on Save","x":1540,"y":2900,"width":440,"height":280}
 	],
 	"edges":[
 		{"id":"e1a2b3c4d5e60001","fromNode":"f1a2b3c4d5e60008","fromSide":"bottom","toNode":"f1a2b3c4d5e60009","toSide":"top","label":"start"},
