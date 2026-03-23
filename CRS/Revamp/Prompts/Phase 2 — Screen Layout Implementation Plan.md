@@ -104,15 +104,15 @@ Right column fields:
 
 Left column fields:
 
-|Field|Component|
-|---|---|
-|Clin Dtl|`TextField` multiline, min 2 rows|
-|Req Dr.|`LisDoctorSingleBox` from `@lis/lis-hub-lib` + "Create New Doctor" `Button`|
-|Req Loc|`LisLocationBox`|
-|Rpt Loc|`LisLocationBox` (Specialty sub-field always disabled)|
-|Copy|`LisLocationBox` (Specialty sub-field always disabled) + "Add Extra Copy" `IconButton`|
-|Reference|`TextField`|
-|Comment|`TextField`|
+| Field     | Component                                                                              |
+| --------- | -------------------------------------------------------------------------------------- |
+| Clin Dtl  | `TextField` multiline, min 2 rows                                                      |
+| Req Dr.   | `LisDoctorBox` from `@lis/lis-hub-lib` + "Create New Doctor" `Button`                  |
+| Req Loc   | `LisLocationBox`                                                                       |
+| Rpt Loc   | `LisLocationBox` (Specialty sub-field always disabled)                                 |
+| Copy      | `LisLocationBox` (Specialty sub-field always disabled) + "Add Extra Copy" `IconButton` |
+| Reference | `TextField`                                                                            |
+| Comment   | `TextField`                                                                            |
 
 Right column fields:
 
