@@ -9,9 +9,6 @@
 		{"id":"f1a2b3c4d5e60007","type":"group","x":-50,"y":3450,"width":1550,"height":430,"color":"5","label":"Post-Register"},
 		{"id":"f1a2b3c4d5e60008","type":"file","file":"Knowledge Base/01_Screens/Registration/_Registration_Overview.md","x":720,"y":-320,"width":520,"height":300},
 		{"id":"f1a2b3c4d5e60009","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/Retrieve Patient by HKID.md","x":0,"y":200,"width":440,"height":280},
-		{"id":"f1a2b3c4d5e6000a","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/Retrieve Patient by Encounter Number.md","x":500,"y":200,"width":440,"height":280},
-		{"id":"f1a2b3c4d5e60015","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/MICR VIRO Validation.md","x":0,"y":2320,"width":480,"height":280},
-		{"id":"f1a2b3c4d5e6001c","type":"text","text":"## ANAT Panel\n14 components\n- Test dropdown\n- Specimen Site & Type\n- Path Tech, X-Ray No.\n- Date of Death, Gynae buttons\n- Coroner, Confidential bench\n- Auth dropdown\n- Save Validation","x":0,"y":2000,"width":490,"height":260},
 		{"id":"f1a2b3c4d5e6000d","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/Default Request Location.md","x":0,"y":800,"width":440,"height":280},
 		{"id":"f1a2b3c4d5e6000e","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/Default Request Info.md","x":500,"y":800,"width":440,"height":280},
 		{"id":"f1a2b3c4d5e6000f","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/Default Request Doctor.md","x":1000,"y":800,"width":440,"height":280},
@@ -34,7 +31,10 @@
 		{"id":"f1a2b3c4d5e6001a","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/Post-Register/Request No Label Printing.md","x":500,"y":3500,"width":440,"height":280},
 		{"id":"f1a2b3c4d5e6001b","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/Post-Register/Registration Worksheet Printing.md","x":1060,"y":3500,"width":440,"height":280},
 		{"id":"f1a2b3c4d5e6000c","type":"file","file":"Knowledge Base/01_Screens/Registration/Components/Patient Selection Dialogue.md","x":1820,"y":200,"width":440,"height":280},
-		{"id":"f1a2b3c4d5e6000b","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/Create New Patient by HKID.md","x":1240,"y":200,"width":440,"height":280}
+		{"id":"f1a2b3c4d5e6000b","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/Create New Patient by HKID.md","x":1240,"y":200,"width":440,"height":280},
+		{"id":"f1a2b3c4d5e6000a","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/Retrieve Patient by Encounter Number.md","x":560,"y":200,"width":440,"height":280},
+		{"id":"f1a2b3c4d5e60015","type":"file","file":"Knowledge Base/01_Screens/Registration/Workflows/MICR VIRO Validation.md","x":20,"y":2340,"width":480,"height":280},
+		{"id":"f1a2b3c4d5e6001c","type":"text","text":"## ANAT Panel\n14 components\n- Test dropdown\n- Specimen Site & Type\n- Path Tech, X-Ray No.\n- Date of Death, Gynae buttons\n- Coroner, Confidential bench\n- Auth dropdown\n- Save Validation","x":10,"y":2000,"width":490,"height":260}
 	],
 	"edges":[
 		{"id":"e1a2b3c4d5e60001","fromNode":"f1a2b3c4d5e60008","fromSide":"bottom","toNode":"f1a2b3c4d5e60009","toSide":"top","label":"start"},
