@@ -1,0 +1,459 @@
+{
+  "nodes": [
+    {
+      "id": "f1a2b3c4d5e60001",
+      "type": "group",
+      "label": "Patient Retrieval",
+      "x": -50,
+      "y": 150,
+      "width": 2050,
+      "height": 430,
+      "color": "5"
+    },
+    {
+      "id": "f1a2b3c4d5e60002",
+      "type": "group",
+      "label": "Request Defaults",
+      "x": -50,
+      "y": 750,
+      "width": 2050,
+      "height": 430,
+      "color": "3"
+    },
+    {
+      "id": "f1a2b3c4d5e60003",
+      "type": "group",
+      "label": "Core Registration",
+      "x": -50,
+      "y": 1350,
+      "width": 2050,
+      "height": 430,
+      "color": "2"
+    },
+    {
+      "id": "f1a2b3c4d5e60004",
+      "type": "group",
+      "label": "Lab-Specific Panels",
+      "x": -50,
+      "y": 1950,
+      "width": 1060,
+      "height": 720,
+      "color": "6"
+    },
+    {
+      "id": "f1a2b3c4d5e60005",
+      "type": "group",
+      "label": "Validations",
+      "x": 1080,
+      "y": 1950,
+      "width": 1100,
+      "height": 720,
+      "color": "1"
+    },
+    {
+      "id": "f1a2b3c4d5e60006",
+      "type": "group",
+      "label": "Pre-Register",
+      "x": -50,
+      "y": 2850,
+      "width": 2050,
+      "height": 430,
+      "color": "4"
+    },
+    {
+      "id": "f1a2b3c4d5e60007",
+      "type": "group",
+      "label": "Post-Register",
+      "x": -50,
+      "y": 3450,
+      "width": 1550,
+      "height": 430,
+      "color": "5"
+    },
+    {
+      "id": "f1a2b3c4d5e60008",
+      "type": "file",
+      "file": "Knowledge Base/01_Screens/Registration/_Registration_Overview.md",
+      "x": 720,
+      "y": -320,
+      "width": 520,
+      "height": 300
+    },
+    {
+      "id": "f1a2b3c4d5e60009",
+      "type": "file",
+      "file": "Knowledge Base/01_Screens/Registration/Workflows/Retrieve Patient by HKID.md",
+      "x": 0,
+      "y": 200,
+      "width": 440,
+      "height": 280
+    },
+    {
+      "id": "f1a2b3c4d5e6000a",
+      "type": "file",
+      "file": "Knowledge Base/01_Screens/Registration/Workflows/Retrieve Patient by Encounter Number.md",
+      "x": 500,
+      "y": 200,
+      "width": 440,
+      "height": 280
+    },
+    {
+      "id": "f1a2b3c4d5e6000b",
+      "type": "file",
+      "file": "Knowledge Base/01_Screens/Registration/Workflows/Create New Patient by HKID.md",
+      "x": 1000,
+      "y": 200,
+      "width": 440,
+      "height": 280
+    },
+    {
+      "id": "f1a2b3c4d5e6000c",
+      "type": "file",
+      "file": "Knowledge Base/01_Screens/Registration/Components/Patient Selection Dialogue.md",
+      "x": 1560,
+      "y": 200,
+      "width": 440,
+      "height": 280
+    },
+    {
+      "id": "f1a2b3c4d5e6000d",
+      "type": "file",
+      "file": "Knowledge Base/01_Screens/Registration/Workflows/Default Request Location.md",
+      "x": 0,
+      "y": 800,
+      "width": 440,
+      "height": 280
+    },
+    {
+      "id": "f1a2b3c4d5e6000e",
+      "type": "file",
+      "file": "Knowledge Base/01_Screens/Registration/Workflows/Default Request Info.md",
+      "x": 500,
+      "y": 800,
+      "width": 440,
+      "height": 280
+    },
+    {
+      "id": "f1a2b3c4d5e6000f",
+      "type": "file",
+      "file": "Knowledge Base/01_Screens/Registration/Workflows/Default Request Doctor.md",
+      "x": 1000,
+      "y": 800,
+      "width": 440,
+      "height": 280
+    },
+    {
+      "id": "f1a2b3c4d5e60010",
+      "type": "file",
+      "file": "Knowledge Base/01_Screens/Registration/Workflows/Default Patient Category.md",
+      "x": 1560,
+      "y": 800,
+      "width": 440,
+      "height": 280
+    },
+    {
+      "id": "f1a2b3c4d5e60011",
+      "type": "file",
+      "file": "Knowledge Base/01_Screens/Registration/Workflows/Register Request.md",
+      "x": 0,
+      "y": 1400,
+      "width": 440,
+      "height": 280
+    },
+    {
+      "id": "f1a2b3c4d5e60012",
+      "type": "file",
+      "file": "Knowledge Base/01_Screens/Registration/Workflows/Request No. Generation.md",
+      "x": 500,
+      "y": 1400,
+      "width": 440,
+      "height": 280
+    },
+    {
+      "id": "f1a2b3c4d5e60013",
+      "type": "file",
+      "file": "Knowledge Base/01_Screens/Registration/Workflows/Test Code Selection Behavior.md",
+      "x": 1000,
+      "y": 1400,
+      "width": 440,
+      "height": 280
+    },
+    {
+      "id": "f1a2b3c4d5e60014",
+      "type": "file",
+      "file": "Knowledge Base/01_Screens/Registration/Workflows/Patient Tag Alert.md",
+      "x": 1560,
+      "y": 1400,
+      "width": 440,
+      "height": 280
+    },
+    {
+      "id": "f1a2b3c4d5e60015",
+      "type": "file",
+      "file": "Knowledge Base/01_Screens/Registration/Workflows/MICR VIRO Validation.md",
+      "x": 0,
+      "y": 2320,
+      "width": 480,
+      "height": 280
+    },
+    {
+      "id": "f1a2b3c4d5e6001c",
+      "type": "text",
+      "text": "## ANAT Panel\n14 components\n- Test dropdown\n- Specimen Site & Type\n- Path Tech, X-Ray No.\n- Date of Death, Gynae buttons\n- Coroner, Confidential bench\n- Auth dropdown\n- Save Validation",
+      "x": 0,
+      "y": 2000,
+      "width": 490,
+      "height": 260
+    },
+    {
+      "id": "f1a2b3c4d5e6001d",
+      "type": "text",
+      "text": "## BBNK Panel\n5 components\n- Blood Category selection\n- Mother Results\n- Operation / Indication codes\n- Inventory reserve\n- Test type radio buttons",
+      "x": 540,
+      "y": 2000,
+      "width": 490,
+      "height": 260
+    },
+    {
+      "id": "f1a2b3c4d5e6001e",
+      "type": "text",
+      "text": "## MICR VIRO Panel\n- Microbiologist\n- Specimen Type & Site\n- Chemotherapy\n- Treatment Category",
+      "x": 540,
+      "y": 2320,
+      "width": 490,
+      "height": 260
+    },
+    {
+      "id": "f1a2b3c4d5e6001f",
+      "type": "text",
+      "text": "## Patient Info Validation\n- Name\n- Demographics modified\n- Age value\n- Info on save\n- Location",
+      "x": 1130,
+      "y": 2000,
+      "width": 480,
+      "height": 260
+    },
+    {
+      "id": "f1a2b3c4d5e60020",
+      "type": "text",
+      "text": "## Test Validation\n- Existence\n- Registrability\n- Validity & Valid period\n- Prefix\n- Duplication",
+      "x": 1660,
+      "y": 2000,
+      "width": 480,
+      "height": 260
+    },
+    {
+      "id": "f1a2b3c4d5e60021",
+      "type": "text",
+      "text": "## Request Info Validation\n- General request info\n- Doctor\n- Specimen datetime\n- Clinical detail / text field length",
+      "x": 1130,
+      "y": 2320,
+      "width": 480,
+      "height": 260
+    },
+    {
+      "id": "f1a2b3c4d5e60022",
+      "type": "text",
+      "text": "## Component Rules\n**Enablement** (13 rules)\nPanel visibility, field state by screen state & lab config\n\n**Interaction** (13 rules)\nTab sequence, focus, color, location, retain behavior",
+      "x": 1660,
+      "y": 2320,
+      "width": 480,
+      "height": 260
+    },
+    {
+      "id": "f1a2b3c4d5e60016",
+      "type": "file",
+      "file": "Knowledge Base/01_Screens/Registration/Workflows/Pre-Register/Verification Dialogue.md",
+      "x": 0,
+      "y": 2900,
+      "width": 440,
+      "height": 280
+    },
+    {
+      "id": "f1a2b3c4d5e60017",
+      "type": "file",
+      "file": "Knowledge Base/01_Screens/Registration/Workflows/Pre-Register/Send Out Information Dialogue.md",
+      "x": 500,
+      "y": 2900,
+      "width": 440,
+      "height": 280
+    },
+    {
+      "id": "f1a2b3c4d5e60018",
+      "type": "file",
+      "file": "Knowledge Base/01_Screens/Registration/Workflows/Pre-Register/Private Change Reason Dialogue.md",
+      "x": 1000,
+      "y": 2900,
+      "width": 440,
+      "height": 280
+    },
+    {
+      "id": "f1a2b3c4d5e60023",
+      "type": "text",
+      "text": "## Result Entry Dialogues\n11 variants\nABG · ABG3 · CRCL\nFluid · TIMH · TOX\nUrine · Urine PYN · Urine QEH\n24-Hour Urine\nResult Entry on Save",
+      "x": 1560,
+      "y": 2900,
+      "width": 440,
+      "height": 280
+    },
+    {
+      "id": "f1a2b3c4d5e60019",
+      "type": "file",
+      "file": "Knowledge Base/01_Screens/Registration/Workflows/Post-Register/Clear Screen.md",
+      "x": 0,
+      "y": 3500,
+      "width": 440,
+      "height": 280
+    },
+    {
+      "id": "f1a2b3c4d5e6001a",
+      "type": "file",
+      "file": "Knowledge Base/01_Screens/Registration/Workflows/Post-Register/Request No Label Printing.md",
+      "x": 500,
+      "y": 3500,
+      "width": 440,
+      "height": 280
+    },
+    {
+      "id": "f1a2b3c4d5e6001b",
+      "type": "file",
+      "file": "Knowledge Base/01_Screens/Registration/Workflows/Post-Register/Registration Worksheet Printing.md",
+      "x": 1060,
+      "y": 3500,
+      "width": 440,
+      "height": 280
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1a2b3c4d5e60001",
+      "fromNode": "f1a2b3c4d5e60008",
+      "fromSide": "bottom",
+      "toNode": "f1a2b3c4d5e60009",
+      "toSide": "top",
+      "label": "start"
+    },
+    {
+      "id": "e1a2b3c4d5e60002",
+      "fromNode": "f1a2b3c4d5e60008",
+      "fromSide": "bottom",
+      "toNode": "f1a2b3c4d5e6000a",
+      "toSide": "top"
+    },
+    {
+      "id": "e1a2b3c4d5e60003",
+      "fromNode": "f1a2b3c4d5e60008",
+      "fromSide": "bottom",
+      "toNode": "f1a2b3c4d5e6000b",
+      "toSide": "top"
+    },
+    {
+      "id": "e1a2b3c4d5e60004",
+      "fromNode": "f1a2b3c4d5e60009",
+      "fromSide": "right",
+      "toNode": "f1a2b3c4d5e6000c",
+      "toSide": "left",
+      "label": "on results"
+    },
+    {
+      "id": "e1a2b3c4d5e60005",
+      "fromNode": "f1a2b3c4d5e6000a",
+      "fromSide": "right",
+      "toNode": "f1a2b3c4d5e6000c",
+      "toSide": "left",
+      "label": "on results"
+    },
+    {
+      "id": "e1a2b3c4d5e60006",
+      "fromNode": "f1a2b3c4d5e6000b",
+      "fromSide": "bottom",
+      "toNode": "f1a2b3c4d5e6000d",
+      "toSide": "top",
+      "label": "auto-default"
+    },
+    {
+      "id": "e1a2b3c4d5e60007",
+      "fromNode": "f1a2b3c4d5e6000c",
+      "fromSide": "bottom",
+      "toNode": "f1a2b3c4d5e6000d",
+      "toSide": "top",
+      "label": "on selection"
+    },
+    {
+      "id": "e1a2b3c4d5e60008",
+      "fromNode": "f1a2b3c4d5e6000d",
+      "fromSide": "right",
+      "toNode": "f1a2b3c4d5e6000e",
+      "toSide": "left"
+    },
+    {
+      "id": "e1a2b3c4d5e60009",
+      "fromNode": "f1a2b3c4d5e6000e",
+      "fromSide": "right",
+      "toNode": "f1a2b3c4d5e6000f",
+      "toSide": "left"
+    },
+    {
+      "id": "e1a2b3c4d5e6000a",
+      "fromNode": "f1a2b3c4d5e6000f",
+      "fromSide": "right",
+      "toNode": "f1a2b3c4d5e60010",
+      "toSide": "left"
+    },
+    {
+      "id": "e1a2b3c4d5e6000b",
+      "fromNode": "f1a2b3c4d5e60010",
+      "fromSide": "bottom",
+      "toNode": "f1a2b3c4d5e60011",
+      "toSide": "top",
+      "label": "proceed"
+    },
+    {
+      "id": "e1a2b3c4d5e6000c",
+      "fromNode": "f1a2b3c4d5e60011",
+      "fromSide": "right",
+      "toNode": "f1a2b3c4d5e60012",
+      "toSide": "left",
+      "label": "assigns req no."
+    },
+    {
+      "id": "e1a2b3c4d5e6000d",
+      "fromNode": "f1a2b3c4d5e60011",
+      "fromSide": "bottom",
+      "toNode": "f1a2b3c4d5e60015",
+      "toSide": "top",
+      "label": "if MICR/VIRO lab"
+    },
+    {
+      "id": "e1a2b3c4d5e6000e",
+      "fromNode": "f1a2b3c4d5e60011",
+      "fromSide": "bottom",
+      "toNode": "f1a2b3c4d5e6001f",
+      "toSide": "top",
+      "label": "triggers"
+    },
+    {
+      "id": "e1a2b3c4d5e6000f",
+      "fromNode": "f1a2b3c4d5e60011",
+      "fromSide": "bottom",
+      "toNode": "f1a2b3c4d5e60020",
+      "toSide": "top",
+      "label": "triggers"
+    },
+    {
+      "id": "e1a2b3c4d5e60010",
+      "fromNode": "f1a2b3c4d5e60011",
+      "fromSide": "bottom",
+      "toNode": "f1a2b3c4d5e60016",
+      "toSide": "top",
+      "label": "pre-register"
+    },
+    {
+      "id": "e1a2b3c4d5e60011",
+      "fromNode": "f1a2b3c4d5e60016",
+      "fromSide": "bottom",
+      "toNode": "f1a2b3c4d5e60019",
+      "toSide": "top",
+      "label": "post-save"
+    }
+  ]
+}
