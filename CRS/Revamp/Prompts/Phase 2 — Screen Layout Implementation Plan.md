@@ -65,14 +65,14 @@ interface RegistrationScreenState {
 
 Left column fields:
 
-|Field|Component|
-|---|---|
-|Name|`TextField` (multiline=false)|
-|Chinese Name|`TextField`|
-|Location (Hospital / Specialty / Ward)|`LisLocationBox` from `@lis/lis-hub-lib`|
-|Bed|`TextField`|
-|Admitted|`DateTimeInput` (Task 1.7 custom component)|
-|MRN|`TextField`|
+| Field                                  | Component                                   |
+| -------------------------------------- | ------------------------------------------- |
+| Name                                   | `TextField` (multiline=false)               |
+| Chinese Name                           | `TextField`                                 |
+| Location (Hospital / Specialty / Ward) | `LisLocationBox` from `@lis/lis-hub-lib`    |
+| Bed                                    | `TextField`                                 |
+| Admitted                               | `DateTimeInput` (Task 1.7 custom component) |
+| MRN                                    | `TextField`                                 |
 
 Right column fields:
 
