@@ -59,7 +59,7 @@ interface RegistrationScreenState {
 
 #### Task 2.2 — Patient Demographics Panel
 
-**Component:** `PatientDemographicsPanel`
+**Component:** `PatientDemographics`
 
 **Layout:** Two-column `Grid` — left column and right column, with the `LisLocationBox` spanning full width where it logically belongs.
 
