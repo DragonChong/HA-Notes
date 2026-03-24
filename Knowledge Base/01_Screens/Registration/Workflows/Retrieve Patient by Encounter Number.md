@@ -321,12 +321,11 @@ If the user clicks **No** on message **687**, the encounter number is cleared fr
 
 ## Data Sources
 
-| Data | Source | Backend Service |
-|---|---|---|
-| Patient demographics and episode data | Local LIS patient records — queried on encounter number entry | `lis-patient-svc` — POST `/patient/byEncounterNo` |
-| PMI patient records | HKPMI service — queried when no local record is found (if PMI is enabled) | `lis-patient-svc` — POST `/patient/pmiList` |
-| PMI availability | System configuration — checked at screen initialisation | `lis-hub-svc` (Hub BFF) |
-| Hospital list for selection panel | System-wide hospital configuration | `lis-hub-svc` (Hub BFF) |
+| Data                                  | Source                                                                    | Backend Service                                   |
+| ------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------- |
+| Patient demographics and episode data | Local LIS patient records — queried on encounter number entry             | `lis-patient-svc` — POST `/patient/byEncounterNo` |
+| PMI patient records                   | HKPMI service — queried when no local record is found (if PMI is enabled) | `lis-patient-svc` — POST `/patient/pmiList`       |
+| Hospital list for selection panel     | `HospitalVo` Dictionary                                                   | N/A                                               |
 
 ---
 
