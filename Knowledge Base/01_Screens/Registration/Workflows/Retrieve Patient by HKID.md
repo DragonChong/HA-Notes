@@ -308,12 +308,12 @@ sequenceDiagram
 
 ## Data Sources
 
-| Data | Source |
-|---|---|
-| Patient demographics and episode list | Local patient records — queried on HKID entry |
-| PMI patient records | PMI service — queried on PMI List button click or Close indicator (when PMI is enabled) |
-| PMI availability | System configuration — checked at screen initialisation |
-| Merged HKID records | Local patient records — checked as part of the HKID lookup |
+| Data | Source | Backend Service |
+|---|---|---|
+| Patient demographics and episode list | Local LIS patient records — queried on HKID entry | `lis-patient-svc` — POST `/patient/byHkid` |
+| PMI patient records | HKPMI service — queried on PMI List button click or Close indicator (when PMI is enabled) | `lis-patient-svc` — POST `/patient/pmiList` |
+| PMI availability | System configuration — checked at screen initialisation | `lis-hub-svc` (Hub BFF) |
+| Merged HKID records | Local LIS patient records — checked as part of the HKID lookup | `lis-patient-svc` — POST `/patient/byHkid` |
 
 ---
 

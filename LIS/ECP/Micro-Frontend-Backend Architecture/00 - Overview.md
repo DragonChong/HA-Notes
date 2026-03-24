@@ -25,11 +25,14 @@ graph TB
         Hub["lis-hub-app\n(Shell Host MFE)\nReact + MUI + Zustand\nPort 3000"]
         CRS["lis-crs-common-app\n(CRS Remote MFE)\nReact Plugin\nPort 3010"]
         LAB["lab-crs-app\n(Specimen Ack Remote MFE)\nReact\nPort 3001"]
+        REQ["lis-request-app\n(Registration Remote MFE)\nReact\nPort TBD"]
     end
 
     subgraph "Backend Services"
         HubSvc["lis-hub-svc\n(Hub BFF)\nSpring Boot 3.3.13\nPort 5000"]
         SpecAck["lis-crs-spec-ack-svc\n(Specimen Ack Service)\nSpring Boot\nPort 8118"]
+        ReqSvc["lis-request-svc\n(Registration Service)\nSpring Boot\nPort TBD"]
+        PatSvc["lis-patient-svc\n(Patient Service)\nSpring Boot\nPort TBD"]
     end
 
     subgraph "Persistence"
@@ -53,9 +56,12 @@ graph TB
 
     Hub -->|"Webpack MF: dynamic import()"| CRS
     CRS -->|"Webpack MF: dynamic import()"| LAB
+    CRS -->|"Webpack MF: dynamic import()"| REQ
     Hub -->|"REST (Axios) Bearer JWT"| HubSvc
     CRS -->|"REST (Axios)"| SpecAck
     LAB -->|"REST (Axios)"| SpecAck
+    REQ -->|"REST (Axios)"| ReqSvc
+    REQ -->|"REST (Axios)"| PatSvc
     Hub -->|"OIDC Auth Code Flow"| KC
     HubSvc -->|"OAuth2 Client Creds"| KC
     HubSvc -->|"ACL check REST"| UAM
@@ -79,8 +85,11 @@ graph TB
 | `lis-hub-app` | React MFE (Shell Host) | Portal shell; loads all lab plugins; owns routing & auth | 3000 | `LisHubAppModule` |
 | `lis-crs-common-app` | React MFE (Remote Plugin) | CRS domain screens (spec-ack, registration, APS, BBS) | 3010 | `CRS` (pluginId in cms-manifest) |
 | `lab-crs-app` | React MFE (Remote Plugin) | Specimen acknowledgment UI; sub-remote consumed by `lis-crs-common-app` | 3001 | `LabCrsSpecimenApp` |
+| `lis-request-app` | React MFE (Remote Plugin) | Registration and request screens; sub-remote consumed by `lis-crs-common-app` | TBD | `LisRequestApp` |
 | `lis-hub-svc` | Spring Boot 3.3.13 / Java 17 | Hub BFF; aggregates DBs; full OAuth2/JWT security | 5000 | `LisApplication` |
 | `lis-crs-spec-ack-svc` | Spring Boot / Java 17 | CRS domain microservice; specimen ack/registration/search | 8118 | `LisCrsSpecAckSvcApplication` |
+| `lis-request-svc` | Spring Boot / Java 17 | Registration and request-related APIs (registration, test validation, default values) | TBD | — |
+| `lis-patient-svc` | Spring Boot / Java 17 | Patient-related APIs: HKPMI patient list, LIS patient by HKID, LIS patient by Encounter Number | TBD | — |
 
 ---
 

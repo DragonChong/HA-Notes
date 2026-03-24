@@ -30,7 +30,8 @@ epic: LISP-21
 |---|---|---|---|
 | Frontend (new) | `lis-request-app` | TBD | New Remote Plugin MFE; owns Registration screen and related request screens |
 | Frontend (consumer) | `lis-crs-common-app` | 3010 | Consumes `lis-request-app` via Webpack Module Federation |
-| Backend | `lis-crs-spec-ack-svc` | 8118 | `CrsRegController` (~289 lines) — primary registration API |
+| Backend (Registration) | `lis-request-svc` | TBD | Primary API service for registration and request-related endpoints |
+| Backend (Patient) | `lis-patient-svc` | TBD | Patient-related APIs: HKPMI patient list, LIS patient by HKID, LIS patient by Encounter Number |
 | Hub BFF | `lis-hub-svc` | 5000 | Auth, dictionary, default values via Hub API |
 
 **MFE Integration**
@@ -100,11 +101,16 @@ graph TD
         H[Workflows]
     end
 
-    subgraph "lis-crs-spec-ack-svc"
+    subgraph "lis-request-svc"
         I[Registration API Endpoints]
-        J[Patient / Encounter Lookup]
         K[Test Validation APIs]
         L[Default Values APIs]
+    end
+
+    subgraph "lis-patient-svc"
+        J[HKPMI Patient List]
+        J2[LIS Patient by HKID]
+        J3[LIS Patient by Encounter Number]
     end
 
     Shell -->|"MF dynamic import"| Manifest
@@ -113,6 +119,8 @@ graph TD
     D --> E --> F --> G --> H
     H --> I
     H --> J
+    H --> J2
+    H --> J3
     G --> K
     C --> L
 ```
@@ -372,22 +380,30 @@ All triggered when user clicks **Save**, before the request is sent to the serve
 
 ### Phase 9 — Backend API
 
-All endpoints in `lis-crs-spec-ack-svc` under `CrsRegController`. Requests use `POST` with `ResultDataResponse<T>` response envelope.
+All requests use `POST` with `ResultDataResponse<T>` response envelope.
+
+#### 9A — Patient APIs (`lis-patient-svc`)
 
 | # | Task | Status | Notes |
 |---|---|---|---|
-| 9.1 | **Patient lookup by HKID** — verify / expose existing endpoint | `[ ]` | Check `CrsRegController` or `CrsSearchController` |
-| 9.2 | **Patient lookup by Encounter No.** | `[ ]` | |
-| 9.3 | **Request No. generation endpoint** | `[ ]` | |
-| 9.4 | **Doctor search / lookup endpoint** | `[ ]` | |
-| 9.5 | **Location search / lookup endpoint** | `[ ]` | |
-| 9.6 | **Default registration values endpoint** — category, doctor, request info | `[ ]` | May be in `CrsDftRegController` |
-| 9.7 | **Test validation endpoint** — existence, registrable, valid period | `[ ]` | |
-| 9.8 | **Register Request endpoint** — main POST to persist registration packing | `[ ]` | `CrsRegController` POST endpoint |
-| 9.9 | **Register ANAT Request endpoint** | `[ ]` | ANAT-specific fields |
-| 9.10 | **Register MICR VIRO Request endpoint** | `[ ]` | MICR/VIRO-specific fields |
-| 9.11 | **PMI patient write-back** — update patient name/race/Chinese name to PMI on first registration | `[ ]` | Conditional on access right `u_lis_obj_hkpmi_security_check` |
-| 9.12 | **Lab options / configuration endpoint** — `RETAIN_MASTER`, tab sequence (`OBJECT_ATTRIBUTE`), lab options | `[ ]` | May already exist in Hub BFF |
+| 9A.1 | **Retrieve HKPMI patient list** — search PMI patient records by HKID | `[ ]` | Returns list of PMI episodes for patient selection |
+| 9A.2 | **Retrieve LIS patient by HKID** — look up local patient records by HKID | `[ ]` | Returns matching patient and episode records |
+| 9A.3 | **Retrieve LIS patient by Encounter Number** — look up local patient by encounter no. | `[ ]` | Returns patient demographics and episode data |
+| 9A.4 | **PMI patient write-back** — update patient name/race/Chinese name to PMI on first registration | `[ ]` | Conditional on access right `u_lis_obj_hkpmi_security_check` |
+
+#### 9B — Registration / Request APIs (`lis-request-svc`)
+
+| # | Task | Status | Notes |
+|---|---|---|---|
+| 9B.1 | **Request No. generation endpoint** | `[ ]` | System-assigned number, pre-save |
+| 9B.2 | **Doctor search / lookup endpoint** | `[ ]` | |
+| 9B.3 | **Location search / lookup endpoint** | `[ ]` | |
+| 9B.4 | **Default registration values endpoint** — category, doctor, request info | `[ ]` | May be in `CrsDftRegController` |
+| 9B.5 | **Test validation endpoint** — existence, registrable, valid period | `[ ]` | |
+| 9B.6 | **Register Request endpoint** — main POST to persist registration packing | `[ ]` | `CrsRegController` POST endpoint |
+| 9B.7 | **Register ANAT Request endpoint** | `[ ]` | ANAT-specific fields |
+| 9B.8 | **Register MICR VIRO Request endpoint** | `[ ]` | MICR/VIRO-specific fields |
+| 9B.9 | **Lab options / configuration endpoint** — `RETAIN_MASTER`, tab sequence (`OBJECT_ATTRIBUTE`), lab options | `[ ]` | May already exist in Hub BFF |
 
 ---
 
@@ -448,10 +464,10 @@ RegistrationPacking
 
 | # | Description | Blocking Phase | Status |
 |---|---|---|---|
-| D.1 | Confirm `CrsRegController` endpoint contracts (request/response DTOs) | 9.8 | `[ ]` |
+| D.1 | Confirm `lis-request-svc` endpoint contracts (request/response DTOs) for registration | 9B.6 | `[ ]` |
 | D.2 | Confirm dictionary keys for Age Unit (`AGE_UNIT`), Urgency, Category, Bill keywords | 2.2–2.3 | `[ ]` |
-| D.3 | Confirm HKID lookup service integration (PAS vs. local) | 8A.1 | `[ ]` |
-| D.4 | Confirm `OBJECT_ATTRIBUTE` table access — via BFF or spec-ack-svc? | 4.1 | `[ ]` |
+| D.3 | Confirm `lis-patient-svc` API contracts — HKPMI patient list, LIS patient by HKID/Encounter Number | 9A.1–9A.3 | `[ ]` |
+| D.4 | Confirm `OBJECT_ATTRIBUTE` table access — via `lis-request-svc` or Hub BFF? | 4.1 | `[ ]` |
 | D.5 | Confirm worksheet printing integration (print service API) | 8D.1 | `[ ]` |
 | D.6 | Confirm label printing integration | 8D.2 | `[ ]` |
 
@@ -470,9 +486,9 @@ RegistrationPacking
 | Phase 6 — Dialogues | 20 | 0 | 0 | 20 |
 | Phase 7 — Validations | 16 | 0 | 0 | 16 |
 | Phase 8 — Workflows | 15 | 0 | 0 | 15 |
-| Phase 9 — Backend API | 12 | 0 | 0 | 12 |
+| Phase 9 — Backend API | 13 | 0 | 0 | 13 |
 | Phase 10 — Testing | 10 | 0 | 0 | 10 |
-| **Total** | **146** | **0** | **0** | **146** |
+| **Total** | **147** | **0** | **0** | **147** |
 
 ---
 
@@ -482,3 +498,4 @@ RegistrationPacking
 |---|---|
 | 2026-03-13 | Initial document created — full task list from Knowledge Base analysis |
 | 2026-03-13 | Updated target repository — Registration screen to be built in new `lis-request-app` MFE, consumed by `lis-crs-common-app`; Phase 0 expanded to cover new repo scaffolding and MF integration |
+| 2026-03-24 | Updated backend service split — `lis-request-svc` for registration/request APIs; `lis-patient-svc` for patient lookup APIs (HKPMI list, LIS patient by HKID/Encounter Number); Phase 9 restructured accordingly |

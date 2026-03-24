@@ -20,17 +20,16 @@ updated: '2026-03-09'
 
 ## 3.1 Service Overview
 
-| | `lis-hub-svc` | `lis-crs-spec-ack-svc` |
-|---|---|---|
-| **Role** | Hub BFF (Backend-for-Frontend) | CRS Domain Microservice |
-| **Port** | 5000 | 8118 |
-| **Java** | 17 | 17 |
-| **Spring Boot** | 3.3.13 | (via `ha-spring-boot-starter 3.0.0`) |
-| **Main class** | `LisApplication` | `LisCrsSpecAckSvcApplication` |
-| **Component scan** | `hk.org.ha.lis` | `hk.org.ha.lis`, `hk.org.ha.lis.crs` |
-| **Security** | ✅ **Fully secured** (`ha-spring-boot-starter-security`) | ❌ **Security DISABLED** (commented out in pom.xml) |
-| **Databases** | PostgreSQL + Oracle + Sybase + Redis | Oracle + Sybase |
-| **Cross-origin** | Controlled by security filter | `@CrossOrigin(origins = "*")` (wide open) |
+| | `lis-hub-svc` | `lis-crs-spec-ack-svc` | `lis-request-svc` | `lis-patient-svc` |
+|---|---|---|---|---|
+| **Role** | Hub BFF (Backend-for-Frontend) | CRS Domain Microservice | Registration & Request Service | Patient Service |
+| **Port** | 5000 | 8118 | TBD | TBD |
+| **Java** | 17 | 17 | 17 | 17 |
+| **Spring Boot** | 3.3.13 | (via `ha-spring-boot-starter 3.0.0`) | TBD | TBD |
+| **Main class** | `LisApplication` | `LisCrsSpecAckSvcApplication` | TBD | TBD |
+| **Security** | ✅ **Fully secured** | ❌ **Security DISABLED** | TBD | TBD |
+| **Databases** | PostgreSQL + Oracle + Sybase + Redis | Oracle + Sybase | TBD | TBD |
+| **Consumed by** | `lis-hub-app` | `lis-crs-common-app`, `lab-crs-app` | `lis-request-app` | `lis-request-app` |
 
 ---
 
@@ -284,6 +283,80 @@ public class ExceptionResponse {
 ```
 
 All endpoints use `POST` (no `GET` for data operations), following HA security convention.
+
+---
+
+## 3.8b lis-request-svc — Registration & Request APIs
+
+> [!info] Status
+> `lis-request-svc` is a new Spring Boot service introduced in the CRS Revamp to own all registration and request-related operations. It is consumed exclusively by `lis-request-app` (the new Registration Remote MFE).
+
+### Responsibilities
+
+| API Category | Description |
+|---|---|
+| Registration | Main registration save (`RegisterRequest`, `RegisterANATRequest`, `RegisterMICRVIRORequest`) |
+| Request No. Generation | System-assigned request number pre-save |
+| Test Validation | Test existence, registrability, valid period checks |
+| Default Values | Default category, doctor, request info (`CrsDftRegController` equivalent) |
+| Doctor Lookup | Doctor search and lookup by hospital |
+| Location Lookup | Location search by hospital/specialty/ward |
+| Lab Options | `RETAIN_MASTER`, tab sequence (`OBJECT_ATTRIBUTE`), lab options configuration |
+
+### API Call Pattern
+
+All endpoints follow the HA LIS standard:
+- **Method:** `POST` only
+- **Response envelope:** `ResultDataResponse<T>`
+- **Request header:** `ServiceParameterVo` fields (`serverName`, `serverLab`, `hospital`, `userKey`, `functionId`)
+
+---
+
+## 3.8c lis-patient-svc — Patient APIs
+
+> [!info] Status
+> `lis-patient-svc` is a new Spring Boot service introduced in the CRS Revamp to own all patient-related lookup operations. It is consumed exclusively by `lis-request-app`.
+
+### Responsibilities
+
+| API Category | Description |
+|---|---|
+| HKPMI Patient List | Retrieve list of PMI patient episodes by HKID — used in the **Select an Episode (PMI List)** panel |
+| LIS Patient by HKID | Retrieve local LIS patient records and episodes by HKID — primary patient lookup at registration |
+| LIS Patient by Encounter Number | Retrieve local LIS patient and episode by encounter number — alternative registration entry point |
+| PMI Patient Write-back | Update patient name / race / Chinese name back to PMI on first registration; conditional on access right `u_lis_obj_hkpmi_security_check` |
+
+### Workflow Integration
+
+```mermaid
+sequenceDiagram
+    participant UI as lis-request-app
+    participant PatSvc as lis-patient-svc
+    participant LIS as LIS Patient DB
+    participant PMI as HKPMI / PMI Service
+
+    UI->>PatSvc: POST /patient/byHkid { hkid }
+    PatSvc->>LIS: Query local patient records
+    LIS-->>PatSvc: Patient + episode list
+    PatSvc-->>UI: ResultDataResponse<PatientEpisodeListVo>
+
+    UI->>PatSvc: POST /patient/pmiList { hkid }
+    PatSvc->>PMI: Query HKPMI by HKID
+    PMI-->>PatSvc: PMI episode records
+    PatSvc-->>UI: ResultDataResponse<PmiEpisodeListVo>
+
+    UI->>PatSvc: POST /patient/byEncounterNo { encounterNo, hospital }
+    PatSvc->>LIS: Query local patient by encounter number
+    LIS-->>PatSvc: Patient record
+    PatSvc-->>UI: ResultDataResponse<PatientVo>
+```
+
+### API Call Pattern
+
+All endpoints follow the HA LIS standard:
+- **Method:** `POST` only
+- **Response envelope:** `ResultDataResponse<T>`
+- **Request header:** `ServiceParameterVo` fields (`serverName`, `serverLab`, `hospital`, `userKey`, `functionId`)
 
 ---
 
