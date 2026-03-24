@@ -8,7 +8,7 @@ Good — the new doc is very detailed. Let me cross-reference it with what's vis
 
 Searched project for “getMuiTextFieldTheme BasicThemeLight styleOverrides MuiTextField CMS”
 
-Searched project for “getMuiTextFieldTheme BasicThemeLight styleOverrides MuiTextField CMS”
+Searched project for “getMuiTextFieldTheme BasicThemeLight styleOverrides MuiTextField CMS” 
 
 The uploaded doc is exactly what's needed. The root cause analysis is clear from combining it with what's visible in the screenshot. Let me lay this out precisely.
 
