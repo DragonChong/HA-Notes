@@ -460,118 +460,118 @@ RegistrationPacking
 
 ## User Story Map
 
-| CRST ID | Story | Phase |
-|---|---|---|
-| CRST-86 | Patient Panel | 2.2 |
-| CRST-87 | Request Info Panel | 2.3 |
-| CRST-88 | Test Panel | 2.4 |
-| CRST-89 | Buttons | 2.6 |
-| CRST-92 | Retrieve Existing Patient by HKID | 8A.1 |
-| CRST-93 | Retrieve PMI Patient by HKID | 8A.1 |
-| CRST-95 | Create New Patient by HKID | 8A.3 |
-| CRST-96 | Retrieve Existing Local Patient by Case Number | 8A.2 |
-| CRST-97 | Retrieve Existing PMI Patient by Case Number | 8A.2 |
-| CRST-98 | Patient Tag Alert | 8A.4 |
-| CRST-100 | Request No. Generation | 8C.1 |
-| CRST-101 | Urgency Color | 2.11 |
-| CRST-102 | Location Interaction — Private Referral | 4.6 |
-| CRST-103 | Test Code Selection Behavior | 8C.2 |
-| CRST-104 | Pre-register: Request Info Validation | 7B.1 |
-| CRST-105 | Pre-register: Result Entry (dispatcher) | 6.20 |
-| CRST-106 | Pre-register: Send Out Information Dialogue | 6.8 |
-| CRST-107 | Pre-register: Verification Dialogue | 6.7 |
-| CRST-108 | Register Request | 8C.3 |
-| CRST-109 | Post-register: Worksheet Printing | 8D.1 |
-| CRST-111 | Post-register: Clear Screen | 8D.3 |
-| CRST-112 | Clear Button | 4 |
-| CRST-114 | Patient Demographics Panel Enablement | 3.2 |
-| CRST-115 | Screen Object Tab Sequence | 4.1 |
-| CRST-116 | Screen Object Focus | 4.2 |
-| CRST-117 | Retain | 4.9 |
-| CRST-118 | ANAT Panel — Specimen Collect Time Unknown Checkbox | 5A.10 |
-| CRST-120 | Register ANAT Request | 8C.4 |
-| CRST-121 | BBNK Panel | 5B.1 |
-| CRST-122 | BBNK Request No. Input Dialogue | 5B.5 |
-| CRST-124 | Register MICR/VIRO Request | 8C.5 |
-| CRST-387 | Gynae Clinical Data Panel (AHN) | 5A.8 |
-| CRST-388 | Gynae Clinical Data Panel (CMC) | 5A.8 |
-| CRST-389 | Gynae Clinical Data Panel (DHL) | 5A.8 |
-| CRST-390 | Gynae Clinical Data Panel (KWH) | 5A.8 |
-| CRST-391 | Gynae Clinical Data Panel (PMH / YCH) | 5A.8 |
-| CRST-392 | Gynae Clinical Data Panel (PYN / QMH / UCH) | 5A.8 |
-| CRST-393 | Gynae Clinical Data Panel (TKO) | 5A.8 |
-| CRST-433 | Retain Checkbox Panel | 2.5 |
-| CRST-455 | Request Information Panel Enablement | 3.3 |
-| CRST-456 | Default Opening Behaviour | 3.1 |
-| CRST-457 | Request No. Enablement after Registration Key Input | 3.12 |
-| CRST-459 | MICR/VIRO Panel | 5C.1 |
-| CRST-460 | Requested Test Panel Enablement | 3.4 |
-| CRST-461 | ANAT Panel Enablement | 3.9 |
-| CRST-462 | BBNK Panel Enablement | 3.10 |
-| CRST-463 | MICR/VIRO Panel Enablement | 3.11 |
-| CRST-465 | Input Specimen No. Button Enablement | 3.5 |
-| CRST-485 | Sendout Button Enablement | 3.6 |
-| CRST-486 | No. of Label Panel Enablement | 3.7 |
-| CRST-487 | Print Tube Label Panel Enablement | 3.8 |
-| CRST-492 | Patient Selection Dialogue | 6.1 |
-| CRST-497 | MICR/VIRO Validation | 7C.7 |
-| CRST-501 | Request Info Validation — Clinical Detail / Reference / Comment | 7B.3 |
-| CRST-502 | Request Info Validation — Datetime | 7B.4 |
-| CRST-503 | Test Validation — Test Existence | 7C.1 |
-| CRST-504 | Test Validation — Test Prefix | 7C.3 |
-| CRST-505 | Test Validation — Test Registrable | 7C.4 |
-| CRST-506 | Test Validation — Test Valid Period | 7C.5 |
-| CRST-507 | Test Validation — Test Duplication | 7C.2 |
-| CRST-508 | Test Validation — Test Validity | 7C.6 |
-| CRST-509 | Pre-register: Private Change Reason Dialogue | 6.9 |
-| CRST-510 | Post-register: Request No. Label Printing | 8D.2 |
-| CRST-511 | Request Doctor Description | 4.8 |
-| CRST-512 | Create New Doctor Dialogue | 6.6 |
-| CRST-513 | Report Copy Input Dialogue | 6.5 |
-| CRST-514 | USID Input Dialogue | 6.2 |
-| CRST-530 | Default Request Info | 8B.3 |
-| CRST-531 | Patient Info Validation — Mandatory & Validity | 7A.1 |
-| CRST-532 | Patient Info Validation — Patient Name | 7A.5 |
-| CRST-533 | Patient Info Validation — Patient Location | 7A.4 |
-| CRST-534 | Patient Info Validation — Patient Demographics Modified | 7A.3 |
-| CRST-535 | Patient Info Validation — Age Value | 7A.2 |
-| CRST-536 | Request Info Validation — Request Doctor | 7B.2 |
-| CRST-537 | Clinical Detail Line Limit Validation | 4.7 |
-| CRST-538 | Location Interaction — Copy Patient Location to Request Location | 4.3 |
-| CRST-539 | Location Interaction — Change Doctor Hospital | 4.5 |
-| CRST-540 | Copy Request Date to Collection Date | 4.4 |
-| CRST-555 | Result Entry — Fluid | 6.14 |
-| CRST-556 | Result Entry — TIMH | 6.15 |
-| CRST-557 | Result Entry — ABG | 6.11 |
-| CRST-558 | Result Entry — ABG3 | 6.12 |
-| CRST-559 | Result Entry — CRCL | 6.13 |
-| CRST-560 | Result Entry — TOX | 6.16 |
-| CRST-561 | Result Entry — 24-Hour Urine | 6.10 |
-| CRST-562 | Result Entry — Urine PYN | 6.17 |
-| CRST-563 | Result Entry — Urine QEH | 6.18 |
-| CRST-564 | Result Entry — Urine (generic) | 6.19 |
-| CRST-583 | BBNK Panel — Patient Results | 5B.4 |
-| CRST-584 | BBNK Panel — Blood Category | 5B.2 |
-| CRST-585 | BBNK Panel — Mother Results | 5B.3 |
-| CRST-586 | ANAT Panel — Coroner Test | 5A.5 |
-| CRST-587 | ANAT Panel — X-Ray No. | 5A.13 |
-| CRST-588 | ANAT Panel — Date of Death | 5A.6 |
-| CRST-589 | ANAT Panel — Auth By | 5A.3 |
-| CRST-590 | ANAT Panel — Path/Tech | 5A.9 |
-| CRST-591 | ANAT Panel — Specimen Type | 5A.12 |
-| CRST-602 | ANAT Panel — Specimen Site Input | 5A.11 |
-| CRST-603 | ANAT Panel — Specimen Site Input Component | 5A.11 |
-| CRST-605 | ANAT Panel — ANAT Test List | 5A.2 |
-| CRST-606 | ANAT Panel — Confidential Bench | 5A.4 |
-| CRST-607 | ANAT Panel — Save Validation | 5A.14 |
-| CRST-608 | ANAT Panel — Gynae Clinical Data Button | 5A.7 |
-| CRST-609 | ANAT Panel — Gynae Clinical Data Request Panel | 5A.8 |
-| CRST-611 | Default Patient Category | 8B.1 |
-| CRST-612 | Default Request Doctor | 8B.2 |
-| CRST-613 | Default Request Location | 8B.4 |
-| CRST-623 | USID Input Dialogue — Remap Specimen | 6.3 |
-| CRST-624 | USID Input Dialogue — Specimen & Test Profile Manipulation | 6.4 |
-| CRST-647 | Screen Font Size Configuration | 2.10 |
+| CRST ID | Story | Phase | Status |
+|---|---|---|---|
+| CRST-86 | Patient Panel | 2.2 | `[ ]` |
+| CRST-87 | Request Info Panel | 2.3 | `[ ]` |
+| CRST-88 | Test Panel | 2.4 | `[ ]` |
+| CRST-89 | Buttons | 2.6 | `[ ]` |
+| CRST-92 | Retrieve Existing Patient by HKID | 8A.1 | `[ ]` |
+| CRST-93 | Retrieve PMI Patient by HKID | 8A.1 | `[ ]` |
+| CRST-95 | Create New Patient by HKID | 8A.3 | `[ ]` |
+| CRST-96 | Retrieve Existing Local Patient by Case Number | 8A.2 | `[ ]` |
+| CRST-97 | Retrieve Existing PMI Patient by Case Number | 8A.2 | `[ ]` |
+| CRST-98 | Patient Tag Alert | 8A.4 | `[ ]` |
+| CRST-100 | Request No. Generation | 8C.1 | `[ ]` |
+| CRST-101 | Urgency Color | 2.11 | `[ ]` |
+| CRST-102 | Location Interaction — Private Referral | 4.6 | `[ ]` |
+| CRST-103 | Test Code Selection Behavior | 8C.2 | `[ ]` |
+| CRST-104 | Pre-register: Request Info Validation | 7B.1 | `[ ]` |
+| CRST-105 | Pre-register: Result Entry (dispatcher) | 6.20 | `[ ]` |
+| CRST-106 | Pre-register: Send Out Information Dialogue | 6.8 | `[ ]` |
+| CRST-107 | Pre-register: Verification Dialogue | 6.7 | `[ ]` |
+| CRST-108 | Register Request | 8C.3 | `[ ]` |
+| CRST-109 | Post-register: Worksheet Printing | 8D.1 | `[ ]` |
+| CRST-111 | Post-register: Clear Screen | 8D.3 | `[ ]` |
+| CRST-112 | Clear Button | 4 | `[ ]` |
+| CRST-114 | Patient Demographics Panel Enablement | 3.2 | `[ ]` |
+| CRST-115 | Screen Object Tab Sequence | 4.1 | `[ ]` |
+| CRST-116 | Screen Object Focus | 4.2 | `[ ]` |
+| CRST-117 | Retain | 4.9 | `[ ]` |
+| CRST-118 | ANAT Panel — Specimen Collect Time Unknown Checkbox | 5A.10 | `[ ]` |
+| CRST-120 | Register ANAT Request | 8C.4 | `[ ]` |
+| CRST-121 | BBNK Panel | 5B.1 | `[ ]` |
+| CRST-122 | BBNK Request No. Input Dialogue | 5B.5 | `[ ]` |
+| CRST-124 | Register MICR/VIRO Request | 8C.5 | `[ ]` |
+| CRST-387 | Gynae Clinical Data Panel (AHN) | 5A.8 | `[ ]` |
+| CRST-388 | Gynae Clinical Data Panel (CMC) | 5A.8 | `[ ]` |
+| CRST-389 | Gynae Clinical Data Panel (DHL) | 5A.8 | `[ ]` |
+| CRST-390 | Gynae Clinical Data Panel (KWH) | 5A.8 | `[ ]` |
+| CRST-391 | Gynae Clinical Data Panel (PMH / YCH) | 5A.8 | `[ ]` |
+| CRST-392 | Gynae Clinical Data Panel (PYN / QMH / UCH) | 5A.8 | `[ ]` |
+| CRST-393 | Gynae Clinical Data Panel (TKO) | 5A.8 | `[ ]` |
+| CRST-433 | Retain Checkbox Panel | 2.5 | `[ ]` |
+| CRST-455 | Request Information Panel Enablement | 3.3 | `[ ]` |
+| CRST-456 | Default Opening Behaviour | 3.1 | `[ ]` |
+| CRST-457 | Request No. Enablement after Registration Key Input | 3.12 | `[ ]` |
+| CRST-459 | MICR/VIRO Panel | 5C.1 | `[ ]` |
+| CRST-460 | Requested Test Panel Enablement | 3.4 | `[ ]` |
+| CRST-461 | ANAT Panel Enablement | 3.9 | `[ ]` |
+| CRST-462 | BBNK Panel Enablement | 3.10 | `[ ]` |
+| CRST-463 | MICR/VIRO Panel Enablement | 3.11 | `[ ]` |
+| CRST-465 | Input Specimen No. Button Enablement | 3.5 | `[ ]` |
+| CRST-485 | Sendout Button Enablement | 3.6 | `[ ]` |
+| CRST-486 | No. of Label Panel Enablement | 3.7 | `[ ]` |
+| CRST-487 | Print Tube Label Panel Enablement | 3.8 | `[ ]` |
+| CRST-492 | Patient Selection Dialogue | 6.1 | `[ ]` |
+| CRST-497 | MICR/VIRO Validation | 7C.7 | `[ ]` |
+| CRST-501 | Request Info Validation — Clinical Detail / Reference / Comment | 7B.3 | `[ ]` |
+| CRST-502 | Request Info Validation — Datetime | 7B.4 | `[ ]` |
+| CRST-503 | Test Validation — Test Existence | 7C.1 | `[ ]` |
+| CRST-504 | Test Validation — Test Prefix | 7C.3 | `[ ]` |
+| CRST-505 | Test Validation — Test Registrable | 7C.4 | `[ ]` |
+| CRST-506 | Test Validation — Test Valid Period | 7C.5 | `[ ]` |
+| CRST-507 | Test Validation — Test Duplication | 7C.2 | `[ ]` |
+| CRST-508 | Test Validation — Test Validity | 7C.6 | `[ ]` |
+| CRST-509 | Pre-register: Private Change Reason Dialogue | 6.9 | `[ ]` |
+| CRST-510 | Post-register: Request No. Label Printing | 8D.2 | `[ ]` |
+| CRST-511 | Request Doctor Description | 4.8 | `[ ]` |
+| CRST-512 | Create New Doctor Dialogue | 6.6 | `[ ]` |
+| CRST-513 | Report Copy Input Dialogue | 6.5 | `[ ]` |
+| CRST-514 | USID Input Dialogue | 6.2 | `[ ]` |
+| CRST-530 | Default Request Info | 8B.3 | `[ ]` |
+| CRST-531 | Patient Info Validation — Mandatory & Validity | 7A.1 | `[ ]` |
+| CRST-532 | Patient Info Validation — Patient Name | 7A.5 | `[ ]` |
+| CRST-533 | Patient Info Validation — Patient Location | 7A.4 | `[ ]` |
+| CRST-534 | Patient Info Validation — Patient Demographics Modified | 7A.3 | `[ ]` |
+| CRST-535 | Patient Info Validation — Age Value | 7A.2 | `[ ]` |
+| CRST-536 | Request Info Validation — Request Doctor | 7B.2 | `[ ]` |
+| CRST-537 | Clinical Detail Line Limit Validation | 4.7 | `[ ]` |
+| CRST-538 | Location Interaction — Copy Patient Location to Request Location | 4.3 | `[ ]` |
+| CRST-539 | Location Interaction — Change Doctor Hospital | 4.5 | `[ ]` |
+| CRST-540 | Copy Request Date to Collection Date | 4.4 | `[ ]` |
+| CRST-555 | Result Entry — Fluid | 6.14 | `[ ]` |
+| CRST-556 | Result Entry — TIMH | 6.15 | `[ ]` |
+| CRST-557 | Result Entry — ABG | 6.11 | `[ ]` |
+| CRST-558 | Result Entry — ABG3 | 6.12 | `[ ]` |
+| CRST-559 | Result Entry — CRCL | 6.13 | `[ ]` |
+| CRST-560 | Result Entry — TOX | 6.16 | `[ ]` |
+| CRST-561 | Result Entry — 24-Hour Urine | 6.10 | `[ ]` |
+| CRST-562 | Result Entry — Urine PYN | 6.17 | `[ ]` |
+| CRST-563 | Result Entry — Urine QEH | 6.18 | `[ ]` |
+| CRST-564 | Result Entry — Urine (generic) | 6.19 | `[ ]` |
+| CRST-583 | BBNK Panel — Patient Results | 5B.4 | `[ ]` |
+| CRST-584 | BBNK Panel — Blood Category | 5B.2 | `[ ]` |
+| CRST-585 | BBNK Panel — Mother Results | 5B.3 | `[ ]` |
+| CRST-586 | ANAT Panel — Coroner Test | 5A.5 | `[ ]` |
+| CRST-587 | ANAT Panel — X-Ray No. | 5A.13 | `[ ]` |
+| CRST-588 | ANAT Panel — Date of Death | 5A.6 | `[ ]` |
+| CRST-589 | ANAT Panel — Auth By | 5A.3 | `[ ]` |
+| CRST-590 | ANAT Panel — Path/Tech | 5A.9 | `[ ]` |
+| CRST-591 | ANAT Panel — Specimen Type | 5A.12 | `[ ]` |
+| CRST-602 | ANAT Panel — Specimen Site Input | 5A.11 | `[ ]` |
+| CRST-603 | ANAT Panel — Specimen Site Input Component | 5A.11 | `[ ]` |
+| CRST-605 | ANAT Panel — ANAT Test List | 5A.2 | `[ ]` |
+| CRST-606 | ANAT Panel — Confidential Bench | 5A.4 | `[ ]` |
+| CRST-607 | ANAT Panel — Save Validation | 5A.14 | `[ ]` |
+| CRST-608 | ANAT Panel — Gynae Clinical Data Button | 5A.7 | `[ ]` |
+| CRST-609 | ANAT Panel — Gynae Clinical Data Request Panel | 5A.8 | `[ ]` |
+| CRST-611 | Default Patient Category | 8B.1 | `[ ]` |
+| CRST-612 | Default Request Doctor | 8B.2 | `[ ]` |
+| CRST-613 | Default Request Location | 8B.4 | `[ ]` |
+| CRST-623 | USID Input Dialogue — Remap Specimen | 6.3 | `[ ]` |
+| CRST-624 | USID Input Dialogue — Specimen & Test Profile Manipulation | 6.4 | `[ ]` |
+| CRST-647 | Screen Font Size Configuration | 2.10 | `[ ]` |
 
 ---
 
