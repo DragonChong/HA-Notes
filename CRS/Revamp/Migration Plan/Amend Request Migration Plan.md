@@ -376,76 +376,76 @@ All endpoints expected in `lis-crs-spec-ack-svc` under `CrsAmendController`. Req
 
 ## User Story Map
 
-| CRST ID | Story | Phase |
-|---|---|---|
-| CRST-771 | Patient Demographic Panel | 2.2 |
-| CRST-772 | Request Information Panel | 2.3 |
-| CRST-775 | Buttons | 2.1 |
-| CRST-776 | Data Retention Selection Panel | 2.4 |
-| CRST-778 | Object Enablement After Retrieval | 3.2 |
-| CRST-779 | Retrieve Request | 8A.1 |
-| CRST-780 | Initial Values of Request | 8A.2 |
-| CRST-781 | Not Supported Lab Message | 8A.5 |
-| CRST-782 | Request Cancelled Message | 8A.4 |
-| CRST-783 | Request Not Found Message | 8A.3 |
-| CRST-784 | Request Retrieval from Other Screen | 8A.6 |
-| CRST-856 | Laboratory Selection | 8A.7 |
-| CRST-785 | Default Focus (Initial) | 4.1 |
-| CRST-786 | Default Focus after Request No. | 4.2 |
-| CRST-787 | Tab Sequence | 4.3 |
-| CRST-788 | Urgency Color | 4.9 |
-| CRST-789 | Copy Request Date to Collection Date | 4.4 |
-| CRST-790 | Doctor Description | 4.5 |
-| CRST-791 | Location Interaction — Change Doctor Hospital | 4.6 |
-| CRST-792 | Location Interaction — Private Referral | 4.7 |
-| CRST-793 | Report Copy Input Dialogue | 6.2 |
-| CRST-794 | Clear Button | 4.8 |
-| CRST-797 | Validation (AmendRequestDataValidator) | 7.1 |
-| CRST-892 | Clinical Detail / Reference / Comment Validation | 7.2 |
-| CRST-893 | Request Info Datetime Validation | 7.3 |
-| CRST-895 | Request / Report / Copy Location Validation | 7.4 |
-| CRST-896 | Confidential Validation | 7.5 |
-| CRST-897 | Bill Validation | 7.6 |
-| CRST-898 | Urgency Validation | 7.7 |
-| CRST-899 | Lab Only Validation | 7.8 |
-| CRST-900 | Clinical Detail on Sendout Request Validation | 7.10 |
-| CRST-894 | Request Doctor Validation | 7.9 |
-| CRST-798 | User Validation | 6.6 |
-| CRST-799 | Private Change Reason Dialogue | 6.5 |
-| CRST-800 | Change Reason Dialogue | 6.4 |
-| CRST-801 | Regenerate Report Determination | 8B.2 |
-| CRST-803 | Change Audit | 8B.4 |
-| CRST-806 | Operation Audit | 8B.5 |
-| CRST-807 | Report Copy Determination | 8B.3 |
-| CRST-808 | Amend Action Result Message | 8B.13 |
-| CRST-810 | Clear Screen | 8B.14 |
-| CRST-812 | Print Send Out Form | 8B.12 |
-| CRST-813 | Print Send Out Button | 2.1 |
-| CRST-814 | Doctor Modified Alert | 8B.6 |
-| CRST-815 | Report Printed in TB/DH Form Alert | 8B.7 |
-| CRST-816 | Create PHLC Lab Order | 8B.11 |
-| CRST-817 | USID Input Dialogue | 6.1 |
-| CRST-818 | USID Not Found Alert | 8B.9 |
-| CRST-819 | USID Data Conversion | 8B.8 |
-| CRST-820 | USID Audit | 8B.10 |
-| CRST-821 | ANAT Panel — Enablement | 5A.2 |
-| CRST-822 | ANAT Panel — Load Data | 5A.3 |
-| CRST-823 | ANAT Panel — Tab Sequence | 5A.4 |
-| CRST-824 | ANAT: Amend Request | 8C.1 |
-| CRST-825 | ANAT: Change Audit | 8C.2 |
-| CRST-826 | ANAT: Regenerate Report Alert | 8C.3 |
-| CRST-827 | BBNK Panel — Enablement | 5B.2 |
-| CRST-828 | BBNK Panel — Load Data | 5B.3 |
-| CRST-830 | BBNK Panel — Tab Sequence | 5B.4 |
-| CRST-831 | BBNK: Amend Request | 8D.1 |
-| CRST-832 | BBNK: Change Audit | 8D.2 |
-| CRST-833 | Special Blood Dialogue | 6.7 |
-| CRST-829 | MICR/VIRO Panel — Enablement | 5C.2 |
-| CRST-834 | MICR/VIRO Panel — Load Data | 5C.3 |
-| CRST-835 | MICR/VIRO Panel — Tab Sequence | 5C.4 |
-| CRST-836 | MICR/VIRO Validation | 7.11 |
-| CRST-837 | MICR/VIRO: Amend Request | 8E.1 |
-| CRST-838 | MICR/VIRO: Change Audit | 8E.2 |
+| CRST ID | Story | Phase | Status |
+|---|---|---|---|
+| CRST-771 | Patient Demographic Panel | 2.2 | `[ ]` |
+| CRST-772 | Request Information Panel | 2.3 | `[ ]` |
+| CRST-775 | Buttons | 2.1 | `[ ]` |
+| CRST-776 | Data Retention Selection Panel | 2.4 | `[ ]` |
+| CRST-778 | Object Enablement After Retrieval | 3.2 | `[ ]` |
+| CRST-779 | Retrieve Request | 8A.1 | `[ ]` |
+| CRST-780 | Initial Values of Request | 8A.2 | `[ ]` |
+| CRST-781 | Not Supported Lab Message | 8A.5 | `[ ]` |
+| CRST-782 | Request Cancelled Message | 8A.4 | `[ ]` |
+| CRST-783 | Request Not Found Message | 8A.3 | `[ ]` |
+| CRST-784 | Request Retrieval from Other Screen | 8A.6 | `[ ]` |
+| CRST-856 | Laboratory Selection | 8A.7 | `[ ]` |
+| CRST-785 | Default Focus (Initial) | 4.1 | `[ ]` |
+| CRST-786 | Default Focus after Request No. | 4.2 | `[ ]` |
+| CRST-787 | Tab Sequence | 4.3 | `[ ]` |
+| CRST-788 | Urgency Color | 4.9 | `[ ]` |
+| CRST-789 | Copy Request Date to Collection Date | 4.4 | `[ ]` |
+| CRST-790 | Doctor Description | 4.5 | `[ ]` |
+| CRST-791 | Location Interaction — Change Doctor Hospital | 4.6 | `[ ]` |
+| CRST-792 | Location Interaction — Private Referral | 4.7 | `[ ]` |
+| CRST-793 | Report Copy Input Dialogue | 6.2 | `[ ]` |
+| CRST-794 | Clear Button | 4.8 | `[ ]` |
+| CRST-797 | Validation (AmendRequestDataValidator) | 7.1 | `[ ]` |
+| CRST-892 | Clinical Detail / Reference / Comment Validation | 7.2 | `[ ]` |
+| CRST-893 | Request Info Datetime Validation | 7.3 | `[ ]` |
+| CRST-895 | Request / Report / Copy Location Validation | 7.4 | `[ ]` |
+| CRST-896 | Confidential Validation | 7.5 | `[ ]` |
+| CRST-897 | Bill Validation | 7.6 | `[ ]` |
+| CRST-898 | Urgency Validation | 7.7 | `[ ]` |
+| CRST-899 | Lab Only Validation | 7.8 | `[ ]` |
+| CRST-900 | Clinical Detail on Sendout Request Validation | 7.10 | `[ ]` |
+| CRST-894 | Request Doctor Validation | 7.9 | `[ ]` |
+| CRST-798 | User Validation | 6.6 | `[ ]` |
+| CRST-799 | Private Change Reason Dialogue | 6.5 | `[ ]` |
+| CRST-800 | Change Reason Dialogue | 6.4 | `[ ]` |
+| CRST-801 | Regenerate Report Determination | 8B.2 | `[ ]` |
+| CRST-803 | Change Audit | 8B.4 | `[ ]` |
+| CRST-806 | Operation Audit | 8B.5 | `[ ]` |
+| CRST-807 | Report Copy Determination | 8B.3 | `[ ]` |
+| CRST-808 | Amend Action Result Message | 8B.13 | `[ ]` |
+| CRST-810 | Clear Screen | 8B.14 | `[ ]` |
+| CRST-812 | Print Send Out Form | 8B.12 | `[ ]` |
+| CRST-813 | Print Send Out Button | 2.1 | `[ ]` |
+| CRST-814 | Doctor Modified Alert | 8B.6 | `[ ]` |
+| CRST-815 | Report Printed in TB/DH Form Alert | 8B.7 | `[ ]` |
+| CRST-816 | Create PHLC Lab Order | 8B.11 | `[ ]` |
+| CRST-817 | USID Input Dialogue | 6.1 | `[ ]` |
+| CRST-818 | USID Not Found Alert | 8B.9 | `[ ]` |
+| CRST-819 | USID Data Conversion | 8B.8 | `[ ]` |
+| CRST-820 | USID Audit | 8B.10 | `[ ]` |
+| CRST-821 | ANAT Panel — Enablement | 5A.2 | `[ ]` |
+| CRST-822 | ANAT Panel — Load Data | 5A.3 | `[ ]` |
+| CRST-823 | ANAT Panel — Tab Sequence | 5A.4 | `[ ]` |
+| CRST-824 | ANAT: Amend Request | 8C.1 | `[ ]` |
+| CRST-825 | ANAT: Change Audit | 8C.2 | `[ ]` |
+| CRST-826 | ANAT: Regenerate Report Alert | 8C.3 | `[ ]` |
+| CRST-827 | BBNK Panel — Enablement | 5B.2 | `[ ]` |
+| CRST-828 | BBNK Panel — Load Data | 5B.3 | `[ ]` |
+| CRST-830 | BBNK Panel — Tab Sequence | 5B.4 | `[ ]` |
+| CRST-831 | BBNK: Amend Request | 8D.1 | `[ ]` |
+| CRST-832 | BBNK: Change Audit | 8D.2 | `[ ]` |
+| CRST-833 | Special Blood Dialogue | 6.7 | `[ ]` |
+| CRST-829 | MICR/VIRO Panel — Enablement | 5C.2 | `[ ]` |
+| CRST-834 | MICR/VIRO Panel — Load Data | 5C.3 | `[ ]` |
+| CRST-835 | MICR/VIRO Panel — Tab Sequence | 5C.4 | `[ ]` |
+| CRST-836 | MICR/VIRO Validation | 7.11 | `[ ]` |
+| CRST-837 | MICR/VIRO: Amend Request | 8E.1 | `[ ]` |
+| CRST-838 | MICR/VIRO: Change Audit | 8E.2 | `[ ]` |
 
 ---
 
