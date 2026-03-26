@@ -116,24 +116,22 @@ Left column fields:
 
 Right column fields:
 
-|Field|Component|
-|---|---|
-|Category|`KeywordDropdown` — group: `CATEGORY`|
-|Confidential|`KeywordDropdown` — group: `CONFIDENTIAL`|
-|Private|`KeywordDropdown` — group: `LAB_ONLY`|
-|Bill|`KeywordDropdown` — group: `BILL` (confirm D.2)|
-|Urgency|`KeywordDropdown` — group: `URGENCY` — **urgency color styling applies here** (Task 2.11)|
-|Collect|`DateTimeInput` (Task 1.7) — visibility driven by `DATE_ATTRIBUTE`|
-|Arrived|`DateTimeInput` — visibility driven by `DATE_ATTRIBUTE`|
-|Request|`DateTimeInput` — visibility driven by `DATE_ATTRIBUTE`|
+| Field        | Component                                                                                 |
+| ------------ | ----------------------------------------------------------------------------------------- |
+| Category     | `KeywordDropdown` — group: `CATEGORY`                                                     |
+| Confidential | `KeywordDropdown` — group: `CONFID`                                                       |
+| Private      | `KeywordDropdown` — group: `PRIVATE_RQ`                                                   |
+| Bill         | `KeywordDropdown` — group: `FOUND_YN`                                                     |
+| Urgency      | `KeywordDropdown` — group: `URGENCY` — **urgency color styling applies here** (Task 2.11) |
+| Collect      | `DateTimeInput` (Task 1.7) — visibility driven by `DATE_ATTRIBUTE`                        |
+| Arrived      | `DateTimeInput` — visibility driven by `DATE_ATTRIBUTE`                                   |
+| Request      | `DateTimeInput` — visibility driven by `DATE_ATTRIBUTE`                                   |
 
 **Styling notes:**
 
 - Panel border + legend title, same pattern as Demographics panel
 - `Rpt Loc` and `Copy` Specialty sub-fields: pass `specialtyDisabled={true}` to `LisLocationBox`
 - Req Dr. Doctor Name display: read-only `TextField` placed inline after the doctor code input — not editable, populated reactively when doctor code resolves
-
-**Blocker:** D.2 — confirm `BILL` keyword group code. D.2 also for `CONFIDENTIAL` and `LAB_ONLY` group names.
 
 ---
 
