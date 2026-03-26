@@ -141,10 +141,10 @@ Right column fields:
 
 **Layout:** Single header row with "Add Test" input, followed by a `DataGrid` or `Table` listing added tests.
 
-|Element|Component|
-|---|---|
-|Add Test input|Task 1.6 `TestCodeInput` (custom autocomplete from `RegistrableTestVo`)|
-|Test list|MUI `Table` — columns: Test Code, Test Name, Lab, actions (remove row)|
+| Element        | Component                                                               |
+| -------------- | ----------------------------------------------------------------------- |
+| Add Test input | Task 1.6 `TestCodeInput` (custom autocomplete from `RegistrableTestVo`) |
+| Test list      | MUI `Table` — columns: Test Code, Test Name, Lab, actions (remove row)  |
 
 **Styling notes:**
 
