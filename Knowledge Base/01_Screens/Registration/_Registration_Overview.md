@@ -36,15 +36,15 @@ The Patient Panel is divided into two columns for patient demographic informatio
 The Request Information Panel is divided into two columns for request details:
 
 #### First Column
-| Field | Type | Description |
-|-------|------|-------------|
-| **Clin Dtl** | Text field | Clinical Details |
-| **Req Dr** | 2 dropdown selectors | Request Doctor (Hospital, Doctor code and name) |
-| **Req Loc** | 3 dropdown selectors | Request Location (Hospital, Specialty, Ward/Sub Specialty) |
-| **Rpt Loc** | 3 dropdown selectors | Report Location (Hospital, Specialty, Ward/Sub Specialty) |
-| **Copy** | 3 dropdown selectors | Report Copy Location (Hospital, Specialty, Ward/Sub Specialty) |
-| **Reference** | Text field | Reference information |
-| **Comment** | Text field | Additional comments |
+| Field         | Type                 | Description                                                    |
+| ------------- | -------------------- | -------------------------------------------------------------- |
+| **Clin Dtl**  | Text field           | Clinical Details                                               |
+| **Req Dr**    | 2 dropdown selectors | Request Doctor (Hospital, Doctor code and name)                |
+| **Req Loc**   | 3 dropdown selectors | Request Location (Hospital, Specialty, Ward/Sub Specialty)     |
+| **Rpt Loc**   | 3 dropdown selectors | Report Location (Hospital, Specialty, Ward/Sub Specialty)      |
+| **Copy**      | 3 dropdown selectors | Report Copy Location (Hospital, Specialty, Ward/Sub Specialty) |
+| **Reference** | Text field           | Reference information                                          |
+| **Comment**   | Text field           | Additional comments                                            |
 
 #### Second Column
 | Field | Type | Description |
