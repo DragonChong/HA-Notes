@@ -180,19 +180,19 @@ These components are shared across Registration and potentially other CRS screen
 
 ### Phase 2 — Screen Layout
 
-| # | Task | Status | Reference |
-|---|---|---|---|
-| 2.1 | **Registration Keys Panel** — Enc No., Req No. (read-only), HKID; keyboard shortcuts (Ctrl+Shift+E/H/A/X) | `[x]` | `src/features/registration/components/RegistrationKeys/` implemented |
-| 2.2 | **Patient Demographics Panel** — two-column layout (Name, Chinese Name, Loc, Ward, Bed, Admitted / Sex, DOB, Age, Race) | `[x]` | `src/features/registration/components/PatientDemographics/` implemented |
-| 2.3 | **Request Information Panel** — two-column layout (Clin Dtl, Req Dr, Req Loc, Rpt Loc, Copy, Reference, Comment / Category, Confidential, Private, Bill, Urgency, Collect, Arrived, Request) | `[x]` | `src/features/registration/components/RequestInfo/` implemented |
-| 2.4 | **Test Panel** — Add Test dropdown, test list display (bottom section) | `[x]` | `src/features/registration/components/TestPanel/` implemented |
-| 2.5 | **Retain Checkboxes Panel** — DB-driven (`RETAIN_MASTER`): Request, DT, Test, Urgency | `[ ]` | [[Knowledge Base/01_Screens/Registration/Components/Interaction/Retain]] |
-| 2.6 | **Action Buttons** — Save (disabled initially), Clear, Exit | `[x]` | `src/features/registration/components/ActionButtons/` — Save (F2), Clear, Exit implemented |
-| 2.7 | **No. of Label Panel** — optional panel, controlled by lab option | `[ ]` | [[Knowledge Base/01_Screens/Registration/Components/Enablement/No. of Label Panel]] |
-| 2.8 | **Print Tube Label Panel** — optional panel, workstation-authorised | `[ ]` | [[Knowledge Base/01_Screens/Registration/Components/Enablement/Print Tube Label Panel]] |
-| 2.9 | **Sendout Button** — optional, lab-option-driven visibility | `[ ]` | [[Knowledge Base/01_Screens/Registration/Components/Enablement/Sendout Button]] |
-| 2.10 | **Screen Font Size** — Normal vs. Large based on menu item config | `[x]` | `FontSizeContext.tsx` + `ThemeAwareRoot.tsx` + `view-handler.tsx` — `fontSizeVariant` prop passed through render chain |
-| 2.11 | **Urgency Color** — visual highlight based on urgency selection | `[/]` | `RequestInfo` has `urgencyKw` field with Blocker comment; colour styling not yet applied |
+| #    | Task                                                                                                                                                                                         | Status | Reference                                                                                                              |
+| ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------- |
+| 2.1  | **Registration Keys Panel** — Enc No., Req No. (read-only), HKID; keyboard shortcuts (Ctrl+Shift+E/H/A/X)                                                                                    | `[x]`  | `src/features/registration/components/RegistrationKeys/` implemented                                                   |
+| 2.2  | **Patient Demographics Panel** — two-column layout (Name, Chinese Name, Loc, Ward, Bed, Admitted / Sex, DOB, Age, Race)                                                                      | `[x]`  | `src/features/registration/components/PatientDemographics/` implemented                                                |
+| 2.3  | **Request Information Panel** — two-column layout (Clin Dtl, Req Dr, Req Loc, Rpt Loc, Copy, Reference, Comment / Category, Confidential, Private, Bill, Urgency, Collect, Arrived, Request) | `[x]`  | `src/features/registration/components/RequestInfo/` implemented                                                        |
+| 2.4  | **Test Panel** — Add Test dropdown, test list display (bottom section)                                                                                                                       | `[x]`  | `src/features/registration/components/TestPanel/` implemented                                                          |
+| 2.5  | **Retain Checkboxes Panel** — DB-driven (`RETAIN_MASTER`): Request, DT, Test, Urgency                                                                                                        | `[ ]`  | [[Knowledge Base/01_Screens/Registration/Components/Interaction/Retain]]                                               |
+| 2.6  | **Action Buttons** — Save (disabled initially), Clear, Exit                                                                                                                                  | `[x]`  | `src/features/registration/components/ActionButtons/` — Save (F2), Clear, Exit implemented                             |
+| 2.7  | **No. of Label Panel** — optional panel, controlled by lab option                                                                                                                            | `[ ]`  | [[Knowledge Base/01_Screens/Registration/Components/Enablement/No. of Label Panel]]                                    |
+| 2.8  | **Print Tube Label Panel** — optional panel, workstation-authorised                                                                                                                          | `[ ]`  | [[Knowledge Base/01_Screens/Registration/Components/Enablement/Print Tube Label Panel]]                                |
+| 2.9  | **Sendout Button** — optional, lab-option-driven visibility                                                                                                                                  | `[ ]`  | [[Knowledge Base/01_Screens/Registration/Components/Enablement/Sendout Button]]                                        |
+| 2.10 | **Screen Font Size** — Normal vs. Large based on menu item config                                                                                                                            | `[x]`  | `FontSizeContext.tsx` + `ThemeAwareRoot.tsx` + `view-handler.tsx` — `fontSizeVariant` prop passed through render chain |
+| 2.11 | **Urgency Color** — visual highlight based on urgency selection                                                                                                                              | `[/]`  | `RequestInfo` has `urgencyKw` field with Blocker comment; colour styling not yet applied                               |
 
 ---
 
