@@ -141,16 +141,16 @@ graph TD
 
 #### 0A — New `lis-request-app` repository
 
-| # | Task | Status | Notes |
-|---|---|---|---|
-| 0A.1 | Scaffold `lis-request-app` repository | `[ ]` | CRACO + Webpack 5 + TypeScript; mirror `lab-crs-app` structure |
-| 0A.2 | Configure `ModuleFederationPlugin` in `craco.config.js` | `[ ]` | MF name: `LisRequestApp`; expose `./RegistrationPage` |
-| 0A.3 | Add `lis-request-app` to `craco.config.js` consumer list in `lis-crs-common-app` | `[ ]` | e.g. `LisRequestApp@:PORT` |
-| 0A.4 | Add shared dependencies (`react`, `@cmschassis/*`, `@lis/lis-hub-lib`, MUI, Zustand, Axios) | `[ ]` | Match versions in `lis-crs-common-app`; use peer deps |
-| 0A.5 | Set up nginx `docker-entrypoint.sh` with `__PLACEHOLDER__` env injection | `[ ]` | Follow `lab-crs-app` pattern |
-| 0A.6 | Set up GitHub Actions CI/CD pipeline | `[ ]` | Follow CDRA reusable workflow templates |
-| 0A.7 | Scaffold `Registration/` folder structure under `src/screens/` | `[ ]` | Components, hooks, types, api sub-folders |
-| 0A.8 | Configure Emotion scoped cache for Registration root | `[ ]` | `key: "request"` in `renderReactComponent` |
+| #    | Task                                                                                        | Status | Notes                                                          |
+| ---- | ------------------------------------------------------------------------------------------- | ------ | -------------------------------------------------------------- |
+| 0A.1 | Scaffold `lis-request-app` repository                                                       | `[ ]`  | CRACO + Webpack 5 + TypeScript; mirror `lab-crs-app` structure |
+| 0A.2 | Configure `ModuleFederationPlugin` in `craco.config.js`                                     | `[ ]`  | MF name: `LisRequestApp`; expose `./RegistrationPage`          |
+| 0A.3 | Add `lis-request-app` to `craco.config.js` consumer list in `lis-crs-common-app`            | `[ ]`  | e.g. `LisRequestApp@:PORT`                                     |
+| 0A.4 | Add shared dependencies (`react`, `@cmschassis/*`, `@lis/lis-hub-lib`, MUI, Zustand, Axios) | `[ ]`  | Match versions in `lis-crs-common-app`; use peer deps          |
+| 0A.5 | Set up nginx `docker-entrypoint.sh` with `__PLACEHOLDER__` env injection                    | `[ ]`  | Follow `lab-crs-app` pattern                                   |
+| 0A.6 | Set up GitHub Actions CI/CD pipeline                                                        | `[ ]`  | Follow CDRA reusable workflow templates                        |
+| 0A.7 | Scaffold `Registration/` folder structure under `src/screens/`                              | `[ ]`  | Components, hooks, types, api sub-folders                      |
+| 0A.8 | Configure Emotion scoped cache for Registration root                                        | `[ ]`  | `key: "request"` in `renderReactComponent`                     |
 
 #### 0B — Integration into `lis-crs-common-app`
 
