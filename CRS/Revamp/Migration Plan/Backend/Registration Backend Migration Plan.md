@@ -241,14 +241,14 @@ Spring `@Transactional` on `RegistrationService.register()`.
 
 ## 7. Open Questions / Decisions
 
-| #   | Question                                                                    | Decision                                                   |
-| --- | --------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| D.1 | Move `model.vo.registration` VOs to `lis-common`?                           | All 24 VOs → `client-lib`; only `TransTestrsltWktVo` + `LabTransTestrsltWktVo` provisionally to `lis-common` (pending D.6) |
-| D.2 | Is JTA needed for atomic Oracle audit + PostgreSQL writes?                  | Pending                                                    |
-| D.3 | Confirm `task_list` table name and schema in target PostgreSQL lab database | lisg_tasklist, Reference `lis-crs-spec-ack-svc`            |
-| D.4 | `ResponseObject` needs to move to `lis-common`                              | Pending                                                    |
-| D.5 | `RegistrationProcessParameterVoInterface` — simplify or preserve?           | Use `RegistrationProcessParameterVo` directly; remove interface |
-| D.6 | `LabResultVo` circular dependency: references `RequestInfoVo`/`LabResultViewVo` which stay in `client-lib` — can it move to `lis-common`? | Pending (evaluate in Step 0d; likely `LabResultVo` stays in `client-lib`) |
+| #   | Question                                                                                                                                  | Decision                                                                                                                   |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| D.1 | Move `model.vo.registration` VOs to `lis-common`?                                                                                         | All 24 VOs → `client-lib`; only `TransTestrsltWktVo` + `LabTransTestrsltWktVo` provisionally to `lis-common` (pending D.6) |
+| D.2 | Is JTA needed for atomic Oracle audit + PostgreSQL writes?                                                                                | Pending                                                                                                                    |
+| D.3 | Confirm `task_list` table name and schema in target PostgreSQL lab database                                                               | lisg_tasklist, Reference `lis-crs-spec-ack-svc`                                                                            |
+| D.4 | `ResponseObject` needs to move to `lis-common`                                                                                            | Pending                                                                                                                    |
+| D.5 | `RegistrationProcessParameterVoInterface` — simplify or preserve?                                                                         | Use `RegistrationProcessParameterVo` directly; remove interface                                                            |
+| D.6 | `LabResultVo` circular dependency: references `RequestInfoVo`/`LabResultViewVo` which stay in `client-lib` — can it move to `lis-common`? | Pending (evaluate in Step 0d; likely `LabResultVo` stays in `client-lib`)                                                  |
 
 ---
 
