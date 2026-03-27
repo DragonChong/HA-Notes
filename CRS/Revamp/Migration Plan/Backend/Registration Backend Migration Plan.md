@@ -197,13 +197,13 @@ Spring `@Transactional` on `RegistrationService.register()`.
 
 ## 7. Open Questions / Decisions
 
-| # | Question | Decision |
-|---|---|---|
-| D.1 | Move `model.vo.registration` VOs to `lis-common`? | Pending |
-| D.2 | Is JTA needed for atomic Oracle audit + PostgreSQL writes? | Pending |
-| D.3 | Confirm `task_list` table name and schema in target PostgreSQL lab database | Pending |
-| D.4 | `ResponseObject` needs to move to `lis-common` | Pending |
-| D.5 | `RegistrationProcessParameterVoInterface` — simplify or preserve? | Pending |
+| #   | Question                                                                    | Decision |
+| --- | --------------------------------------------------------------------------- | -------- |
+| D.1 | Move `model.vo.registration` VOs to `lis-common`?                           | Pending  |
+| D.2 | Is JTA needed for atomic Oracle audit + PostgreSQL writes?                  | Pending  |
+| D.3 | Confirm `task_list` table name and schema in target PostgreSQL lab database | Pending  |
+| D.4 | `ResponseObject` needs to move to `lis-common`                              | Pending  |
+| D.5 | `RegistrationProcessParameterVoInterface` — simplify or preserve?           | Pending  |
 
 ---
 
