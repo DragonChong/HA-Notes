@@ -48,5 +48,17 @@ function findInIndexedDB(dbName, storeName, keyName, arrayPropName, searchCallba
 
 # Call Function
 ```javascript
-
+findInIndexedDB(
+  'lis',                  // Database name
+  'keyval',               // Object store name
+  'dictionaryCRSTKO',     // Key name
+  'LocationDictionaryVo', // The nested array to search
+  (item) => item.type === 2 // Your filter condition
+)
+.then(results => {
+  console.table(results);
+})
+.catch(error => {
+  console.error(error);
+});
 ```
