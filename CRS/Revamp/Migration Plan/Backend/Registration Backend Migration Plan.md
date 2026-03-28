@@ -4,7 +4,7 @@ tags:
   - crs/revamp
   - backend
   - migration
-status: in-progress
+status: in-progress-step5
 epic: LISP-21
 created: '2026-03-27'
 ---
@@ -165,12 +165,12 @@ lis-request-svc/                         ← parent POM (packaging=pom)
 
 | File | Status | Pending (Step 3) |
 |---|---|---|
-| `PatientRegistrationService.java` | ✅ Skeleton | `PatientRepository` |
-| `RegistrationProcessorService.java` | ✅ Skeleton | drequest + lab-specific table repositories |
-| `RegistrationAuditService.java` | ✅ Skeleton | Audit repositories / invoker replacement |
-| `TaskListService.java` | ✅ Skeleton | `TaskListRepository` + confirm table name |
-| `TestResultService.java` | ✅ Skeleton | `LabTransTestrsltWktRepository` |
-| `RegistrationService.java` | ✅ Full orchestration | Sub-service implementations (Step 3) |
+| `PatientRegistrationService.java` | ✅ Implemented | selectActivePatient + insertPatient via `PatientRepository` |
+| `RegistrationProcessorService.java` | ✅ Implemented | extraValidation (bool) + insertCrsRegistrationData via `DrequestRepository` |
+| `RegistrationAuditService.java` | ✅ Implemented | logCrsResultAudit / logPatientAudit / logOperationAudit via ALS log; Oracle pending D.2 |
+| `TaskListService.java` | ✅ Implemented | insertTaskList via `LisgTaskListRepository` |
+| `TestResultService.java` | ✅ Implemented | insertTestResult via `TransTestrsltWktRepository.saveAll()` |
+| `RegistrationService.java` | ✅ Full orchestration | All sub-services implemented ✅ |
 
 ### Controller — `hk.org.ha.lis.request.controller`
 
@@ -228,17 +228,18 @@ Spring `@Transactional` on `RegistrationService.register()`.
 - [x] `PatientRepository` PK type updated to `PatientPk`
 - [x] `mvn compile` — BUILD SUCCESS (all 3 modules) ✅
 
-### Step 4 — Implement Sub-Services
-- [ ] `PatientRegistrationService.selectActivePatient()` — query patient table
-- [ ] `PatientRegistrationService.insertPatient()` — insert new patient
-- [ ] `RegistrationProcessorService.extraValidationOnRequestNo()` — request number format validation
-- [ ] `RegistrationProcessorService.insertLabSpecificPatientData()` — lab-specific patient data
-- [ ] `RegistrationProcessorService.insertCrsRegistrationData()` — drequest INSERT
-- [ ] `RegistrationAuditService.logCrsResultAudit()` ×2 — patient + request audit types
-- [ ] `RegistrationAuditService.logPatientAudit()` — conditional on auditText not null
-- [ ] `RegistrationAuditService.logOperationAudit()` — operation audits from process parameter
-- [ ] `TaskListService.insertTaskList()` — insert task list entry
-- [ ] `TestResultService.insertTestResult()` — bulk insert test results
+### Step 4 — Implement Sub-Services ✅
+- [x] `PatientRegistrationService.selectActivePatient()` — `PatientRepository.findByPatEncounterAndPatHospital()` (hospital from ThreadLocal `ServiceParameterVo`); falls back to `findFirstByPatEncounter()` when hospital is null; maps entity → `PatientVo`
+- [x] `PatientRegistrationService.insertPatient()` — maps `PatientVo` → `Patient` entity; `PatientRepository.save()`
+- [x] `RegistrationProcessorService.extraValidationOnRequestNo()` — validates request number is non-null/non-blank; base is no-op in legacy, returns `boolean`
+- [x] `RegistrationProcessorService.insertLabSpecificPatientData()` — no-op (base processor in legacy is empty; lab-specific overrides deferred)
+- [x] `RegistrationProcessorService.insertCrsRegistrationData()` — maps `RegistrationVo` → `Drequest` entity; `DrequestRepository.save()`; mirrors `CrsRequestService.convertToCrsRequest()` field mapping
+- [x] `RegistrationAuditService.logCrsResultAudit()` ×2 — ALS log only; Oracle `AuditInvoker` deferred pending D.2
+- [x] `RegistrationAuditService.logPatientAudit()` — ALS log only; Oracle `AuditInvoker` deferred pending D.2
+- [x] `RegistrationAuditService.logOperationAudit()` — ALS log only per `AuditVo` entry; Oracle `AuditInvoker` deferred pending D.2
+- [x] `TaskListService.insertTaskList()` — builds `LisgTasklist` entity (`TASK_ACTION_CRS_SEND=141`, `TASK_STATUS_OUTSTANDING=0`); `LisgTaskListRepository.save()`
+- [x] `TestResultService.insertTestResult()` — maps `List<LabTransTestrsltWktVo>` → `List<TransTestrsltWkt>`; `TransTestrsltWktRepository.saveAll()`
+- [x] `mvn compile` — BUILD SUCCESS (all 3 modules) ✅
 
 ### Step 5 — Verification
 - [ ] Unit test `RegistrationControllerTest` — mock service, verify `ResultDataResponse` shape
@@ -273,7 +274,7 @@ Spring `@Transactional` on `RegistrationService.register()`.
 | Sub-services (skeleton) | 5 | 5 ✅ |
 | Module restructure (Step 0 sub-tasks) | 5 | 5 ✅ |
 | RegistrationServiceClient created | 1 | 1 ✅ |
-| Sub-service implementations | 10 | 0 |
+| Sub-service implementations | 10 | 10 ✅ |
 | Entities | 3 | 3 ✅ |
 | PK classes | 2 | 2 ✅ |
 | Repositories (base + sybase + postgres variants) | 9 | 9 ✅ |
