@@ -166,7 +166,7 @@ lis-request-svc/                         ← parent POM (packaging=pom)
 | File | Status | Pending (Step 3) |
 |---|---|---|
 | `PatientRegistrationService.java` | ✅ Implemented | selectActivePatient + insertPatient via `PatientRepository` |
-| `RegistrationProcessorService.java` | ✅ Implemented | extraValidation (bool) + insertCrsRegistrationData via `DrequestRepository` |
+| `RegistrationProcessorService.java` | ✅ Implemented | extraValidation (bool) + `insertCrsRegistrationData` → `crs_request` + `crs_request_detail` + `crs_request_copy_hist`; replaces erroneous `DrequestRepository` usage |
 | `RegistrationAuditService.java` | ✅ Implemented | logCrsResultAudit / logPatientAudit / logOperationAudit via ALS log; Oracle pending D.2 |
 | `TaskListService.java` | ✅ Implemented | insertTaskList via `LisgTaskListRepository` |
 | `TestResultService.java` | ✅ Implemented | insertTestResult via `TransTestrsltWktRepository.saveAll()` |
@@ -222,10 +222,16 @@ Spring `@Transactional` on `RegistrationService.register()`.
 - [x] `PatientRepository` in `postgresql/`, `SybasePatientRepository` in `sybase/`, `PostgresPatientRepository` in `temp/`
 - [x] `TransTestrsltWktRepository` in `postgresql/`, `SybaseTransTestrsltWktRepository` in `sybase/`, `PostgresTransTestrsltWktRepository` in `temp/` (table: `trans_testrslt_wkt`; composite PK via `TransTestrsltWktPk`)
 - [x] `LisgTaskListRepository` in `postgresql/`, `SybaseLisgTaskListRepository` in `sybase/`, `PostgresLisgTaskListRepository` in `temp/` (table: `lisg_tasklist`; D.3 confirmed)
-- [x] `DrequestRepository` — `JpaRepository.save()` already present; no new write methods needed
+- [x] `DrequestRepository` — pre-existing; no changes
+- [x] `CrsRequestRepository` in `postgresql/`, `SybaseCrsRequestRepository` in `sybase/`, `PostgresCrsRequestRepository` in `temp/` (table: `crs_request`; composite PK via `CrsRequestPk`)
+- [x] `CrsRequestDetailRepository` in `postgresql/`, `SybaseCrsRequestDetailRepository` in `sybase/`, `PostgresCrsRequestDetailRepository` in `temp/` (table: `crs_request_detail`; surrogate PK `req_serial`)
+- [x] `CrsRequestCopyHistRepository` in `postgresql/`, `SybaseCrsRequestCopyHistRepository` in `sybase/`, `PostgresCrsRequestCopyHistRepository` in `temp/` (table: `crs_request_copy_hist`; surrogate PK `reqcp_serial`)
 - [x] `@RepositoryType(LAB_SPECIFIC, LAB_DB)` applied on all base repositories
 - [x] `Patient` entity updated to composite PK (`patEncounter` + `patHospital`) via `@IdClass(PatientPk.class)`; `pk/PatientPk.java` created
 - [x] `PatientRepository` PK type updated to `PatientPk`
+- [x] `CrsRequest.java` entity (43 columns, composite PK `reqReqno`+`reqRegisteredDate`) and `pk/CrsRequestPk.java` created
+- [x] `CrsRequestDetail.java` entity (surrogate PK `req_serial`) created
+- [x] `CrsRequestCopyHist.java` entity (surrogate PK `reqcp_serial`) created
 - [x] `mvn compile` — BUILD SUCCESS (all 3 modules) ✅
 
 ### Step 4 — Implement Sub-Services ✅
@@ -233,7 +239,9 @@ Spring `@Transactional` on `RegistrationService.register()`.
 - [x] `PatientRegistrationService.insertPatient()` — maps `PatientVo` → `Patient` entity; `PatientRepository.save()`
 - [x] `RegistrationProcessorService.extraValidationOnRequestNo()` — validates request number is non-null/non-blank; base is no-op in legacy, returns `boolean`
 - [x] `RegistrationProcessorService.insertLabSpecificPatientData()` — no-op (base processor in legacy is empty; lab-specific overrides deferred)
-- [x] `RegistrationProcessorService.insertCrsRegistrationData()` — maps `RegistrationVo` → `Drequest` entity; `DrequestRepository.save()`; mirrors `CrsRequestService.convertToCrsRequest()` field mapping
+- [x] `RegistrationProcessorService.insertCrsRegistrationData()` — inserts into `crs_request` (always) + `crs_request_detail` (one per alpha code) + `crs_request_copy_hist` (one per report copy); field mapping mirrors `CrsRequestService.convertToCrsRequest()` / `superCreateCrsRequest()` in `lis-crs-spec-ack-svc`; prime/primeType logic for report copies preserved
+  - Deferred: `crs_gcrs_request_order` (D.7), `crs_send_out` (D.7), `crs_request_supplement_info` (D.7), USID tables (D.7), `reportMapping()` (D.6)
+  - TODO D.5: `req_age_unit` — legacy resolves via `KeywordService`; current fallback = direct Integer parse of `ageUnit` string
 - [x] `RegistrationAuditService.logCrsResultAudit()` ×2 — ALS log only; Oracle `AuditInvoker` deferred pending D.2
 - [x] `RegistrationAuditService.logPatientAudit()` — ALS log only; Oracle `AuditInvoker` deferred pending D.2
 - [x] `RegistrationAuditService.logOperationAudit()` — ALS log only per `AuditVo` entry; Oracle `AuditInvoker` deferred pending D.2
@@ -244,7 +252,7 @@ Spring `@Transactional` on `RegistrationService.register()`.
 ### Step 5 — Verification
 - [ ] Unit test `RegistrationControllerTest` — mock service, verify `ResultDataResponse` shape
 - [ ] Unit test `RegistrationServiceTest` — mock sub-services, verify `ResponseObject` state
-- [ ] Integration test: POST `/api/registration/register` with test schema; verify `drequest` row inserted
+- [ ] Integration test: POST `/api/registration/register` with test schema; verify `crs_request` + `crs_request_detail` + `crs_request_copy_hist` rows inserted
 - [ ] Verify ALS logs with correct `functionId` and `description`
 - [ ] Verify `DataSourceContextHolder` routes to correct lab
 
@@ -258,7 +266,9 @@ Spring `@Transactional` on `RegistrationService.register()`.
 | D.2 | Is JTA needed for atomic Oracle audit + PostgreSQL writes?                  | Pending                                                    |
 | D.3 | Confirm `task_list` table name and schema in target PostgreSQL lab database | ✅ `lisg_tasklist`, confirmed from `lis-crs-spec-ack-svc`; `LisgTaskListRepository` created |
 | D.4 | `ResponseObject` needs to move to `lis-common`                              | Pending                                                    |
-| D.5 | `RegistrationProcessParameterVoInterface` — simplify or preserve?           | Use `RegistrationProcessParameterVo` directly; remove interface |
+| D.5 | `req_age_unit` in `CrsRequest` — legacy resolves VO string via `KeywordService.selectKeywordFromGroupByCode(ageUnit, "AGE_UNIT")`; current code does direct Integer parse | Pending — direct parse fallback in place; null stored if non-numeric |
+| D.6 | `reportMapping()` in base processor — mutates report copies / report destination before `crs_request_copy_hist` insert | Deferred to future iteration |
+| D.7 | Conditional tables written by `superCreateCrsRequest()` — `crs_gcrs_request_order`, `crs_send_out`, `crs_request_supplement_info`, USID tables | Deferred to future iterations; TODO comments added in service |
 | D.6 | `LabResultVo` circular dependency with `lis-common`?                        | Resolved — all 19 transitive deps moved to `lis-common` together; `LabResultVo` now in `hk.org.ha.lis.model.vo` |
 
 ---
@@ -275,7 +285,7 @@ Spring `@Transactional` on `RegistrationService.register()`.
 | Module restructure (Step 0 sub-tasks) | 5 | 5 ✅ |
 | RegistrationServiceClient created | 1 | 1 ✅ |
 | Sub-service implementations | 10 | 10 ✅ |
-| Entities | 3 | 3 ✅ |
-| PK classes | 2 | 2 ✅ |
-| Repositories (base + sybase + postgres variants) | 9 | 9 ✅ |
+| Entities | 6 | 6 ✅ |
+| PK classes | 3 | 3 ✅ |
+| Repositories (base + sybase + postgres variants) | 18 | 18 ✅ |
 | Tests | 3 | 0 |
