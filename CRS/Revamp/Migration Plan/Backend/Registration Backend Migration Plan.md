@@ -89,13 +89,14 @@ lis-request-svc/                         ← parent POM (packaging=pom)
 
 ### Data Model Ownership
 
-| Model | Current Location | Final Owner | Notes |
-|---|---|---|---|
-| All registration VOs (23) | `app/src/.../client/model/` | `client-lib` | ✅ Moved (Step 0c) |
-| `LabResultVo` | `app/src/.../client/model/` | `client-lib` | ⚠️ D.6 circular dep blocks `lis-common` move |
-| `TransTestrsltWktVo` + `LabTransTestrsltWktVo` | `app/src/.../client/model/` | `lis-common` (Step 0d) | Pending circular dep evaluation |
-| `RegistrationRequest` DTO | `app/src/.../client/dto/` | `client-lib` | ✅ Moved (Step 0c) |
-| `ResponseObject` | `client-lib` | `lis-common` (D.4) | Pending decision |
+| Model | Final Location | Notes |
+|---|---|---|
+| 19 request/result VOs | `lis-common` (`hk.org.ha.lis.model.vo`) | ✅ Moved (Step 0d) |
+| `RegistrationVo` | `client-lib` | Depends on `LabResultVo` in lis-common |
+| `RegistrationPackingVo` | `client-lib` | Depends on `LabTransTestrsltWktVo` in lis-common |
+| `RegistrationProcessParameterVo` / Interface | `client-lib` | CRS-specific orchestration |
+| `RegistrationRequest` DTO | `client-lib` | ✅ Moved (Step 0c) |
+| `ResponseObject` | `client-lib` | Pending move to `lis-common` (D.4) |
 
 ---
 
@@ -114,34 +115,39 @@ lis-request-svc/                         ← parent POM (packaging=pom)
 
 ## 3. Files Created (Step 1 ✅)
 
-### VOs — `hk.org.ha.lis.request.client.model` (✅ moved to `client-lib`, Step 0c)
+### VOs — `hk.org.ha.lis.model.vo` in `lis-common` (✅ moved, Step 0d)
 
-| File | Note | Final Owner |
-|---|---|---|
-| `StatableVoInterface.java` | State constants interface | `client-lib` |
-| `AbstractVo.java` | Abstract base with `int state` | `client-lib` |
-| `LocationIdVo.java` | hospital + Integer key | `client-lib` |
-| `ReportCopyUnitVo.java` | reportProfile + counter + subCounter | `client-lib` |
-| `RequestIdVo.java` | hospital + labNo + requestNo | `client-lib` |
-| `AuditVo.java` | requestNo + auditType + auditText + hkid | `client-lib` |
-| `RequestDetailVo.java` | All request detail fields; validation groups removed (backend concern) | `client-lib` |
-| `RequestDataVo.java` | doctorReference + clinicalDetails + comment; `StringHelper` replaced with `stripTrailing()` | `client-lib` |
-| `ReportCopyVo.java` | Full report copy fields | `client-lib` |
-| `RequestProfileDetailVo.java` | Alpha code + lab + date; `@JsonSubTypes` for `UsidRequestProfileDetailVo` | `client-lib` |
-| `UsidVo.java` | Specimen identifier fields; `getDisplaySpecimen()` simplified | `client-lib` |
-| `UsidRequestProfileDetailVo.java` | Extends `RequestProfileDetailVo` + USID list | `client-lib` |
-| `RequestInfoVo.java` | Core request info; `@JsonSubTypes` for `UsidRequestInfoVo`; `PatientInfoVo`/`EncounterInfoVo` from `lis-common` | `client-lib` |
-| `UsidRequestInfoVo.java` | Extends `RequestInfoVo` + usids list | `client-lib` |
-| `GroupVo.java` | Minimal stub with `@JsonIgnoreProperties(ignoreUnknown = true)` — result-only fields omitted | `client-lib` |
-| `LabResultViewVo.java` | type + name + `List<GroupVo>` | `client-lib` |
-| `LabResultVo.java` | requestInfo + `PatientVo` (lis-common) + labResultViews | `client-lib` ⚠️ D.6 |
-| `RegistrationVo.java` | labResult + alphaCodes | `client-lib` |
-| `TransTestrsltWktVo.java` | All result worksheet fields | `lis-common` (Step 0d) |
-| `LabTransTestrsltWktVo.java` | Extends `TransTestrsltWktVo` + labNo | `lis-common` (Step 0d) |
-| `RegistrationProcessParameterVoInterface.java` | Interface + `@JsonDeserialize(as = RegistrationProcessParameterVo.class)` | `client-lib` (D.5: remove) |
-| `RegistrationProcessParameterVo.java` | All process parameter fields + copy constructor | `client-lib` |
-| `RegistrationPackingVo.java` | Top-level packing VO; `PatientVo` from `lis-common` | `client-lib` |
-| `ResponseObject.java` | roState + isRollback; SUCCESS/FAIL/REQUEST_NO_INVALID_FORMAT constants added | `lis-common` (D.4) |
+| File | Note |
+|---|---|
+| `StatableVoInterface.java` | State constants interface |
+| `AbstractVo.java` | Abstract base with `int state` |
+| `LocationIdVo.java` | hospital + Integer key |
+| `ReportCopyUnitVo.java` | reportProfile + counter + subCounter |
+| `RequestIdVo.java` | hospital + labNo + requestNo |
+| `AuditVo.java` | requestNo + auditType + auditText + hkid |
+| `RequestDetailVo.java` | All request detail fields; validation groups removed (backend concern) |
+| `RequestDataVo.java` | doctorReference + clinicalDetails + comment; `StringHelper` replaced with `stripTrailing()` |
+| `ReportCopyVo.java` | Full report copy fields |
+| `RequestProfileDetailVo.java` | Alpha code + lab + date; `@JsonSubTypes` for `UsidRequestProfileDetailVo` |
+| `UsidVo.java` | Specimen identifier fields; `getDisplaySpecimen()` simplified |
+| `UsidRequestProfileDetailVo.java` | Extends `RequestProfileDetailVo` + USID list |
+| `RequestInfoVo.java` | Core request info; `@JsonSubTypes` for `UsidRequestInfoVo`; `PatientInfoVo`/`EncounterInfoVo` from `lis-common` |
+| `UsidRequestInfoVo.java` | Extends `RequestInfoVo` + usids list |
+| `GroupVo.java` | Minimal stub with `@JsonIgnoreProperties(ignoreUnknown = true)` — result-only fields omitted |
+| `LabResultViewVo.java` | type + name + `List<GroupVo>` |
+| `LabResultVo.java` | requestInfo + `PatientVo` (lis-common) + labResultViews |
+| `TransTestrsltWktVo.java` | All result worksheet fields |
+| `LabTransTestrsltWktVo.java` | Extends `TransTestrsltWktVo` + labNo |
+
+### VOs remaining in `client-lib` — `hk.org.ha.lis.request.client.model`
+
+| File | Note |
+|---|---|
+| `RegistrationVo.java` | labResult + alphaCodes; depends on `LabResultVo` in lis-common |
+| `RegistrationPackingVo.java` | Top-level packing VO; `PatientVo` + `LabTransTestrsltWktVo` from lis-common |
+| `RegistrationProcessParameterVoInterface.java` | Interface + `@JsonDeserialize(as = RegistrationProcessParameterVo.class)` |
+| `RegistrationProcessParameterVo.java` | All process parameter fields; `AuditVo` from lis-common |
+| `ResponseObject.java` | roState + isRollback; SUCCESS/FAIL/REQUEST_NO_INVALID_FORMAT constants (D.4: pending lis-common move) |
 
 ### DTO — `hk.org.ha.lis.request.client.dto` (✅ moved to `client-lib`, Step 0c)
 
@@ -203,20 +209,24 @@ Spring `@Transactional` on `RegistrationService.register()`.
 - [x] **0a** — Convert `lis-request-svc/pom.xml` to parent POM (`packaging=pom`, `artifactId=lis-request-svc-parent`, modules: `client-lib`, `app`)
 - [x] **0b** — Create `app/pom.xml` (inherits parent; depends on all server libs + `lis-request-client`); move `src/` → `app/src/`
 - [x] **0c** — Create `client-lib/pom.xml` (`artifactId=lis-request-client`; depends on `core-api` v1.0.2 + `lis-common`); copy all 24 VOs to `client-lib/.../client/model/`; copy `RegistrationRequest` to `client-lib/.../client/dto/`; create `RegistrationServiceClient extends AbstractRestClient`; delete old copies from `app/`; update all imports in `app/`
-- [ ] **0d** — Evaluate `LabResultVo` circular dependency (D.6); if clear → move `TransTestrsltWktVo` + `LabTransTestrsltWktVo` to `lis-common`
+- [x] **0d** — Moved all 19 request/result VOs (including `LabResultVo`, `TransTestrsltWktVo`, `LabTransTestrsltWktVo`) to `lis-common` (`hk.org.ha.lis.model.vo`); D.6 moot — transitive deps all moved together; `lis-common` installed to local Maven repo
+  - ✅ `TransTestrsltWktVo` + `LabTransTestrsltWktVo` confirmed in `hk.org.ha.lis.model.vo`; `RegistrationPackingVo` (client-lib) imports `LabTransTestrsltWktVo` from `lis-common`
 - [x] **0e** — Verified `mvn compile` passes: parent → `lis-request-client` → `lis-request-svc` all BUILD SUCCESS ✅
 
 ### Step 2 — Dependency / lis-common cleanup
 - ~~[ ] Move 24 VOs from `model.vo.registration` to `lis-common` (D.1)~~ (superseded by Step 0c/0d)
 - [ ] Move `ResponseObject` to `lis-common` (D.4)
-- [ ] Move `TransTestrsltWktVo` + `LabTransTestrsltWktVo` to `lis-common` after D.6 evaluation (Step 0d)
+- ~~[x] Move `TransTestrsltWktVo` + `LabTransTestrsltWktVo` to `lis-common` after D.6 evaluation (Step 0d)~~ ✅ done — `hk.org.ha.lis.model.vo`
 
-### Step 3 — Create Repositories
-- [ ] `PatientRepository` in `postgresql/`, `SybasePatientRepository` in `sybase/`, `PostgresPatientRepository` in `temp/`
-- [ ] `LabTransTestrsltWktRepository` in `postgresql/`
-- [ ] `TaskListRepository` in `postgresql/` — confirm table name from schema (D.3)
-- [ ] Extend `DrequestRepository` with write methods needed for registration
-- [ ] Apply `@RepositoryType` on all above repositories
+### Step 3 — Create Repositories ✅
+- [x] `PatientRepository` in `postgresql/`, `SybasePatientRepository` in `sybase/`, `PostgresPatientRepository` in `temp/`
+- [x] `TransTestrsltWktRepository` in `postgresql/`, `SybaseTransTestrsltWktRepository` in `sybase/`, `PostgresTransTestrsltWktRepository` in `temp/` (table: `trans_testrslt_wkt`; composite PK via `TransTestrsltWktPk`)
+- [x] `LisgTaskListRepository` in `postgresql/`, `SybaseLisgTaskListRepository` in `sybase/`, `PostgresLisgTaskListRepository` in `temp/` (table: `lisg_tasklist`; D.3 confirmed)
+- [x] `DrequestRepository` — `JpaRepository.save()` already present; no new write methods needed
+- [x] `@RepositoryType(LAB_SPECIFIC, LAB_DB)` applied on all base repositories
+- [x] `Patient` entity updated to composite PK (`patEncounter` + `patHospital`) via `@IdClass(PatientPk.class)`; `pk/PatientPk.java` created
+- [x] `PatientRepository` PK type updated to `PatientPk`
+- [x] `mvn compile` — BUILD SUCCESS (all 3 modules) ✅
 
 ### Step 4 — Implement Sub-Services
 - [ ] `PatientRegistrationService.selectActivePatient()` — query patient table
@@ -241,14 +251,14 @@ Spring `@Transactional` on `RegistrationService.register()`.
 
 ## 7. Open Questions / Decisions
 
-| #   | Question                                                                                                                                  | Decision                                                                                                                   |
-| --- | ----------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| D.1 | Move `model.vo.registration` VOs to `lis-common`?                                                                                         | All 24 VOs → `client-lib`; only `TransTestrsltWktVo` + `LabTransTestrsltWktVo` provisionally to `lis-common` (pending D.6) |
-| D.2 | Is JTA needed for atomic Oracle audit + PostgreSQL writes?                                                                                | Pending                                                                                                                    |
-| D.3 | Confirm `task_list` table name and schema in target PostgreSQL lab database                                                               | lisg_tasklist, Reference `lis-crs-spec-ack-svc`                                                                            |
-| D.4 | `ResponseObject` needs to move to `lis-common`                                                                                            | Pending                                                                                                                    |
-| D.5 | `RegistrationProcessParameterVoInterface` — simplify or preserve?                                                                         | Use `RegistrationProcessParameterVo` directly; remove interface                                                            |
-| D.6 | `LabResultVo` circular dependency: references `RequestInfoVo`/`LabResultViewVo` which stay in `client-lib` — can it move to `lis-common`? | Pending (evaluate in Step 0d; likely `LabResultVo` stays in `client-lib`)                                                  |
+| #   | Question                                                                    | Decision                                                   |
+| --- | --------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| D.1 | Move `model.vo.registration` VOs to `lis-common`?                           | 19 request/result VOs → `lis-common`; 5 registration-orchestration VOs stay in `client-lib` |
+| D.2 | Is JTA needed for atomic Oracle audit + PostgreSQL writes?                  | Pending                                                    |
+| D.3 | Confirm `task_list` table name and schema in target PostgreSQL lab database | ✅ `lisg_tasklist`, confirmed from `lis-crs-spec-ack-svc`; `LisgTaskListRepository` created |
+| D.4 | `ResponseObject` needs to move to `lis-common`                              | Pending                                                    |
+| D.5 | `RegistrationProcessParameterVoInterface` — simplify or preserve?           | Use `RegistrationProcessParameterVo` directly; remove interface |
+| D.6 | `LabResultVo` circular dependency with `lis-common`?                        | Resolved — all 19 transitive deps moved to `lis-common` together; `LabResultVo` now in `hk.org.ha.lis.model.vo` |
 
 ---
 
@@ -261,8 +271,10 @@ Spring `@Transactional` on `RegistrationService.register()`.
 | Controller created | 1 | 1 ✅ |
 | RegistrationService created | 1 | 1 ✅ |
 | Sub-services (skeleton) | 5 | 5 ✅ |
-| Module restructure (Step 0 sub-tasks) | 5 | 4 ✅ (0d pending) |
+| Module restructure (Step 0 sub-tasks) | 5 | 5 ✅ |
 | RegistrationServiceClient created | 1 | 1 ✅ |
 | Sub-service implementations | 10 | 0 |
-| Repositories | 4 | 0 |
+| Entities | 3 | 3 ✅ |
+| PK classes | 2 | 2 ✅ |
+| Repositories (base + sybase + postgres variants) | 9 | 9 ✅ |
 | Tests | 3 | 0 |
