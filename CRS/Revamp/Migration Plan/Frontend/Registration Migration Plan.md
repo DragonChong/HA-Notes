@@ -344,7 +344,7 @@ All triggered when user clicks **Save**, before the request is sent to the serve
 
 | #    | Task                                                           | Status | Reference                                                                                 |
 | ---- | -------------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------------- |
-| 8A.1 | **Retrieve Patient by HKID**                                   | `[ ]`  | [[Knowledge Base/01_Screens/Registration/Workflows/Retrieve Patient by HKID]]             |
+| 8A.1 | **Retrieve Patient by HKID**                                   | `[/]`  | [[Knowledge Base/01_Screens/Registration/Workflows/Retrieve Patient by HKID]]             |
 | 8A.2 | **Retrieve Patient by Encounter Number**                       | `[ ]`  | [[Knowledge Base/01_Screens/Registration/Workflows/Retrieve Patient by Encounter Number]] |
 | 8A.3 | **Create New Patient by HKID**                                 | `[ ]`  | [[Knowledge Base/01_Screens/Registration/Workflows/Create New Patient by HKID]]           |
 | 8A.4 | **Patient Tag Alert** — show alert when patient has tags/flags | `[ ]`  | [[Knowledge Base/01_Screens/Registration/Workflows/Patient Tag Alert]]                    |
@@ -466,8 +466,8 @@ RegistrationPacking
 | CRST-87 | Request Info Panel | 2.3 | `[ ]` |
 | CRST-88 | Test Panel | 2.4 | `[ ]` |
 | CRST-89 | Buttons | 2.6 | `[ ]` |
-| CRST-92 | Retrieve Existing Patient by HKID | 8A.1 | `[ ]` |
-| CRST-93 | Retrieve PMI Patient by HKID | 8A.1 | `[ ]` |
+| CRST-92 | Retrieve Existing Patient by HKID | 8A.1 | `[/]` |
+| CRST-93 | Retrieve PMI Patient by HKID | 8A.1 | `[/]` |
 | CRST-95 | Create New Patient by HKID | 8A.3 | `[ ]` |
 | CRST-96 | Retrieve Existing Local Patient by Case Number | 8A.2 | `[ ]` |
 | CRST-97 | Retrieve Existing PMI Patient by Case Number | 8A.2 | `[ ]` |
@@ -602,10 +602,10 @@ RegistrationPacking
 | Phase 5 — Lab Panels | 23 | 0 | 0 | 23 |
 | Phase 6 — Dialogues | 20 | 0 | 0 | 20 |
 | Phase 7 — Validations | 16 | 0 | 0 | 16 |
-| Phase 8 — Workflows | 15 | 0 | 0 | 15 |
+| Phase 8 — Workflows | 15 | 0 | 1 | 14 |
 | Phase 9 — Backend API | 13 | 0 | 0 | 13 |
 | Phase 10 — Testing | 10 | 0 | 0 | 10 |
-| **Total** | **147** | **0** | **0** | **147** |
+| **Total** | **147** | **0** | **1** | **146** |
 
 ---
 
@@ -616,3 +616,4 @@ RegistrationPacking
 | 2026-03-13 | Initial document created — full task list from Knowledge Base analysis |
 | 2026-03-13 | Updated target repository — Registration screen to be built in new `lis-request-app` MFE, consumed by `lis-crs-common-app`; Phase 0 expanded to cover new repo scaffolding and MF integration |
 | 2026-03-24 | Updated backend service split — `lis-request-svc` for registration/request APIs; `lis-patient-svc` for patient lookup APIs (HKPMI list, LIS patient by HKID/Encounter Number); Phase 9 restructured accordingly |
+| 2026-03-28 | 8A.1 — Retrieve Patient by HKID — implementation in progress: patientApi.ts, store extension, SelectEpisodeDialog, useRetrievePatientByHkid hook, HkidInput wiring complete |
