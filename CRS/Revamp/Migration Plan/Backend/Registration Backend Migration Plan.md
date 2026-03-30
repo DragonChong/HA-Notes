@@ -298,16 +298,16 @@ Spring `@Transactional` on `RegistrationService.register()`.
 
 ## 7. Open Questions / Decisions
 
-| #   | Question                                                                    | Decision                                                   |
-| --- | --------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| D.1 | Move `model.vo.registration` VOs to `lis-common`?                           | 19 request/result VOs → `lis-common`; 5 registration-orchestration VOs stay in `client-lib` |
-| D.2 | Is JTA needed for atomic Oracle audit + PostgreSQL writes?                  | Pending                                                    |
-| D.3 | Confirm `task_list` table name and schema in target PostgreSQL lab database | ✅ `lisg_tasklist`, confirmed from `lis-crs-spec-ack-svc`; `LisgTaskListRepository` created |
-| D.4 | `ResponseObject` needs to move to `lis-common`                              | Pending                                                    |
-| D.5 | `req_age_unit` in `CrsRequest` — legacy resolves VO string via `KeywordService.selectKeywordFromGroupByCode(ageUnit, "AGE_UNIT")`; current code does direct Integer parse | Pending — direct parse fallback in place; null stored if non-numeric |
-| D.6 | `reportMapping()` in base processor — mutates report copies / report destination before `crs_request_copy_hist` insert | Deferred to future iteration |
-| D.7 | Conditional tables written by `superCreateCrsRequest()` — `crs_gcrs_request_order`, `crs_send_out`, `crs_request_supplement_info`, USID tables | Deferred to future iterations; TODO comments added in service |
-| D.6 | `LabResultVo` circular dependency with `lis-common`?                        | Resolved — all 19 transitive deps moved to `lis-common` together; `LabResultVo` now in `hk.org.ha.lis.model.vo` |
+| #   | Question                                                                                                                                                                  | Decision                                                                                                        |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| D.1 | Move `model.vo.registration` VOs to `lis-common`?                                                                                                                         | 19 request/result VOs → `lis-common`; 5 registration-orchestration VOs stay in `client-lib`                     |
+| D.2 | Is JTA needed for atomic Oracle audit + PostgreSQL writes?                                                                                                                | Pending                                                                                                         |
+| D.3 | Confirm `task_list` table name and schema in target PostgreSQL lab database                                                                                               | ✅ `lisg_tasklist`, confirmed from `lis-crs-spec-ack-svc`; `LisgTaskListRepository` created                      |
+| D.4 | `ResponseObject` needs to move to `lis-common`                                                                                                                            | Keep in `lis-request-svc`                                                                                       |
+| D.5 | `req_age_unit` in `CrsRequest` — legacy resolves VO string via `KeywordService.selectKeywordFromGroupByCode(ageUnit, "AGE_UNIT")`; current code does direct Integer parse | Pending — direct parse fallback in place; null stored if non-numeric                                            |
+| D.6 | `reportMapping()` in base processor — mutates report copies / report destination before `crs_request_copy_hist` insert                                                    | Deferred to future iteration                                                                                    |
+| D.7 | Conditional tables written by `superCreateCrsRequest()` — `crs_gcrs_request_order`, `crs_send_out`, `crs_request_supplement_info`, USID tables                            | Deferred to future iterations; TODO comments added in service                                                   |
+| D.6 | `LabResultVo` circular dependency with `lis-common`?                                                                                                                      | Resolved — all 19 transitive deps moved to `lis-common` together; `LabResultVo` now in `hk.org.ha.lis.model.vo` |
 
 ---
 
