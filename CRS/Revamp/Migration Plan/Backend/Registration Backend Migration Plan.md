@@ -256,6 +256,43 @@ Spring `@Transactional` on `RegistrationService.register()`.
 - [ ] Verify ALS logs with correct `functionId` and `description`
 - [ ] Verify `DataSourceContextHolder` routes to correct lab
 
+### Step 6 — Fix `register()` Flow Gaps (see §8.6)
+- [ ] **6a** — Add existing-patient check before `insertPatient()` — call `patientRegistrationService.selectActivePatient(encounterIdVo)` first; only insert if null
+- [ ] **6b** — After patient insert/find, propagate `patientInfo` + `encounterInfo` onto each `registration.getLabResult().getRequestInfo()`
+- [ ] **6c** — Add `setNewPatientData(labResult)` call in the newPatient block (dispatches to strategy)
+- [ ] **6d** — Add `registeredDate = now` for `index > 0` registrations in multi-lab batch
+- [ ] **6e** — Add `constructOperationAuditsFromLabResult(labResult, operationAudits)` call **before** `logOperationAudit` (dispatches to strategy)
+- [ ] **6f** — Update `extraValidationOnRequestNo` to dispatch to strategy for USID format validation
+
+### Step 7 — Lab-Specific Strategy Infrastructure (see §8.7)
+- [ ] **7a** — Create `LabRegistrationStrategy` interface in `service/strategy/`
+- [ ] **7b** — Create `HaBaseRegistrationStrategy` — USID validation + `constructOperationAuditsFromLabResult` from `requestProfileDetails`
+- [ ] **7c** — Wire `Map<Integer, LabRegistrationStrategy>` into `RegistrationProcessorService`; dispatch `beforeCrsRegistration()` and `insertCrsRegistrationLabSpecificData()` in `insertCrsRegistrationData()`
+- [ ] **7d** — Update `RegistrationService.register()` to call strategy methods (6c/6e/6f above)
+
+### Step 8 — Lab-Specific Strategy Implementations (see §8.7.3)
+- [ ] **8a** — `ApsRegistrationStrategy`: `beforeCrsRegistration` (clear alphaCodes) + `insertCrsRegistrationLabSpecificData` (AP detail/GRequest/transient + testrslt audit)
+  - Requires: `CrsApDetail` entity + `CrsApDetailRepository`, `CrsApGRequest` entity + `CrsApGRequestRepository`, `CrsApTransient` entity + `CrsApTransientRepository`
+- [ ] **8b** — `BbsRegistrationStrategy`: `setNewPatientData` + `insertLabSpecificPatientData` + `insertCrsRegistrationLabSpecificData` (BB request code/inv + claimed HKID log)
+  - Requires: `CrsBbRequestCode` entity + `CrsBbRequestCodeRepository`, `CrsBbRequestInv` entity + `CrsBbRequestInvRepository`
+- [ ] **8c** — `CpsRegistrationStrategy`: `insertCrsRegistrationLabSpecificData` (TmpDftLink inserts)
+  - Requires: `TmpDftLink` entity + `TmpDftLinkRepository`
+- [ ] **8d** — `MbsRegistrationStrategy`: `insertCrsRegistrationLabSpecificData` (MB request/testinfo)
+  - Requires: `CrsMbRequest` entity + `CrsMbRequestRepository`, `CrsMbTestinfo` entity + `CrsMbTestinfoRepository`
+- [ ] **8e** — `VrsRegistrationStrategy`: delegates to `MbsRegistrationStrategy`
+- [ ] **8f** — `mvn compile` — BUILD SUCCESS
+
+### Step 9 — Pre-Registration API Endpoints (see §8.7.4)
+- [ ] **9a** — `POST /api/registration/gather-patient-info` — patient info gathering with lab-specific hooks (BBS: blood history, PID check, cluster info, claimed HKID)
+- [ ] **9b** — `POST /api/registration/gather-patient-info-by-hkid` — HKID-based patient info gathering
+- [ ] **9c** — `POST /api/registration/gather-validation-info` — validation info (BBS: ABO/Rh1 check, previous T&S request)
+- [ ] **9d** — `POST /api/registration/pre-registration` — pre-registration processing (BBS: autologous blood + request number generation)
+- [ ] **9e** — `POST /api/registration/check-duplicate` — duplicate test request check (MBS: `selectMbsDuplicate`)
+
+### Step 10 — Request Construction API (see §8.7.5)
+- [ ] **10a** — `POST /api/registration/construct-request` — loads existing registration from DB via `retrieveCrsRequest(reqNo)` + lab-specific `setLabSpecificRequestData()`
+- [ ] **10b** — Implement lab-specific `setLabSpecificRequestData()` per strategy (CPS: TmpDftLink, APS: AP detail/GRequest/transient/followup, BBS: BB request inv/code, MBS: MB request/testinfo)
+
 ---
 
 ## 7. Open Questions / Decisions
