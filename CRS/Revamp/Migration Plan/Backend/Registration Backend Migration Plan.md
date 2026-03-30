@@ -4,7 +4,7 @@ tags:
   - crs/revamp
   - backend
   - migration
-status: in-progress-step5
+status: in-progress-step6
 epic: LISP-21
 created: '2026-03-27'
 ---
@@ -943,6 +943,8 @@ constructRequest(reqNo)
 
 ---
 
+## 9. Progress Summary
+
 | Phase | Total | Done |
 |---|---|---|
 | VOs created | 24 | 24 ✅ |
@@ -957,3 +959,8 @@ constructRequest(reqNo)
 | PK classes | 3 | 3 ✅ |
 | Repositories (base + sybase + postgres variants) | 18 | 18 ✅ |
 | Tests | 3 | 0 |
+| **Step 6 — register() flow fixes** | 6 | 0 |
+| **Step 7 — Strategy infrastructure** | 4 | 0 |
+| **Step 8 — Lab-specific strategies** | 6 | 0 |
+| **Step 9 — Pre-registration APIs** | 5 | 0 |
+| **Step 10 — Request construction API** | 2 | 0 |
