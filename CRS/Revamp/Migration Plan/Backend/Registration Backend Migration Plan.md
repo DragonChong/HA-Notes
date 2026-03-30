@@ -273,7 +273,325 @@ Spring `@Transactional` on `RegistrationService.register()`.
 
 ---
 
-## 8. Progress Summary
+## 8. Legacy Class Analysis — Pending Migration
+
+> [!info] Scope
+> This section documents the **two RegistrationProcessor hierarchies** and the **CrsRequestService hierarchy** from the legacy backend.
+> All classes listed here must be migrated to `lis-request-svc`. As of Step 4, only the base `insertCrsRegistrationData` flow (crs_request + crs_request_detail + crs_request_copy_hist) and base `extraValidationOnRequestNo` are implemented. Everything below represents **additional work** still required.
+
+### 8.1 Class Hierarchy Overview
+
+#### Hierarchy A — Registration-Time Processors (`biz/frontend/request/impl/`)
+
+These processors run **during registration** (called from `RegistrationAppServiceImpl.register()`). They handle patient-info gathering, validation, pre/post-registration hooks, and lab-specific CRS data insertion.
+
+```
+RegistrationProcessorInterface  (biz/frontend/request/)  — 12 methods
+  └── RegistrationProcessorImpl  (568 lines)
+        └── HaRegistrationProcessorImpl  (139 lines)
+              ├── RegistrationApsProcessorImpl  (193 lines)
+              ├── RegistrationBbsProcessorImpl  (801 lines) ← most complex
+              ├── RegistrationCpsProcessorImpl  (111 lines)
+              ├── RegistrationMbsProcessorImpl  (~70 lines)
+              │     └── RegistrationVrsProcessorImpl  (30 lines)  ← pure subclass
+              └── (RegistrationGnsProcessorImpl, RegistrationHmsProcessorImpl, RegistrationImsProcessorImpl — no overrides in this hierarchy)
+```
+
+#### Hierarchy B — Request Construction Processors (`biz/registration/impl/`)
+
+These processors run when **constructing a RegistrationVo from an existing request** (e.g. re-opening a saved request). They read lab-specific data from the database and attach it to the RegistrationVo extras map.
+
+```
+RegistrationProcessorInterface  (biz/registration/)  — 1 method: constructRequest(reqNo)
+  └── AbstractRegistrationProcessor  (300 lines)
+        ├── RegistrationProcessorCpsImpl  (108 lines)
+        ├── RegistrationProcessorGnsImpl  (61 lines) — no-op
+        ├── RegistrationProcessorHmsImpl  (90 lines) — no-op
+        ├── RegistrationProcessorImsImpl  (89 lines) — no-op
+        ├── RegistrationProcessorApsImpl  (386 lines) ← complex
+        ├── RegistrationProcessorBbsImpl  (127 lines)
+        ├── RegistrationProcessorMbsImpl  (121 lines)
+        └── RegistrationProcessorVrsImpl  (61 lines) — extends MbsImpl
+```
+
+#### CrsRequestService Hierarchy
+
+```
+AbstractCrsRequestService  (3,434 lines; 14 DAOs)
+  └── CrsRequestService  (335 lines; +2 USID DAOs)
+```
+
+---
+
+### 8.2 Hierarchy A — Registration-Time Processors (Detail)
+
+#### 8.2.1 RegistrationProcessorImpl (Base — 568 lines)
+
+**File:** `biz/frontend/request/impl/RegistrationProcessorImpl.java`
+
+Extends `AbstractProcessor`. Provides default (no-op) implementations for all 12 interface methods. Implements:
+
+| Method | Behavior |
+|---|---|
+| `insertCrsRegistrationData(RegistrationVo)` | Calls `handleReportMapInfo()` → `reportMapping()` → `getCrsRequestService().createCrsRequest()` → `insertCrsRegistrationLabSpecificData()` |
+| `reportMapping(LabResultVo)` | Complex report-map logic: `RPT_CPY` mode inserts report copies from map; `RPT_DST` mode replaces destination hospital. Uses `getCrsRequestService().selectReportMap()`, `LocationService`, request audit logging |
+| `convertReportMapToReportCopyVo()` | Converts a report-map row into a `ReportCopyVo` |
+| `selectLocationIdByReportMap()` | Looks up location ID from report map |
+| `checkLocationIdExist()` | Validates location exists |
+
+**Stub methods** (to be overridden by lab-specific subclasses):
+`gatherRegistrationLabSpecificPatientInformation` (2 overloads), `gatherLabSpecificInformationForValidation`, `processLabSpecificPreRegistration`, `processLabSpecificPostRegistration`, `processLabSpecificPreClose`, `setNewPatientData`, `setNewPatientLabSpecificData`, `gatherRegistrationClusterPatientInformation`, `constructOperationAuditsFromLabResult`, `insertLabSpecificPatientData`, `extraValidationOnRequestNo`, `insertCrsRegistrationLabSpecificData`
+
+#### 8.2.2 HaRegistrationProcessorImpl (139 lines)
+
+**File:** `biz/frontend/request/impl/HaRegistrationProcessorImpl.java`
+
+Extends `RegistrationProcessorImpl`. Adds HA-specific behavior:
+
+| Method | Behavior |
+|---|---|
+| `getRequestService()` | Returns `RequestService` instance |
+| `constructOperationAuditsFromLabResult()` | Builds audit list from `requestProfileDetails` (alpha codes); adds USID-as-reqno audit if `UsidRequestInfoVo` present |
+| `extraValidationOnRequestNo()` | Delegates to `validateRequestNoFormatWithUsidSetup()` — validates request number format against USID option values (`DISABLED` → 10-digit only; `ENABLED_ALL` → 12+USID; etc.); throws `LisMessageException` on invalid format |
+
+#### 8.2.3 RegistrationApsProcessorImpl (193 lines)
+
+**File:** `biz/frontend/request/impl/RegistrationApsProcessorImpl.java`
+
+Extends `HaRegistrationProcessorImpl`. APS (Anatomical Pathology) specific.
+
+| Method | Behavior |
+|---|---|
+| `insertCrsRegistrationData(RegistrationVo)` | **Overrides base** — calls `registration.setAlphaCodes(Collections.emptyList())` before calling `super.insertCrsRegistrationData()` (APS does not insert `crs_request_detail` rows); then inserts AP-specific data + logs `testrslt` audit |
+| `insertCrsRegistrationLabSpecificData(RegistrationVo)` | Inserts `CrsApDetail`, `CrsApGRequest`, `CrsApTransient` via `getCrsRequestService()` |
+
+**Dependencies:** `getCrsRequestService().insertCrsApDetail()`, `.insertCrsApGRequest()`, `.insertCrsApTransient()`, `AuditInvoker.logCrsResultAudit()`
+
+#### 8.2.4 RegistrationBbsProcessorImpl (801 lines)
+
+**File:** `biz/frontend/request/impl/RegistrationBbsProcessorImpl.java`
+
+Extends `HaRegistrationProcessorImpl`. BBS (Blood Bank) specific. **Most complex** lab-specific processor.
+
+**Services used:** `BbRequestService`, `OptionService` (×2 — general + BBS-specific), `PatientService` (×2 — general + CRS), `AuditService`, `PatientBloodHistoryService`, `RequestService`, `ResultService`, `BloodInventoryService`, `CounterService`, `KeywordService`
+
+| Method | Behavior |
+|---|---|
+| `gatherRegistrationClusterPatientInformation(ro, hkid)` | Overload 1 — delegates to overload 2 with skip-PID sentinel |
+| `gatherRegistrationClusterPatientInformation(ro, hkid, hkidKey, encounterIdVo)` | Complex cross-server patient PID group verification. Queries `getCrsPatientService().selectPatientActivePidGroupByPid()`, `selectActivePatient()`, `selectLatestPatient()`. Retrieves `PatientBloodHistoryVo`, cluster blood history, and claimed HKID info (option-gated) |
+| `gatherRegistrationLabSpecificPatientInformation(ro)` | Extracts hkidKey/hkid/encounter from `ro.getPatient()` → delegates to `gatherRegistrationBbsPatientInformation()` |
+| `gatherRegistrationBbsPatientInformation(ro, encounterIdVo, hkidKey, hkid)` | Calls `gatherRegistrationClusterPatientInformation`; then checks `AUTO_PID_CHECK_ENABLED` option → if enabled and request count=0, updates PID lab check status; retrieves `notCheckedPidChecks` |
+| `gatherLabSpecificInformationForValidation(criteria, ro)` | Delegates to `gatherBbsInformationForValidation()` |
+| `gatherBbsInformationForValidation(criteria, ro)` | Checks `HISTORICAL_ABO_CHECK_CRITERIA` option → queries `ResultService.selectAuthorizedResultsCount()` for ABO/Rh1 test; gathers previous T&S request via `RequestService.selectPreviousRequestByGroup()` |
+| `processLabSpecificPreRegistration(criteria, ro)` | Calls `gatherAutologousBloodInformation()` + `generateRequestNumber()` |
+| `gatherAutologousBloodInformation(criteria, ro)` | For Component/T&S tests: queries `ResultService.selectNumericResultSum()` (autologous at HKRC), `BloodInventoryService.selectBloodInvCount()` ×5 (quarantine/available/reserved blood + components), `KeywordService.selectKeywords("PRODTYPE")` for cellular/component types |
+| `generateRequestNumber(criteria, ro)` | Auto-generates request number with lab prefix based on BBS test type (`TS`/`COMP`/`OTHER`), using `CounterService.getLabSpecCounterNewTran()` + `RequestService.generateNewRequestNo()` with retry loop (max 5) |
+| `setNewPatientLabSpecificData(labResultVo)` | Sets `hkidKey` on all `BbRequestCodeVo` entries and `pidGroup` on all `BbRequestInvVo` entries from the extras map |
+| `insertCrsRegistrationLabSpecificData(registration)` | Calls `insertCrsBbRequestCode()` + `insertCrsBbRequestInv()` |
+| `insertCrsBbRequestInv(registrationVo)` | Calls `insertClaimHkidPatAmendLog()` first (if claimed HKID exists — builds `PatAmendLogVo` and calls `AuditService.insertPatientAmendLog()`), then delegates to `getCrsRequestService().insertCrsBbRequestInv()` |
+| `insertLabSpecificPatientData(patient)` | For non-BTH/non-CUH servers: queries `PatientBloodHistoryService.selectPatientBloodHistoryByPidKey()` |
+
+#### 8.2.5 RegistrationCpsProcessorImpl (111 lines)
+
+**File:** `biz/frontend/request/impl/RegistrationCpsProcessorImpl.java`
+
+Extends `HaRegistrationProcessorImpl`. CPS (Chemical Pathology) specific.
+
+| Method | Behavior |
+|---|---|
+| `insertCrsRegistrationLabSpecificData(registration)` | Inserts `TmpDftLink` records via `RequestRelationService.insertTmpDftLink()` for each `TmpDftLinkVo` in the extras map |
+
+**Dependencies:** `RequestRelationService.insertTmpDftLink()`
+
+#### 8.2.6 RegistrationMbsProcessorImpl (~70 lines)
+
+**File:** `biz/frontend/request/impl/RegistrationMbsProcessorImpl.java`
+
+Extends `HaRegistrationProcessorImpl`. MBS (Microbiology) specific.
+
+| Method | Behavior |
+|---|---|
+| `insertCrsRegistrationLabSpecificData(registration)` | Calls `getCrsRequestService().insertCrsMbRequest()` + `getCrsRequestService().insertCrsMbTestInfo()` |
+| `checkDuplicatedTestRequest(reqNo, hkidKey, alphaCodes, isNewPatient)` | Overrides base — calls `getRequestService().selectMbsDuplicate(...)` to check for duplicate MBS requests |
+
+**Dependencies:** `getCrsRequestService().insertCrsMbRequest()`, `.insertCrsMbTestInfo()`, `RequestService.selectMbsDuplicate()`
+
+#### 8.2.7 RegistrationVrsProcessorImpl (30 lines)
+
+**File:** `biz/frontend/request/impl/RegistrationVrsProcessorImpl.java`
+
+Extends `RegistrationMbsProcessorImpl`. **Pure subclass** — inherits all MBS behavior. No overrides.
+
+#### 8.2.8 GNS / HMS / IMS Processors
+
+No lab-specific overrides in Hierarchy A. Use base `RegistrationProcessorImpl` / `HaRegistrationProcessorImpl` behavior directly.
+
+---
+
+### 8.3 Hierarchy B — Request Construction Processors (Detail)
+
+#### 8.3.1 AbstractRegistrationProcessor (Base — 300 lines)
+
+**File:** `biz/registration/impl/AbstractRegistrationProcessor.java`
+
+Extends `AbstractProcessor`, implements both `RegistrationProcessorInterface` (small) and `RegistrationProcessExecutorInterface`.
+
+| Method | Behavior |
+|---|---|
+| `constructRequest(String reqNo)` | Calls `getCrsRequestService().retrieveCrsRequest(reqNo)` → `setLabSpecificRequestData()` → returns `RegistrationVo` |
+| `setRequestProfileDetailData()` | Reads `requestProfileDetails` from the RegistrationVo and sets them on individual extras |
+| `getReqNo()` / `getRegistertedDate()` | Accessors for current request number and registered date |
+| `getCrsRequestService()` / `getRequestService()` | Lazy-init factory methods returning service instances |
+
+**Abstract methods:** `getLabNo()`, `setLabSpecificRequestData()`
+
+#### 8.3.2 Lab-Specific Processors — `setLabSpecificRequestData()` Behavior
+
+| Processor | Lab | `setLabSpecificRequestData()` | Dependencies |
+|---|---|---|---|
+| `RegistrationProcessorCpsImpl` (108 lines) | LAB_NO_CPS | Loads `List<TmpDftLinkVo>` from `RequestRelationService.selectCrsTmpDftLink(reqNo)` → puts into extras map | `RequestRelationService` |
+| `RegistrationProcessorGnsImpl` (61 lines) | LAB_NO_GNS | No-op | — |
+| `RegistrationProcessorHmsImpl` (90 lines) | LAB_NO_HMS | No-op | — |
+| `RegistrationProcessorImsImpl` (89 lines) | LAB_NO_IMS | No-op | — |
+| `RegistrationProcessorApsImpl` (386 lines) | LAB_NO_APS | Complex — loads `ApDetailVo`, `ApGRequestVo`, `ApTransientVo`, followup data from CrsRequestService; skips `setRequestProfileDetailData()`; has `triggerLisTrInsApRequest()` (Oracle trigger simulation) | `CrsRequestService`, Oracle trigger |
+| `RegistrationProcessorBbsImpl` (127 lines) | LAB_NO_BBS | Loads `BbRequestInvVo` + `BbRequestCodeVo` from CrsRequestService → puts into extras map | `CrsRequestService` |
+| `RegistrationProcessorMbsImpl` (121 lines) | LAB_NO_MBS | Loads `MbRequestVo` + `MbTestinfoVo` (conditional: skipped for BTH/CUH servers) from CrsRequestService → puts into extras | `CrsRequestService` |
+| `RegistrationProcessorVrsImpl` (61 lines) | LAB_NO_VRS | Only overrides `getLabNo()` to return LAB_NO_VRS; inherits MBS behavior | Same as MBS |
+
+---
+
+### 8.4 CrsRequestService Hierarchy (Detail)
+
+#### 8.4.1 AbstractCrsRequestService (3,434 lines)
+
+**File:** `biz/service/AbstractCrsRequestService.java`
+
+Massive data-access class with **14 DAO interfaces**:
+`crsRequestDao`, `crsRequestDetailDao`, `crsRequestCopyHistDao`, `crsMbRequestDao`, `crsMbTestinfoDao`, `crsBbRequestCodeDao`, `crsApRequestDao`, `crsApGRequestDao`, `crsApTransientDao`, `crsSiteDao`, `crsGcrsRequestOrderDao`, `crsSendOutDao`, `crsBbRequestInvDao`, `crsRequestSupplementInfoDao`, `reportMapDao`
+
+**Key methods for Registration:**
+
+| Method | Lines ~  | Behavior |
+|---|---|---|
+| `createCrsRequest(RegistrationVo)` | 1489–1700 | Master insert: `crs_request` (always) + `crs_request_detail` (per alpha code) + `crs_request_copy_hist` (per report copy) + `crs_gcrs_request_order` (conditional) + `crs_send_out` (conditional) + `crs_request_supplement_info` (conditional via `handleRequestSupplementInfo()`) |
+| `retrieveCrsRequest(String reqNo)` | 2110–2200 | Reads `crs_request` + joins `crs_request_detail` + `crs_request_copy_hist` → builds `RegistrationVo` with extras |
+| `insertCrsApDetail(RegistrationVo)` | ~2870 | Inserts `crs_ap_detail` row from AP extras |
+| `insertCrsApGRequest(RegistrationVo)` | ~2900 | Inserts `crs_ap_g_request` rows from AP extras |
+| `insertCrsApTransient(RegistrationVo)` | ~2930 | Inserts `crs_ap_transient` row from AP extras |
+| `insertCrsMbRequest(RegistrationVo)` | ~3000 | Inserts `crs_mb_request` from MB extras |
+| `insertCrsMbTestInfo(RegistrationVo)` | ~3030 | Inserts `crs_mb_testinfo` rows from MB extras |
+| `insertCrsBbRequestInv(RegistrationVo)` | ~3100 | Inserts `crs_bb_request_inv` rows from BB extras |
+| `insertCrsBbRequestCode(RegistrationVo)` | ~3130 | Inserts `crs_bb_request_code` rows from BB extras |
+| `selectReportMap(String reqHosp)` | ~3200 | Queries `report_map` for hospital |
+| `handleReportMapInfo()` | ~3250 | Pre-processes report map before insert |
+| `hasCrsRequests(Long hkidKey)` | ~3350 | Checks if patient has recent CRS requests |
+| `handleRequestSupplementInfo()` | base returns false | Overridden in CrsRequestService for BTH |
+| `convertToCrsRequest()` / `convertToCrsRequestDetail()` / `convertToCrsRequestCopyHist()` | various | VO → entity conversion logic |
+
+#### 8.4.2 CrsRequestService (335 lines)
+
+**File:** `biz/service/CrsRequestService.java`
+
+Extends `AbstractCrsRequestService`. Adds USID support.
+
+**Additional DAOs:** `crsUsidRelationMasterDao`, `crsUsidProfileRelationDao`
+
+| Method | Behavior |
+|---|---|
+| `createCrsRequest(RegistrationVo)` | Calls `super.createCrsRequest()` then checks if `requestInfoVo instanceof UsidRequestInfoVo` → calls `insertCrsUsidRelations()` |
+| `insertCrsUsidRelations()` | Inserts `CrsUsidRelationMaster` + `CrsUsidProfileRelation` records for each USID entry |
+| `convertToRequestInfoVo()` | Overrides base to build `UsidRequestInfoVo` with USID data from DB |
+| `constructRequestProfileDetailVo()` | Overrides to return `UsidRequestProfileDetailVo` |
+| `constructApRequestVo()` / `convertToApRequestVo()` | AP-specific USID conversion overrides |
+
+---
+
+### 8.5 Migration Mapping — What Still Needs to Be Built
+
+#### 8.5.1 New Repositories Required
+
+| Repository | Entity | Table | Used By |
+|---|---|---|---|
+| `CrsApDetailRepository` | `CrsApDetail` | `crs_ap_detail` | APS insert |
+| `CrsApGRequestRepository` | `CrsApGRequest` | `crs_ap_g_request` | APS insert |
+| `CrsApTransientRepository` | `CrsApTransient` | `crs_ap_transient` | APS insert |
+| `CrsMbRequestRepository` | `CrsMbRequest` | `crs_mb_request` | MBS insert |
+| `CrsMbTestinfoRepository` | `CrsMbTestinfo` | `crs_mb_testinfo` | MBS insert |
+| `CrsBbRequestInvRepository` | `CrsBbRequestInv` | `crs_bb_request_inv` | BBS insert |
+| `CrsBbRequestCodeRepository` | `CrsBbRequestCode` | `crs_bb_request_code` | BBS insert |
+| `TmpDftLinkRepository` | `TmpDftLink` | `tmp_dft_link` | CPS insert |
+| `CrsUsidRelationMasterRepository` | `CrsUsidRelationMaster` | `crs_usid_relation_master` | USID insert |
+| `CrsUsidProfileRelationRepository` | `CrsUsidProfileRelation` | `crs_usid_profile_relation` | USID insert |
+| `CrsGcrsRequestOrderRepository` | `CrsGcrsRequestOrder` | `crs_gcrs_request_order` | GCRS conditional insert |
+| `CrsSendOutRepository` | `CrsSendOut` | `crs_send_out` | Send-out conditional insert |
+| `CrsRequestSupplementInfoRepository` | `CrsRequestSupplementInfo` | `crs_request_supplement_info` | BTH supplement info |
+| `ReportMapRepository` | `ReportMap` | `report_map` | Report mapping |
+
+#### 8.5.2 New/Extended Services Required
+
+| Service | Replaces Legacy | Key Methods |
+|---|---|---|
+| `CrsRequestDataService` | `AbstractCrsRequestService` + `CrsRequestService` | `createCrsRequest()` (full — including GCRS, send-out, supplement, USID), `retrieveCrsRequest()`, all lab-specific inserts, `selectReportMap()`, `hasCrsRequests()` |
+| `RegistrationProcessorService` (extend) | Lab-specific processors (Hierarchy A) | Add strategy/dispatch for `insertCrsRegistrationLabSpecificData()` per lab; add `reportMapping()`, `constructOperationAuditsFromLabResult()`, USID validation |
+| `RegistrationConstructionService` (new) | Hierarchy B processors | `constructRequest(reqNo)` + lab-specific `setLabSpecificRequestData()` per lab |
+| `BbsRegistrationService` (new or embedded) | `RegistrationBbsProcessorImpl` | `gatherRegistrationClusterPatientInformation()`, `gatherBbsInformationForValidation()`, `gatherAutologousBloodInformation()`, `generateRequestNumber()`, `insertClaimHkidPatAmendLog()`, `setNewPatientLabSpecificData()`, `insertLabSpecificPatientData()` |
+
+#### 8.5.3 Strategy Pattern Recommendation
+
+The legacy code uses **class-per-lab polymorphism**. In the Spring migration, replace with a **strategy dispatch pattern**:
+
+```java
+// Lab-specific strategy interface
+public interface LabRegistrationStrategy {
+    String getLabNo();
+    void insertLabSpecificData(RegistrationVo registration);
+    void setLabSpecificRequestData(RegistrationVo registration);
+    // ... other lab-specific hooks
+}
+
+// Inject all strategies, dispatch by lab number
+@RequiredArgsConstructor
+public class RegistrationProcessorService extends AbstractService {
+    private final Map<String, LabRegistrationStrategy> strategies;
+    
+    public void insertCrsRegistrationLabSpecificData(RegistrationVo reg) {
+        String labNo = getServiceParameter().getRequestLab();
+        LabRegistrationStrategy strategy = strategies.get(labNo);
+        if (strategy != null) {
+            strategy.insertLabSpecificData(reg);
+        }
+    }
+}
+```
+
+**Concrete strategies needed:**
+- `ApsRegistrationStrategy` — AP detail/GRequest/transient inserts; empty alphaCodes override; testrslt audit
+- `BbsRegistrationStrategy` — BB request code/inv inserts; claimed HKID pat-amend-log; patient blood history; autologous blood; request number generation
+- `CpsRegistrationStrategy` — TmpDftLink inserts
+- `MbsRegistrationStrategy` — MB request/testinfo inserts; duplicate test check
+- `VrsRegistrationStrategy` — extends/delegates to MBS (same behavior, different lab number)
+- `GnsRegistrationStrategy` / `HmsRegistrationStrategy` / `ImsRegistrationStrategy` — no-op (or omit from map)
+
+#### 8.5.4 External Service Dependencies (BBS)
+
+BBS is the most complex lab and requires calling services that may live in other microservices:
+
+| Legacy Service | Methods Used | Migration Notes |
+|---|---|---|
+| `PatientBloodHistoryService` | `selectPatientBloodHistoryByPidKey()`, `selectClusterPatientBloodHistory()` | May need Feign client to `lis-patient-svc` or dedicated BBS patient service |
+| `BloodInventoryService` | `selectBloodInvCount()` ×5 | BBS-specific; may need new repository or external service |
+| `ResultService` | `selectNumericResultSum()`, `selectAuthorizedResultsCount()` | Cross-cutting — may live in a result microservice |
+| `CounterService` | `getLabSpecCounterNewTran()` | Sequence generation — needs careful concurrency handling |
+| `KeywordService` | `selectKeywords("PRODTYPE")` | Dictionary service — likely Feign to `lis-dictionary-svc` or `lis-common` cache |
+| `RequestService` | `selectRequestCount()`, `selectPreviousRequestByGroup()`, `generateNewRequestNo()`, `selectMbsDuplicate()` | Core request queries — within `lis-request-svc` |
+| `PatientService` | `selectActivePatient()`, `selectLatestPatient()`, `selectPatientActivePidGroupByPid()`, `updatePidLabCheck()`, `selectNotCheckedPidChecks()` | Patient queries — Feign to `lis-patient-svc` |
+| `OptionService` | `selectOptionValueDetail()` ×multiple | Option/config — likely Feign to config service or local cache |
+| `AuditService` | `insertPatientAmendLog()` | Audit — via ALS or Oracle (pending D.2) |
+| `LocationService` | Location lookup for report mapping | May be in `lis-common` or Feign |
+
+---
+
+## 9. Progress Summary
 
 | Phase | Total | Done |
 |---|---|---|
