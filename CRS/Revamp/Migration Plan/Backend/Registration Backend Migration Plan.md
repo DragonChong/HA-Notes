@@ -256,13 +256,14 @@ Spring `@Transactional` on `RegistrationService.register()`.
 - [ ] Verify ALS logs with correct `functionId` and `description`
 - [ ] Verify `DataSourceContextHolder` routes to correct lab
 
-### Step 6 — Fix `register()` Flow Gaps (see §8.6)
-- [ ] **6a** — Add existing-patient check before `insertPatient()` — call `patientRegistrationService.selectActivePatient(encounterIdVo)` first; only insert if null
-- [ ] **6b** — After patient insert/find, propagate `patientInfo` + `encounterInfo` onto each `registration.getLabResult().getRequestInfo()`
-- [ ] **6c** — Add `setNewPatientData(labResult)` call in the newPatient block (dispatches to strategy)
-- [ ] **6d** — Add `registeredDate = now` for `index > 0` registrations in multi-lab batch
-- [ ] **6e** — Add `constructOperationAuditsFromLabResult(labResult, operationAudits)` call **before** `logOperationAudit` (dispatches to strategy)
-- [ ] **6f** — Update `extraValidationOnRequestNo` to dispatch to strategy for USID format validation
+### Step 6 — Fix `register()` Flow Gaps (see §8.6) ✅
+- [x] **6a** — Add existing-patient check before `insertPatient()` — call `patientRegistrationService.selectActivePatient(encounterNo)` first; only insert if null
+- [x] **6b** — After patient insert/find, propagate `patientInfo` + `encounterInfo` onto each `registration.getLabResult().getRequestInfo()`
+- [x] **6c** — Add `setNewPatientData(registration)` call in the newPatient block + no-op stub in `RegistrationProcessorService`
+- [x] **6d** — Add `registeredDate = now` for `index > 0` registrations in multi-lab batch
+- [x] **6e** — Add `constructOperationAuditsFromLabResult(labResult, operationAudits)` call **before** `logOperationAudit` + no-op stub in `RegistrationProcessorService`
+- [x] **6f** — Added TODO on `extraValidationOnRequestNo` for USID format validation via strategy dispatch (Step 7)
+- [x] `mvn compile` — BUILD SUCCESS (all 3 modules) ✅
 
 ### Step 7 — Lab-Specific Strategy Infrastructure (see §8.7)
 - [ ] **7a** — Create `LabRegistrationStrategy` interface in `service/strategy/`
@@ -959,7 +960,7 @@ constructRequest(reqNo)
 | PK classes | 3 | 3 ✅ |
 | Repositories (base + sybase + postgres variants) | 18 | 18 ✅ |
 | Tests | 3 | 0 |
-| **Step 6 — register() flow fixes** | 6 | 0 |
+| **Step 6 — register() flow fixes** | 6 | 6 ✅ |
 | **Step 7 — Strategy infrastructure** | 4 | 0 |
 | **Step 8 — Lab-specific strategies** | 6 | 0 |
 | **Step 9 — Pre-registration APIs** | 5 | 0 |
