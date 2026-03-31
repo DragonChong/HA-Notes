@@ -271,14 +271,16 @@ Spring `@Transactional` on `RegistrationService.register()`.
 - [x] **6c** — Add `setNewPatientData(registration)` call in the newPatient block + no-op stub in `RegistrationProcessorService`
 - [x] **6d** — Add `registeredDate = now` for `index > 0` registrations in multi-lab batch
 - [x] **6e** — Add `constructOperationAuditsFromLabResult(labResult, operationAudits)` call **before** `logOperationAudit` + no-op stub in `RegistrationProcessorService`
-- [x] **6f** — Added TODO on `extraValidationOnRequestNo` for USID format validation via strategy dispatch (Step 7)
+- [x] **6f** — Added TODO on `extraValidationOnRequestNo` for USID format validation via strategy dispatch (Step 7) — TODO removed in Step 7c
 - [x] `mvn compile` — BUILD SUCCESS (all 3 modules) ✅
 
 ### Step 7 — Lab-Specific Strategy Infrastructure (see §8.7)
-- [ ] **7a** — Create `LabRegistrationStrategy` interface in `service/strategy/`
-- [ ] **7b** — Create `HaBaseRegistrationStrategy` — USID validation + `constructOperationAuditsFromLabResult` from `requestProfileDetails`
-- [ ] **7c** — Wire `Map<Integer, LabRegistrationStrategy>` into `RegistrationProcessorService`; dispatch `beforeCrsRegistration()` and `insertCrsRegistrationLabSpecificData()` in `insertCrsRegistrationData()`
-- [ ] **7d** — Update `RegistrationService.register()` to call strategy methods (6c/6e/6f above)
+- [x] **7a** — Created `LabRegistrationStrategy` interface in `service/strategy/` with 10 methods (getLabNo + 9 register-flow defaults)
+- [x] **7b** — Created `HaBaseRegistrationStrategy` (default strategy: getLabNo()=null) with USID validation via `RequestNoHelper` + `RegistrationConstants`; also created `RequestNoHelper.java` and `RegistrationConstants.java` helper classes
+- [x] **7c** — Wired `Map<Integer, LabRegistrationStrategy>` into `RegistrationProcessorService` via `@PostConstruct initStrategies()`; strategy dispatch on `extraValidationOnRequestNo`, `insertLabSpecificPatientData`, `setNewPatientData`, `insertCrsRegistrationData` (reportMap, beforeCrsRegistration, labSpecificData, supplementInfo hooks), `constructOperationAuditsFromLabResult`; added `resolveLabNo()` + `resolveStrategy()` helpers
+- [x] **7d** — Verified `RegistrationService.register()` — no changes needed (strategy dispatch entirely within `RegistrationProcessorService`); updated Step 6f TODO comment
+- [x] `mvn compile` — BUILD SUCCESS (127 source files: 123 prior + 4 new) ✅
+- [x] Fixed pre-existing missing imports in `ReportMapRepository` and `OfficeRepository` (`RepositoryType`, `DatabaseConstants`)
 
 ### Step 8 — Lab-Specific Strategy Implementations (see §8.7.3)
 - [ ] **8a** — `ApsRegistrationStrategy`: `beforeCrsRegistration` (clear alphaCodes) + `insertCrsRegistrationLabSpecificData` (AP detail/GRequest/transient + testrslt audit)
@@ -579,7 +581,7 @@ Extends `AbstractCrsRequestService`. Adds USID support.
 | Service | Replaces Legacy | Key Methods |
 |---|---|---|
 | `CrsRequestDataService` | `AbstractCrsRequestService` + `CrsRequestService` | `createCrsRequest()` (full — including GCRS, send-out, supplement, USID), `retrieveCrsRequest()`, all lab-specific inserts, `selectReportMap()`, `hasCrsRequests()` |
-| `RegistrationProcessorService` (extend) | Lab-specific processors (Hierarchy A) | Add strategy/dispatch for `insertCrsRegistrationLabSpecificData()` per lab; `reportMapping()` ✅; `constructOperationAuditsFromLabResult()` ✅; USID validation (Step 7) |
+| `RegistrationProcessorService` (extend) | Lab-specific processors (Hierarchy A) | Strategy dispatch ✅ (Step 7): `Map<Integer, LabRegistrationStrategy>` via `@PostConstruct`; dispatches `extraValidationOnRequestNo`, `insertLabSpecificPatientData`, `setNewPatientData`, `insertCrsRegistrationData` hooks, `constructOperationAuditsFromLabResult`; `reportMapping()` ✅ (D.6); USID validation ✅ (Step 7b) |
 | `RegistrationConstructionService` (new) | Hierarchy B processors | `constructRequest(reqNo)` + lab-specific `setLabSpecificRequestData()` per lab |
 | `BbsRegistrationService` (new or embedded) | `RegistrationBbsProcessorImpl` | `gatherRegistrationClusterPatientInformation()`, `gatherBbsInformationForValidation()`, `gatherAutologousBloodInformation()`, `generateRequestNumber()`, `insertClaimHkidPatAmendLog()`, `setNewPatientLabSpecificData()`, `insertLabSpecificPatientData()` |
 
@@ -692,19 +694,19 @@ register(packing)
 
 | # | Legacy Processor Call | Current `RegistrationService.java` | Status |
 |---|---|---|---|
-| ① | `processor.extraValidationOnRequestNo(requestNo)` | `registrationProcessorService.extraValidationOnRequestNo(registration)` | **Partial** — base non-null check only; missing USID format validation from `HaRegistrationProcessorImpl.validateRequestNoFormatWithUsidSetup()` |
-| ② | `processor.setNewPatientData(labResult)` | **MISSING** | Not called. BBS uses this to set `hkidKey` on `BbRequestCodeVo` entries and `pidGroup` on `BbRequestInvVo` entries in the extras map. Without it, BBS registration will write incorrect foreign keys. |
-| ③ | `processor.insertLabSpecificPatientData(newPatient)` | `registrationProcessorService.insertLabSpecificPatientData(registration)` | **Implemented (no-op)** — correct for base; BBS override does `PatientBloodHistoryService.selectPatientBloodHistoryByPidKey()` for non-BTH/CUH servers |
-| ④ | `processor.insertCrsRegistrationData(registration)` | `registrationProcessorService.insertCrsRegistrationData(registration)` | **Partial** — base `crs_request` + `crs_request_detail` + `crs_request_copy_hist` + `reportMapping()` (D.6 ✅). Missing: `insertCrsRegistrationLabSpecificData()` dispatch (Step 7), GCRS/send-out/supplement tables (D.7), USID tables (D.7) |
-| ⑤ | `processor.constructOperationAuditsFromLabResult(labResult, audits)` | **MISSING** | Not called. `HaRegistrationProcessorImpl` builds audit entries from `requestProfileDetails` (alpha codes) + USID audit into the `operationAudits` list. Without this call, `logOperationAudit` receives the raw list from the frontend, which may be incomplete — the processor is expected to **augment** it with server-side audit entries. |
+| ① | `processor.extraValidationOnRequestNo(requestNo)` | `registrationProcessorService.extraValidationOnRequestNo(registration)` | ✅ **Implemented** (Step 7) — base non-null check + strategy delegation; USID format validation in `HaBaseRegistrationStrategy.extraValidationOnRequestNo()` via `RequestNoHelper` + `LabOption` lookup |
+| ② | `processor.setNewPatientData(labResult)` | `registrationProcessorService.setNewPatientData(registration)` | ✅ **Implemented** (Step 7c) — delegates to strategy; base is no-op; BBS override in Step 8b |
+| ③ | `processor.insertLabSpecificPatientData(newPatient)` | `registrationProcessorService.insertLabSpecificPatientData(registration)` | ✅ **Implemented** (Step 7c) — delegates to strategy; base is no-op; BBS override in Step 8b |
+| ④ | `processor.insertCrsRegistrationData(registration)` | `registrationProcessorService.insertCrsRegistrationData(registration)` | ✅ **Implemented** (Steps 4/D.6/D.8/7c) — crs_request + crs_request_detail + crs_request_copy_hist + reportMapping (D.6) + strategy hooks (beforeCrsRegistration, insertCrsRegistrationLabSpecificData, handleReportMapInfo, handleRequestSupplementInfo) + GCRS/send-out/supplement (D.8) + USID tables (D.8) |
+| ⑤ | `processor.constructOperationAuditsFromLabResult(labResult, audits)` | `registrationProcessorService.constructOperationAuditsFromLabResult(labResult, audits)` | ✅ **Implemented** (Step 7c) — delegates to strategy; `HaBaseRegistrationStrategy.constructOperationAuditsFromLabResult()` is TODO stub (will be filled in Step 8) |
 
 #### 8.6.3 Additional Flow Gaps
 
 | Gap | Legacy Behavior | Current Behavior | Impact |
 |---|---|---|---|
-| Existing patient check | `selectActivePatient(encounterIdVo)` before insert; reuses existing if found | `insertPatient()` called unconditionally | Duplicate patient risk; potential unique constraint violation |
-| Patient data propagation | Sets `patientInfo` + `encounterInfo` on each `registration.labResult.requestInfo` from the resolved patient | Not done | Lab-specific processors receive stale patient references from frontend |
-| Registered date for index > 0 | `CalendarService.selectCurrentTime()` for 2nd+ registration in batch | Not done | Multi-lab registrations all share the same timestamp |
+| Existing patient check | `selectActivePatient(encounterIdVo)` before insert; reuses existing if found | ✅ Fixed (Step 6a) — checks for existing patient before insert | Resolved |
+| Patient data propagation | Sets `patientInfo` + `encounterInfo` on each `registration.labResult.requestInfo` from the resolved patient | ✅ Fixed (Step 6b) — propagates to each registration | Resolved |
+| Registered date for index > 0 | `CalendarService.selectCurrentTime()` for 2nd+ registration in batch | ✅ Fixed (Step 6d) — `new Timestamp(System.currentTimeMillis())` for index > 0 | Resolved |
 | Token notification | `addToken(taskActionId, serverName, requestLab)` once per unique lab | Not done | CRS processor token queue not notified (may not be needed post-migration) |
 
 #### 8.6.4 Corrected `register()` Flow
@@ -970,7 +972,7 @@ constructRequest(reqNo)
 | Repositories (base + sybase + postgres variants) | 42 | 42 ✅ |
 | Tests | 3 | 0 |
 | **Step 6 — register() flow fixes** | 6 | 6 ✅ |
-| **Step 7 — Strategy infrastructure** | 4 | 0 |
+| **Step 7 — Strategy infrastructure** | 4 | 4 ✅ |
 | **Step 8 — Lab-specific strategies** | 6 | 0 |
 | **Step 9 — Pre-registration APIs** | 5 | 0 |
 | **Step 10 — Request construction API** | 2 | 0 |
