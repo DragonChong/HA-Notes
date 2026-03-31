@@ -247,10 +247,10 @@ Spring `@Transactional` on `RegistrationService.register()`.
 - [x] `PatientRegistrationService.insertPatient()` — maps `PatientVo` → `Patient` entity; `PatientRepository.save()`
 - [x] `RegistrationProcessorService.extraValidationOnRequestNo()` — validates request number is non-null/non-blank; base is no-op in legacy, returns `boolean`
 - [x] `RegistrationProcessorService.insertLabSpecificPatientData()` — no-op (base processor in legacy is empty; lab-specific overrides deferred)
-- [x] `RegistrationProcessorService.insertCrsRegistrationData()` — inserts into `crs_request` (always) + `crs_request_detail` (one per alpha code) + `crs_request_copy_hist` (one per report copy); field mapping mirrors `CrsRequestService.convertToCrsRequest()` / `superCreateCrsRequest()` in `lis-crs-spec-ack-svc`; prime/primeType logic for report copies preserved
-  - Deferred: `crs_gcrs_request_order` (D.7), `crs_send_out` (D.7), `crs_request_supplement_info` (D.7), USID tables (D.7)
+- [x] `RegistrationProcessorService.insertCrsRegistrationData()` — inserts into `crs_request` (always) + `crs_request_detail` (one per alpha code) + `crs_request_copy_hist` (one per report copy) + `crs_gcrs_request_order` (conditional) + `crs_send_out` (conditional) + `crs_request_supplement_info` (conditional) + USID tables (conditional); field mapping mirrors `CrsRequestService.convertToCrsRequest()` / `superCreateCrsRequest()` in `lis-crs-spec-ack-svc`; prime/primeType logic for report copies preserved
   - ✅ D.5: `req_age_unit` — now resolved via `KeywordService.resolveKeywordCode()` with `KeywordListRepository`; direct Integer parse as fallback
   - ✅ D.6: `reportMapping()` — full RPT_CPY/RPT_DST implementation with profile-matching, null-profile fallback, `LocationService` for office resolution, audit via `RegistrationAuditService.logReportMappingAudit()`
+  - ✅ D.8: Conditional tables — `CrsGcrsRequestOrder`, `CrsSendOut`, `CrsRequestSupplementInfo`, `CrsUsidRelationMaster`, `CrsUsidProfileRelation` entities + PK classes + 3-tier repos; `GcrsRequestOrderVo`, `SendOutVo`, `RequestSupplementInfoVo` VOs in `lis-common`; `getExtraListValue()` (Jackson ObjectMapper), `mapToCrsGcrsRequestOrder()`, `mapToCrsSendOut()`, `insertCrsUsidRelations()`, `handleRequestSupplementInfo()` (base returns `false`)
 - [x] `RegistrationAuditService.logCrsResultAudit()` ×2 — ALS log only; Oracle `AuditInvoker` deferred pending D.2
 - [x] `RegistrationAuditService.logPatientAudit()` — ALS log only; Oracle `AuditInvoker` deferred pending D.2
 - [x] `RegistrationAuditService.logOperationAudit()` — ALS log only per `AuditVo` entry; Oracle `AuditInvoker` deferred pending D.2
@@ -315,7 +315,7 @@ Spring `@Transactional` on `RegistrationService.register()`.
 | D.4 | `ResponseObject` needs to move to `lis-common`                                                                                                                            | Keep in `lis-request-svc`                                                                                       |
 | D.5 | `req_age_unit` in `CrsRequest` — legacy resolves VO string via `KeywordService.selectKeywordFromGroupByCode(ageUnit, "AGE_UNIT")`; current code does direct Integer parse | ✅ Resolved — `KeywordService.resolveKeywordCode()` queries `keyword_list` + `keyword_group` tables; direct Integer parse retained as fallback; `KeywordList`, `KeywordGroup`, `KeywordGroupPk` entities and `KeywordListRepository` (3-tier) created |
 | D.6 | `reportMapping()` in base processor — mutates report copies / report destination before `crs_request_copy_hist` insert                                                    | ✅ Implemented — `reportMapping()` in `RegistrationProcessorService` with RPT_CPY (add report copies) + RPT_DST (replace destination) modes; profile-matching + null-profile fallback; `ReportMap` entity + `ReportMapRepository` (3-tier), `Office` entity + `OfficeRepository` (3-tier) + `OfficePk`, `LocationService` (office self-join resolution), `RegistrationAuditService.logReportMappingAudit()` (audit type 581); `handleReportMapInfo()` returns `true` (base; BTH/DH-CPLC/DH-HNC/CUH override to `false` via Step 7) |
-| D.7 | Conditional tables written by `superCreateCrsRequest()` — `crs_gcrs_request_order`, `crs_send_out`, `crs_request_supplement_info`, USID tables                            | Deferred to future iterations; TODO comments added in service                                                   |
+| D.7 | Conditional tables written by `superCreateCrsRequest()` — `crs_gcrs_request_order`, `crs_send_out`, `crs_request_supplement_info`, USID tables                            | ✅ Implemented (D.8) — entities, PK classes, 3-tier repos, VOs in `lis-common`; insert logic in `insertCrsRegistrationData()` with `getExtraListValue()` (Jackson-based), `mapToCrsGcrsRequestOrder()`, `mapToCrsSendOut()`, `insertCrsUsidRelations()`; `handleRequestSupplementInfo()` returns `false` (base; BTH overrides via Step 7) |
 | D.6 | `LabResultVo` circular dependency with `lis-common`?                                                                                                                      | Resolved — all 19 transitive deps moved to `lis-common` together; `LabResultVo` now in `hk.org.ha.lis.model.vo` |
 
 ---
@@ -957,7 +957,7 @@ constructRequest(reqNo)
 
 | Phase | Total | Done |
 |---|---|---|
-| VOs created | 24 | 24 ✅ |
+| VOs created | 27 | 27 ✅ |
 | DTO created | 1 | 1 ✅ |
 | Controller created | 1 | 1 ✅ |
 | RegistrationService created | 1 | 1 ✅ |
@@ -965,9 +965,9 @@ constructRequest(reqNo)
 | Module restructure (Step 0 sub-tasks) | 5 | 5 ✅ |
 | RegistrationServiceClient created | 1 | 1 ✅ |
 | Sub-service implementations | 10 | 10 ✅ |
-| Entities | 10 | 10 ✅ |
-| PK classes | 5 | 5 ✅ |
-| Repositories (base + sybase + postgres variants) | 27 | 27 ✅ |
+| Entities | 15 | 15 ✅ |
+| PK classes | 8 | 8 ✅ |
+| Repositories (base + sybase + postgres variants) | 42 | 42 ✅ |
 | Tests | 3 | 0 |
 | **Step 6 — register() flow fixes** | 6 | 6 ✅ |
 | **Step 7 — Strategy infrastructure** | 4 | 0 |
