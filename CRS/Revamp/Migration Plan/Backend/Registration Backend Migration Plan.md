@@ -283,16 +283,13 @@ Spring `@Transactional` on `RegistrationService.register()`.
 - [x] Fixed pre-existing missing imports in `ReportMapRepository` and `OfficeRepository` (`RepositoryType`, `DatabaseConstants`)
 
 ### Step 8 — Lab-Specific Strategy Implementations (see §8.7.3)
-- [ ] **8a** — `ApsRegistrationStrategy`: `beforeCrsRegistration` (clear alphaCodes) + `insertCrsRegistrationLabSpecificData` (AP detail/GRequest/transient + testrslt audit)
-  - Requires: `CrsApDetail` entity + `CrsApDetailRepository`, `CrsApGRequest` entity + `CrsApGRequestRepository`, `CrsApTransient` entity + `CrsApTransientRepository`
-- [ ] **8b** — `BbsRegistrationStrategy`: `setNewPatientData` + `insertLabSpecificPatientData` + `insertCrsRegistrationLabSpecificData` (BB request code/inv + claimed HKID log)
-  - Requires: `CrsBbRequestCode` entity + `CrsBbRequestCodeRepository`, `CrsBbRequestInv` entity + `CrsBbRequestInvRepository`
-- [ ] **8c** — `CpsRegistrationStrategy`: `insertCrsRegistrationLabSpecificData` (TmpDftLink inserts)
-  - Requires: `TmpDftLink` entity + `TmpDftLinkRepository`
-- [ ] **8d** — `MbsRegistrationStrategy`: `insertCrsRegistrationLabSpecificData` (MB request/testinfo)
-  - Requires: `CrsMbRequest` entity + `CrsMbRequestRepository`, `CrsMbTestinfo` entity + `CrsMbTestinfoRepository`
-- [ ] **8e** — `VrsRegistrationStrategy`: delegates to `MbsRegistrationStrategy`
-- [ ] **8f** — `mvn compile` — BUILD SUCCESS
+- [x] **8a** — `ApsRegistrationStrategy`: `beforeCrsRegistration` (clear alphaCodes) + `insertCrsRegistrationLabSpecificData` (CrsApRequest with compCode resolution via ApDictionaryService, CrsSite, CrsApGRequest, CrsApTransient); entities: CrsApRequest + CrsApRequestPk, CrsApGRequest + CrsApGRequestPk, CrsApTransient + CrsApTransientPk, CrsSite + CrsSitePk, Test, ApComplexityFactor; 3-tier repos (postgresql/sybase/temp) for all 6; ApDictionaryService (test → testCompCode → apComplexityFactor → cfCode/cfUnit); VOs: ApInfoVo, SiteVo, ApGRequestVo, ApTransientVo
+- [x] **8b** — `BbsRegistrationStrategy`: `setNewPatientData` (propagate hkidKey as pidGroup onto BbRequestCodeVo/BbRequestInvVo) + `insertCrsRegistrationLabSpecificData` (CrsBbRequestCode + CrsBbRequestInv with encodeSpecialBloods via BLOODCAT keyword group) + `insertLabSpecificPatientData` (NO-OP stub — deferred); entities: CrsBbRequestCode (IDENTITY PK), CrsBbRequestInv + CrsBbRequestInvPk; 3-tier repos; VOs: BbRequestCodeVo, BbRequestInvVo, BbSpecialBloodVo; KeywordService.selectKeywords() added
+- [x] **8c** — `CpsRegistrationStrategy`: `insertCrsRegistrationLabSpecificData` (delete-then-insert TmpDftLink with pidGp backfill from patient); entity: TmpDftLink + TmpDftLinkPk; 3-tier repos (with deleteByDftReqno @Query); VO: TmpDftLinkVo
+- [x] **8d** — `MbsRegistrationStrategy`: `insertCrsRegistrationLabSpecificData` (CrsMbRequest with pidGroup backfill + CrsMbTestinfo); entities: CrsMbRequest + CrsMbRequestPk, CrsMbTestinfo + CrsMbTestinfoPk; 3-tier repos (REPOSITORY_TYPE_COMMON); VOs: MbRequestVo, MbTestinfoVo
+- [x] **8e** — `VrsRegistrationStrategy`: extends `MbsRegistrationStrategy`, overrides only `getLabNo()` → LAB_NO_VRS(8)
+- [x] **8f** — `mvn compile` — BUILD SUCCESS (185 source files) ✅
+  - Helper updates: `HaBaseRegistrationStrategy` — added extractExtras/extractRegisteredDate/extractPidGroup/getExtraValue/getExtraListValue protected helpers; `RegistrationConstants` — added LAB_NO_MBS(7), LAB_NO_VRS(8), 8 EXTRA_KEY_* constants
 
 ### Step 9 — Pre-Registration API Endpoints (see §8.7.4)
 - [ ] **9a** — `POST /api/registration/gather-patient-info` — patient info gathering with lab-specific hooks (BBS: blood history, PID check, cluster info, claimed HKID)
