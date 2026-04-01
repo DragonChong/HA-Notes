@@ -699,12 +699,12 @@ register(packing)
 
 #### 8.6.3 Additional Flow Gaps
 
-| Gap | Legacy Behavior | Current Behavior | Impact |
-|---|---|---|---|
-| Existing patient check | `selectActivePatient(encounterIdVo)` before insert; reuses existing if found | ✅ Fixed (Step 6a) — checks for existing patient before insert | Resolved |
-| Patient data propagation | Sets `patientInfo` + `encounterInfo` on each `registration.labResult.requestInfo` from the resolved patient | ✅ Fixed (Step 6b) — propagates to each registration | Resolved |
-| Registered date for index > 0 | `CalendarService.selectCurrentTime()` for 2nd+ registration in batch | ✅ Fixed (Step 6d) — `new Timestamp(System.currentTimeMillis())` for index > 0 | Resolved |
-| Token notification | `addToken(taskActionId, serverName, requestLab)` once per unique lab | Not done | CRS processor token queue not notified (may not be needed post-migration) |
+| Gap                           | Legacy Behavior                                                                                             | Current Behavior                                                              | Impact                                                                    |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Existing patient check        | `selectActivePatient(encounterIdVo)` before insert; reuses existing if found                                | ✅ Fixed (Step 6a) — checks for existing patient before insert                 | Resolved                                                                  |
+| Patient data propagation      | Sets `patientInfo` + `encounterInfo` on each `registration.labResult.requestInfo` from the resolved patient | ✅ Fixed (Step 6b) — propagates to each registration                           | Resolved                                                                  |
+| Registered date for index > 0 | `CalendarService.selectCurrentTime()` for 2nd+ registration in batch                                        | ✅ Fixed (Step 6d) — `new Timestamp(System.currentTimeMillis())` for index > 0 | Resolved                                                                  |
+| Token notification            | `addToken(taskActionId, serverName, requestLab)` once per unique lab                                        | Not done                                                                      | CRS processor token queue not notified (may not be needed post-migration) |
 
 #### 8.6.4 Corrected `register()` Flow
 
