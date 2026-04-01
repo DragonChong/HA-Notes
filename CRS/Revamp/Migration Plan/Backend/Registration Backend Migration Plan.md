@@ -970,6 +970,6 @@ constructRequest(reqNo)
 | Tests | 3 | 0 |
 | **Step 6 — register() flow fixes** | 6 | 6 ✅ |
 | **Step 7 — Strategy infrastructure** | 4 | 4 ✅ |
-| **Step 8 — Lab-specific strategies** | 6 | 0 |
+| **Step 8 — Lab-specific strategies** | 6 | 6 ✅ |
 | **Step 9 — Pre-registration APIs** | 5 | 0 |
 | **Step 10 — Request construction API** | 2 | 0 |
