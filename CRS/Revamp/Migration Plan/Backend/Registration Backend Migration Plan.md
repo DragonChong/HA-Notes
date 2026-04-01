@@ -622,18 +622,18 @@ public class RegistrationProcessorService extends AbstractService {
 
 BBS is the most complex lab and requires calling services that may live in other microservices:
 
-| Legacy Service | Methods Used | Migration Notes |
-|---|---|---|
-| `PatientBloodHistoryService` | `selectPatientBloodHistoryByPidKey()`, `selectClusterPatientBloodHistory()` | May need Feign client to `lis-patient-svc` or dedicated BBS patient service |
-| `BloodInventoryService` | `selectBloodInvCount()` ×5 | BBS-specific; may need new repository or external service |
-| `ResultService` | `selectNumericResultSum()`, `selectAuthorizedResultsCount()` | Cross-cutting — may live in a result microservice |
-| `CounterService` | `getLabSpecCounterNewTran()` | Sequence generation — needs careful concurrency handling |
-| `KeywordService` | `selectKeywords("PRODTYPE")` | Dictionary service — likely Feign to `lis-dictionary-svc` or `lis-common` cache |
-| `RequestService` | `selectRequestCount()`, `selectPreviousRequestByGroup()`, `generateNewRequestNo()`, `selectMbsDuplicate()` | Core request queries — within `lis-request-svc` |
-| `PatientService` | `selectActivePatient()`, `selectLatestPatient()`, `selectPatientActivePidGroupByPid()`, `updatePidLabCheck()`, `selectNotCheckedPidChecks()` | Patient queries — Feign to `lis-patient-svc` |
-| `OptionService` | `selectOptionValueDetail()` ×multiple | Option/config — likely Feign to config service or local cache |
-| `AuditService` | `insertPatientAmendLog()` | Audit — via ALS or Oracle (pending D.2) |
-| `LocationService` | Location lookup for report mapping | May be in `lis-common` or Feign |
+| Legacy Service               | Methods Used                                                                                                                                 | Migration Notes                                                                 |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `PatientBloodHistoryService` | `selectPatientBloodHistoryByPidKey()`, `selectClusterPatientBloodHistory()`                                                                  | May need Feign client to `lis-patient-svc` or dedicated BBS patient service     |
+| `BloodInventoryService`      | `selectBloodInvCount()` ×5                                                                                                                   | BBS-specific; may need new repository or external service                       |
+| `ResultService`              | `selectNumericResultSum()`, `selectAuthorizedResultsCount()`                                                                                 | Cross-cutting — may live in a result microservice                               |
+| `CounterService`             | `getLabSpecCounterNewTran()`                                                                                                                 | Sequence generation — needs careful concurrency handling                        |
+| `KeywordService`             | `selectKeywords("PRODTYPE")`                                                                                                                 | Dictionary service — likely Feign to `lis-dictionary-svc` or `lis-common` cache |
+| `RequestService`             | `selectRequestCount()`, `selectPreviousRequestByGroup()`, `generateNewRequestNo()`, `selectMbsDuplicate()`                                   | Core request queries — within `lis-request-svc`                                 |
+| `PatientService`             | `selectActivePatient()`, `selectLatestPatient()`, `selectPatientActivePidGroupByPid()`, `updatePidLabCheck()`, `selectNotCheckedPidChecks()` | Patient queries — Feign to `lis-patient-svc`                                    |
+| `OptionService`              | `selectOptionValueDetail()` ×multiple                                                                                                        | Option/config — likely Feign to config service or local cache                   |
+| `AuditService`               | `insertPatientAmendLog()`                                                                                                                    | Audit — via ALS or Oracle (pending D.2)                                         |
+| `LocationService`            | Location lookup for report mapping                                                                                                           | May be in `lis-common` or Feign                                                 |
 
 ---
 
