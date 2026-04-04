@@ -67,20 +67,22 @@ Checks which of the six open blockers (D.1–D.6) affect the specified task. For
 
 | Field | Value |
 |---|---|
-| **Invoke** | `/implement-task {phase.task} {task name}` |
-| **Auto-loaded when** | User asks to implement, build, or scaffold a Registration task |
-| **Resource files** | `component-template.tsx` — pre-wired component with correct Emotion/apiContext patterns |
+| **Invoke** | `/implement-task {TASK-ID or phase.task} {task name} [repo]` |
+| **Auto-loaded when** | User asks to implement, build, or scaffold any CRS Revamp task |
+| **Resource files** | `component-template.tsx` — pre-wired frontend component with correct Emotion/apiContext patterns |
 
-The primary implementation skill. Runs three pre-flight checks before writing any code:
-1. **Shared library check** — does `@lis/lis-hub-lib` already cover this? If yes, wires it up instead of re-implementing.
-2. **Phase constraint check** — enforces the scope for the current phase (Phase 2 = layout only, no business logic).
-3. **Blocker check** — flags any D.1–D.6 blockers and inserts TODO comments for assumptions.
+The primary implementation skill. Supports **both frontend and backend** repositories. Detects the target repo from the Task ID (Central Task List lookup) or from a repo argument, then applies the correct pre-flight checks and architecture rules for that stack.
 
-Generates: component `.tsx`, hook `.ts` (if state needed), types `.ts` (if new types), test scaffold `.test.tsx`, and barrel export update.
+**Frontend pre-flights** (`lis-request-app`, `lis-crs-common-app`):
+1. **Shared library check** — does `@lis/lis-hub-lib` cover this? Wire it up instead of re-implementing.
+2. **Phase constraint check** — enforces scope per phase (Phase 2 = layout only, etc.)
+3. **Blocker check** — flags D.1–D.6 and inserts `// TODO [BLOCKER D.x]` comments.
 
-Runs `npm run type-check` after generation and reports errors.
+**Backend pre-flights** (`lis-request-svc`, `lis-patient-svc`, `lis-hub-svc`):
+1. **Module placement** — determines whether file belongs in `app/` or `client-lib/`.
+2. **Blocker check** — same D.1–D.6 registry.
 
-**Architecture rules enforced in every file:**
+**Frontend architecture rules:**
 
 | Rule | Detail |
 |---|---|
@@ -92,7 +94,21 @@ Runs `npm run type-check` after generation and reports errors.
 | Dictionary | `apiContext.dictionary.get()` — no direct dictionary endpoint calls |
 | Env values | No hardcoded URLs, lab numbers, or hospital codes |
 
-**Use for:** all Phase 0–9 implementation tasks.
+**Backend architecture rules:**
+
+| Rule | Detail |
+|---|---|
+| Base class | Controller + Service extend `AbstractService` (audit-logging) |
+| DI | `@RequiredArgsConstructor` + `final` fields — no `@Autowired` |
+| ServiceParameter | ThreadLocal via `AbstractService.setServiceParameter()` at controller entry |
+| DataSource routing | `DataSourceContextHolder.setCurrentDb(...)` at controller entry — no manual TX helper |
+| Transactions | Spring `@Transactional` only |
+| Return type | `ResponseEntity<ResultDataResponse<T>>` — no raw `String` returns |
+| Logging | `info()` / `warn()` from `AbstractService` — no SLF4J `logger.info/error` |
+
+After generation, runs `npm run type-check` (frontend) or `mvn compile` (backend) and reports errors.
+
+**Use for:** all Phase 0–9 frontend tasks AND all backend service tasks.
 
 ---
 
