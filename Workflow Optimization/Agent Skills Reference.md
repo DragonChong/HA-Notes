@@ -1,0 +1,234 @@
+---
+title: Agent Skills Reference
+tags:
+  - tooling
+  - copilot
+  - agent-skills
+  - crs-revamp
+created: 2026-04-04
+updated: 2026-04-04
+status: active
+---
+
+# Agent Skills Reference
+
+Complete reference for all Agent Skills defined for the CRS Revamp project. Skills live at `obsidian-vault/.github/skills/` and are loaded by Copilot via the `chat.agentSkillsLocations` setting in [[Copilot Workflow Optimization#Layer 1 — Multi-Root Workspace|the workspace file]].
+
+> [!info] How skills load
+> Copilot reads only the `name` and `description` fields at startup. The full `SKILL.md` body loads only when the skill is invoked (manually via `/name` or automatically when Copilot judges it relevant). Resource files (`.tsx`, etc.) load only when referenced in the instructions. This keeps context usage low across many skills.
+
+> [!tip] Generate a new skill
+> Type `/create-skill` in Copilot Chat with a description of what you need. Copilot generates a `SKILL.md` with frontmatter, instructions, and directory structure.
+
+---
+
+## Skills Catalogue
+
+### `load-context`
+
+| Field | Value |
+|---|---|
+| **Invoke** | `/load-context {panel or topic}` |
+| **Auto-loaded when** | User asks about a panel, component, or workflow by name |
+| **Resource files** | None |
+
+Searches `@workspace` across the vault for KB notes, legacy Flex component references, and related workflow/validation/interaction docs for the specified topic. Produces a structured summary: business rules, legacy behaviour, shared lib components needed, dictionary VOs required, and open questions. Ends with a handoff prompt to `/implement-task` or `/blocker-check`.
+
+**Use before:** any unfamiliar or complex implementation task.
+
+---
+
+### `blocker-check`
+
+| Field | Value |
+|---|---|
+| **Invoke** | `/blocker-check {task name or description}` |
+| **Auto-loaded when** | User asks about starting a task or mentions a blocker |
+| **Resource files** | None |
+
+Checks which of the six open blockers (D.1–D.6) affect the specified task. For each affected blocker, states what is unknown, what assumption is needed to proceed, and what the risk is. Recommends one of: **PROCEED**, **PROCEED WITH ASSUMPTION**, **PARTIAL**, or **BLOCKED**. When proceeding with an assumption, inserts `// TODO [BLOCKER D.x]: <assumption>` comments in generated code so all assumptions are grep-searchable.
+
+**Open blockers registry:**
+
+| ID | Description | Affects |
+|---|---|---|
+| D.1 | `CrsRegController` endpoint contracts | Phase 9, Phase 8C save |
+| D.2 | Keyword group codes — `AGE_UNIT`, `RACE`, `BILL`, `CONFIDENTIAL`, `LAB_ONLY` | Phases 2–3 dropdowns |
+| D.3 | HKID lookup: PAS integration vs local CRS data | Phase 8A |
+| D.4 | `OBJECT_ATTRIBUTE` table access route: Hub BFF or spec-ack-svc? | Phase 4 tab sequence |
+| D.5 | Worksheet printing API endpoint | Phase 8D.1 |
+| D.6 | Label printing API endpoint | Phase 8D.2 |
+
+**Use before:** any task that touches dropdowns, tab sequence, save workflows, or printing.
+
+---
+
+### `implement-task`
+
+| Field | Value |
+|---|---|
+| **Invoke** | `/implement-task {phase.task} {task name}` |
+| **Auto-loaded when** | User asks to implement, build, or scaffold a Registration task |
+| **Resource files** | `component-template.tsx` — pre-wired component with correct Emotion/apiContext patterns |
+
+The primary implementation skill. Runs three pre-flight checks before writing any code:
+1. **Shared library check** — does `@lis/lis-hub-lib` already cover this? If yes, wires it up instead of re-implementing.
+2. **Phase constraint check** — enforces the scope for the current phase (Phase 2 = layout only, no business logic).
+3. **Blocker check** — flags any D.1–D.6 blockers and inserts TODO comments for assumptions.
+
+Generates: component `.tsx`, hook `.ts` (if state needed), types `.ts` (if new types), test scaffold `.test.tsx`, and barrel export update.
+
+Runs `npm run type-check` after generation and reports errors.
+
+**Architecture rules enforced in every file:**
+
+| Rule | Detail |
+|---|---|
+| Emotion cache | `key: "request"` — never `"css"` or default |
+| API calls | `apiContext.request.post<ResultDataResponse<T>>()` only — no direct Axios |
+| Zustand store | `src/features/registration/store/` only — no Hub store imports |
+| Panel visibility | `style={{ display: isVisible ? '' : 'none' }}` — never conditional unmount |
+| Message box | `(cms.api.ui as any).MessageBoxApi` — no `<MessageBoxProvider>` |
+| Dictionary | `apiContext.dictionary.get()` — no direct dictionary endpoint calls |
+| Env values | No hardcoded URLs, lab numbers, or hospital codes |
+
+**Use for:** all Phase 0–9 implementation tasks.
+
+---
+
+### `test-scaffold`
+
+| Field | Value |
+|---|---|
+| **Invoke** | `/test-scaffold {ComponentName}` |
+| **Auto-loaded when** | User asks to write, generate, or add tests for a component |
+| **Resource files** | `test-template.tsx` — pre-wired test with `mockApiContext` and mandatory visibility assertion |
+
+Reads the component file first to understand its props and rendered structure. If a `.test.tsx` already exists, extends it rather than replacing it. Generates tests in three groups: rendering (including mandatory `display:none` visibility test), props, and user interactions.
+
+Creates `src/test-utils/mockApiContext.ts` if it does not yet exist.
+
+Runs the test suite after generation and reports pass/fail.
+
+> [!warning] Mandatory test
+> Every Registration component test file must include the `display:none` visibility test. This is an architecture rule verification, not optional.
+
+**Use after:** every `implement-task` invocation.
+
+---
+
+### `phase-review`
+
+| Field | Value |
+|---|---|
+| **Invoke** | `/phase-review {phase number or "all"}` |
+| **Auto-loaded when** | User says a phase is complete or asks for a code review |
+| **Resource files** | None |
+
+Scans `src/features/registration/` for 8 critical violations (V1–V8) and 5 warnings (W1–W5). Reports each finding with file, approximate line, issue description, and specific fix. Ends with a summary count and **GO / NO-GO** recommendation for the next phase.
+
+**Critical violations scanned:**
+
+| Code | Violation |
+|---|---|
+| V1 | Direct Axios import |
+| V2 | Hub Zustand store import |
+| V3 | Wrong Emotion cache key |
+| V4 | Conditional unmount of panels |
+| V5 | Direct dictionary endpoint call |
+| V6 | `<MessageBoxProvider>` instantiation |
+| V7 | Hardcoded environment values |
+| V8 | Re-implemented shared library component |
+
+**Warnings scanned:** missing TypeScript return types, missing test files, incomplete `useEffect` deps, unresolved `TODO [BLOCKER]` comments, phase constraint violations.
+
+**Use after:** completing a batch of tasks or a full phase, before starting the next phase.
+
+---
+
+### `task-plan`
+
+| Field | Value |
+|---|---|
+| **Invoke** | `/task-plan {phase.task} {task name}` |
+| **Auto-loaded when** | User says "plan task" or asks for a task planning note |
+| **Resource files** | None |
+
+Generates an Obsidian implementation plan note at:
+`CRS/Revamp/Task Plans/{phase.task} — {Task Name}.md`
+
+The note includes: YAML frontmatter (phase, task, status, estimate, blockers, tags), phase constraint callout, KB context summary, blocker analysis with assumptions, technical approach (files, shared lib components, dictionary VOs, API calls), architecture checklist, and acceptance criteria.
+
+Also back-links the corresponding task row in `Registration Migration Plan.md` to the new note.
+
+**Use before:** starting any non-trivial task. Especially valuable for tasks with blockers or complex business rules.
+
+---
+
+### `task-add`
+
+| Field | Value |
+|---|---|
+| **Invoke** | `/task-add {phase} {task name}` |
+| **Auto-loaded when** | User says "add a task" or "I found a missing task" |
+| **Resource files** | None |
+
+Adds a new task row to the correct phase table in `Registration Migration Plan.md`. Assigns the next sequential task number, sets status to `[ ]`, and appends any provided notes or KB wikilink. Updates the Progress Summary table (increments Pending + Total for the phase row and the Total row). Appends a Changelog entry.
+
+**Status after:** new row visible in migration plan, total count updated.
+
+---
+
+### `task-update`
+
+| Field | Value |
+|---|---|
+| **Invoke** | `/task-update {task number(s)} {start\|done\|skip\|block}` |
+| **Auto-loaded when** | User says "mark done", "start task", "complete phase", etc. |
+| **Resource files** | None |
+
+Updates the status cell(s) of one or more task rows in `Registration Migration Plan.md`. Accepts natural language: `"done with 2.1, 2.2, 2.3"`, `"Phase 2 is done"`, `"block 4.1 on D.4"`. After updating rows, **recounts actual status values from the file** (does not estimate) and updates the Progress Summary table. Appends Changelog entries. Reports a confirmation block with per-task changes and updated progress percentage.
+
+**Status symbol mapping:**
+
+| Input | Symbol | Meaning |
+|---|---|---|
+| `start` | `[/]` | In Progress |
+| `done` | `[x]` | Completed |
+| `skip` | `[-]` | Skipped / N/A |
+| `block` | `[!]` | Blocked — adds blocker ID to Notes |
+
+---
+
+## Skill Invocation Flow
+
+```mermaid
+graph LR
+    LC["/load-context"] --> BC["/blocker-check"]
+    BC --> TP["/task-plan"]
+    TP --> TUS["/task-update start"]
+    TUS --> IT["/implement-task"]
+    IT --> TS["/test-scaffold"]
+    TS --> PR["/phase-review"]
+    PR --> TUD["/task-update done"]
+
+    TA["/task-add"] -.->|"new task discovered"| TP
+```
+
+**Shortcut for simple tasks** (no unknowns, familiar component):
+```
+/implement-task → /test-scaffold → /task-update done
+```
+
+**Full sequence for complex tasks** (new panel, blockers, unfamiliar legacy source):
+```
+/load-context → /blocker-check → /task-plan → /task-update start
+→ /implement-task → /test-scaffold → /phase-review → /task-update done
+```
+
+---
+
+## Related Notes
+
+- [[Copilot Workflow Optimization]]
+- [[Registration Migration Plan]]
