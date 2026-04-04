@@ -1,23 +1,27 @@
 ---
 name: task-plan
-description: Generate a detailed implementation plan for a CRS Revamp Registration task, saved as an Obsidian note in the vault. Use this before starting a task to capture business rules, technical approach, acceptance criteria, and effort estimate. Replaces JIRA sub-task creation for planning purposes.
-argument-hint: "[phase.task e.g. 2.3] [task name]"
+description: Generate a detailed implementation plan for a CRS Revamp task, saved as an Obsidian note in the vault. Updates the Central Task List Reference column to point directly to the new plan note. Use this before starting a task to capture business rules, technical approach, acceptance criteria, and effort estimate.
+argument-hint: "[TASK-ID or phase.task e.g. TASK-007 or 2.3] [task name] [optional: repo]"
 ---
 
 # Generate Task Implementation Plan
 
-You are generating an Obsidian implementation plan note for a CRS Revamp Registration task. The note is saved at:
-`CRS/Revamp/Task Plans/{phase.task} — {Task Name}.md`
+You are generating an Obsidian implementation plan note for a CRS Revamp task. The note is saved at:
+`CRS/Revamp/Migration Plan/Frontend/Implementation Plans/{phase.task} — {Task Name}.md`
 
 ---
 
 ## Step 1 — Gather information
 
 If not already provided, ask for:
-1. **Phase and task number** (e.g. `2.3`)
-2. **Task name** (e.g. `Patient Demographics Panel`)
-3. **Blockers that apply** (D.1–D.6, or "None")
-4. **Effort estimate**: `S` (1 — trivial wiring), `M` (2 — moderate), `L` (3 — new component), `XL` (5 — complex/blocked)
+1. **Task ID** — the global `TASK-NNN` identifier from the Central Task List
+   - If the user provides a local task number (e.g. `2.3`) instead, find the Task ID by reading the `` `TASK-NNN` `` tag in that row's Notes/Reference cell in the migration plan
+2. **Phase and task number** (e.g. `2.3`)
+3. **Task name** (e.g. `Patient Demographics Panel`)
+4. **Repository** — which repo this task targets (default: `lis-request-app`)
+5. **Screen slug** — short tag for the screen (e.g. `registration`, `amend-request`, `backend`)
+6. **Blockers that apply** (D.1–D.6, or "None")
+7. **Effort estimate**: `S` (1 — trivial wiring), `M` (2 — moderate), `L` (3 — new component), `XL` (5 — complex/blocked)
 
 Then search `@workspace` in the knowledge base for relevant documents:
 - Knowledge Base notes for this panel/component/workflow
@@ -33,15 +37,17 @@ Use this exact structure:
 ```markdown
 ---
 title: "{phase.task} — {Task Name}"
+task-id: {TASK-ID}
 phase: {X}
 task: "{phase.task}"
+repo: {repository}
 status: pending
 estimate: {S|M|L|XL}
 blockers:
   - {D.x or none}
 tags:
   - crs-revamp
-  - registration
+  - {screen-slug}
   - phase-{X}
 created: {YYYY-MM-DD}
 ---
@@ -54,7 +60,7 @@ created: {YYYY-MM-DD}
 
 ## Context
 
-{1–2 sentences describing what this task is and where it fits in the Registration screen.}
+{1–2 sentences describing what this task is and where it fits in the screen.}
 
 Legacy source: `{LegacyComponentName.mxml}` / `{LegacyPmName.as}`
 
@@ -120,17 +126,29 @@ After completing this task, the following tasks become unblocked:
 
 ## Step 3 — Link from the migration plan
 
-After creating the note, update the corresponding task row in `Registration Migration Plan.md` to add a wikilink to this plan note in the Notes/Reference column:
+After creating the note, update the corresponding task row in the migration plan to add a wikilink in the Notes/Reference column. Preserve the existing `` `TASK-NNN` `` tag:
 
 ```markdown
-| 2.3 | **Patient Demographics Panel** | `[ ]` | [[CRS/Revamp/Task Plans/2.3 — Patient Demographics Panel]] |
+| 2.3 | **Patient Demographics Panel** | `[ ]` | [[CRS/Revamp/Migration Plan/Frontend/Implementation Plans/2.3 — Patient Demographics Panel]] · `TASK-007` |
 ```
+
+---
+
+## Step 3A — Update the Central Task List Reference column
+
+1. Open `CRS/Revamp/Central Task List.md`
+2. Find the Task Registry row where Task ID = `{TASK-ID}`
+3. Replace the Reference cell value:
+   - **From:** `[[CRS/Revamp/Migration Plan/.../...]] §{local-number}`
+   - **To:** `[[CRS/Revamp/Migration Plan/Frontend/Implementation Plans/{phase.task} — {Task Name}]]`
+4. This upgrades the reference from a migration plan section pointer to a direct link to the richer plan note
 
 ---
 
 ## Step 4 — Confirm
 
 Show the user:
-1. The path where the note was saved
-2. The frontmatter summary (task, phase, estimate, blockers)
-3. Prompt: "Run `/task-update 2.3 start` when you begin this task."
+1. The path where the plan note was saved
+2. The frontmatter summary (task-id, task, repo, estimate, blockers)
+3. The Central Task List Reference column updated for `{TASK-ID}`
+4. Prompt: "Run `/task-update {TASK-ID} start` when you begin this task."
