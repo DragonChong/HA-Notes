@@ -150,16 +150,16 @@ Scans `src/features/registration/` for 8 critical violations (V1–V8) and 5 war
 
 | Field | Value |
 |---|---|
-| **Invoke** | `/task-plan {phase.task} {task name}` |
+| **Invoke** | `/task-plan {TASK-ID or phase.task} {task name}` |
 | **Auto-loaded when** | User says "plan task" or asks for a task planning note |
 | **Resource files** | None |
 
 Generates an Obsidian implementation plan note at:
-`CRS/Revamp/Task Plans/{phase.task} — {Task Name}.md`
+`CRS/Revamp/Migration Plan/Frontend/Implementation Plans/{phase.task} — {Task Name}.md`
 
-The note includes: YAML frontmatter (phase, task, status, estimate, blockers, tags), phase constraint callout, KB context summary, blocker analysis with assumptions, technical approach (files, shared lib components, dictionary VOs, API calls), architecture checklist, and acceptance criteria.
+The note includes: YAML frontmatter (`task-id`, `repo`, phase, task, status, estimate, blockers, tags), phase constraint callout, KB context summary, blocker analysis with assumptions, technical approach (files, shared lib components, dictionary VOs, API calls), architecture checklist, and acceptance criteria.
 
-Also back-links the corresponding task row in `Registration Migration Plan.md` to the new note.
+Back-links the migration plan row AND **upgrades the Reference column in `CRS/Revamp/Central Task List.md`** to point directly to this note (replacing the `§section` link added by `task-add`).
 
 **Use before:** starting any non-trivial task. Especially valuable for tasks with blockers or complex business rules.
 
@@ -169,13 +169,13 @@ Also back-links the corresponding task row in `Registration Migration Plan.md` t
 
 | Field | Value |
 |---|---|
-| **Invoke** | `/task-add {phase} {task name}` |
+| **Invoke** | `/task-add {repo} {migration plan} {phase} {task name}` |
 | **Auto-loaded when** | User says "add a task" or "I found a missing task" |
 | **Resource files** | None |
 
-Adds a new task row to the correct phase table in `Registration Migration Plan.md`. Assigns the next sequential task number, sets status to `[ ]`, and appends any provided notes or KB wikilink. Updates the Progress Summary table (increments Pending + Total for the phase row and the Total row). Appends a Changelog entry.
+Adds a new task row to the correct phase table in the per-screen migration plan **and** registers it in `CRS/Revamp/Central Task List.md`. Generates a global `TASK-NNN` ID, tags the migration plan row with it, updates the Progress Summary in both files, and appends Changelog entries in both files.
 
-**Status after:** new row visible in migration plan, total count updated.
+**Status after:** new row in migration plan (with Task ID tag), new row in Central Task List, both Progress Summaries updated.
 
 ---
 
@@ -183,11 +183,13 @@ Adds a new task row to the correct phase table in `Registration Migration Plan.m
 
 | Field | Value |
 |---|---|
-| **Invoke** | `/task-update {task number(s)} {start\|done\|skip\|block}` |
+| **Invoke** | `/task-update {TASK-ID or task number(s)} {start\|done\|skip\|block}` |
 | **Auto-loaded when** | User says "mark done", "start task", "complete phase", etc. |
 | **Resource files** | None |
 
-Updates the status cell(s) of one or more task rows in `Registration Migration Plan.md`. Accepts natural language: `"done with 2.1, 2.2, 2.3"`, `"Phase 2 is done"`, `"block 4.1 on D.4"`. After updating rows, **recounts actual status values from the file** (does not estimate) and updates the Progress Summary table. Appends Changelog entries. Reports a confirmation block with per-task changes and updated progress percentage.
+Updates task status in **both** the per-screen migration plan and `CRS/Revamp/Central Task List.md`. Accepts a global `TASK-ID` (preferred) or a local task number. After updating rows, **recounts actual status values from both files** and updates both Progress Summary tables. Appends Changelog entries in both files. Reports per-task changes plus updated progress for both the phase (migration plan) and repository (Central Task List).
+
+For tasks created before centralization (no Task ID tag), updates the migration plan only and prompts to backfill.
 
 **Status symbol mapping:**
 
@@ -197,6 +199,22 @@ Updates the status cell(s) of one or more task rows in `Registration Migration P
 | `done` | `[x]` | Completed |
 | `skip` | `[-]` | Skipped / N/A |
 | `block` | `[!]` | Blocked — adds blocker ID to Notes |
+
+---
+
+## Central Task List
+
+The file `CRS/Revamp/Central Task List.md` is the single source of truth for all tasks across all repositories.
+
+| Skill | Action on Central Task List |
+|---|---|
+| `/task-add` | Creates a new row with `TASK-NNN` ID; Reference points to migration plan `§section` |
+| `/task-plan` | Upgrades Reference to direct link to the implementation plan note |
+| `/task-update` | Mirrors every status change; recounts Progress Summary by repository |
+
+**Progress Summary in this file is by repository** (cross-repo view). Progress Summary inside each migration plan remains by phase (screen-level view).
+
+For tasks created before centralization, run `/task-add` manually to backfill. `/task-update` will warn when it encounters a task with no `TASK-ID` tag.
 
 ---
 
@@ -213,6 +231,12 @@ graph LR
     PR --> TUD["/task-update done"]
 
     TA["/task-add"] -.->|"new task discovered"| TP
+
+    CTL[(Central Task List)]
+    TA -->|"register TASK-ID"| CTL
+    TP -->|"upgrade Reference link"| CTL
+    TUS -->|"sync status"| CTL
+    TUD -->|"sync status"| CTL
 ```
 
 **Shortcut for simple tasks** (no unknowns, familiar component):
