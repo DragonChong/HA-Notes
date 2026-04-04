@@ -3,7 +3,9 @@ views:
     name: 表格
     order:
       - file.name
-      - task
+      - status
     sort:
+      - property: status
+        direction: DESC
       - property: file.name
         direction: ASC
