@@ -21,11 +21,11 @@ status: active
 | Repository | Role | Migration Plan |
 |---|---|---|
 | `lis-hub-app` | Shell MFE | — |
-| `lis-request-app` | Registration + Request screens MFE | [[CRS/Revamp/Migration Plan/Frontend/Registration Migration Plan\|Registration]] · [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|Amend Request]] |
+| `lis-request-app` | Registration + Request screens MFE | [[CRS/Revamp/Migration Plan/Frontend/Registration Migration Plan\|Registration]] · [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|Amend Request]] · [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|Add Delete Test]] |
 | `lis-crs-common-app` | Level-1 Remote MFE | — |
 | `lis-request-svc` | Registration backend service | [[CRS/Revamp/Migration Plan/Backend/Registration Backend Migration Plan\|Registration Backend]] |
 | `lis-patient-svc` | Patient APIs | — |
-| `lis-crs-spec-ack-svc` | Amend Request backend service | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|Amend Request]] |
+| `lis-crs-spec-ack-svc` | CRS domain service (Amend Request + Add/Delete Test) | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|Amend Request]] · [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|Add Delete Test]] |
 | `lis-hub-svc` | Hub BFF | — |
 
 ---
@@ -273,6 +273,59 @@ status: active
 | AR-10.9 | `lis-request-app` | Integration test — MICR-VIRO amend | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §10]] |
 | AR-10.10 | `lis-request-app` | Integration test — retrieval from another screen (pre-populated Request No.) | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §10]] |
 | AR-10.11 | `lis-request-app` | Accessibility — keyboard tab sequence matches DB config | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §10]] |
+| ADT-0.1 | `lis-request-app` | Register `crs-add-delete-test` view in `cms-manifest.js` in `lis-crs-common-app` | `[ ]` | menuRoute: "AddDeleteTest" | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §0]] |
+| ADT-0.2 | `lis-request-app` | Wire `onWillDisplayView` to lazy-import `./AddDeleteTestPage` from `LisRequestApp` | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §0]] |
+| ADT-0.3 | `lis-request-app` | Expose `./AddDeleteTestPage` in `ModuleFederationPlugin` in `craco.config.js` | `[ ]` | Alongside RegistrationPage and AmendRequestPage | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §0]] |
+| ADT-0.4 | `lis-request-app` | Scaffold `AddDeleteTest/` folder structure under `src/screens/` | `[ ]` | Components, hooks, types, api sub-folders | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §0]] |
+| ADT-1.1 | `lis-request-app` | **Screen shell & root component** — `AddDeleteTestPage` root, Emotion cache wrapper (`key: "request"`), `apiContext` prop wiring | `[ ]` | CRST-1016 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §1]] |
+| ADT-1.2 | `lis-request-app` | **Request No. Input** — text field, enabled on open, triggers retrieval on Enter/confirm | `[ ]` | CRST-1016 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §1]] |
+| ADT-1.3 | `lis-request-app` | **Patient Demographics Panel** — Name, Location, DOB, Age, Sex, Pay Code; always read-only; Discharged indicator (BTH only) | `[ ]` | CRST-1016 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §1]] |
+| ADT-1.4 | `lis-request-app` | **Test Grid** — fixed 10-column layout (DEL, Specimen, Test Profile, Group, Test Code, Test Name, Ctr, Sub-ctr, Status Date, Optional); Ctr/Sub-ctr hidden by default | `[ ]` | CRST-1016 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §1]] |
+| ADT-1.5 | `lis-request-app` | **Test Panel** — add test input field (disabled until retrieval) | `[ ]` | CRST-1016 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §1]] |
+| ADT-1.6 | `lis-request-app` | **Action Buttons** — Submit (disabled on open), Clear (disabled on open), Exit (always enabled), Input Specimen No. (disabled on open) | `[ ]` | CRST-1016 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §1]] |
+| ADT-2.1 | `lis-request-app` | **Laboratory Selection** — lab selection logic applied before retrieval | `[ ]` | CRST-1017 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §2]] |
+| ADT-2.2 | `lis-request-app` | **Retrieve Request** — POST to retrieve request by request no.; populate Demographics panel and Test Grid on success | `[ ]` | CRST-1019 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §2]] |
+| ADT-2.3 | `lis-request-app` | **Not Supported Lab Message** — display message when selected lab does not support add/delete test | `[ ]` | CRST-1018 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §2]] |
+| ADT-2.4 | `lis-request-app` | **Patient Discharged Message** — display message when patient is discharged | `[ ]` | CRST-1020 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §2]] |
+| ADT-2.5 | `lis-request-app` | **Private Patient Message** — display message when patient is private | `[ ]` | CRST-1021 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §2]] |
+| ADT-2.6 | `lis-request-app` | **Request Cancelled Message** — display message when request is cancelled | `[ ]` | CRST-1022 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §2]] |
+| ADT-2.7 | `lis-request-app` | **Request Not Found Message** — display message when request no. does not exist | `[ ]` | CRST-1023 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §2]] |
+| ADT-3.1 | `lis-request-app` | **Object Enablement After Retrieval** — enable Submit, Clear, Input Specimen No., Test Panel; reveal Ctr/Sub-ctr columns for Special Lab requests | `[ ]` | CRST-1024 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §3]] |
+| ADT-4.1 | `lis-request-app` | **Clear Button** — reset all fields; return screen to initial state | `[ ]` | CRST-1025 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §4]] |
+| ADT-4.2 | `lis-request-app` | **Default Focus — Initial** — set initial keyboard focus on Request No. input when screen opens | `[ ]` | CRST-1026 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §4]] |
+| ADT-4.3 | `lis-request-app` | **Tab Sequence** — keyboard tab order across screen objects | `[ ]` | CRST-1027 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §4]] |
+| ADT-4.4 | `lis-request-app` | **Mark Test to Delete** — toggle DEL column checkbox for a test row | `[ ]` | CRST-1028 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §4]] |
+| ADT-4.5 | `lis-request-app` | **Mark Test to Delete — Order Check** — validate delete/un-delete sequence in order | `[ ]` | CRST-1029 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §4]] |
+| ADT-4.6 | `lis-request-app` | **Mark Test to Delete — User Access Right Validation** — check user ACL before allowing deletion mark | `[ ]` | CRST-1030 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §4]] |
+| ADT-5.1 | `lis-request-app` | **Add Test User Access Right Validation** — validate user has rights to add tests before submit | `[ ]` | CRST-1035 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §5]] |
+| ADT-5.2 | `lis-request-app` | **Add Test Validation** — validate newly added tests before submit | `[ ]` | CRST-1036 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §5]] |
+| ADT-5.3 | `lis-request-app` | **Delete Test Validation** — validate tests marked for deletion before submit | `[ ]` | CRST-1037 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §5]] |
+| ADT-5.4 | `lis-request-app` | **Change Reason Dialogue** — display change reason dialogue before confirming submit | `[ ]` | CRST-1038 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §5]] |
+| ADT-5.5 | `lis-request-app` | **Add/Delete Test (Action)** — POST add/delete test payload to `lis-crs-spec-ack-svc`; handle success and clear screen | `[ ]` | CRST-1039 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §5]] |
+| ADT-5.6 | `lis-request-app` | **Server Error Message** — display error message on server failure response | `[ ]` | CRST-1040 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §5]] |
+| ADT-6.1 | `lis-request-app` | **USID Input Dialogue** — open specimen ID input dialogue from Input Specimen No. button | `[ ]` | CRST-1032 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §6]] |
+| ADT-6.2 | `lis-request-app` | **Create Specimen Profile Relation from Request** — for HA hospitals; create specimen-profile relation from retrieved request | `[ ]` | CRST-1031 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §6]] |
+| ADT-6.3 | `lis-request-app` | **Profile Not Mapped to Specimen Message** — display message when no profile mapping exists for specimen | `[ ]` | CRST-1033 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §6]] |
+| ADT-6.4 | `lis-request-app` | **USID Not Found Alert** — display alert when USID does not match any specimen | `[ ]` | CRST-1034 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §6]] |
+| ADT-7.1 | `lis-request-app` | **CHEM Mark Test to Delete** — CHEM-specific logic when marking a test for deletion | `[ ]` | CRST-1041 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §7]] |
+| ADT-7.2 | `lis-request-app` | **CHEM Mark Test to Delete — Check DFT** — validate DFT rules before marking | `[ ]` | CRST-1042 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §7]] |
+| ADT-7.3 | `lis-request-app` | **CHEM Mark Test to Delete — Check TIS Correlation** — validate TIS correlation before marking | `[ ]` | CRST-1043 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §7]] |
+| ADT-8.1 | `lis-request-app` | **BBNK Get Patient Blood History** — retrieve patient blood history on request retrieval for BBNK lab | `[ ]` | CRST-1046 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §8]] |
+| ADT-8.2 | `lis-request-app` | **BBNK Mark Test to Delete** — BBNK-specific logic when marking a test for deletion | `[ ]` | CRST-1044 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §8]] |
+| ADT-8.3 | `lis-request-app` | **BBNK Mark Test to Delete — Check Cross Match Group** — validate cross match group constraints before marking | `[ ]` | CRST-1045 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §8]] |
+| ADT-8.4 | `lis-request-app` | **BBNK Test Code Determination** — determine applicable test codes for BBNK lab context | `[ ]` | CRST-1047 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §8]] |
+| ADT-9.1 | `lis-request-app` | **MICR Retrieve Request** — MICR-specific request retrieval logic (culture/sensitivity data) | `[ ]` | CRST-1048 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §9]] |
+| ADT-9.2 | `lis-request-app` | **MICR Mark Test to Delete** — MICR-specific logic when marking a test for deletion | `[ ]` | CRST-1049 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §9]] |
+| ADT-9.3 | `lis-request-app` | **MICR Mark Test to Delete — Culture or Sensitivity Check** — validate culture/sensitivity relationships before marking | `[ ]` | CRST-1050 | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §9]] |
+| ADT-10A.1 | `lis-crs-spec-ack-svc` | **Retrieve request endpoint** — retrieve registered request by request no.; return patient demographics + test list | `[ ]` | Used by Phase 2 retrieval workflow | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §10A]] |
+| ADT-10A.2 | `lis-crs-spec-ack-svc` | **Add/delete test endpoint** — accept add/delete test payload; execute test modifications on the request | `[ ]` | Primary submit action endpoint | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §10A]] |
+| ADT-10A.3 | `lis-crs-spec-ack-svc` | **BBNK blood history endpoint** — retrieve patient blood history for BBNK cross-match context | `[ ]` | Called on request retrieval for BBNK lab | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §10A]] |
+| ADT-10A.4 | `lis-crs-spec-ack-svc` | **CHEM DFT check endpoint** — validate DFT rules for CHEM test deletion | `[ ]` | Called during CHEM mark-to-delete flow | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §10A]] |
+| ADT-10A.5 | `lis-crs-spec-ack-svc` | **CHEM TIS correlation check endpoint** — validate TIS correlation for CHEM test deletion | `[ ]` | Called during CHEM mark-to-delete flow | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §10A]] |
+| ADT-10A.6 | `lis-crs-spec-ack-svc` | **MICR culture/sensitivity check endpoint** — validate culture/sensitivity relations for MICR test deletion | `[ ]` | Called during MICR mark-to-delete flow | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §10A]] |
+| ADT-10A.7 | `lis-crs-spec-ack-svc` | **Create specimen profile relation endpoint** — create specimen-profile relation for USID-enabled HA hospital requests | `[ ]` | Called from USID dialogue flow | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §10A]] |
+| ADT-10B.1 | `lis-hub-svc` | **Lab options** — retrieve lab-specific options (USID enabled, Special Lab flag, etc.) | `[ ]` | Drives conditional UI behaviour and feature flags | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §10B]] |
+| ADT-10B.2 | `lis-hub-svc` | **User access rights** — validate ACL for test add/delete operations | `[ ]` | Called during mark-to-delete and submit validations | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §10B]] |
 
 ---
 
@@ -281,13 +334,13 @@ status: active
 | Repository | Total | Completed | In Progress | Pending |
 |---|---|---|---|---|
 | `lis-hub-app` | 0 | 0 | 0 | 0 |
-| `lis-request-app` | 205 | 0 | 1 | 204 |
+| `lis-request-app` | 249 | 0 | 1 | 248 |
 | `lis-crs-common-app` | 0 | 0 | 0 | 0 |
-| `lis-crs-spec-ack-svc` | 10 | 0 | 0 | 10 |
+| `lis-crs-spec-ack-svc` | 17 | 0 | 0 | 17 |
 | `lis-request-svc` | 9 | 0 | 0 | 9 |
 | `lis-patient-svc` | 4 | 0 | 0 | 4 |
-| `lis-hub-svc` | 0 | 0 | 0 | 0 |
-| **Total** | **228** | **0** | **1** | **227** |
+| `lis-hub-svc` | 2 | 0 | 0 | 2 |
+| **Total** | **281** | **0** | **1** | **280** |
 
 ---
 
@@ -297,4 +350,5 @@ status: active
 |---|---|
 | 2026-04-04 | Central Task List created |
 | 2026-04-05 | Migrated Registration screen tasks (Phase 2–10, 127 tasks) from Registration Migration Plan; `REG-` prefix used for all task IDs |
+| 2026-04-05 | Added Add/Delete Test screen tasks (53 tasks, `ADT-` prefix); updated Repository Index and Progress Summary |
 | 2026-04-05 | Migrated Amend Request screen tasks (Phase 2–10, 101 tasks) from Amend Request Migration Plan; `AR-` prefix used for all task IDs; added `lis-crs-spec-ack-svc` to Repository Index |
