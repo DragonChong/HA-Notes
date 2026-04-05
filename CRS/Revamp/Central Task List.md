@@ -21,11 +21,11 @@ status: active
 | Repository | Role | Migration Plan |
 |---|---|---|
 | `lis-hub-app` | Shell MFE | — |
-| `lis-request-app` | Registration + Request screens MFE | [[CRS/Revamp/Migration Plan/Frontend/Registration Migration Plan\|Registration]] · [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|Amend Request]] · [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|Add Delete Test]] |
+| `lis-request-app` | Registration + Request screens MFE | [[CRS/Revamp/Migration Plan/Frontend/Registration Migration Plan\|Registration]] · [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|Amend Request]] · [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|Add Delete Test]] · [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|Cancel Request]] |
 | `lis-crs-common-app` | Level-1 Remote MFE | — |
 | `lis-request-svc` | Registration backend service | [[CRS/Revamp/Migration Plan/Backend/Registration Backend Migration Plan\|Registration Backend]] |
 | `lis-patient-svc` | Patient APIs | — |
-| `lis-crs-spec-ack-svc` | CRS domain service (Amend Request + Add/Delete Test) | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|Amend Request]] · [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|Add Delete Test]] |
+| `lis-crs-spec-ack-svc` | CRS domain service (Amend Request + Add/Delete Test + Cancel Request) | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|Amend Request]] · [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|Add Delete Test]] · [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|Cancel Request]] |
 | `lis-hub-svc` | Hub BFF | — |
 
 ---
@@ -326,6 +326,54 @@ status: active
 | ADT-10A.7 | `lis-crs-spec-ack-svc` | **Create specimen profile relation endpoint** — create specimen-profile relation for USID-enabled HA hospital requests | `[ ]` | Called from USID dialogue flow | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §10A]] |
 | ADT-10B.1 | `lis-hub-svc` | **Lab options** — retrieve lab-specific options (USID enabled, Special Lab flag, etc.) | `[ ]` | Drives conditional UI behaviour and feature flags | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §10B]] |
 | ADT-10B.2 | `lis-hub-svc` | **User access rights** — validate ACL for test add/delete operations | `[ ]` | Called during mark-to-delete and submit validations | [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|ADT Plan §10B]] |
+| CR-0.1 | `lis-request-app` | Register `crs-cancel-request` view in `cms-manifest.js` in `lis-crs-common-app` | `[ ]` | menuRoute: "CancelRequest" | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §0]] |
+| CR-0.2 | `lis-request-app` | Wire `onWillDisplayView` to lazy-import `./CancelRequestPage` from `LisRequestApp` | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §0]] |
+| CR-0.3 | `lis-request-app` | Expose `./CancelRequestPage` in `ModuleFederationPlugin` in `craco.config.js` | `[ ]` | Alongside existing screen entries | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §0]] |
+| CR-0.4 | `lis-request-app` | Scaffold `CancelRequest/` folder structure under `src/screens/` | `[ ]` | Components, hooks, types, api sub-folders | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §0]] |
+| CR-1.1 | `lis-request-app` | **Screen shell & root component** — `CancelRequestPage` root, Emotion cache wrapper, `apiContext` prop wiring; Cancel Comment test initialisation check (message 219) | `[ ]` | CRST-924 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §1]] |
+| CR-1.2 | `lis-request-app` | **Request No. input + Action Buttons area** — Cancel Request button (disabled), Update Reason + Authorize Reason buttons (conditional on `AMEND_CANCEL_COMMENT`) | `[ ]` | CRST-924 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §1]] |
+| CR-1.3 | `lis-request-app` | **Patient Demographics Panel** — Name, HKID, Encounter, Sex, Age, Req. Doc, Request Location, Report Location, Report Copy, Bed; always read-only | `[ ]` | CRST-924 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §1]] |
+| CR-1.4 | `lis-request-app` | **Test Grid** — Test code, status date (colour-coded), Optional flag; Specimen column conditional on USID enablement | `[ ]` | CRST-924 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §1]] |
+| CR-1.5 | `lis-request-app` | **Cancel Reason text input** — free-text area; disabled on open; pre-populated from existing cancel reason on retrieval | `[ ]` | CRST-924 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §1]] |
+| CR-1.6 | `lis-request-app` | **Cancel Comment shortcut buttons** — up to 15 buttons from CANCOM keyword group; each appends `key_desc` to Cancel Reason; disabled on open; hidden when no CANCOM keywords configured | `[ ]` | CRST-924 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §1]] |
+| CR-1.7 | `lis-request-app` | **Specimen and Site section** — read-only; visible only for MBS and VRS labs | `[ ]` | CRST-924 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §1]] |
+| CR-1.8 | `lis-request-app` | **Reminder Label** — optional red-bold label from `CANCEL_REMINDER` lab option; hidden when option not set | `[ ]` | CRST-924 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §1]] |
+| CR-2.1 | `lis-request-app` | **Laboratory Selection** — determine performing lab from request number prefix before retrieval | `[ ]` | CRST-929 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §2]] |
+| CR-2.2 | `lis-request-app` | **Retrieve Request** — POST by request no. + lab no.; populate Demographics, Test Grid, Clinical Detail, Comment, Cancel Reason; transition to ready state | `[ ]` | CRST-925 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §2]] |
+| CR-2.3 | `lis-request-app` | **Not Supported Lab Message** — display message when lab is not supported on this screen | `[ ]` | CRST-930 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §2]] |
+| CR-2.4 | `lis-request-app` | **Request Cancelled Message** — display message when retrieved request is already cancelled | `[ ]` | CRST-931 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §2]] |
+| CR-2.5 | `lis-request-app` | **Request Not Found Message** — display message when request no. does not exist | `[ ]` | CRST-926 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §2]] |
+| CR-2.6 | `lis-request-app` | **Test Result display** — load test results into Test Grid; colour-code rows by test status | `[ ]` | CRST-927 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §2]] |
+| CR-2.7 | `lis-request-app` | **Cancel Comment Test check** — on screen load, verify `CANCEL_COMMENT` lab option configured; display message 219 if not | `[ ]` | CRST-928 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §2]] |
+| CR-2.8 | `lis-request-app` | **Retrieve Cancel Request Reason** — search retrieved tests for Cancel Comment test; if found with non-empty text, load into Cancel Reason and check Keep Cancel Reason | `[ ]` | CRST-980 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §2]] |
+| CR-2.9 | `lis-request-app` | **Retain Cancel Request Reason Handling** — Keep Cancel Reason checkbox behaviour; controls retention/clearing of existing cancel reason on retrieval | `[ ]` | CRST-979 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §2]] |
+| CR-2.10 | `lis-request-app` | **Retrieve Lab Request by Assigned Lab No.** — retrieve lab-specific request data by the assigned lab number | `[ ]` | CRST-981 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §2]] |
+| CR-3.1 | `lis-request-app` | **Object Enablement After Retrieval** — enable Cancel Request button, Cancel Reason input, Cancel Comment buttons; disable Request No. field; enable Update/Authorize Reason where applicable | `[ ]` | CRST-932 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §3]] |
+| CR-4.1 | `lis-request-app` | **Tab Sequence** — keyboard tab order across screen objects | `[ ]` | CRST-933 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §4]] |
+| CR-4.2 | `lis-request-app` | **Default Focus — Initial** — set initial keyboard focus on Request No. input when screen opens | `[ ]` | CRST-934 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §4]] |
+| CR-4.3 | `lis-request-app` | **Clear Button** — reset all fields; return screen to initial state | `[ ]` | CRST-935 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §4]] |
+| CR-4.4 | `lis-request-app` | **Decode Text** — decode and display formatted text in Clinical Detail, Comment, and Cancel Reason fields | `[ ]` | CRST-936 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §4]] |
+| CR-5.1 | `lis-request-app` | **Validation** — validate cancel prerequisites; determine Request Level (4=Printed, 3=Authorized, 2=Entered, 1=No Result) | `[ ]` | CRST-938 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §5]] |
+| CR-5.2 | `lis-request-app` | **User Validation** — secondary authentication prompt; capture Authorize ID and Acting By ID | `[ ]` | CRST-939 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §5]] |
+| CR-5.3 | `lis-request-app` | **Ask for Confirmation** — present final confirmation dialogue before committing cancellation | `[ ]` | CRST-940 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §5]] |
+| CR-5.4 | `lis-request-app` | **Cancel Request (Action)** — assemble cancel package; POST to server; handle success/failure/error responses; clear screen on success | `[ ]` | CRST-941 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §5]] |
+| CR-5.5 | `lis-request-app` | **Confirmation Message** — display message 673 in message monitor on successful cancellation | `[ ]` | CRST-937 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §5]] |
+| CR-5.6 | `lis-request-app` | **Failure Message** — display message 674 ("Record update failed!") when server returns failure state | `[ ]` | CRST-942 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §5]] |
+| CR-5.7 | `lis-request-app` | **Server Error Message** — display message 3385 when backend throws an exception | `[ ]` | CRST-943 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §5]] |
+| CR-5.8 | `lis-request-app` | **Authorize Cancel Reason** — secondary pipeline to authorise existing cancel reason; cancel package with `isAuthorize = true` | `[ ]` | CRST-944 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §5]] |
+| CR-5.9 | `lis-request-app` | **Update Reason** — allow authorised staff to amend cancel reason on a previously cancelled request | `[ ]` | CRST-945 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §5]] |
+| CR-6.1 | `lis-request-app` | **ANAT Object Enablement After Retrieval** — ANAT-specific field/button enablement overrides after request retrieval | `[ ]` | CRST-946 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §6]] |
+| CR-7.1 | `lis-request-app` | **BBNK Blood Inventory Validation** — validate blood inventory constraints before cancellation of a BBNK request | `[ ]` | CRST-947 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §7]] |
+| CR-7.2 | `lis-request-app` | **BBNK Blood Released Message** — display message when blood has already been released for the request being cancelled | `[ ]` | CRST-949 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §7]] |
+| CR-7.3 | `lis-request-app` | **BBNK User Access Right Checking** — verify user has sufficient rights to cancel a BBNK request | `[ ]` | CRST-950 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §7]] |
+| CR-8.1 | `lis-request-app` | **Display MICR/VIRO Information** — show read-only Specimen and Site section for MBS and VRS lab requests on retrieval | `[ ]` | CRST-951 | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §8]] |
+| CR-9A.1 | `lis-crs-spec-ack-svc` | **Retrieve request endpoint** — retrieve full request data by request no. + lab no.; return demographics, tests, clinical detail, comment, existing cancel reason | `[ ]` | Used by Phase 2 retrieval workflow | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §9A]] |
+| CR-9A.2 | `lis-crs-spec-ack-svc` | **Cancel request endpoint** — accept cancel package; commit cancellation; return success/failure/error | `[ ]` | Primary cancel action endpoint | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §9A]] |
+| CR-9A.3 | `lis-crs-spec-ack-svc` | **Update reason endpoint** — update cancel reason text on a previously cancelled request | `[ ]` | Used by Update Reason action | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §9A]] |
+| CR-9A.4 | `lis-crs-spec-ack-svc` | **Authorize cancel reason endpoint** — authorise cancel reason on a previously cancelled request | `[ ]` | Used by Authorize Cancel Reason action | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §9A]] |
+| CR-9A.5 | `lis-crs-spec-ack-svc` | **Retrieve lab request by assigned lab no.** — fetch lab-specific request data by the assigned lab number | `[ ]` | Used by CRST-981 retrieval workflow | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §9A]] |
+| CR-9B.1 | `lis-hub-svc` | **Lab options + CANCOM keywords** — retrieve USID.ENABLE, CANCEL.AMEND_CANCEL_COMMENT, CANCEL.CANCEL_REMINDER, CANCEL.CANCEL_COMMENT options; retrieve CANCOM keyword group (up to 15) | `[ ]` | Drives all conditional UI on screen load | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §9B]] |
+| CR-9B.2 | `lis-hub-svc` | **User access rights** — validate ACL for cancel, update reason, and authorize cancel reason operations | `[ ]` | Called during User Validation and BBNK access right checks | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §9B]] |
 
 ---
 
@@ -334,13 +382,13 @@ status: active
 | Repository | Total | Completed | In Progress | Pending |
 |---|---|---|---|---|
 | `lis-hub-app` | 0 | 0 | 0 | 0 |
-| `lis-request-app` | 249 | 0 | 1 | 248 |
+| `lis-request-app` | 290 | 0 | 1 | 289 |
 | `lis-crs-common-app` | 0 | 0 | 0 | 0 |
-| `lis-crs-spec-ack-svc` | 17 | 0 | 0 | 17 |
+| `lis-crs-spec-ack-svc` | 22 | 0 | 0 | 22 |
 | `lis-request-svc` | 9 | 0 | 0 | 9 |
 | `lis-patient-svc` | 4 | 0 | 0 | 4 |
-| `lis-hub-svc` | 2 | 0 | 0 | 2 |
-| **Total** | **281** | **0** | **1** | **280** |
+| `lis-hub-svc` | 4 | 0 | 0 | 4 |
+| **Total** | **329** | **0** | **1** | **328** |
 
 ---
 
@@ -351,4 +399,5 @@ status: active
 | 2026-04-04 | Central Task List created |
 | 2026-04-05 | Migrated Registration screen tasks (Phase 2–10, 127 tasks) from Registration Migration Plan; `REG-` prefix used for all task IDs |
 | 2026-04-05 | Added Add/Delete Test screen tasks (53 tasks, `ADT-` prefix); updated Repository Index and Progress Summary |
+| 2026-04-05 | Added Cancel Request screen tasks (48 tasks, `CR-` prefix); updated Repository Index and Progress Summary |
 | 2026-04-05 | Migrated Amend Request screen tasks (Phase 2–10, 101 tasks) from Amend Request Migration Plan; `AR-` prefix used for all task IDs; added `lis-crs-spec-ack-svc` to Repository Index |
