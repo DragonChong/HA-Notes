@@ -21,11 +21,11 @@ status: active
 | Repository | Role | Migration Plan |
 |---|---|---|
 | `lis-hub-app` | Shell MFE | — |
-| `lis-request-app` | Registration + Request screens MFE | [[CRS/Revamp/Migration Plan/Frontend/Registration Migration Plan\|Registration]] · [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|Amend Request]] · [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|Add Delete Test]] · [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|Cancel Request]] |
+| `lis-request-app` | Registration + Request screens MFE | [[CRS/Revamp/Migration Plan/Frontend/Registration Migration Plan\|Registration]] · [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|Amend Request]] · [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|Add Delete Test]] · [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|Cancel Request]] · [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|Wipeout Request]] |
 | `lis-crs-common-app` | Level-1 Remote MFE | — |
 | `lis-request-svc` | Registration backend service | [[CRS/Revamp/Migration Plan/Backend/Registration Backend Migration Plan\|Registration Backend]] |
 | `lis-patient-svc` | Patient APIs | — |
-| `lis-crs-spec-ack-svc` | CRS domain service (Amend Request + Add/Delete Test + Cancel Request) | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|Amend Request]] · [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|Add Delete Test]] · [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|Cancel Request]] |
+| `lis-crs-spec-ack-svc` | CRS domain service (Amend Request + Add/Delete Test + Cancel Request + Wipeout Request) | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|Amend Request]] · [[CRS/Revamp/Migration Plan/Frontend/Add Delete Test Migration Plan\|Add Delete Test]] · [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|Cancel Request]] · [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|Wipeout Request]] |
 | `lis-hub-svc` | Hub BFF | — |
 
 ---
@@ -374,6 +374,47 @@ status: active
 | CR-9A.5 | `lis-crs-spec-ack-svc` | **Retrieve lab request by assigned lab no.** — fetch lab-specific request data by the assigned lab number | `[ ]` | Used by CRST-981 retrieval workflow | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §9A]] |
 | CR-9B.1 | `lis-hub-svc` | **Lab options + CANCOM keywords** — retrieve USID.ENABLE, CANCEL.AMEND_CANCEL_COMMENT, CANCEL.CANCEL_REMINDER, CANCEL.CANCEL_COMMENT options; retrieve CANCOM keyword group (up to 15) | `[ ]` | Drives all conditional UI on screen load | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §9B]] |
 | CR-9B.2 | `lis-hub-svc` | **User access rights** — validate ACL for cancel, update reason, and authorize cancel reason operations | `[ ]` | Called during User Validation and BBNK access right checks | [[CRS/Revamp/Migration Plan/Frontend/Cancel Request Migration Plan\|CR Plan §9B]] |
+| WR-0.1 | `lis-request-app` | Register `crs-wipeout-request` view in `cms-manifest.js` in `lis-crs-common-app` | `[ ]` | menuRoute: "WipeoutRequest" | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §0]] |
+| WR-0.2 | `lis-request-app` | Wire `onWillDisplayView` to lazy-import `./WipeoutRequestPage` from `LisRequestApp` | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §0]] |
+| WR-0.3 | `lis-request-app` | Expose `./WipeoutRequestPage` in `ModuleFederationPlugin` in `craco.config.js` | `[ ]` | Alongside existing screen entries | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §0]] |
+| WR-0.4 | `lis-request-app` | Scaffold `WipeoutRequest/` folder structure under `src/screens/` | `[ ]` | Reuse shared components from Cancel Request where applicable | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §0]] |
+| WR-1.1 | `lis-request-app` | **Screen shell & root component** — `WipeoutRequestPage` root, Emotion cache wrapper (`key: "request"`), `apiContext` prop wiring | `[ ]` | CRST-982 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §1]] |
+| WR-1.2 | `lis-request-app` | **Request No. input + Wipeout Request button** — Request No. field (enabled on open); Wipeout Request button (disabled); no Cancel Reason / Update Reason / Authorize Reason controls | `[ ]` | CRST-982 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §1]] |
+| WR-1.3 | `lis-request-app` | **Patient Demographics Panel** — Name, HKID, Encounter, Sex, Age, Req. Doc, Request/Report Location, Report Copy, Bed; always read-only | `[ ]` | CRST-982 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §1]] |
+| WR-1.4 | `lis-request-app` | **Test Grid** — Test code, status date (colour-coded), Optional flag; Specimen column conditional on USID enablement | `[ ]` | CRST-982 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §1]] |
+| WR-1.5 | `lis-request-app` | **Specimen and Site section** — read-only; visible only for MBS and VRS labs | `[ ]` | CRST-982 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §1]] |
+| WR-1.6 | `lis-request-app` | **Clear Button + Exit Button** — Clear resets screen (disabled on open); Exit always enabled | `[ ]` | CRST-982 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §1]] |
+| WR-2.1 | `lis-request-app` | **Laboratory Selection** — determine performing lab from request number prefix before retrieval | `[ ]` | CRST-983 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §2]] |
+| WR-2.2 | `lis-request-app` | **Retrieve Request** — POST by request no. + lab no.; populate Demographics, Test Grid, Clinical Detail, Comment, Specimen/Site section; transition to ready state | `[ ]` | CRST-985 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §2]] |
+| WR-2.3 | `lis-request-app` | **Not Supported Lab Message** — display message when lab is not supported on this screen | `[ ]` | CRST-984 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §2]] |
+| WR-2.4 | `lis-request-app` | **Request Not Found Message** — display message when request no. does not exist | `[ ]` | CRST-986 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §2]] |
+| WR-2.5 | `lis-request-app` | **Test Result display** — load test results into Test Grid; colour-code rows by test status | `[ ]` | CRST-987 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §2]] |
+| WR-3.1 | `lis-request-app` | **Object Enablement After Retrieval** — enable Wipeout Request button; disable Request No. field | `[ ]` | CRST-988 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §3]] |
+| WR-4.1 | `lis-request-app` | **Tab Sequence** — keyboard tab order across screen objects | `[ ]` | CRST-989 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §4]] |
+| WR-4.2 | `lis-request-app` | **Default Focus — Initial** — set initial keyboard focus on Request No. input when screen opens | `[ ]` | CRST-990 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §4]] |
+| WR-4.3 | `lis-request-app` | **Clear Button** — show confirmation prompt; reset all fields and return screen to initial state | `[ ]` | CRST-991 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §4]] |
+| WR-5.1 | `lis-request-app` | **Confirmation Message** — "Are you sure?" prompt shown when user clicks Wipeout Request button (step 1 of pipeline) | `[ ]` | CRST-992 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §5]] |
+| WR-5.2 | `lis-request-app` | **Validation** — validate wipeout prerequisites; determine Request Level (4=Printed, 3=Authorized, 2=Entered, 1=No Result) | `[ ]` | CRST-993 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §5]] |
+| WR-5.3 | `lis-request-app` | **TIS Correlation Check** — if `CHECK_TIS_CORRELATION` option enabled, query server for TIS correlation; block wipeout with message 2738 if correlated (unique to Wipeout Request) | `[ ]` | CRST-999 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §5]] |
+| WR-5.4 | `lis-request-app` | **User Validation** — secondary authentication prompt; capture Authorize ID and Acting By ID | `[ ]` | CRST-994 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §5]] |
+| WR-5.5 | `lis-request-app` | **Ask for Confirmation** — present final confirmation dialogue before committing wipeout | `[ ]` | CRST-995 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §5]] |
+| WR-5.6 | `lis-request-app` | **Wipeout Request (Action)** — assemble base wipeout package (lab result, authorize/acting-by IDs, request level); POST to server; handle success/failure/error; clear screen on success | `[ ]` | CRST-996 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §5]] |
+| WR-5.7 | `lis-request-app` | **Failure Message** — display message 674 ("Record update failed!") when server returns failure state | `[ ]` | CRST-997 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §5]] |
+| WR-5.8 | `lis-request-app` | **Server Error Message** — display message 3385 when backend throws an exception | `[ ]` | CRST-998 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §5]] |
+| WR-6.1 | `lis-request-app` | **BBNK Blood Inventory Validation** — validate blood unit states; issued/transfused blocks (msg 2375); reserved/allocated/analyser-ordered requires Release Blood right | `[ ]` | CRST-1000 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §6]] |
+| WR-6.2 | `lis-request-app` | **BBNK User Access Right Checking** — check `cbx_release_blood` against `w_lis_bbnk_wipeout_request`; show warning (2376/4354) with right, error (2377/4355) without | `[ ]` | CRST-1002 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §6]] |
+| WR-6.3 | `lis-request-app` | **BBNK Ask for Confirmation** — prompt msg 1659 if patient has only one BBNK request (historical data at risk); prompt msg 4413 if Corp Blood Requirement exists | `[ ]` | CRST-1001 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §6]] |
+| WR-6.4 | `lis-request-app` | **BBNK Wipeout Message** — post-success message monitor notification specific to BBNK wipeout | `[ ]` | CRST-1003 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §6]] |
+| WR-6.5 | `lis-request-app` | **BBNK Wipeout Request** — append `isDeleteHistoricalPatientDataNeeded` flag to wipeout package (from BBNK Ask for Confirmation response) | `[ ]` | CRST-1004 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §6]] |
+| WR-7.1 | `lis-request-app` | **VIRO Pair Specimen Check** — if VIRO request has paired specimen, prompt msg 1886; if confirmed and First Specimen, verify `PAIRUP_TEST` config (block with msg 1889 if missing) | `[ ]` | CRST-1005 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §7]] |
+| WR-7.2 | `lis-request-app` | **VIRO Wipeout Request** — append VIRO fields to package: `isFirstSpecimenRequest`, `pairSpecimenRequestNo`, `vrsPairUpTestKey`; backend removes Pair Up Test result from Second Specimen when First Specimen is wiped out | `[ ]` | CRST-1006 | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §7]] |
+| WR-8A.1 | `lis-crs-spec-ack-svc` | **Retrieve request endpoint** — retrieve full request data by request no. + lab no.; includes VIRO pair specimen data where applicable | `[ ]` | Used by Phase 2 retrieval workflow | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §8A]] |
+| WR-8A.2 | `lis-crs-spec-ack-svc` | **Wipeout request endpoint (general)** — accept base wipeout package; commit wipeout | `[ ]` | Primary wipeout action endpoint | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §8A]] |
+| WR-8A.3 | `lis-crs-spec-ack-svc` | **BBNK wipeout endpoint** — accept wipeout package with `isDeleteHistoricalPatientDataNeeded`; commit BBNK-specific wipeout | `[ ]` | Includes optional historical data deletion | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §8A]] |
+| WR-8A.4 | `lis-crs-spec-ack-svc` | **VIRO wipeout endpoint** — accept wipeout package with pair specimen fields; remove Pair Up Test result from Second Specimen when First Specimen is wiped out | `[ ]` | VIRO-specific request packing | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §8A]] |
+| WR-8A.5 | `lis-crs-spec-ack-svc` | **TIS correlation check endpoint** — query `tis_correlation` table for request no. as `pat_reqno` or `donor_reqno`; return correlation status | `[ ]` | Used by TIS Correlation Check | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §8A]] |
+| WR-8B.1 | `lis-hub-svc` | **Lab options** — retrieve `USID.ENABLE`, `TEST_MAINTENANCE.CHECK_TIS_CORRELATION`, `PAIRUP.PAIRUP_TEST` options | `[ ]` | Drives conditional UI and validation behaviour | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §8B]] |
+| WR-8B.2 | `lis-hub-svc` | **User access rights** — validate ACL for wipeout operation and BBNK `cbx_release_blood` right against `w_lis_bbnk_wipeout_request` | `[ ]` | Called during User Validation and BBNK access right checks | [[CRS/Revamp/Migration Plan/Frontend/Wipeout Request Migration Plan\|WR Plan §8B]] |
 
 ---
 
@@ -382,13 +423,13 @@ status: active
 | Repository | Total | Completed | In Progress | Pending |
 |---|---|---|---|---|
 | `lis-hub-app` | 0 | 0 | 0 | 0 |
-| `lis-request-app` | 290 | 0 | 1 | 289 |
+| `lis-request-app` | 324 | 0 | 1 | 323 |
 | `lis-crs-common-app` | 0 | 0 | 0 | 0 |
-| `lis-crs-spec-ack-svc` | 22 | 0 | 0 | 22 |
+| `lis-crs-spec-ack-svc` | 27 | 0 | 0 | 27 |
 | `lis-request-svc` | 9 | 0 | 0 | 9 |
 | `lis-patient-svc` | 4 | 0 | 0 | 4 |
-| `lis-hub-svc` | 4 | 0 | 0 | 4 |
-| **Total** | **329** | **0** | **1** | **328** |
+| `lis-hub-svc` | 6 | 0 | 0 | 6 |
+| **Total** | **370** | **0** | **1** | **369** |
 
 ---
 
@@ -400,4 +441,5 @@ status: active
 | 2026-04-05 | Migrated Registration screen tasks (Phase 2–10, 127 tasks) from Registration Migration Plan; `REG-` prefix used for all task IDs |
 | 2026-04-05 | Added Add/Delete Test screen tasks (53 tasks, `ADT-` prefix); updated Repository Index and Progress Summary |
 | 2026-04-05 | Added Cancel Request screen tasks (48 tasks, `CR-` prefix); updated Repository Index and Progress Summary |
+| 2026-04-05 | Added Wipeout Request screen tasks (41 tasks, `WR-` prefix); updated Repository Index and Progress Summary |
 | 2026-04-05 | Migrated Amend Request screen tasks (Phase 2–10, 101 tasks) from Amend Request Migration Plan; `AR-` prefix used for all task IDs; added `lis-crs-spec-ack-svc` to Repository Index |
