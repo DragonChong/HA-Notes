@@ -25,6 +25,7 @@ status: active
 | `lis-crs-common-app` | Level-1 Remote MFE | — |
 | `lis-request-svc` | Registration backend service | [[CRS/Revamp/Migration Plan/Backend/Registration Backend Migration Plan\|Registration Backend]] |
 | `lis-patient-svc` | Patient APIs | — |
+| `lis-crs-spec-ack-svc` | Amend Request backend service | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|Amend Request]] |
 | `lis-hub-svc` | Hub BFF | — |
 
 ---
@@ -171,6 +172,107 @@ status: active
 | REG-10.8 | `lis-request-app` | Integration test — new patient (HKID not in system) | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Registration Migration Plan\|Reg Plan §10]] |
 | REG-10.9 | `lis-request-app` | Integration test — retain functionality across consecutive registrations | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Registration Migration Plan\|Reg Plan §10]] |
 | REG-10.10 | `lis-request-app` | Accessibility — keyboard tab sequence matches DB config | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Registration Migration Plan\|Reg Plan §10]] |
+| AR-2.1 | `lis-request-app` | **Request No. Input + Action Buttons area** — Request No. field, Amend / Clear buttons always present; Input Specimen No. / Send Out / Print Send Out / Print Form conditional | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §2]] |
+| AR-2.2 | `lis-request-app` | **Patient Demographic Panel** — HKID, Encounter, Name (English + Chinese), Sex, Age, Age Unit; all read-only | `[ ]` | CRST-771 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §2]] |
+| AR-2.3 | `lis-request-app` | **Request Information Panel** — Category, Pay Code, Clinical Detail, Reference, Comment, Bill, Urgency, Confidential, Private, Bed, Request Doctor, Request Loc, Report Loc, Report Copy, Collect / Request / Arrival datetimes | `[ ]` | CRST-772 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §2]] |
+| AR-2.4 | `lis-request-app` | **Data Retention Panel** — Permanent / Follow Laboratory radio buttons; General Lab only; controlled by LAB_FUNCTION access right | `[ ]` | CRST-776 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §2]] |
+| AR-2.5 | `lis-request-app` | **Urgency Color** — red highlight on Request Info Panel when Urgency = Urgent | `[ ]` | CRST-788 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §2]] |
+| AR-3.1 | `lis-request-app` | **Default Opening Behaviour** — Request No. input enabled; Patient + Request Info panels disabled; Amend button disabled | `[ ]` | CRST-785 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §3]] |
+| AR-3.2 | `lis-request-app` | **Object Enablement After Retrieval** — comprehensive field/button matrix; enable editable fields, keep patient panel read-only | `[ ]` | CRST-778 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §3]] |
+| AR-3.3 | `lis-request-app` | **Input Specimen No. Button Visibility** — shown only when USID lab option is enabled | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §3]] |
+| AR-3.4 | `lis-request-app` | **Send Out / Print Send Out / Print Form Button Visibility** — shown only when Sendout function is enabled | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §3]] |
+| AR-3.5 | `lis-request-app` | **ANAT Panel Visibility** — shown when retrieved request belongs to ANAT lab | `[ ]` | CRST-821 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §3]] |
+| AR-3.6 | `lis-request-app` | **BBNK Panel Visibility** — shown when retrieved request belongs to Blood Bank lab | `[ ]` | CRST-827 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §3]] |
+| AR-3.7 | `lis-request-app` | **MICR-VIRO Panel Visibility** — shown when retrieved request belongs to MICR or VIRO lab | `[ ]` | CRST-829 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §3]] |
+| AR-3.8 | `lis-request-app` | **Data Retention Panel Enablement** — enabled only after retrieval for a lab number; access controlled by LAB_FUNCTION right | `[ ]` | CRST-776 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §3]] |
+| AR-4.1 | `lis-request-app` | **Default Focus (Initial)** — cursor starts on Request No. field when screen opens | `[ ]` | CRST-785 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §4]] |
+| AR-4.2 | `lis-request-app` | **Default Focus after Request No.** — focus moves to Category field after successful request retrieval | `[ ]` | CRST-786 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §4]] |
+| AR-4.3 | `lis-request-app` | **Tab Sequence** — DB-driven tab order through editable fields (`OBJECT_ATTRIBUTE` table, function=`AMEND`) | `[ ]` | CRST-787 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §4]] |
+| AR-4.4 | `lis-request-app` | **Copy Request Date to Collection Date** — auto-populate Collection Date from Request Date on change | `[ ]` | CRST-789 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §4]] |
+| AR-4.5 | `lis-request-app` | **Doctor Description** — auto-populate doctor full name and department when doctor code is selected | `[ ]` | CRST-790 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §4]] |
+| AR-4.6 | `lis-request-app` | **Location Interaction — Change Doctor Hospital** — auto-sync doctor hospital when Request Location hospital changes | `[ ]` | CRST-791 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §4]] |
+| AR-4.7 | `lis-request-app` | **Location Interaction — Private Referral** — set Private flag automatically when a private referral location is selected | `[ ]` | CRST-792 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §4]] |
+| AR-4.8 | `lis-request-app` | **Clear Button** — show confirmation dialogue; reset all fields and return screen to initial state | `[ ]` | CRST-794 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §4]] |
+| AR-4.9 | `lis-request-app` | **Urgency Color Interaction** — apply / remove red highlight on Request Info Panel based on Urgency value | `[ ]` | CRST-788 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §4]] |
+| AR-5A.1 | `lis-request-app` | **ANAT Panel container** — conditional render; shown only for ANAT requests | `[ ]` | CRST-821 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §5A]] |
+| AR-5A.2 | `lis-request-app` | **ANAT Panel Enablement** — field-level enablement rules within the panel | `[ ]` | CRST-821 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §5A]] |
+| AR-5A.3 | `lis-request-app` | **ANAT Panel Load Data** — populate ANAT fields from AP_REQUEST table on retrieval | `[ ]` | CRST-822 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §5A]] |
+| AR-5A.4 | `lis-request-app` | **ANAT Panel Tab Sequence** — tab order through ANAT-specific fields | `[ ]` | CRST-823 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §5A]] |
+| AR-5B.1 | `lis-request-app` | **BBNK Panel container** — conditional render; shown only for Blood Bank requests | `[ ]` | CRST-827 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §5B]] |
+| AR-5B.2 | `lis-request-app` | **BBNK Panel Enablement** — panel visibility and component enablement rules | `[ ]` | CRST-827 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §5B]] |
+| AR-5B.3 | `lis-request-app` | **BBNK Panel Load Data** — populate Blood Bank fields on retrieval | `[ ]` | CRST-828 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §5B]] |
+| AR-5B.4 | `lis-request-app` | **BBNK Panel Tab Sequence** — tab order through Blood Bank fields | `[ ]` | CRST-830 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §5B]] |
+| AR-5C.1 | `lis-request-app` | **MICR-VIRO Panel container** — conditional render; shown only for MICR or VIRO requests | `[ ]` | CRST-829 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §5C]] |
+| AR-5C.2 | `lis-request-app` | **MICR-VIRO Panel Enablement** — panel visibility and component enablement rules | `[ ]` | CRST-829 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §5C]] |
+| AR-5C.3 | `lis-request-app` | **MICR-VIRO Panel Load Data** — populate Microbiology/Virology fields on retrieval | `[ ]` | CRST-834 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §5C]] |
+| AR-5C.4 | `lis-request-app` | **MICR-VIRO Panel Tab Sequence** — tab order through MBS/VRS fields | `[ ]` | CRST-835 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §5C]] |
+| AR-6.1 | `lis-request-app` | **USID Input Dialogue** — specimen number entry; validates USID existence | `[ ]` | CRST-817 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §6]] |
+| AR-6.2 | `lis-request-app` | **Report Copy Input Dialogue** — add/edit additional report copy locations | `[ ]` | CRST-793 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §6]] |
+| AR-6.3 | `lis-request-app` | **Laboratory Selection Dialogue** — CRS multi-match picker when request is found in multiple labs | `[ ]` | CRST-856 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §6]] |
+| AR-6.4 | `lis-request-app` | **Change Reason Dialogue** — required popup when specific tracked fields are modified; captures reason for change | `[ ]` | CRST-800 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §6]] |
+| AR-6.5 | `lis-request-app` | **Private Change Reason Dialogue** — required popup when Private or Lab Only status changes | `[ ]` | CRST-799 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §6]] |
+| AR-6.6 | `lis-request-app` | **User Validation Dialogue** — secondary authentication prompt for privileged amend actions | `[ ]` | CRST-798 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §6]] |
+| AR-6.7 | `lis-request-app` | **Special Blood Dialogue** — BBNK-specific; blood category selection with three-state checkboxes | `[ ]` | CRST-833 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §6]] |
+| AR-7.1 | `lis-request-app` | **Amend Request Validation (coordinator)** — orchestrates all validators; determines order and short-circuit logic | `[ ]` | CRST-797 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §7]] |
+| AR-7.2 | `lis-request-app` | **Clinical Detail / Reference / Comment Validation** — character limit enforcement | `[ ]` | CRST-892 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §7]] |
+| AR-7.3 | `lis-request-app` | **Datetime Validation** — specimen datetime rules (Collect ≤ Arrive ≤ Request, future date guards) | `[ ]` | CRST-893 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §7]] |
+| AR-7.4 | `lis-request-app` | **Location Validation** — Request / Report / Report Copy location rules | `[ ]` | CRST-895 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §7]] |
+| AR-7.5 | `lis-request-app` | **Confidential Validation** | `[ ]` | CRST-896 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §7]] |
+| AR-7.6 | `lis-request-app` | **Bill Validation** | `[ ]` | CRST-897 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §7]] |
+| AR-7.7 | `lis-request-app` | **Urgency Validation** | `[ ]` | CRST-898 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §7]] |
+| AR-7.8 | `lis-request-app` | **Lab Only Validation** | `[ ]` | CRST-899 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §7]] |
+| AR-7.9 | `lis-request-app` | **Request Doctor Validation** — doctor code and hospital matching | `[ ]` | CRST-894 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §7]] |
+| AR-7.10 | `lis-request-app` | **Clinical Detail on Sendout Request Validation** — mandatory clinical detail for sendout requests | `[ ]` | CRST-900 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §7]] |
+| AR-7.11 | `lis-request-app` | **MICR-VIRO Validation** — Microbiologist, Specimen Type, Treatment Category rules | `[ ]` | CRST-836 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §7]] |
+| AR-8A.1 | `lis-request-app` | **Retrieve Request** — main retrieval workflow; data mapping from response to all panels | `[ ]` | CRST-779 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8A]] |
+| AR-8A.2 | `lis-request-app` | **Initial Values Snapshot** — capture before-image of all editable fields immediately after retrieval; used for change detection | `[ ]` | CRST-780 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8A]] |
+| AR-8A.3 | `lis-request-app` | **Request Not Found Message** — display error when request number does not exist | `[ ]` | CRST-783 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8A]] |
+| AR-8A.4 | `lis-request-app` | **Request Cancelled Message** — display warning when retrieved request is in cancelled status | `[ ]` | CRST-782 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8A]] |
+| AR-8A.5 | `lis-request-app` | **Not Supported Lab Message** — display restriction message when lab is not supported in CRS | `[ ]` | CRST-781 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8A]] |
+| AR-8A.6 | `lis-request-app` | **Request Retrieval from Other Screen** — handle pre-populated Request No. passed from source screens | `[ ]` | CRST-784 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8A]] |
+| AR-8A.7 | `lis-request-app` | **Laboratory Selection** — present multi-match picker when request is found in more than one lab | `[ ]` | CRST-856 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8A]] |
+| AR-8B.1 | `lis-request-app` | **Change Reason Dialogue trigger** — detect tracked-field changes by comparing current values against initial snapshot | `[ ]` | CRST-800 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8B]] |
+| AR-8B.2 | `lis-request-app` | **Regenerate Report Determination** — prompt for report regeneration when request has already been printed | `[ ]` | CRST-801 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8B]] |
+| AR-8B.3 | `lis-request-app` | **Report Copy Determination** — recalculate primary report destination from Report Copy list | `[ ]` | CRST-807 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8B]] |
+| AR-8B.4 | `lis-request-app` | **Change Audit** — write field change audit entries to TESTRSLT_AUDIT for all modified fields | `[ ]` | CRST-803 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8B]] |
+| AR-8B.5 | `lis-request-app` | **Operation Audit** — write sendout form audit entries | `[ ]` | CRST-806 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8B]] |
+| AR-8B.6 | `lis-request-app` | **Doctor Modified Alert** — display confirmation alert when the requesting doctor has been changed | `[ ]` | CRST-814 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8B]] |
+| AR-8B.7 | `lis-request-app` | **Report Printed in TB/DH Form Alert** — display reprint warning when TB or DH report form was previously printed | `[ ]` | CRST-815 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8B]] |
+| AR-8B.8 | `lis-request-app` | **USID Data Conversion** — prepare specimen relation data for saving | `[ ]` | CRST-819 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8B]] |
+| AR-8B.9 | `lis-request-app` | **USID Not Found Alert** — display warning when entered USID does not exist in the system | `[ ]` | CRST-818 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8B]] |
+| AR-8B.10 | `lis-request-app` | **USID Audit** — write specimen relation audit entries (types 559, 560, 564, 565) | `[ ]` | CRST-820 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8B]] |
+| AR-8B.11 | `lis-request-app` | **Create PHLC Lab Order** — create PHLC outbound message for eligible send-out requests | `[ ]` | CRST-816 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8B]] |
+| AR-8B.12 | `lis-request-app` | **Print Send Out Form** — auto-print triggering conditions and print sequence post-amend | `[ ]` | CRST-812 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8B]] |
+| AR-8B.13 | `lis-request-app` | **Amend Action Result Message** — display success or failure messages (501, 1992, 3861, 4332) | `[ ]` | CRST-808 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8B]] |
+| AR-8B.14 | `lis-request-app` | **Clear Screen** — reset all panels and return to initial state after successful amendment | `[ ]` | CRST-810 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8B]] |
+| AR-8C.1 | `lis-request-app` | **ANAT Amend Request** — ANAT-specific amend processing and payload assembly | `[ ]` | CRST-824 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8C]] |
+| AR-8C.2 | `lis-request-app` | **ANAT Change Audit** — ANAT field change audit formatting and submission | `[ ]` | CRST-825 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8C]] |
+| AR-8C.3 | `lis-request-app` | **ANAT Regenerate Report Alert** — ANAT-specific report regeneration confirmation | `[ ]` | CRST-826 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8C]] |
+| AR-8D.1 | `lis-request-app` | **BBNK Amend Request** — Blood Bank amend processing with ZIKV special handling | `[ ]` | CRST-831 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8D]] |
+| AR-8D.2 | `lis-request-app` | **BBNK Change Audit** — Blood Bank field change audit formatting and submission | `[ ]` | CRST-832 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8D]] |
+| AR-8E.1 | `lis-request-app` | **MICR-VIRO Amend Request** — Microbiology/Virology amend processing and payload assembly | `[ ]` | CRST-837 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8E]] |
+| AR-8E.2 | `lis-request-app` | **MICR-VIRO Change Audit** — MICR-VIRO field change audit formatting and submission | `[ ]` | CRST-838 | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §8E]] |
+| AR-9.1 | `lis-crs-spec-ack-svc` | **Retrieve Request by Request No.** — fetch full request data for display | `[ ]` | Check `CrsAmendController` or `CrsSearchController` | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §9]] |
+| AR-9.2 | `lis-crs-spec-ack-svc` | **Amend Request endpoint (general)** — main POST to persist amended request | `[ ]` | `CrsAmendController` POST endpoint | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §9]] |
+| AR-9.3 | `lis-crs-spec-ack-svc` | **ANAT Amend Request endpoint** — ANAT-specific fields | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §9]] |
+| AR-9.4 | `lis-crs-spec-ack-svc` | **BBNK Amend Request endpoint** — Blood Bank-specific fields | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §9]] |
+| AR-9.5 | `lis-crs-spec-ack-svc` | **MICR-VIRO Amend Request endpoint** — Microbiology/Virology-specific fields | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §9]] |
+| AR-9.6 | `lis-crs-spec-ack-svc` | **Change Audit endpoint** — write TESTRSLT_AUDIT entries | `[ ]` | May be part of amend payload or separate call | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §9]] |
+| AR-9.7 | `lis-crs-spec-ack-svc` | **Doctor search / lookup endpoint** — verify / reuse existing from Registration | `[ ]` | May already exist in Hub BFF | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §9]] |
+| AR-9.8 | `lis-crs-spec-ack-svc` | **Location search / lookup endpoint** — verify / reuse existing from Registration | `[ ]` | May already exist in Hub BFF | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §9]] |
+| AR-9.9 | `lis-crs-spec-ack-svc` | **USID lookup endpoint** — check specimen number existence | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §9]] |
+| AR-9.10 | `lis-crs-spec-ack-svc` | **Lab options / configuration endpoint** — tab sequence (`OBJECT_ATTRIBUTE`), lab options | `[ ]` | Reuse from Registration if already built | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §9]] |
+| AR-10.1 | `lis-request-app` | Unit tests — common input components (Request No. input, Lab Selection) | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §10]] |
+| AR-10.2 | `lis-request-app` | Unit tests — validation logic (all Phase 7 validators) | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §10]] |
+| AR-10.3 | `lis-request-app` | Unit tests — change detection (Initial Values Snapshot vs. modified state) | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §10]] |
+| AR-10.4 | `lis-request-app` | Unit tests — workflow hooks (retrieval, save sequence) | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §10]] |
+| AR-10.5 | `lis-request-app` | Integration test — full amend save flow (happy path, no tracked-field changes) | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §10]] |
+| AR-10.6 | `lis-request-app` | Integration test — amend with Change Reason Dialogue triggered | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §10]] |
+| AR-10.7 | `lis-request-app` | Integration test — ANAT amend | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §10]] |
+| AR-10.8 | `lis-request-app` | Integration test — BBNK amend | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §10]] |
+| AR-10.9 | `lis-request-app` | Integration test — MICR-VIRO amend | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §10]] |
+| AR-10.10 | `lis-request-app` | Integration test — retrieval from another screen (pre-populated Request No.) | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §10]] |
+| AR-10.11 | `lis-request-app` | Accessibility — keyboard tab sequence matches DB config | `[ ]` | | [[CRS/Revamp/Migration Plan/Frontend/Amend Request Migration Plan\|AR Plan §10]] |
 
 ---
 
@@ -179,12 +281,13 @@ status: active
 | Repository | Total | Completed | In Progress | Pending |
 |---|---|---|---|---|
 | `lis-hub-app` | 0 | 0 | 0 | 0 |
-| `lis-request-app` | 114 | 0 | 1 | 113 |
+| `lis-request-app` | 205 | 0 | 1 | 204 |
 | `lis-crs-common-app` | 0 | 0 | 0 | 0 |
+| `lis-crs-spec-ack-svc` | 10 | 0 | 0 | 10 |
 | `lis-request-svc` | 9 | 0 | 0 | 9 |
 | `lis-patient-svc` | 4 | 0 | 0 | 4 |
 | `lis-hub-svc` | 0 | 0 | 0 | 0 |
-| **Total** | **127** | **0** | **1** | **126** |
+| **Total** | **228** | **0** | **1** | **227** |
 
 ---
 
@@ -194,3 +297,4 @@ status: active
 |---|---|
 | 2026-04-04 | Central Task List created |
 | 2026-04-05 | Migrated Registration screen tasks (Phase 2–10, 127 tasks) from Registration Migration Plan; `REG-` prefix used for all task IDs |
+| 2026-04-05 | Migrated Amend Request screen tasks (Phase 2–10, 101 tasks) from Amend Request Migration Plan; `AR-` prefix used for all task IDs; added `lis-crs-spec-ack-svc` to Repository Index |
