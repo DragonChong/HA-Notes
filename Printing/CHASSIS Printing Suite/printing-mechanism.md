@@ -400,7 +400,7 @@ flowchart TD
     subgraph PrintExec["Print Execution (Electron Main — printReport.ts)"]
         S --> T{File type?}
         T -->|PDF or TXT on Windows| U{Java process running?}
-        U -->|yes| V[javaManager.sendCommand\n{ command:'print', args:[file, jobName, option, password] }]
+        U -->|yes| V[javaManager.sendCommand\n command:'print', args:file, jobName, option, password ]
         V --> W{waitForPrintResult?}
         W -->|yes| X[getWin32PrintLog → Windows Event Log\ncheck for successful print event]
         W -->|no| Y[sleep 1000ms]
@@ -418,7 +418,7 @@ flowchart TD
         AB --> AG[reportRepository.updateStatus\nReportStatus = Completed]
         AG --> AH[setReports filter out completed]
         AH --> AI["notifyPrinted(report)"]
-        AI --> AJ[ipc send PrintStatus{Printed}\nback over WebSocket]
+        AI --> AJ[ipc send PrintStatus`Printed`\nback over WebSocket]
     end
 
     E --> F
