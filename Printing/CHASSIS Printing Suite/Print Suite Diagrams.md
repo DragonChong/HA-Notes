@@ -193,3 +193,65 @@ sequenceDiagram
 
     App-->>MQ: (optional) consume Printing_PrintStatus:{app}<br/>to track Rendered → Queued → Delivered → Printed
 ```
+# Sequence Diagram 2
+```mermaid
+sequenceDiagram
+    autonumber
+    participant App as External App
+    participant RenderCtrl as PrintRenderController<br/>(print-render-svc)
+    participant MQProd as MessageProducer<br/>(render-svc)
+    participant MQ as RocketMQ
+    participant RenderCons as RenderConsumer<br/>(RocketMQReplyListener)
+    participant ResourceSvc as ResourceService
+    participant S3 as object-storage-svc<br/>(S3 API)
+    participant Jasper as JasperUtil / PdfUtil
+
+    App->>RenderCtrl: POST /v1/render<br/>{ jobs[], resources[], resourcesUrl }
+
+    RenderCtrl->>MQProd: sendAndReceiveRenderRequest(request)
+    MQProd->>MQ: sendAndReceive Printing_Render<br/>payload: RenderRequest JSON
+    Note over MQ,RenderCons: Synchronous request-reply pattern
+
+    MQ->>RenderCons: onMessage(RenderRequest)
+
+    loop For each RenderJob
+        RenderCons->>ResourceSvc: buildResourceMap(jobs, resources, resourcesUrl)
+
+        alt resourcesUrl provided (S3 path)
+            ResourceSvc->>S3: GET object (template file by name)
+            S3-->>ResourceSvc: Base64-encoded bytes
+        else inline resources in request body
+            ResourceSvc->>ResourceSvc: ResourceUtil.buildResourceMap(resources)
+        end
+        ResourceSvc-->>RenderCons: Map[filename → Resource]
+
+        alt Template is JasperReport
+            RenderCons->>Jasper: JasperUtil.render(input, resourceMap)
+            Note over Jasper: Compile JRXML + fill with parameters
+            Jasper-->>RenderCons: PDF bytes in OutputStream
+        else Template is PDF resource
+            RenderCons->>RenderCons: use Base64 PDF bytes directly
+        end
+
+        opt Multiple inputs
+            RenderCons->>Jasper: PdfUtil.mergePdf(inputStreams)
+            Jasper-->>RenderCons: merged PDF bytes
+        end
+
+        opt PostProcess.Encrypt defined
+            RenderCons->>Jasper: PdfUtil.encryptPdf(bytes, password)
+            Jasper-->>RenderCons: encrypted PDF bytes
+        end
+
+        RenderCons->>RenderCons: EncodedData { contentType, body(Base64) }
+    end
+
+    RenderCons-->>MQ: reply: JSON array of EncodedData[]
+    MQ-->>MQProd: String reply received
+    MQProd->>MQProd: objectMapper.readValue → EncodedData[]
+    MQProd-->>RenderCtrl: EncodedData[]
+    RenderCtrl-->>App: 200 OK [ { contentType, body(Base64 PDF) }, ... ]
+
+    Note over App: Caller receives Base64-encoded PDF(s) synchronously.<br/>No routing to printers — caller handles the data directly.
+```
+# Print-only flow Sequence Diagram
