@@ -1,14 +1,16 @@
 # Certificate
 
 ### Install Certificate
+```bash
+cd C:\Program Files\Eclipse Adoptium\jdk-11.0.21.9-hotspot\lib\security
 
-Go to C:\Program Files\Eclipse Adoptium\jdk-11.0.21.9-hotspot\lib\security
-
-Input ..\..\bin\keytool -import -alias jrog -keystore cacerts -file C:\CA1.crt
+..\..\bin\keytool -import -alias jrog -keystore cacerts -file C:\CA1.crt
 
 Enter password: changeit
 
 Trust: yes
+```
+
 
 ### WebLogic Keystore
 
