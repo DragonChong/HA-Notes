@@ -635,20 +635,20 @@ stateDiagram-v2
     Stored --> [*]
     ErrorState --> [*]
 
-    note right of Queued : Topic: Printing_PrintQueue_{location}<br/>or Printing_PersonalPrintQueue<br/>(for recipient-based delivery)
+    note right of Queued : Topic - Printing_PrintQueue_{location}<br/>or Printing_PersonalPrintQueue<br/>(for recipient-based delivery)
     note right of Delivered : print-delivery-svc acts as<br/>RocketMQ ↔ WebSocket bridge
-    note right of Printed : Printing_PrintStatus:{app}<br/>consumed by original caller<br/>for end-to-end tracking
+    note right of Printed : Printing_PrintStatus - {app}<br/>consumed by original caller<br/>for end-to-end tracking
 ```
 
 ---
 
 ## Key Design Decisions
 
-| Concern | Decision | Rationale |
-|---|---|---|
-| Render sync vs async | `/v1/render` is sync (req-reply), `/v1/renderPrint` and `/v1/print` are async | Sync render suits callers needing the PDF bytes immediately; async suits fire-and-forget workflows |
-| Two RocketMQ templates | `rocketMQTemplate` for internal ops, `deliveryRocketMQTemplate` for print queues | Print queues may target a different RocketMQ nameserver from internal topics |
-| Dynamic consumer creation | `PrintMQPushConsumer` created per WebSocket session, not at startup | Location binding happens at connect time from client hostname/locationTag query params |
-| Sequential print queue | `fastq` with concurrency=1 in `useReportQueue` | Prevents overlapping print jobs on a single physical printer |
-| Java process for printing | `local-print-service.jar` via stdin/stdout JSON on Windows | Java Print Service API provides reliable cross-printer PDF/text support on Windows |
-| Status tracking | `Printing_PrintStatus:{app}` carries all lifecycle events keyed by `jobId` | Enables caller to correlate async events back to the originating job |
+| Concern                   | Decision                                                                         | Rationale                                                                                          |
+| ------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Render sync vs async      | `/v1/render` is sync (req-reply), `/v1/renderPrint` and `/v1/print` are async    | Sync render suits callers needing the PDF bytes immediately; async suits fire-and-forget workflows |
+| Two RocketMQ templates    | `rocketMQTemplate` for internal ops, `deliveryRocketMQTemplate` for print queues | Print queues may target a different RocketMQ nameserver from internal topics                       |
+| Dynamic consumer creation | `PrintMQPushConsumer` created per WebSocket session, not at startup              | Location binding happens at connect time from client hostname/locationTag query params             |
+| Sequential print queue    | `fastq` with concurrency=1 in `useReportQueue`                                   | Prevents overlapping print jobs on a single physical printer                                       |
+| Java process for printing | `local-print-service.jar` via stdin/stdout JSON on Windows                       | Java Print Service API provides reliable cross-printer PDF/text support on Windows                 |
+| Status tracking           | `Printing_PrintStatus:{app}` carries all lifecycle events keyed by `jobId`       | Enables caller to correlate async events back to the originating job                               |
