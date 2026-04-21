@@ -1,0 +1,11 @@
+
+- Worksheet
+  - Default Printer
+    - Currently must pass a printer name, anyway to use default printer?
+  - Print Queue (Lab)
+    - Can use Printing_PrintQueue_{location}? e.g. Printing_PrintQueue_lis-chongkw-01
+- Label Printing
+  - Print Queue (Lab)
+- Deployment versions
+- Readiness for Print Agent App
+- CCP Agent / Print Agent App
