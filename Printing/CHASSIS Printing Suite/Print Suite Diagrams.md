@@ -2,55 +2,55 @@
 ```mermaid
 flowchart TB
     subgraph External["External Callers"]
-        App["External Application\n(any microservice)"]
-        LocalCaller["Local Caller\n(same machine)"]
+        App["External Application<br>(any microservice)"]
+        LocalCaller["Local Caller<br>(same machine)"]
     end
 
     subgraph RenderSvc["print-render-svc  :8080"]
-        Controller["PrintRenderController\nPOST /v1/render\nPOST /v1/renderPrint\nPOST /v1/print"]
-        RenderProducer["MessageProducer\n(rocketMQTemplate\n+ deliveryRocketMQTemplate)"]
-        RenderConsumer["RenderConsumer\nRocketMQReplyListener\nPrinting_Render"]
-        PrintConsumer["PrintConsumer\nRocketMQListener\nPrinting_Print"]
-        RPConsumer["RenderPrintConsumer\nRocketMQListener\nPrinting_RenderPrint"]
-        ResourceSvc["ResourceService\nbuildResourceMap()"]
-        StorageSvc["StorageService\nMinIO/S3 client"]
-        JasperUtil["JasperUtil\nJasperReports engine"]
-        PdfUtil["PdfUtil\niText PDF merge/\nencrypt/decrypt"]
+        Controller["PrintRenderController<br>POST /v1/render<br>POST /v1/renderPrint<br>POST /v1/print"]
+        RenderProducer["MessageProducer<br>(rocketMQTemplate<br>+ deliveryRocketMQTemplate)"]
+        RenderConsumer["RenderConsumer<br>RocketMQReplyListener<br>Printing_Render"]
+        PrintConsumer["PrintConsumer<br>RocketMQListener<br>Printing_Print"]
+        RPConsumer["RenderPrintConsumer<br>RocketMQListener<br>Printing_RenderPrint"]
+        ResourceSvc["ResourceService<br>buildResourceMap()"]
+        StorageSvc["StorageService<br>MinIO/S3 client"]
+        JasperUtil["JasperUtil<br>JasperReports engine"]
+        PdfUtil["PdfUtil<br>iText PDF merge/<br>encrypt/decrypt"]
     end
 
     subgraph ObjectStorage["object-storage-svc  :9000  (S3-compatible)"]
-        S3API["S3 REST API\n(AWS Signature V4)"]
-        FS["Filesystem Storage\nbucket/object path"]
+        S3API["S3 REST API<br>(AWS Signature V4)"]
+        FS["Filesystem Storage<br>bucket/object path"]
     end
 
     subgraph RocketMQ["Apache RocketMQ  :9876"]
-        T_Render["Printing_Render\n(sync reply)"]
-        T_Print["Printing_Print\n(async)"]
-        T_RenderPrint["Printing_RenderPrint\n(async)"]
-        T_PrintQueue["Printing_PrintQueue_{location}\n(per-location)"]
-        T_PersonalQueue["Printing_PersonalPrintQueue\n(per-user)"]
-        T_Status["Printing_PrintStatus\n(status acks)"]
+        T_Render["Printing_Render<br>(sync reply)"]
+        T_Print["Printing_Print<br>(async)"]
+        T_RenderPrint["Printing_RenderPrint<br>(async)"]
+        T_PrintQueue["Printing_PrintQueue_{location}<br>(per-location)"]
+        T_PersonalQueue["Printing_PersonalPrintQueue<br>(per-user)"]
+        T_Status["Printing_PrintStatus<br>(status acks)"]
     end
 
     subgraph DeliverySvc["print-delivery-svc  :8089"]
-        WSHandler["PrintWebSocketHandler\nWebSocket endpoint\n/ws"]
-        MQConsumer["PrintMQPushConsumer\n(one per location/session)"]
-        SessionMgr["WebSocketSessionManager\nConcurrentHashMap\nsessions"]
-        DeliveryProducer["MessageProducer\nPrinting_PrintStatus"]
-        LocationSvc["LocationLookupService\nhostname → location"]
+        WSHandler["PrintWebSocketHandler<br>WebSocket endpoint<br>/ws"]
+        MQConsumer["PrintMQPushConsumer<br>(one per location/session)"]
+        SessionMgr["WebSocketSessionManager<br>ConcurrentHashMap<br>sessions"]
+        DeliveryProducer["MessageProducer<br>Printing_PrintStatus"]
+        LocationSvc["LocationLookupService<br>hostname → location"]
     end
 
     subgraph AgentApp["print-agent-app  (Electron Desktop)"]
-        HttpServer["Express HTTP :18300\nPOST /v1/print"]
-        ReactUI["React Frontend\nuseReportQueue hook\nfastq concurrency=1"]
-        IPCBridge["IPC Bridge\ncontextBridge"]
-        ElectronMain["Electron Main\nipcMain handlers"]
-        SQLite["SQLite DB\nTypeORM\njob history"]
-        JavaProc["Java Process\nlocal-print-service.jar\nPDF/text printing"]
-        Printer["Physical Printer\nWindows/Unix/Network"]
+        HttpServer["Express HTTP :18300<br>POST /v1/print"]
+        ReactUI["React Frontend<br>useReportQueue hook<br>fastq concurrency=1"]
+        IPCBridge["IPC Bridge<br>contextBridge"]
+        ElectronMain["Electron Main<br>ipcMain handlers"]
+        SQLite["SQLite DB<br>TypeORM<br>job history"]
+        JavaProc["Java Process<br>local-print-service.jar<br>PDF/text printing"]
+        Printer["Physical Printer<br>Windows/Unix/Network"]
     end
 
-    App -->|"POST /v1/renderPrint\nPOST /v1/render\nPOST /v1/print"| Controller
+    App -->|"POST /v1/renderPrint<br>POST /v1/render<br>POST /v1/print"| Controller
     LocalCaller -->|"POST /v1/print"| HttpServer
     Controller --> RenderProducer
 
@@ -85,10 +85,10 @@ flowchart TB
     WSHandler --> MQConsumer
     MQConsumer -->|"TextMessage JSON"| WSHandler
     WSHandler --> DeliveryProducer
-    DeliveryProducer -->|"Printing_PrintStatus\nDelivered/Printed"| T_Status
+    DeliveryProducer -->|"Printing_PrintStatus<br>Delivered/Printed"| T_Status
 
-    AgentApp <-->|"WebSocket\nws://print-delivery-svc/ws\n?locationTag=...&hospCode=..."| WSHandler
-    HttpServer -->|"IPC event\nprintRequest"| ReactUI
+    AgentApp <-->|"WebSocket<br>ws://print-delivery-svc/ws<br>?locationTag=...&hospCode=..."| WSHandler
+    HttpServer -->|"IPC event<br>printRequest"| ReactUI
     ReactUI --> IPCBridge
     IPCBridge --> ElectronMain
     ElectronMain --> SQLite
@@ -96,7 +96,7 @@ flowchart TB
     JavaProc --> Printer
     ElectronMain --> Printer
 
-    App -.->|"consume Printing_PrintStatus\nfor async tracking"| T_Status
+    App -.->|"consume Printing_PrintStatus<br>for async tracking"| T_Status
 
 ```
 # Sequence Digram
