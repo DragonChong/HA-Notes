@@ -7,5 +7,7 @@
 - Label Printing
   - Print Queue (Lab)
 - Deployment versions
+	- latest
 - Readiness for Print Agent App
+	- CMS to be deployed
 - CCP Agent / Print Agent App
