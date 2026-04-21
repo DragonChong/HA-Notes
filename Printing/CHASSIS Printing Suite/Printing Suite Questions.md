@@ -1,6 +1,7 @@
 - Worksheet
   - Default Printer
     - Currently must pass a printer name, anyway to use default printer?
+    - Do not provide printer name --> Default Printer
   - Print Queue (Lab)
     - Can use Printing_PrintQueue_{location}? e.g. Printing_PrintQueue_lis-chongkw-01
 - Label Printing
