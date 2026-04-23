@@ -322,5 +322,48 @@ https://hooks.slack.com/services/T04E944TT50/B0B09DVSS6L/rGCiyJBTSHpC7Mwu2Uu6k5p
 ```
 
 ```yaml
+  Notify:
+    name: Send Release Notification
+    needs: [_Init_, PublishLib]
+    runs-on: ${{ vars.RUNS_ON_2 }}
+    if: ${{ success() }}
+    steps:
+      - name: Send Slack Notification
+        run: |
+          curl -x "${{ secrets.PROXY_URL }}" -X POST "${{ secrets.SLACK_WEBHOOK_URL }}" \
+            -H 'Content-Type: application/json' \
+            -d '{
+              "channel": "it-releases",
+              "attachments": [{
+                "color": "good",
+                "title": "🚀 Library Released: ${{ github.event.repository.name }}",
+                "text": "*Version:* ${{ github.ref_name }}\n*Publisher:* ${{ github.actor }}\n*Release Notes:* ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}"
+              }]
+            }'
 
+      - name: Send Release Notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: 25
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "🚀 Library Published: ${{ github.event.repository.name }} v${{ github.ref_name }}"
+          to: ${{ secrets.TEAM_MAILING_LIST }}
+          from: GitHub CI <noreply@hagithub.home>
+          secure: false
+          body: |
+            Hi Team,
+
+            A new version of the library has been successfully published by ${{ github.actor }}.
+
+            - **Repository:** ${{ github.repository }}
+            - **New Version:** ${{ github.ref_name }}
+            - **Timestamp:** ${{ github.event.head_commit.timestamp }}
+
+            View the full release notes and artifacts here:
+            ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}
+
+            ---
+            *This is an automated notification from the self-hosted GitHub Runner.*
 ```
