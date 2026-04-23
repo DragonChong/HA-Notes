@@ -125,3 +125,40 @@ Since the runner is internal, it should "just work," but if the workflow hangs o
 1.  ****DNS Resolution:**** Ensure the self-hosted runner (the physical or virtual machine) can resolve the hostname `maildevsmtp.xxx.xxx`.
 
 2.  ****Relay Permissions:**** Some internal SMTP servers require the IP of the self-hosted runner to be explicitly whitelisted to "Relay" mail, even if you provide a username and password.
+
+
+
+
+```yaml
+  Notify:
+    name: Send Release Notification
+    needs: [_Init_, PublishLib]
+    runs-on: ${{ vars.RUNS_ON_2 }}
+    if: ${{ success() }}
+    steps:
+      - name: Send Release Notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: 25
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "🚀 Library Published: ${{ github.event.repository.name }} v${{ github.ref_name }}"
+          to: ${{ secrets.TEAM_MAILING_LIST }}
+          from: GitHub CI <noreply@hagithub.home>
+          secure: false
+          body: |
+            Hi Team,
+
+            A new version of the library has been successfully published by ${{ github.actor }}.
+
+            - **Repository:** ${{ github.repository }}
+            - **New Version:** ${{ github.ref_name }}
+            - **Timestamp:** ${{ github.event.head_commit.timestamp }}
+
+            View the full release notes and artifacts here:
+            ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref_name }}
+
+            ---
+            *This is an automated notification from the self-hosted GitHub Runner.*
+```
