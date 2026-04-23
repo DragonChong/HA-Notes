@@ -315,3 +315,8 @@ Link: ${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.
 ### A Note on "Self-Hosted" Security
 
 Since your runner is self-hosted, it must have **outbound internet access** to reach `hooks.slack.com`. Usually, corporate networks allow this over Port 443 (HTTPS), but if it fails, you may need to ask your IT team to allow the runner's IP to talk to Slack's API endpoints.
+
+## Web hook
+```
+https://hooks.slack.com/services/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
+```
