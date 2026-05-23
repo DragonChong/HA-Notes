@@ -82,6 +82,7 @@ Based on the C-to-Java migration map in [DESIGN.md](../../../ECP/LIS/lis-dhx-rrc
 | #  | Description | Status | Notes |
 |----|---|---|---|
 | E1 | Pass `patientVo` to `lis-request-svc` for patient registration | ⬜ | `DhxRrcStartProcessService.startProcess()`: `patientVo` is currently created but unused. When external patient insert via `lis-request-svc` is implemented, `patientVo` should be passed to the service call. |
+| E2 | Pass `PatientVo` to `createPatient` API instead of `PatAdmission3Vo` | ⬜ | `PatientService.getLatestPatient()` and `PatientService.newPatient()`: both call `lisPatientSvc.createPatient(patAdmission3Vo)`. Enhance to accept and pass `PatientVo` (built via `convertToPatientVo()`) for a cleaner, VO-based contract aligned with the rest of the service layer. |
 
 ---
 
