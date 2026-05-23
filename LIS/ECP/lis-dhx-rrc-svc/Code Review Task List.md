@@ -49,7 +49,7 @@ Based on the C-to-Java migration map in [DESIGN.md](../../../ECP/LIS/lis-dhx-rrc
 | 13 | `get_specimen()` | `DhxRrcUtilityServiceImpl.getSpecimen()` | ⬜ | |
 | 14 | `generate_patient_encounter()` | `DhxRrcUtilityServiceImpl.generatePatientEncounter()` | ⬜ | |
 | 15 | `get_year_prefix()` | `DhxRrcUtilityServiceImpl.getYearPrefix()` | ⬜ | |
-| 16 | `construct_testrslt()` | `TransTestrsltService.constructTestrslt()` | ⬜ | |
+| 16 | `construct_testrslt()` | `TransTestrsltService.constructTestrslt()` | 🔧 | High: no empty-list guard — `ediTestrslts.get(0)` unconditionally called after loop; empty list throws `IndexOutOfBoundsException` — fixed (guard added at top: empty list throws `RejectionLogException(12)`, matching C `case 0`); High: after `break` from fatal `amendEdiRslt` error, no post-loop check — silent drop instead of C's `create_reject_log(11); return -1` — fixed (post-loop check added, throws `RejectionLogException(11)`); Low: `dh_previous_reqno` set in `constructSendoutReqnoMap` in Java vs inside `construct_testrslt` in C — functionally equivalent ✅; Low: LINE_LBL inserted at `i+1` (Java) vs appended to end of array (C) — visual order controlled by `rslt_ctr`, functionally equivalent ✅ |
 
 ---
 
