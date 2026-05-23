@@ -18,12 +18,12 @@ Based on the C-to-Java migration map in [DESIGN.md](../../../ECP/LIS/lis-dhx-rrc
 
 ## Orchestration Layer
 
-| # | C Function | Java Equivalent | Status | Issues |
-|---|---|---|---|---|
-| 1 | `rrc_process()` | `DhxRrcAppServiceImpl.rrcProcess()` | ⬜ | |
-| 2 | `update_outstanding_request_status()` | `EdiRequestService.updateOutstandingRequestStatus()` | 🔧 | High: exception swallowed → wrong rollback behaviour; Medium: two try/catch broke atomicity — both fixed |
-| 3 | `get_outstanding_request()` | `EdiRequestService.getOutstandingRequest()` | ⚠️ | High: exception swallowed returns null; Medium: null conflates DB error and empty result; Low: unused import EdiRequestPk |
-| 4 | `start_process()` | `DhxRrcStartProcessService.startProcess()` | ⬜ | |
+| #   | C Function                            | Java Equivalent                                      | Status | Issues                                                                                                                    |
+| --- | ------------------------------------- | ---------------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `rrc_process()`                       | `DhxRrcAppServiceImpl.rrcProcess()`                  | ⬜      |                                                                                                                           |
+| 2   | `update_outstanding_request_status()` | `EdiRequestService.updateOutstandingRequestStatus()` | 🔧     | High: exception swallowed → wrong rollback behaviour; Medium: two try/catch broke atomicity — both fixed                  |
+| 3   | `get_outstanding_request()`           | `EdiRequestService.getOutstandingRequest()`          | ⚠️     | High: exception swallowed returns null; Medium: null conflates DB error and empty result; Low: unused import EdiRequestPk |
+| 4   | `start_process()`                     | `DhxRrcStartProcessService.startProcess()`           | ⬜      |                                                                                                                           |
 
 ---
 
