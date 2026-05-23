@@ -31,7 +31,7 @@ Based on the C-to-Java migration map in [DESIGN.md](../../../ECP/LIS/lis-dhx-rrc
 
 | #   | C Function                                             | Java Equivalent                           | Status | Issues |
 | --- | ------------------------------------------------------ | ----------------------------------------- | ------ | ------ |
-| 5   | `select_edi_dh_info()`                                 | `EdiRequestService.selectEdiDhInfoById()` | ⬜      |        |
+| 5   | `select_edi_dh_info()`                                 | `EdiRequestService.selectEdiDhInfoById()` | 🔧     | Medium: `labNo` Integer unboxing NPE risk — fixed (changed to primitive `int`); Low: `findById` fetches unused columns (`hKId`, `updateDatetime`) — accepted, no fix needed |
 | 6   | `retrieve_edi_testrslt()`                              | `EdiRequestService.retrieveEdiTestrslt()` | ⬜      |        |
 | 7   | `amend_edi_rslt()`                                     | `EdiRequestService.amendEdiRslt()`        | ⬜      |        |
 | 8   | `update_edi_status()`                                  | `EdiRequestService.updateEdiStatus()`     | ⬜      |        |
