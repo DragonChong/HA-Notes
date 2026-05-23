@@ -23,7 +23,7 @@ Based on the C-to-Java migration map in [DESIGN.md](../../../ECP/LIS/lis-dhx-rrc
 | 1   | `rrc_process()`                       | `DhxRrcAppServiceImpl.rrcProcess()`                  | ⬜      |                                                                                                                           |
 | 2   | `update_outstanding_request_status()` | `EdiRequestService.updateOutstandingRequestStatus()` | 🔧     | High: exception swallowed → wrong rollback behaviour; Medium: two try/catch broke atomicity — both fixed                  |
 | 3   | `get_outstanding_request()`           | `EdiRequestService.getOutstandingRequest()`          | 🔧     | High: exception swallowed returns null — fixed (now throws); Medium: null conflates DB error and empty result — fixed (now returns empty list); Low: unused import EdiRequestPk — fixed |
-| 4   | `start_process()`                     | `DhxRrcStartProcessService.startProcess()`           | ⚠️     | High: ACK failure rolls back CRS writes in Java but C commits them (send_acknowledgement called inside @Transactional); Medium: patientVo created but never used — possible missing pass to insertCrsRequest; Medium: getSpecType() NPE risk — fixed (null guard added); Low: boxed Integer == int — confirmed safe (Java unboxes automatically, false alarm) |
+| 4   | `start_process()`                     | `DhxRrcStartProcessService.startProcess()`           | 🔧     | High: ACK failure rolled back CRS writes — fixed (sendAcknowledgement wrapped in try/catch; failure sets status=10 matching C); Medium: patientVo dead code — deferred (see Enhancement E1 below); Medium: getSpecType() NPE — fixed (null guard added); Low: boxed Integer == — false alarm (Java unboxes correctly) |
 
 ---
 
@@ -74,6 +74,14 @@ Based on the C-to-Java migration map in [DESIGN.md](../../../ECP/LIS/lis-dhx-rrc
 |---|---|---|---|---|
 | 25 | `get_send_ack_hosp()` | `RrcSendAckService.setCurrentHospitals()` / `getCurrentHospitals()` | ⬜ | |
 | 26 | `send_acknowledgement()` | `SendAcknowledgementService.sendAcknowledgement()` | ⬜ | |
+
+---
+
+## Planned Enhancements
+
+| #  | Description | Status | Notes |
+|----|---|---|---|
+| E1 | Pass `patientVo` to `lis-request-svc` for patient registration | ⬜ | `DhxRrcStartProcessService.startProcess()`: `patientVo` is currently created but unused. When external patient insert via `lis-request-svc` is implemented, `patientVo` should be passed to the service call. |
 
 ---
 
