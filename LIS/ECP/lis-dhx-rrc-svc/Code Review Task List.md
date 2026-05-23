@@ -43,7 +43,7 @@ Based on the C-to-Java migration map in [DESIGN.md](../../../ECP/LIS/lis-dhx-rrc
 
 | # | C Function | Java Equivalent | Status | Issues |
 |---|---|---|---|---|
-| 10 | `check_sendout_reqno_map()` | `RequestService.selectSendoutReqnoMapByCurrentReqno()` | ⬜ | |
+| 10 | `check_sendout_reqno_map()` | `RequestService.selectSendoutReqnoMapByCurrentReqno()` | 🔧 | High: pre-check call in `rrcProcess` (line 114) was outside try/catch — DB exception aborted entire request loop — fixed (wrapped in try/catch, sets status=10 and continues); Medium: `selectTransTestrsltWktByReqNo` had same exposure — fixed in same block; Low: `@Query` returns single entity, throws `NonUniqueResultException` if duplicate `dh_current_reqno` rows exist — accepted (data integrity enforced at application level) |
 | 11 | `wipeout_request()` | `WipeoutService.wipeoutRequest()` | ⬜ | |
 | 12 | `assign_reqno()` | `DhxRrcUtilityServiceImpl.assignReqno()` | ⬜ | |
 | 13 | `get_specimen()` | `DhxRrcUtilityServiceImpl.getSpecimen()` | ⬜ | |
