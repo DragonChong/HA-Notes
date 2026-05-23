@@ -58,7 +58,7 @@ Based on the C-to-Java migration map in [DESIGN.md](../../../ECP/LIS/lis-dhx-rrc
 
 | # | C Function | Java Equivalent | Status | Issues |
 |---|---|---|---|---|
-| 17 | `update_sendout_reqno_map()` / `insert_sendout_reqno_map()` | `RequestService.constructSendoutReqnoMap()` + `insertSendoutReqnoMap()` | ⬜ | |
+| 17 | `update_sendout_reqno_map()` / `insert_sendout_reqno_map()` | `RequestService.constructSendoutReqnoMap()` + `insertSendoutReqnoMap()` | 🔧 | **High: NPE when `sendoutReqno` is null** — blank check set `sendreqnoExist=1` but unconditional `.getSendoutReqno().trim()` immediately after would NPE; C char array is never null — fixed (null-safe: `(getSendoutReqno() != null ? getSendoutReqno().trim() : "")`); **Medium: wrong `labno` source in INSERT** — C `update_sendout_reqno_map()` explicitly uses `edi_dh_info_labno` (not `cond_labno`) with comment "labno should follow edi_dh_info_labno if valid='Y'"; Java used `DataSourceContextHolder.getCurrentDb().getLab()` (`cond_labno` equivalent) — fixed (now uses `ediDhInfo.getLabNo()`); `sendoutReqno` substring offsets equivalent to C `copystr` for both labno==20 and !=20 paths ✅; `dh_previous_reqno` assignment timing difference (Java post-loop vs C in construct_testrslt) is functionally equivalent ✅ |
 | 18 | `insert_crs_request()` | `RequestService.insertCrsRequest()` | ⬜ | |
 | 19 | `insert_request_detail()` | `RequestService.insertCrsRequestDetail()` | ⬜ | |
 | 20 | `insert_request_copy_hist()` | `RequestService.insertCrsRequestCopyHist()` | ⬜ | |
