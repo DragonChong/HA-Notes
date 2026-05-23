@@ -23,7 +23,7 @@ Based on the C-to-Java migration map in [DESIGN.md](../../../ECP/LIS/lis-dhx-rrc
 | 1   | `rrc_process()`                       | `DhxRrcAppServiceImpl.rrcProcess()`                  | ⬜      |                                                                                                                           |
 | 2   | `update_outstanding_request_status()` | `EdiRequestService.updateOutstandingRequestStatus()` | 🔧     | High: exception swallowed → wrong rollback behaviour; Medium: two try/catch broke atomicity — both fixed                  |
 | 3   | `get_outstanding_request()`           | `EdiRequestService.getOutstandingRequest()`          | 🔧     | High: exception swallowed returns null — fixed (now throws); Medium: null conflates DB error and empty result — fixed (now returns empty list); Low: unused import EdiRequestPk — fixed |
-| 4   | `start_process()`                     | `DhxRrcStartProcessService.startProcess()`           | ⬜      |                                                                                                                           |
+| 4   | `start_process()`                     | `DhxRrcStartProcessService.startProcess()`           | ⚠️     | High: ACK failure rolls back CRS writes in Java but C commits them (send_acknowledgement called inside @Transactional); Medium: patientVo created but never used — possible missing pass to insertCrsRequest; Medium: getSpecType() NPE risk — fixed (null guard added); Low: boxed Integer == int — confirmed safe (Java unboxes automatically, false alarm) |
 
 ---
 
