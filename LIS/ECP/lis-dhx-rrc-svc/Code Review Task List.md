@@ -29,13 +29,13 @@ Based on the C-to-Java migration map in [DESIGN.md](../../../ECP/LIS/lis-dhx-rrc
 
 ## EDI / Patient Layer
 
-| # | C Function | Java Equivalent | Status | Issues |
-|---|---|---|---|---|
-| 5 | `select_edi_dh_info()` | `EdiRequestService.selectEdiDhInfoById()` | ⬜ | |
-| 6 | `retrieve_edi_testrslt()` | `EdiRequestService.retrieveEdiTestrslt()` | ⬜ | |
-| 7 | `amend_edi_rslt()` | `EdiRequestService.amendEdiRslt()` | ⬜ | |
-| 8 | `update_edi_status()` | `EdiRequestService.updateEdiStatus()` | ⬜ | |
-| 9 | `get_latest_patient()` / `get_pmi()` / `get_patient()` | `PatientService.getLatestPatient()` | ⬜ | |
+| #   | C Function                                             | Java Equivalent                           | Status | Issues |
+| --- | ------------------------------------------------------ | ----------------------------------------- | ------ | ------ |
+| 5   | `select_edi_dh_info()`                                 | `EdiRequestService.selectEdiDhInfoById()` | ⬜      |        |
+| 6   | `retrieve_edi_testrslt()`                              | `EdiRequestService.retrieveEdiTestrslt()` | ⬜      |        |
+| 7   | `amend_edi_rslt()`                                     | `EdiRequestService.amendEdiRslt()`        | ⬜      |        |
+| 8   | `update_edi_status()`                                  | `EdiRequestService.updateEdiStatus()`     | ⬜      |        |
+| 9   | `get_latest_patient()` / `get_pmi()` / `get_patient()` | `PatientService.getLatestPatient()`       | ⬜      |        |
 
 ---
 
