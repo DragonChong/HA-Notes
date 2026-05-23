@@ -73,7 +73,7 @@ Based on the C-to-Java migration map in [DESIGN.md](../../../ECP/LIS/lis-dhx-rrc
 
 | #   | C Function               | Java Equivalent                                                     | Status | Issues |
 | --- | ------------------------ | ------------------------------------------------------------------- | ------ | ------ |
-| 25  | `get_send_ack_hosp()`    | `RrcSendAckService.setCurrentHospitals()` / `getCurrentHospitals()` | ⬜      |        |
+| 25  | `get_send_ack_hosp()`    | `RrcSendAckService.getHospitals(int labNo)` | ✅      | **Medium: `currentHospitals` shared mutable field on singleton bean — concurrent lab contexts could read stale/mixed list — fixed (removed `currentHospitals` field and `setCurrentHospitals()`; made `getHospitals(int labNo)` public; callers now resolve lab via `DataSourceContextHolder.getCurrentDb().getLab()` at call time)**; Low: config YAML vs DB `lis_option` — intentional design change; Low: `split(",")` trims whitespace (C does not) — more lenient, acceptable |
 | 26  | `send_acknowledgement()` | `SendAcknowledgementService.sendAcknowledgement()`                  | ⬜      |        |
 
 ---
