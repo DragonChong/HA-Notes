@@ -71,10 +71,10 @@ Based on the C-to-Java migration map in [DESIGN.md](../../../ECP/LIS/lis-dhx-rrc
 
 ## Acknowledgement Layer
 
-| # | C Function | Java Equivalent | Status | Issues |
-|---|---|---|---|---|
-| 25 | `get_send_ack_hosp()` | `RrcSendAckService.setCurrentHospitals()` / `getCurrentHospitals()` | ⬜ | |
-| 26 | `send_acknowledgement()` | `SendAcknowledgementService.sendAcknowledgement()` | ⬜ | |
+| #   | C Function               | Java Equivalent                                                     | Status | Issues |
+| --- | ------------------------ | ------------------------------------------------------------------- | ------ | ------ |
+| 25  | `get_send_ack_hosp()`    | `RrcSendAckService.setCurrentHospitals()` / `getCurrentHospitals()` | ⬜      |        |
+| 26  | `send_acknowledgement()` | `SendAcknowledgementService.sendAcknowledgement()`                  | ⬜      |        |
 
 ---
 
