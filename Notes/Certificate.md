@@ -2,7 +2,7 @@
 
 ### Install Certificate
 ```bash
-cd C:\Program Files\Eclipse Adoptium\jdk-11.0.21.9-hotspot\lib\security
+cd C:\Program Files\Eclipse Adoptium\jdk-17.0.10.7-hotspot\lib\security
 
 ..\..\bin\keytool -import -alias jrog -keystore cacerts -file C:\CA1.crt
 
