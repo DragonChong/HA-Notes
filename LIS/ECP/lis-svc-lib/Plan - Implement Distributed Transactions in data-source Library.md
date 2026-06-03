@@ -1,4 +1,3 @@
-
 ## Context
 
 The `data-source` library routes JPA/JDBC operations across Sybase, PostgreSQL, and Oracle using a ThreadLocal-based context (`DataSourceContextHolder.setCurrentDb`) and `DynamicDataSource extends AbstractRoutingDataSource`. JTA is already configured via `JtaConfig.java` (Atomikos 6.0.0); each DB type has **one** `DynamicDataSource` bean wrapping many `AtomikosDataSourceBean` instances (one per hospital/lab/schema combination).
