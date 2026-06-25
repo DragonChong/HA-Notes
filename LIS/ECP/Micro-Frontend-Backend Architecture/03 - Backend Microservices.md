@@ -20,16 +20,16 @@ updated: '2026-03-09'
 
 ## 3.1 Service Overview
 
-| | `lis-hub-svc` | `lis-crs-spec-ack-svc` | `lis-request-svc` | `lis-patient-svc` |
-|---|---|---|---|---|
-| **Role** | Hub BFF (Backend-for-Frontend) | CRS Domain Microservice | Registration & Request Service | Patient Service |
-| **Port** | 5000 | 8118 | TBD | TBD |
-| **Java** | 17 | 17 | 17 | 17 |
-| **Spring Boot** | 3.3.13 | (via `ha-spring-boot-starter 3.0.0`) | TBD | TBD |
-| **Main class** | `LisApplication` | `LisCrsSpecAckSvcApplication` | TBD | TBD |
-| **Security** | ✅ **Fully secured** | ❌ **Security DISABLED** | TBD | TBD |
-| **Databases** | PostgreSQL + Oracle + Sybase + Redis | Oracle + Sybase | TBD | TBD |
-| **Consumed by** | `lis-hub-app` | `lis-crs-common-app`, `lab-crs-app` | `lis-request-app` | `lis-request-app` |
+|                 | `lis-hub-svc`                        | `lis-crs-spec-ack-svc`               | `lis-request-svc`              | `lis-patient-svc` |
+| --------------- | ------------------------------------ | ------------------------------------ | ------------------------------ | ----------------- |
+| **Role**        | Hub BFF (Backend-for-Frontend)       | CRS Domain Microservice              | Registration & Request Service | Patient Service   |
+| **Port**        | 5000                                 | 8118                                 | TBD                            | TBD               |
+| **Java**        | 17                                   | 17                                   | 17                             | 17                |
+| **Spring Boot** | 3.3.13                               | (via `ha-spring-boot-starter 3.0.0`) | TBD                            | TBD               |
+| **Main class**  | `LisApplication`                     | `LisCrsSpecAckSvcApplication`        | TBD                            | TBD               |
+| **Security**    | ✅ **Fully secured**                  | ❌ **Security DISABLED**              | TBD                            | TBD               |
+| **Databases**   | PostgreSQL + Oracle + Sybase + Redis | Oracle + Sybase                      | TBD                            | TBD               |
+| **Consumed by** | `lis-hub-app`                        | `lis-crs-common-app`, `lab-crs-app`  | `lis-request-app`              | `lis-request-app` |
 
 ---
 
