@@ -38,36 +38,34 @@ A production incident on 26 Jun 2026 showed message `P5120260626094915113` (A08)
 ```mermaid
 sequenceDiagram
     autonumber
-    participant PMI as PMI / IOI
-    participant MQS as MessageQueueService
+    participant PMI as PMI
+    participant SVC as lis-patient-pmi-sync-svc
     participant DB as patient_pmi_sync_message_queue
-    participant MQP as MessageQueueProcessor
-    participant Sync as PatientSyncService
 
-    Note over PMI,Sync: 26 Jun 2026 — same patient, old HKID vs new HKID
+    Note over PMI,DB: 26 Jun 2026 — same patient, old HKID vs new HKID
 
-    PMI->>MQS: HL7 A08 (update patient, hkid = OLD)
-    MQS->>DB: INSERT ...5113<br/>hkid=OLD, status=OUTSTANDING
+    PMI->>SVC: HL7 A08 (update patient, hkid = OLD)
+    SVC->>DB: INSERT ...5113<br/>hkid=OLD, status=OUTSTANDING
 
-    MQP->>DB: findProcessableMessages()
-    DB-->>MQP: ...5113 (no earlier blocking msg)
-    MQP->>DB: UPDATE ...5113 status=PROCESSING
+    SVC->>DB: findProcessableMessages()
+    DB-->>SVC: ...5113 (no earlier blocking msg)
+    SVC->>DB: UPDATE ...5113 status=PROCESSING
 
-    PMI->>MQS: HL7 A47 (change HKID, hkid=NEW, oldHkid=OLD)
-    MQS->>DB: INSERT ...5193<br/>hkid=NEW only (old_hkid not stored)
+    PMI->>SVC: HL7 A47 (change HKID, hkid=NEW, oldHkid=OLD)
+    SVC->>DB: INSERT ...5193<br/>hkid=NEW only (old_hkid not stored)
 
-    MQP->>DB: findProcessableMessages()
+    SVC->>DB: findProcessableMessages()
     Note over DB: Blocking check:<br/>blocking.hkid = m.hkid<br/>OLD ≠ NEW → not blocked
-    DB-->>MQP: ...5193 eligible
-    MQP->>DB: UPDATE ...5193 status=PROCESSING
+    DB-->>SVC: ...5193 eligible
+    SVC->>DB: UPDATE ...5193 status=PROCESSING
 
     par Concurrent processing (race condition)
-        MQP->>Sync: Process A47 ...5193 (NEW HKID)
+        SVC->>SVC: Process A47 ...5193 (NEW HKID)
     and
-        MQP->>Sync: Process A08 ...5113 (OLD HKID)
+        SVC->>SVC: Process A08 ...5113 (OLD HKID)
     end
 
-    Note over MQP,Sync: A47 should wait until A08 completes
+    Note over SVC,DB: A47 should wait until A08 completes
 ```
 
 ## Change Description
