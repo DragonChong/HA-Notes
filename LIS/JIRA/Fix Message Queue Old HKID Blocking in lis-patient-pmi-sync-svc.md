@@ -1,7 +1,5 @@
 ---
-title: >-
-  Fix message queue blocking logic in `lis-patient-pmi-sync-svc` to check old
-  HKID for A40/A45/A47 transactions
+title: Fix message queue blocking logic in `lis-patient-pmi-sync-svc` to check old HKID for A40/A45/A47 transactions
 tags:
   - jira-log
   - lis
@@ -9,10 +7,11 @@ request_type: Change Request
 priority: Medium
 services:
   - lis-patient-pmi-sync-svc
-target_completion_date: '2026-07-16'
+target_completion_date: 2026-07-16
 status: draft
-created: '2026-07-02'
-reference_jira: []
+created: 2026-07-02
+reference_jira:
+  - https://hatool.home/jira/browse/LIS-10723
 ---
 # Fix message queue blocking logic in `lis-patient-pmi-sync-svc` to check old HKID for A40/A45/A47 transactions
 
