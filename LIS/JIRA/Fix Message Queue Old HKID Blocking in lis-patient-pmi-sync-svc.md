@@ -3,6 +3,7 @@ title: Fix message queue blocking logic in `lis-patient-pmi-sync-svc` to check o
 tags:
   - jira-log
   - lis
+  - lis-patient-pmi-sync-svc
 request_type: Change Request
 priority: Medium
 services:
