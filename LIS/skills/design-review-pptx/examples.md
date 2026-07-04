@@ -136,11 +136,42 @@ Testing: {simulate concurrent scheduler trigger; verify single GCRS send per msg
 
 ---
 
+## Example C — Incremental fix with Promotion/Fallback (LIS-10583)
+
+**File:** `Fix Message Queue Old HKID Blocking (LIS-10583).md` (13 slides)
+
+### Outline used
+
+| # | Title |
+|---|-------|
+| 1 | Title |
+| 2 | Agenda |
+| 3 | Background — Problem |
+| 4 | Background (transaction types table) |
+| 5 | Existing Design - Message Queue Flow |
+| 6 | Existing Design - Current Blocking Query (SQL) |
+| 7–10 | Proposed Change (overview, schema, blocking logic, timeline) |
+| 11–12 | Promotion / Fallback |
+| 13 | Q&A |
+
+### Generate command
+
+```bash
+python ~/.cursor/skills/design-review-pptx/generate-design-review-pptx.py \
+  "docs/Fix Message Queue Old HKID Blocking (LIS-10583).md"
+```
+
+Uses the same template and generator as LIS-10672 — output style is identical.
+
+---
+
 ## Naming conventions
 
 | Item | Pattern |
 |------|---------|
 | Markdown file | `{Title}.md` — same basename as target `.pptx` |
+| Generator | `~/.cursor/skills/design-review-pptx/generate-design-review-pptx.py` |
+| Template | `~/.cursor/skills/design-review-pptx/ha-lis-design-review-template.pptx` |
 | JIRA in title | `({JIRA-KEY})` at end of H1 |
 | Service in subtitle | `(lis-{service-name})` on line after title |
 | Direction in titles | `GCRS → LIS`, `LIS → GCRS` |

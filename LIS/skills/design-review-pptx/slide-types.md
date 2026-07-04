@@ -16,7 +16,7 @@ CP3
 5th Jun 2026
 ```
 
-**Layout:** Dark background, large title, subtitle lines for service / forum / date.
+**Layout:** Title Slide (layout 0) — white Office theme; title + `(service-name)` in title placeholder; `CP3` and date in subtitle placeholder (idx 1). Slide number bottom-right from master.
 
 ---
 
@@ -33,7 +33,7 @@ Design Review
 
 Full reviews add: `Promotion`, `Fallback`, `Any further topics / open discussion`.
 
-**Layout:** Simple bullet or numbered list, left-aligned.
+**Layout:** Title and Content (layout 1) — agenda items as **bold** paragraphs, one per line.
 
 ---
 
@@ -55,7 +55,7 @@ Overview
 
 Optional label line (`Overview`, `Receiver`, `Sender`) between title and table.
 
-**Layout:** Title + subtitle label + full-width table.
+**Layout:** Title and Content + table (header bold 12pt, body 11pt). Optional footnote lines below table in 11pt Calibri.
 
 ---
 
@@ -108,7 +108,7 @@ Structure is identical
 Field names are identical
 ```
 
-**Layout:** Monospace code block left or full width; callouts as smaller text.
+**Layout:** Title and Content + Consolas 10pt code textbox. Notes below code in 11pt Calibri.
 
 ---
 
@@ -354,4 +354,4 @@ Status is updated to SUCCESS and then FAILED as a result
 # Q&A
 ```
 
-**Layout:** Title only on dark background; closing slide.
+**Layout:** Title Only (layout 7) — centred **Q&A** at 48pt; white background. Closing slide.
