@@ -1,19 +1,21 @@
 ---
 name: design-review-pptx
 description: >
-  Prepares Markdown slide outlines for LIS/HA design review presentations (CP3),
-  following conventions from GCRS Order Interface and similar service design reviews.
-  Use when the user asks to prepare design review slides, create a design review deck,
-  write slide content in markdown for PowerPoint, document a change for CP3 review,
-  or generate presentation material before calling the pptx skill. Triggers on
-  "design review", "CP3", "prepare slides", "slide outline", or when working with
-  .md files intended to become .pptx for technical design review sessions.
+  Prepares Markdown slide outlines and generates .pptx for LIS/HA CP3 design reviews
+  using the canonical HA template (LIS-10672 / LIS-10583 style). Use when the user asks
+  to prepare design review slides, create a design review deck, write slide content in
+  markdown for PowerPoint, document a change for CP3 review, or generate presentation
+  material. Triggers on "design review", "CP3", "prepare slides", "slide outline".
 ---
 
-# Design Review PowerPoint — Markdown Authoring
+# Design Review PowerPoint
 
-Produce **slide-ready Markdown** that the `pptx` skill converts into a `.pptx` deck.
-Do not generate `.pptx` in this skill — finish with a complete `.md` file, then hand off to `pptx`.
+Produce **slide-ready Markdown**, then generate `.pptx` with the **canonical HA/LIS template** so every deck matches the style of:
+
+- `Fix Race Condition in lis-gcr-order-inf-svc… (LIS-10672).pptx`
+- `Fix Message Queue Old HKID Blocking (LIS-10583).pptx`
+
+**Always use the bundled generator** — do not use pptxgenjs or custom colour themes for CP3 design reviews.
 
 ---
 
@@ -26,7 +28,8 @@ Task Progress:
 - [ ] 3. Draft slide outline (titles only)
 - [ ] 4. Write slide content in Markdown
 - [ ] 5. Self-check against QA checklist
-- [ ] 6. Hand off to pptx skill for deck generation
+- [ ] 6. Generate .pptx with generate-design-review-pptx.py
+- [ ] 7. Content QA (markitdown)
 ```
 
 ### Step 1 — Classify review type
@@ -34,11 +37,9 @@ Task Progress:
 | Type | When | Typical slide count |
 |------|------|---------------------|
 | **Full** | New service, major migration, first design review | 20–35 |
-| **Incremental** | Bug fix, race condition, targeted change to existing design | 5–10 |
+| **Incremental** | Bug fix, race condition, targeted change to existing design | 5–15 |
 
 ### Step 2 — Gather inputs
-
-Collect before writing:
 
 | Field | Example | Required |
 |-------|---------|----------|
@@ -51,85 +52,132 @@ Collect before writing:
 | Diagrams | architecture PNG/SVG, sequence flows | As needed |
 | Code/message samples | XML, JSON, SQL | As needed |
 
-Ask the user for missing items. Infer slide content from wiki pages, JIRA, source code, or prior design docs when available.
-
 ### Step 3 — Choose slide outline
 
-**Full design review** — use this default outline; drop or add slides per scope:
+**Full design review** — default outline; drop or add slides per scope:
 
-1. Title
-2. Agenda
-3. Background (legacy / existing)
-4. Background (revamped / proposed) — or Problem Statement for greenfield
-5. Domain reference (transaction types, message types) — split across slides if table is long
-6. Message format examples (legacy + revamped)
-7. System architecture (receiver, sender, or relevant flows) — one slide per flow
-8. Data model / schema changes
-9. Status / state machine / lifecycle
-10. Processing mechanism — split across 2 slides if flow is dense
-11. Retry / error handling / concurrency (if applicable)
-12. Obsoleted components (if applicable)
-13. OpenShift configuration (ConfigMaps, Secrets) — one slide per config group
-14. Production usage / volume stats (if available)
-15. Promotion (deployment steps)
-16. Fallback (receiver + sender, or per direction)
-17. Q&A
+1. Title → 2. Agenda → 3–4. Background → 5–7. Domain reference → 8–11. Architecture / processing → 12. Schema → 13–14. Retry / concurrency → 15–16. OpenShift config → 17. Production stats → 18–19. Promotion / Fallback → 20. Q&A
 
 **Incremental design review** — minimal outline:
 
-1. Title
-2. Agenda (Background, Design Review)
-3. Background (problem, symptoms, root cause)
-4. Existing design reference (reuse architecture / flow from prior review — cite slide topic, do not duplicate full content)
-5. Proposed change (what changes, why, impact)
-6. Q&A
+1. Title → 2. Agenda → 3. Background (problem) → 4+. Existing design / proposed change → Promotion / Fallback → Q&A
 
-See [slide-types.md](slide-types.md) for per-slide content rules and [examples.md](examples.md) for real excerpts.
+See [slide-types.md](slide-types.md) and [examples.md](examples.md).
 
 ### Step 4 — Write Markdown
 
-Save as `{Title}.md` in the working directory (match the eventual `.pptx` basename).
+Save as `{Title}.md` in the project `docs/` folder (same basename as target `.pptx`).
+
+### Step 6 — Generate .pptx
+
+```bash
+pip install -r ~/.cursor/skills/design-review-pptx/requirements.txt
+
+python ~/.cursor/skills/design-review-pptx/generate-design-review-pptx.py \
+  "docs/{Title}.md" \
+  "docs/{Title}.pptx"
+```
+
+Omit the second argument to write `{Title}.pptx` next to the `.md` file.
+
+### Step 7 — Content QA
+
+```bash
+python -m markitdown "docs/{Title}.pptx"
+```
+
+Verify slide count, titles, and no placeholder text.
+
+---
+
+## Visual Style (canonical template)
+
+Style is defined by `ha-lis-design-review-template.pptx` in this skill folder. **Do not override** with custom colours or pptxgenjs themes.
+
+| Element | Style |
+|---------|-------|
+| Theme | Microsoft Office Theme (white background) |
+| Title font | Calibri Light (from slide master) |
+| Body font | Calibri |
+| Accent / subtitle | Century Gothic, `#00B0F0` on title slide |
+| Slide numbers | Bottom-right, grey, from master |
+| Title slide layout | Title + subtitle placeholder (`CP3` + date) |
+| Content slides | Title and Content (layout index 1) |
+| Q&A slide | Title Only, centred 48pt |
+| Agenda items | Bold, one per paragraph |
+| Body bullets | Plain paragraphs; use `- ` prefix or indent for level-1 sub-bullets |
+| Tables | Header row bold 12pt; body 11pt; optional footnotes below |
+| Code blocks | Consolas 10pt in textbox below title |
+| Diagram slides | `![](image.png)` — embed PNG/SVG manually or add image to slide after generation |
+
+Reference decks: LIS-10672 (6 slides, incremental), LIS-10583 (13 slides, incremental with Promotion/Fallback).
 
 ---
 
 ## Markdown Format
 
-Each slide is a level-1 heading block separated by a blank line. Use slide-number comments for traceability (matches markitdown export from existing decks).
+Each slide is a level-1 heading block preceded by a slide-number comment.
 
 ```markdown
 <!-- Slide number: 1 -->
-# {Title} ({JIRA-KEY})
-({service-name})
+# Fix Message Queue Old HKID Blocking (LIS-10583)
+(lis-patient-pmi-sync-svc)
 CP3
-{Date}
+3rd Jul, 2026
 
 <!-- Slide number: 2 -->
 # Agenda
-{Agenda item 1}
-{Agenda item 2}
-...
+Background
+Design Review
+Promotion
+Fallback
+Q&A
 
 <!-- Slide number: 3 -->
 # Background
-{Content}
+Production incident on 26 Jun 2026
+Root cause: blocking check only compares blocking.hkid = m.hkid
+
+<!-- Slide number: 4 -->
+# Background
+| Type | Description | HKID in message |
+| --- | --- | --- |
+| A47 | Change HKID | new HKID + old HKID |
+On enqueue, only new HKID is persisted (footnote line after table)
+
+<!-- Slide number: 5 -->
+# Existing Design - Current Blocking Query
+```sql
+SELECT m FROM MessageQueue m
+WHERE blocking.hkid = m.hkid
 ```
+countPreviousBlockingMessages uses the same hkid-only match
+
+<!-- Slide number: N -->
+# Q&A
+```
+
+### Slide type auto-detection
+
+| Markdown pattern | Layout used |
+|------------------|-------------|
+| First slide with `CP3` in body | Title Slide |
+| `# Agenda` | Title and Content (bold items) |
+| `# Q&A` | Title Only (centred) |
+| Body contains `\| col \|` table | Title and Content + table |
+| Body contains ` ``` ` fence | Title and Content + Consolas code |
+| Everything else | Title and Content (bullets) |
 
 ### Rules
 
-- **One `#` heading per slide** — this becomes the slide title.
-- **Slide body** uses plain bullets, tables, or fenced code blocks — no `##` sub-headings unless the title slide needs a subtitle line (put subtitle on its own line under the title, not as `##`).
-- **Bullets**: plain lines starting at column 0 (no `-` prefix required — match existing HA decks which use unindented lines). Use `-` only when nesting sub-bullets.
-- **Tables**: GitHub-flavored markdown with header row.
-- **Code / messages**: fenced blocks with language tag (`xml`, `json`, `sql`). Truncate with `…` or `# …` comment on long samples; keep structure visible.
-- **Diagrams**: `![]({filename})` on its own line. List required image files at the top of the `.md` as an HTML comment:
-
-  ```markdown
-  <!-- Assets: architecture-receiver.png, message-lifecycle.png -->
-  ```
-
-- **Annotations beside diagrams**: put callout labels as plain lines after the image (e.g. `Endpoint`, `POST /api/processReceiver`) — the pptx step maps these to text boxes.
-- **Split long tables**: max ~10 rows per slide; repeat the `#` title with a part indicator (`Transaction Types (GCRS → LIS)` + `Receiver`) rather than cramming one slide.
-- **Do not** include slide footer numbers in body content — the pptx template adds them.
+- **One `#` heading per slide** — becomes the slide title.
+- **No `##` sub-headings** in slide body — use plain lines or tables.
+- **Bullets**: plain lines (no `-` required). Use `- ` or indent for sub-bullets.
+- **Tables**: GFM with header row; non-table lines after the table become footnotes.
+- **Code**: fenced block with language tag (`sql`, `xml`, `json`); lines after fence become notes.
+- **Diagrams**: `![]({filename})` — list assets in `<!-- Assets: ... -->` at top of file; add images manually post-generation if needed.
+- **Hyphens not em-dashes** in titles (`Existing Design - Overview`) — avoids encoding issues.
+- **Do not** put slide numbers in body — template adds them.
 
 ---
 
@@ -146,82 +194,49 @@ CP3
 
 ### Agenda slide
 
-List only topics to be presented. Common items:
+Bold items, one per line. Incremental: `Background`, `Design Review`. Full reviews add `Promotion`, `Fallback`.
 
-- Design Review
-- Promotion
-- Fallback
-- Any further topics / open discussion
+### Background (bug fix)
 
-For incremental reviews: `Background`, `Design Review`.
+Symptom → trigger → root cause → impact. One slide; detail on Design Review slides.
 
-### Background slides
+### Promotion / Fallback
 
-- **Migration / greenfield**: two-column comparison table (`Aspect | Legacy` / `Aspect | Revamped`).
-- **Bug fix**: bullet narrative — symptom → trigger → root cause → impact. Keep to one slide; move deep technical detail to Design Review slides.
+Ordered steps; name concrete artifacts (Helm release, cron job, DDL script).
 
-### Architecture slides
-
-- One diagram per slide; label components and endpoints as plain lines.
-- Name the integration pattern: API Gateway, SAM3, scheduler trigger, etc.
-
-### Schema / configuration slides
-
-- Group by artifact: table name, ConfigMap name, or Secret name as a plain line under the title.
-- Tables: `Column/Key | Type | Description` or `Key | Default | Description`.
-
-### Promotion / Fallback slides
-
-- Numbered or bullet steps in execution order.
-- Name concrete artifacts: Helm release, cron job name pattern (`GcrOrderSvcScheduleJob{Hosp}`), legacy process names (`loeReceiver (LOESERVER)`).
-- Separate receiver and sender fallback when directions differ.
-
-### Q&A slide
+### Q&A
 
 Title only: `# Q&A`
 
 ---
 
-## Splitting Content Across Slides
-
-| Content | Split strategy |
-|---------|----------------|
-| Transaction type table | ≤10 rows per slide; same title, different implicit part |
-| Message XML + JSON | One format per slide; add callout lines (`Structure is identical`, `Field names are identical`) |
-| Processing flow | Slide 1: retrieve + lock; Slide 2: send + status update |
-| OpenShift config | One slide per ConfigMap or Secret group |
-
----
-
-## QA Checklist (before handoff)
+## QA Checklist
 
 - [ ] Title slide has JIRA key, service name, CP3, date
-- [ ] Agenda matches actual slide sequence
+- [ ] Agenda matches slide sequence
 - [ ] Every slide has a `#` title
 - [ ] No slide exceeds ~10 table rows or ~8 top-level bullets
-- [ ] Code samples are truncated but structurally representative
-- [ ] All `![](...)` assets listed and available (or marked `<!-- TODO: asset -->`)
 - [ ] Promotion and Fallback included for production-impacting changes
-- [ ] Incremental reviews reference existing design instead of duplicating full architecture
-- [ ] Terminology consistent (OUTSTANDING, RETRY, service names, endpoint paths)
-- [ ] No placeholder text (`TBD`, `lorem`, `xxx`)
+- [ ] Terminology consistent (OUTSTANDING, RETRY, service names)
+- [ ] No placeholder text (`TBD`, `lorem`)
+- [ ] Generated via `generate-design-review-pptx.py` (not pptxgenjs)
+- [ ] markitdown QA passed
 
 ---
 
-## Handoff to pptx
+## Skill assets
 
-After the Markdown file is complete:
-
-1. Read the `pptx` skill.
-2. If a **template .pptx** exists (e.g. prior design review deck), use template-based editing workflow.
-3. If **no template**, use pptxgenjs with the Teal Trust or Ocean Gradient palette for HA/LIS technical content.
-4. Run content QA (`python -m markitdown output.pptx`) and visual QA per pptx skill.
-
-Tell the user: Markdown path, required asset files, and recommended template (if any).
+| File | Purpose |
+|------|---------|
+| `ha-lis-design-review-template.pptx` | Canonical master (from LIS-10672 deck) |
+| `generate-design-review-pptx.py` | Markdown → styled .pptx |
+| `requirements.txt` | `python-pptx` dependency |
+| [slide-types.md](slide-types.md) | Per-slide content reference |
+| [examples.md](examples.md) | Real deck excerpts |
 
 ---
 
 ## Additional Resources
 
-- Slide-type reference and layouts: [slide-types.md](slide-types.md)
-- Annotated excerpts from real decks: [examples.md](examples.md)
+- Slide-type reference: [slide-types.md](slide-types.md)
+- Annotated excerpts: [examples.md](examples.md)
