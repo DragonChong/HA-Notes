@@ -25,11 +25,11 @@ Produce **slide-ready Markdown**, then generate `.pptx` with the **canonical HA/
 Task Progress:
 - [ ] 1. Classify review type (full vs incremental)
 - [ ] 2. Gather inputs (JIRA, service, audience, scope)
-- [ ] 3. Draft slide outline (titles only)
+- [ ] 3. Draft slide outline (titles only) — reuse prior slides via extract-slides.py for incremental reviews
 - [ ] 4. Write slide content in Markdown
 - [ ] 5. Self-check against QA checklist
 - [ ] 6. Generate .pptx with generate-design-review-pptx.py
-- [ ] 7. Content QA (markitdown)
+- [ ] 7. Content QA (qa-design-review-pptx.py, then markitdown for a final read)
 ```
 
 ### Step 1 — Classify review type
@@ -62,6 +62,22 @@ Task Progress:
 
 1. Title → 2. Agenda → 3. Background (problem) → 4+. Existing design / proposed change → Promotion / Fallback → Q&A
 
+When a prior full review already documented the architecture/flow, reuse those slides
+instead of rewriting them (see examples.md, "Reusing prior design slides"). Discover and
+pull them forward with `extract-slides.py`:
+
+```bash
+# List slide titles in the prior deck
+python <skill-dir>/extract-slides.py "docs/{Prior Title}.md"
+
+# Extract matching slide(s), renumbered from a given position
+python <skill-dir>/extract-slides.py "docs/{Prior Title}.md" \
+  --title "Message Processing Mechanism" --start-number 4
+```
+
+If a reused slide references an image, copy that image file alongside the **new** deck's
+`.md` — paths resolve relative to wherever the new markdown lives, not the source deck.
+
 See [slide-types.md](slide-types.md) and [examples.md](examples.md).
 
 ### Step 4 — Write Markdown
@@ -84,11 +100,20 @@ Omit the second argument to write `{Title}.pptx` next to the `.md` file.
 
 ### Step 7 — Content QA
 
+Run the mechanical checks first — they cover the checkable half of the QA checklist below
+(title-slide fields, placeholder text, slide/table size limits, agenda coverage) and fail
+with a non-zero exit code if anything's wrong:
+
+```bash
+python <skill-dir>/qa-design-review-pptx.py "docs/{Title}.md"
+```
+
+Then do a final human-readable pass over the generated deck for the judgment-based items
+(Promotion/Fallback relevance, terminology consistency):
+
 ```bash
 python -m markitdown "docs/{Title}.pptx"
 ```
-
-Verify slide count, titles, and no placeholder text.
 
 ---
 
@@ -214,15 +239,18 @@ Title only: `# Q&A`
 
 ## QA Checklist
 
-- [ ] Title slide has JIRA key, service name, CP3, date
-- [ ] Agenda matches slide sequence
-- [ ] Every slide has a `#` title
-- [ ] No slide exceeds ~10 table rows or ~8 top-level bullets
-- [ ] Promotion and Fallback included for production-impacting changes
-- [ ] Terminology consistent (OUTSTANDING, RETRY, service names)
-- [ ] No placeholder text (`TBD`, `lorem`)
+Items marked **(auto)** are checked by `qa-design-review-pptx.py` — run it before the
+human pass rather than eyeballing these:
+
+- [ ] Title slide has JIRA key, service name, CP3, date **(auto)**
+- [ ] Agenda matches slide sequence **(auto, warning-level)**
+- [ ] Every slide has a `#` title **(auto)**
+- [ ] No slide exceeds ~10 table rows or ~8 top-level bullets **(auto, warning-level)**
+- [ ] Promotion and Fallback included for production-impacting changes — judgment call
+- [ ] Terminology consistent (OUTSTANDING, RETRY, service names) — judgment call
+- [ ] No placeholder text (`TBD`, `lorem`) **(auto)**
 - [ ] Generated via `generate-design-review-pptx.py` (not pptxgenjs)
-- [ ] markitdown QA passed
+- [ ] `qa-design-review-pptx.py` passed with no errors, then markitdown reviewed by eye
 
 ---
 
