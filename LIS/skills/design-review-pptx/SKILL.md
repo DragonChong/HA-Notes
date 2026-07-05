@@ -70,10 +70,12 @@ Save as `{Title}.md` in the project `docs/` folder (same basename as target `.pp
 
 ### Step 6 — Generate .pptx
 
-```bash
-pip install -r ~/.cursor/skills/design-review-pptx/requirements.txt
+Resolve `<skill-dir>` to the folder containing **this** SKILL.md — e.g. `~/.cursor/skills/design-review-pptx` when invoked via Cursor's symlink into the vault, or the vault path `LIS/skills/design-review-pptx/` directly (Cowork, or any environment without that symlink). Do not hardcode the Cursor path; it only resolves through that specific symlink.
 
-python ~/.cursor/skills/design-review-pptx/generate-design-review-pptx.py \
+```bash
+pip install -r <skill-dir>/requirements.txt
+
+python <skill-dir>/generate-design-review-pptx.py \
   "docs/{Title}.md" \
   "docs/{Title}.pptx"
 ```

@@ -61,9 +61,15 @@ Mark unknowns as `[TBD]` and ask the user before writing to Obsidian.
 
 Show the full draft in chat before creating the Obsidian note, unless the user explicitly asks to skip review.
 
-### Step 4: Create Obsidian note (MCP)
+### Step 4: Create Obsidian note
 
-Use the **user-obsidian** MCP server. Read tool schemas before calling.
+Use the **user-obsidian** MCP server (`write_note`) when it is available in the current
+environment. Read tool schemas before calling.
+
+If no such MCP is connected — e.g. in Cowork, which mounts the vault directly as a
+filesystem folder — write the note directly with the file-editing tools instead: create
+`<vault-root>/LIS/JIRA/<Short Title>.md` containing the YAML frontmatter block followed by
+the Markdown body, equivalent to what `write_note` would produce.
 
 **Note path:** `LIS/JIRA/<Short Title>.md`
 
@@ -102,6 +108,10 @@ Call `write_note` with `path`, `content`, and `frontmatter`.
 2. If empty or missing the table header, initialize using the list template below
 3. `patch_note` to prepend a new row after the table header row (newest first)
 
+If the user-obsidian MCP is not available, use the file-editing tools directly instead:
+read `LIS/JIRA/JIRA Log List.md`, initialize it with the template below if empty/missing
+the header, then insert the new row directly after the header row (newest first).
+
 **List template** (initialize when file is empty):
 
 ```markdown
@@ -123,14 +133,16 @@ Use wikilinks (`[[Note Title]]`) in the Note column — Obsidian resolves by tit
 
 ## Obsidian MCP quick reference
 
-| Action | Tool | Key args |
-|---|---|---|
-| Read list or note | `read_note` | `path` |
-| Create log note | `write_note` | `path`, `content`, `frontmatter` |
-| Add list row | `patch_note` | `path`, `oldString` (header row), `newString` (header + new row) |
-| Search existing logs | `search_notes` | `query`, `limit` |
+| Action | Tool | Key args | Direct-file fallback (no MCP) |
+|---|---|---|---|
+| Read list or note | `read_note` | `path` | `Read` on the vault file path |
+| Create log note | `write_note` | `path`, `content`, `frontmatter` | `Write` the file with YAML frontmatter + Markdown body |
+| Add list row | `patch_note` | `path`, `oldString` (header row), `newString` (header + new row) | `Edit` to insert the new row after the header row |
+| Search existing logs | `search_notes` | `query`, `limit` | `Grep`/`Glob` over `LIS/JIRA/` |
 
-Paths are relative to vault root (e.g. `LIS/JIRA/...`).
+Paths are relative to vault root (e.g. `LIS/JIRA/...`). In Cowork, the vault root is the
+mounted folder, and file tools (`Read`/`Write`/`Edit`) operate on it directly — no MCP
+required.
 
 ## Quality checklist
 

@@ -157,9 +157,11 @@ Testing: {simulate concurrent scheduler trigger; verify single GCRS send per msg
 ### Generate command
 
 ```bash
-python ~/.cursor/skills/design-review-pptx/generate-design-review-pptx.py \
+python <skill-dir>/generate-design-review-pptx.py \
   "docs/Fix Message Queue Old HKID Blocking (LIS-10583).md"
 ```
+
+`<skill-dir>` is the folder containing `design-review-pptx/SKILL.md` — see Step 6 in [SKILL.md](SKILL.md) for how to resolve it per environment.
 
 Uses the same template and generator as LIS-10672 — output style is identical.
 
@@ -170,8 +172,8 @@ Uses the same template and generator as LIS-10672 — output style is identical.
 | Item | Pattern |
 |------|---------|
 | Markdown file | `{Title}.md` — same basename as target `.pptx` |
-| Generator | `~/.cursor/skills/design-review-pptx/generate-design-review-pptx.py` |
-| Template | `~/.cursor/skills/design-review-pptx/ha-lis-design-review-template.pptx` |
+| Generator | `<skill-dir>/generate-design-review-pptx.py` (see SKILL.md Step 6 for `<skill-dir>` resolution) |
+| Template | `<skill-dir>/ha-lis-design-review-template.pptx` |
 | JIRA in title | `({JIRA-KEY})` at end of H1 |
 | Service in subtitle | `(lis-{service-name})` on line after title |
 | Direction in titles | `GCRS → LIS`, `LIS → GCRS` |
