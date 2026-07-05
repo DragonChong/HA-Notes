@@ -283,6 +283,36 @@ def add_code_slide(prs: Presentation, slide: dict) -> None:
             np.font.size = Pt(11)
 
 
+def embed_image(slide, image_ref: str, kind: str, has_text: bool) -> None:
+    """Add the diagram referenced by a slide's `![](...)` line as a picture.
+
+    - No other body text (pure diagram slide): dominant, centred image.
+    - Body text present (e.g. Architecture Diagram labels, Flow steps):
+      image placed beside the text on the right, and the bullet/agenda
+      content placeholder is narrowed so the two don't overlap.
+    """
+    image_path = Path(image_ref)
+    if not image_path.is_absolute():
+        image_path = (MD_DIR / image_path).resolve()
+
+    if not image_path.exists():
+        print(f"Warning: image not found, skipping embed: {image_path}", file=sys.stderr)
+        return
+
+    if not has_text:
+        slide.shapes.add_picture(str(image_path), Inches(1.3), Inches(1.3), width=Inches(7.4))
+        return
+
+    if kind in ("bullets", "agenda"):
+        try:
+            body = body_placeholder(slide)
+            body.width = Inches(4.6)
+        except RuntimeError:
+            pass
+
+    slide.shapes.add_picture(str(image_path), Inches(5.4), Inches(1.3), width=Inches(4.0))
+
+
 def add_qa_slide(prs: Presentation) -> None:
     s = prs.slides.add_slide(prs.slide_layouts[LAYOUT_TITLE_ONLY])
     title = s.shapes.title
@@ -313,17 +343,25 @@ def build_presentation(slides: list[dict], output_path: Path) -> Presentation:
     }
 
     for i, slide in enumerate(slides):
-        kind = classify_slide(slide, i)
+        image_ref, body_wo_image = extract_image(slide["body"])
+        working_slide = {"title": slide["title"], "body": body_wo_image}
+
+        kind = classify_slide(working_slide, i)
         handler = handlers[kind]
         if kind == "qa":
-            handler(prs, slide)
+            handler(prs, working_slide)
         else:
-            handler(prs, slide)
+            handler(prs, working_slide)
+
+        if image_ref:
+            embed_image(prs.slides[-1], image_ref, kind, has_text=bool(body_wo_image))
 
     return prs
 
 
 def main() -> None:
+    global MD_DIR
+
     if len(sys.argv) < 2:
         print(__doc__)
         sys.exit(1)
@@ -332,6 +370,8 @@ def main() -> None:
     if not md_path.exists():
         print(f"Error: Markdown file not found: {md_path}", file=sys.stderr)
         sys.exit(1)
+
+    MD_DIR = md_path.parent
 
     output_path = (
         Path(sys.argv[2]).resolve()
