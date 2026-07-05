@@ -147,14 +147,20 @@ def classify_slide(slide: dict, index: int) -> str:
 
     if title.strip().upper() == "Q&A":
         return "qa"
-    if index == 0 and any("CP3" in line for line in body):
+    if index == 0:
+        # Slide order guarantees the first slide is the title slide — don't
+        # gate this on the literal string "CP3" appearing in the body, since
+        # that breaks silently for any other review forum or a typo.
         return "title"
     if title.strip().lower() == "agenda":
         return "agenda"
+    if "```" in "\n".join(body):
+        # Check for a code fence before table lines: a code sample (e.g. SQL
+        # using `||` concatenation) can contain a line starting with "|"
+        # and would otherwise be misclassified as a table slide.
+        return "code"
     if any(is_table_line(line) for line in body):
         return "table"
-    if "```" in "\n".join(body):
-        return "code"
     return "bullets"
 
 
