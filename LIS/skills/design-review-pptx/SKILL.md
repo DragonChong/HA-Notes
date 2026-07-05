@@ -110,7 +110,7 @@ Style is defined by `ha-lis-design-review-template.pptx` in this skill folder. *
 | Body bullets | Plain paragraphs; use `- ` prefix or indent for level-1 sub-bullets |
 | Tables | Header row bold 12pt; body 11pt; optional footnotes below |
 | Code blocks | Consolas 10pt in textbox below title |
-| Diagram slides | `![](image.png)` — embed PNG/SVG manually or add image to slide after generation |
+| Diagram slides | `![](image.png)` — embedded automatically by the generator (path resolved relative to the input `.md` file); dominant/centred if the slide has no other body text, placed beside the text otherwise |
 
 Reference decks: LIS-10672 (6 slides, incremental), LIS-10583 (13 slides, incremental with Promotion/Fallback).
 
@@ -177,7 +177,7 @@ countPreviousBlockingMessages uses the same hkid-only match
 - **Bullets**: plain lines (no `-` required). Use `- ` or indent for sub-bullets.
 - **Tables**: GFM with header row; non-table lines after the table become footnotes.
 - **Code**: fenced block with language tag (`sql`, `xml`, `json`); lines after fence become notes.
-- **Diagrams**: `![]({filename})` — list assets in `<!-- Assets: ... -->` at top of file; add images manually post-generation if needed.
+- **Diagrams**: `![]({filename})` — one per slide; the generator embeds it automatically, resolving `{filename}` relative to the input `.md` file's own directory (so keep image assets alongside the markdown, e.g. in the same `docs/` folder). List assets in `<!-- Assets: ... -->` at top of file for reference only — it isn't parsed.
 - **Hyphens not em-dashes** in titles (`Existing Design - Overview`) — avoids encoding issues.
 - **Do not** put slide numbers in body — template adds them.
 
