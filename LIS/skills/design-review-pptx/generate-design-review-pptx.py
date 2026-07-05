@@ -24,9 +24,15 @@ from pptx.util import Inches, Pt
 SKILL_DIR = Path(__file__).resolve().parent
 TEMPLATE = SKILL_DIR / "ha-lis-design-review-template.pptx"
 
+# Directory the input Markdown file lives in — relative image references
+# (`![](diagram.png)`) resolve against this. Set by main() before generation.
+MD_DIR = Path(".")
+
 LAYOUT_TITLE = 0
 LAYOUT_TITLE_CONTENT = 1
 LAYOUT_TITLE_ONLY = 7
+
+IMAGE_RE = re.compile(r"^!\[[^\]]*\]\(([^)]+)\)$")
 
 
 def delete_all_slides(prs: Presentation) -> None:
@@ -69,6 +75,26 @@ def parse_slides(md_content: str) -> list[dict]:
         slides.append({"title": title, "body": body})
 
     return slides
+
+
+def extract_image(body: list[str]) -> tuple[str | None, list[str]]:
+    """Pull the first `![alt](path)` reference out of a slide body.
+
+    Returns (image_ref, remaining_body). Only one image per slide is
+    supported, matching the documented slide-type patterns; any further
+    image lines are left in the body as text.
+    """
+    image_ref: str | None = None
+    remaining: list[str] = []
+
+    for line in body:
+        match = IMAGE_RE.match(line.strip())
+        if match and image_ref is None:
+            image_ref = match.group(1)
+            continue
+        remaining.append(line)
+
+    return image_ref, remaining
 
 
 def is_table_line(line: str) -> bool:
