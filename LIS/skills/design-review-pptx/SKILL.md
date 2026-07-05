@@ -259,7 +259,9 @@ human pass rather than eyeballing these:
 | File | Purpose |
 |------|---------|
 | `ha-lis-design-review-template.pptx` | Canonical master (from LIS-10672 deck) |
-| `generate-design-review-pptx.py` | Markdown → styled .pptx |
+| `generate-design-review-pptx.py` | Markdown → styled .pptx, including diagram embedding |
+| `qa-design-review-pptx.py` | Mechanical QA checks (Step 7) |
+| `extract-slides.py` | Pull slides forward from a prior deck's markdown (Step 3, incremental reviews) |
 | `requirements.txt` | `python-pptx` dependency |
 | [slide-types.md](slide-types.md) | Per-slide content reference |
 | [examples.md](examples.md) | Real deck excerpts |
