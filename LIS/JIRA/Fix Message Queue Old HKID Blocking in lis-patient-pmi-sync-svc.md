@@ -8,7 +8,7 @@ request_type: Change Request
 priority: Medium
 services:
   - lis-patient-pmi-sync-svc
-target_completion_date: 2026-07-16
+target_completion_date: 2026-07-30
 status: draft
 created: 2026-07-02
 reference_jira:
