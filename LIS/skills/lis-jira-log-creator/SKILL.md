@@ -158,3 +158,4 @@ required.
 
 - Section templates: [template.md](template.md)
 - Full examples from team emails: [examples.md](examples.md)
+- CP3 design (downstream): [generate-design](../generate-design/SKILL.md) → [design-review-pptx](../design-review-pptx/SKILL.md)

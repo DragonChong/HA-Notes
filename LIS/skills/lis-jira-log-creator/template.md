@@ -41,6 +41,10 @@ Use this structure for the Obsidian note body (frontmatter is separate).
 
 <Dth Mon YYYY>
 
+## Design
+
+<!-- Populated by generate-design skill before CP3 review. See design-template.md. -->
+
 ## Reference Logs
 
 - LIS-XXXX
