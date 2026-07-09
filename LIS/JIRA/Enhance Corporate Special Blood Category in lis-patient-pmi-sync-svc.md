@@ -1,5 +1,5 @@
 ---
-created: 2026-07-09
+created: 2026-07-09T00:00:00.000Z
 priority: Medium
 reference_jira:
   - LIS-7291
@@ -13,8 +13,11 @@ tags:
   - jira-log
   - lis
   - lis-patient-pmi-sync-svc
-target_completion_date: 2026-04-17
-title: Enhance `lis-patient-pmi-sync-svc` to support Handling of Patient Merge and Deletion on Corporate Special Blood Category
+target_completion_date: 2026-04-17T00:00:00.000Z
+title: >-
+  Enhance `lis-patient-pmi-sync-svc` to support Handling of Patient Merge and
+  Deletion on Corporate Special Blood Category
+design_status: draft
 ---
 # Enhance `lis-patient-pmi-sync-svc` to support Handling of Patient Merge and Deletion on Corporate Special Blood Category
 
@@ -121,7 +124,7 @@ Hospital-level feature flag via lab_option (BbCorpBloodCatSetup.java)
 | group | LIS_PATIENT_PMI_SYNC_SVC |
 | code | BB_CORP_BLOOD_CAT_ENABLED |
 | Enabled | option_value = 1 |
-| Scope | Per hospital server (DataSourceContextHolder)
+| Scope | Per hospital server (DataSourceContextHolder) |
 When disabled: mergePid skips blood category copy; deletePMI returns success with skip message
 PatientSyncController logs ALS info when flag is false at message entry
 
