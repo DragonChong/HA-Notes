@@ -51,6 +51,17 @@ Task Progress:
 | Agenda topics | Design Review, Promotion, Fallback | Yes |
 | Diagrams | architecture PNG/SVG, sequence flows | As needed |
 | Code/message samples | XML, JSON, SQL | As needed |
+| **JIRA design note** | `LIS/JIRA/{note}.md` ## Design section | Yes (from **generate-design**) |
+
+**Preferred input:** `## Design` section in the JIRA Obsidian note created by **lis-jira-log-creator** and populated by **generate-design**. Convert to slide markdown first:
+
+```bash
+python <generate-design-skill-dir>/jira-design-to-slides.py \
+  "<vault>/LIS/JIRA/{Note}.md" \
+  "<repo>/docs/{Title}.md"
+```
+
+If no Design section exists yet, run **generate-design** first, or write slide markdown manually per Step 4 below.
 
 ### Step 3 — Choose slide outline
 
@@ -268,7 +279,9 @@ human pass rather than eyeballing these:
 
 ---
 
-## Additional Resources
+## Related skills
 
-- Slide-type reference: [slide-types.md](slide-types.md)
-- Annotated excerpts: [examples.md](examples.md)
+- **lis-jira-log-creator** — change request note (upstream)
+- **generate-design** — `## Design` section in JIRA note (upstream)
+- [slide-types.md](slide-types.md) — per-slide content reference
+- [examples.md](examples.md) — real deck excerpts
