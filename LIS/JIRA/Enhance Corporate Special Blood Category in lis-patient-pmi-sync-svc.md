@@ -67,4 +67,106 @@ Revamping the handling of patient merge and deletion on corporate special blood 
 
 ## Design
 
-<!-- Populated by generate-design skill before CP3 review. See design-template.md. -->
+**Review type:** incremental
+**JIRA key:** LIS-10583
+**Service:** lis-patient-pmi-sync-svc
+**Review forum:** CP3
+**Review date:** 9th Jul, 2026
+**Prior review:** none
+
+### Agenda
+Background
+Design Review
+Promotion
+Fallback
+Q&A
+
+### Slide: Background
+Corporate special blood category for patient merge/deletion is handled by legacy trigger transaction_log_tr
+Trigger fires on INSERT to transaction_log
+Supports CPI types 020 (Merge HKID), 031 (Change HKID), 250 (PMI Deletion)
+Logic revamp into lis-patient-pmi-sync-svc to align with PMI subscription architecture
+
+### Slide: Background
+| CPI type | HL7 / ADT | Trigger action on bb_corp_blood_category |
+| --- | --- | --- |
+| 020 | A40 Merge HKID | Copy active requirements from old HKID to new HKID |
+| 031 | A47 Change HKID | Copy active requirements from old HKID to new HKID |
+| 250 | A29 PMI Deletion | Reset requirements to default values |
+
+### Slide: Existing Design - Legacy Trigger Logic
+Iterate latest active bb_corp_blood_category per blood_key for old HKID (merge) or patient HKID (deletion)
+Merge/change: copy record when blood_value = 1 and not already active on new HKID
+Deletion: insert reset record (blood_value 0, or 2 when blood_key = 537)
+Set corp_alert_status = 21 on new records
+Reference: docs/LIS-10583/transaction_log_tr.sql
+
+### Slide: Existing Design - PMI Sync Flow
+PMI publishes HL7 messages to lis-patient-pmi-sync-svc
+PatientSyncServiceImpl routes by transaction type (A40, A47, A29, ...)
+A40/A47: PatientAppServiceImpl.mergePid() then patientUpdate()
+A29: PatientAppServiceImpl.deletePMI()
+
+### Slide: Proposed Change - Overview
+Migrate transaction_log_tr logic to BbCorpBloodCategoryService
+Handle A40/A47 merge and change HKID blood category copy in mergePid()
+Handle A29 PMI deletion blood category reset in deletePMI()
+Gate all processing via BbCorpBloodCatSetup per-hospital lab_option flag
+
+### Slide: Proposed Change - BbCorpBloodCatSetup
+Hospital-level feature flag via lab_option (BbCorpBloodCatSetup.java)
+| Key | Value |
+| --- | --- |
+| lab | 9 (CRS) |
+| group | LIS_PATIENT_PMI_SYNC_SVC |
+| code | BB_CORP_BLOOD_CAT_ENABLED |
+| Enabled | option_value = 1 |
+| Scope | Per hospital server (DataSourceContextHolder)
+When disabled: mergePid skips blood category copy; deletePMI returns success with skip message
+PatientSyncController logs ALS info when flag is false at message entry
+
+### Slide: Proposed Change - Merge and Change HKID (A40/A47)
+After successful mergePid, call processBloodCategoryForPidChange when flag enabled
+BbCorpBloodCategoryService.getActiveBloodCategories(oldHkid)
+BbCorpBloodCategoryService.processBbCorpBloodCatForMergeOrChangeHKID
+Sets patient_log_type 020 (A40) or 031 (A47)
+Rollback merge on blood category failure (RollbackException)
+
+### Slide: Proposed Change - PMI Deletion (A29)
+PatientSyncServiceImpl routes A29 to deletePMI()
+Skip when BB_CORP_BLOOD_CAT_ENABLED is false
+BbCorpBloodCategoryService.processBbCorpBloodCatForPMIDeletion
+Reset active records: blood_value 0 (or 2 for blood_key 537)
+Sets patient_log_type 250; remark documents patient deletion reset
+
+### Diagram: corp-blood-category-flow
+```mermaid
+sequenceDiagram
+    autonumber
+    participant PMI as PMI
+    participant SVC as lis-patient-pmi-sync-svc
+    participant DB as bb_corp_blood_category
+
+    PMI->>SVC: HL7 A40/A47/A29
+    SVC->>SVC: BbCorpBloodCatSetup.isBbCorpBloodCatEnable()
+    alt flag disabled
+        SVC-->>PMI: Skip blood category processing
+    else A40/A47 merge or change HKID
+        SVC->>DB: Copy active records old HKID to new HKID
+    else A29 PMI deletion
+        SVC->>DB: Reset active records to default
+    end
+```
+
+### Slide: Promotion
+Deploy lis-patient-pmi-sync-svc with BbCorpBloodCategoryService changes
+Configure lab_option BB_CORP_BLOOD_CAT_ENABLED = 1 per hospital before go-live
+Verify A40, A47, A29 processing in SIT with flag enabled and disabled
+Retire or disable transaction_log_tr after parallel-run validation
+
+### Slide: Fallback
+Revert lis-patient-pmi-sync-svc deployment
+Set BB_CORP_BLOOD_CAT_ENABLED = 0 to disable service-side processing per hospital
+Re-enable transaction_log_tr if legacy trigger path is still required
+
+### Slide: Q&A
