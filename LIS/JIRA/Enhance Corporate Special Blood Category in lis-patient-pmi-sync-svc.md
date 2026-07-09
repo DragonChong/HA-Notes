@@ -1,5 +1,5 @@
 ---
-created: '2026-07-09'
+created: 2026-07-09
 priority: Medium
 reference_jira:
   - LIS-7291
@@ -13,10 +13,8 @@ tags:
   - jira-log
   - lis
   - lis-patient-pmi-sync-svc
-target_completion_date: '2026-04-17'
-title: >-
-  Enhance `lis-patient-pmi-sync-svc` to support Handling of Patient Merge and
-  Deletion on Corporate Special Blood Category
+target_completion_date: 2026-04-17
+title: Enhance `lis-patient-pmi-sync-svc` to support Handling of Patient Merge and Deletion on Corporate Special Blood Category
 ---
 # Enhance `lis-patient-pmi-sync-svc` to support Handling of Patient Merge and Deletion on Corporate Special Blood Category
 
