@@ -101,5 +101,124 @@ Persisting `old_hkid` and including it in blocking checks ensures A40/A45/A47 me
 
 16th Jul, 2026
 
----
-# Design
+## Design
+
+**Review type:** incremental
+**JIRA key:** LIS-10723
+**Service:** lis-patient-pmi-sync-svc
+**Review forum:** CP3
+**Review date:** 3rd Jul, 2026
+**Prior review:** none
+**Slide source:** docs/Fix Message Queue Old HKID Blocking (LIS-10723).pptx.md
+
+### Agenda
+Background
+Design Review
+Promotion
+Fallback
+Q&A
+
+### Slide: Background
+Production issue reported by ITO on 26 Jun 2026
+Message A08 (Patient Update) and A47 (Change HKID) was received in sequence
+Message P5120260626094915113 (A08) set to PROCESSING for patient's old HKID
+Message P5120260626094915193 (A47) picked up concurrently ~2 seconds later
+A47 was not blocked until A08 completed
+Message P5120260626094915193 (A47) was marked FAILED as a result
+
+### Diagram: incident-sequence
+```mermaid
+sequenceDiagram
+    autonumber
+    participant PMI as PMI
+    participant SVC as lis-patient-pmi-sync-svc
+    participant DB as patient_pmi_sync_message_queue
+
+    Note over PMI,DB: 26 Jun 2026 - same patient, old HKID vs new HKID
+
+    PMI->>SVC: HL7 A08 (update patient, hkid = OLD)
+    SVC->>DB: INSERT ...5113, hkid=OLD, status=OUTSTANDING
+
+    SVC->>DB: findProcessableMessages()
+    DB-->>SVC: ...5113 (no earlier blocking msg)
+    SVC->>DB: UPDATE ...5113 status=PROCESSING
+
+    PMI->>SVC: HL7 A47 (change HKID, hkid=NEW, oldHkid=OLD)
+    SVC->>DB: INSERT ...5193, hkid=NEW only (old_hkid not stored)
+
+    SVC->>DB: findProcessableMessages()
+    Note over DB: Blocking check: blocking.hkid = m.hkid, OLD != NEW - not blocked
+    DB-->>SVC: ...5193 eligible
+    SVC->>DB: UPDATE ...5193 status=PROCESSING
+
+    par Concurrent processing (race condition)
+        SVC->>SVC: Process A47 ...5193 (NEW HKID)
+    and
+        SVC->>SVC: Process A08 ...5113 (OLD HKID)
+    end
+
+    Note over SVC,DB: A47 should wait until A08 completes
+```
+
+### Slide: Background
+![](Picture3.jpg)
+Root cause: blocking check only compares blocking.hkid = m.hkid (new HKID)
+For A40/A45/A47, old HKID is not stored in message queue table
+Old HKID exists only inside parsed_message JSON
+
+### Slide: Background
+On enqueue, only new HKID is persisted to patient_pmi_sync_message_queue.hkid
+Blocking messages for the old HKID are invisible to the retrieval query
+| Type | Description | HKID in message |
+| --- | --- | --- |
+| A40 | Merge HKID | new HKID + old HKID |
+| A45 | Move Episode | new HKID + old HKID |
+| A47 | Change HKID | new HKID + old HKID |
+| Other (e.g. A08) | Update patient info | HKID only |
+
+### Slide: Existing Design - Message Queue Flow
+Scheduler runs every 10 seconds per hospital server
+Retrieve messages to be processed
+OUTSTANDING, RETRY, PENDING
+Selected messages set to PROCESSING before business logic runs
+Check if message should be blocked
+Status: FAILED, RETRY, PROCESSING
+HKID = hkid column in patient_pmi_sync_message_queue
+
+### Slide: Proposed Change - Overview
+Add old_hkid column to patient_pmi_sync_message_queue
+Populate old_hkid on enqueue
+Enhance blocking mechanism to match on both hkid and old_hkid
+No change to message processing business logic
+
+### Slide: Proposed Change - Schema
+New old_hkid column in patient_pmi_sync_message_queue
+| Column | Type | Description |
+| --- | --- | --- |
+| old_hkid | VARCHAR(12) NULL | Previous HKID for A40/A45/A47; NULL for other types |
+
+### Slide: Proposed Change - Amended Blocking Logic
+A message is blocked when an earlier message blocking matches ANY of:
+blocking.hkid = m.hkid
+blocking.hkid = m.oldHkid (when old_hkid is not null)
+blocking.old_hkid = m.hkid (when blocking has old_hkid)
+blocking.old_hkid = m.oldHkid (when both have old_hkid)
+
+### Slide: Proposed Change - Incident Timeline (Fixed)
+With old_hkid persisted and checked, A47 waits for in-flight A08 on the same patient identity
+| Time | Message | Type | Event |
+| --- | --- | --- | --- |
+| 09:49:18.300 | ...5113 | A08 | Queued (old HKID) |
+| 09:49:18.392 | ...5113 | A08 | Set PROCESSING |
+| 09:49:18.560 | ...5193 | A47 | Queued (new HKID) |
+| After fix | ...5193 | A47 | Blocked until ...5113 completes |
+
+### Slide: Promotion
+Deploy DDL - add old_hkid column on all hospital DBs (PG + Sybase)
+Deploy lis-patient-pmi-sync-svc
+
+### Slide: Fallback
+Revert lis-patient-pmi-sync-svc deployment to previous version
+old_hkid column can remain (nullable, unused by old code)
+
+### Slide: Q&A
