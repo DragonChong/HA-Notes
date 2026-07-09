@@ -34,13 +34,25 @@ def parse_frontmatter(text: str) -> tuple[dict, str]:
 
 
 def extract_design_section(body: str) -> str | None:
-    match = re.search(r"^## Design\s*$", body, re.MULTILINE)
-    if not match:
-        return None
-    start = match.end()
-    rest = body[start:]
-    next_section = re.search(r"^## [^#]", rest, re.MULTILINE)
-    return rest[: next_section.start()].strip() if next_section else rest.strip()
+    """Extract ## Design (preferred) or trailing # Design section."""
+    m = re.search(r"^## Design\s*\n(.*)", body, re.MULTILINE | re.DOTALL)
+    if m:
+        rest = m.group(1)
+        next_h2 = re.search(r"^## [^#]", rest, re.MULTILINE)
+        content = rest[: next_h2.start()].strip() if next_h2 else rest.strip()
+        return content if content else None
+
+    m = re.search(r"^---\s*\n# Design\s*\n(.*)$", body, re.MULTILINE | re.DOTALL)
+    if m:
+        content = m.group(1).strip()
+        return content if content else None
+
+    m = re.search(r"^# Design\s*\n(.*)$", body, re.MULTILINE | re.DOTALL)
+    if m:
+        content = m.group(1).strip()
+        return content if content else None
+
+    return None
 
 
 def parse_metadata(design: str) -> dict[str, str]:
