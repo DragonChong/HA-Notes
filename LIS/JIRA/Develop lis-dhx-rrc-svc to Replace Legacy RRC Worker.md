@@ -55,23 +55,37 @@ The revamped `lis-dhx-rrc-svc` Spring Boot microservice has been designed to rep
 
 ```mermaid
 flowchart LR
-    subgraph External["External"]
-        DH["DH System"]
+    subgraph External["External System"]
+            DH["DH System"]
     end
-    subgraph HA["HA Cloud"]
-        WS["DhxEaiInsertion WebService"]
-        INT_DB[("INT_DB Sybase/PG")]
-        SCH["lis-common-scheduler-svc"]
-        RRC["lis-dhx-rrc-svc"]
-        PAT["lis-patient-svc"]
-        REQ["lis-request-svc"]
-        CRS_DB[("LAB_DB PostgreSQL")]
+    subgraph Internal["HA"]
+            WS("DhxEaiInsertion <br> WebService")
+            INT_DB[("INT Database")]
+            SCH_SVC("lis-common-scheduler-svc")
+            RRC_SVC("lis-dhx-rrc-svc")
+            PAT_SVC("lis-patient-svc")
+            REQ_SVC("lis-request-svc")
+            CRS_DB[("CRS Database")]
     end
-    DH --> WS --> INT_DB
-    SCH -->|POST /api/rrcProcess| RRC
-    RRC --> INT_DB
-    RRC --> PAT
-    RRC --> REQ --> CRS_DB
+    DH --> WS
+    WS --> INT_DB
+    SCH_SVC -- Trigger--> RRC_SVC
+    RRC_SVC -- Retrieve Outstanding Records --> INT_DB
+    RRC_SVC -- Retrieve PMI Patient --> PAT_SVC
+    RRC_SVC -- Register/Wipeout Request --> REQ_SVC
+    REQ_SVC -- Insert/Delete Request --> CRS_DB
+
+    classDef external fill:#ffebee,stroke:#f44336,stroke-width:2px,color:#000
+    classDef internal fill:#e3f2fd,stroke:#2196f3,stroke-width:2px,color:#000
+    classDef webservice fill:#e8f5e8,stroke:#4caf50,stroke-width:2px,color:#000
+    classDef database fill:#fff3e0,stroke:#ff9800,stroke-width:2px,color:#000
+    classDef service fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px,color:#000
+
+    class DH external
+    class WS webservice
+    class INT_DB,CRS_DB database
+    class RRC_SVC,PAT_SVC,REQ_SVC,SCH_SVC service
+
 ```
 
 ## Justification
