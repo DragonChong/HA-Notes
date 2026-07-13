@@ -295,11 +295,10 @@ Service reads and updates status on EDI_REQUEST and EDI_TESTRSLT during processi
 Per-request database transaction ensures all LAB_DB writes commit or roll back together
 
 ### Slide: Proposed Change - External Service Integration
-| Service | Purpose |
-| --- | --- |
-| lis-common-scheduler-svc | Triggers POST /api/rrcProcess once per lab on schedule |
-| lis-patient-svc | PMI patient lookup, update, and anonymous patient creation |
-| lis-request-svc | CRS request registration, wipeout, and DH acknowledgement dispatch |
+| Service                  | Purpose                                                            |
+| ------------------------ | ------------------------------------------------------------------ |
+| lis-patient-svc          | PMI patient lookup, update, and anonymous patient creation         |
+| lis-request-svc          | CRS request registration, wipeout, and DH acknowledgement dispatch |
 Endpoint URLs configured per environment via OpenShift ConfigMaps
 
 ### Slide: Proposed Change - Error Handling and Monitoring
