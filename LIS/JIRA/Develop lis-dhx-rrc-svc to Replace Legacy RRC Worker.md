@@ -265,11 +265,11 @@ Spring profiles (dev, devqa, sit, lpt, prd) select per-environment connection pa
 No code change required when a hospital switches from Sybase to PostgreSQL
 
 ### Slide: Proposed Change - INT_DB Source Tables
-| Table | Purpose |
-| --- | --- |
-| EDI_REQUEST | One row per inbound DH request; status drives processing |
-| EDI_DH_INFO | DH metadata: encounter, hospital, lab number, validity flag |
-| EDI_TESTRSLT | Individual test result rows from DH |
+| Table        | Purpose                                                     |
+| ------------ | ----------------------------------------------------------- |
+| EDI_REQUEST  | One row per inbound DH request; status drives processing    |
+| EDI_DH_INFO  | DH metadata: encounter, hospital, lab number, validity flag |
+| EDI_TESTRSLT | Individual test result rows from DH                         |
 Service reads and updates status on EDI_REQUEST and EDI_TESTRSLT during processing
 
 ### Slide: Proposed Change - LAB_DB Target Tables
