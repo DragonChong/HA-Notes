@@ -125,15 +125,15 @@ Sybase-to-PostgreSQL migration requires a cloud-native replacement with identica
 Downstream consumers rely on structured CRS data for report sharing within HA
 
 ### Slide: Background - Legacy vs Revamped
-| Aspect | Legacy (C daemon) | Revamped (Spring Boot) |
-| --- | --- | --- |
-| Trigger | Continuous daemon polling | HTTP POST from scheduler |
-| Protocol | Unix socket | REST API (JSON over HTTPS) |
-| Framework | C, CT-Lib | Java 17, Spring Boot 3.3 |
-| Database access | CT-Lib multi-connection | Spring Data JPA with dynamic routing |
-| Patient resolution | Direct SQL against PMI tables | REST call to lis-patient-svc |
-| DH acknowledgement | Direct LOE queue insert | REST call to lis-request-svc |
-| Deployment | On-premises Unix process | OpenShift container pod |
+| Aspect             | Legacy (C daemon)             | Revamped (Spring Boot)               |
+| ------------------ | ----------------------------- | ------------------------------------ |
+| Trigger            | Continuous daemon polling     | HTTP POST from scheduler             |
+| Protocol           | Unix socket                   | REST API (JSON over HTTPS)           |
+| Framework          | C, CT-Lib                     | Java 17, Spring Boot 3.3             |
+| Database access    | CT-Lib multi-connection       | Spring Data JPA with dynamic routing |
+| Patient resolution | Direct SQL against PMI tables | REST call to lis-patient-svc         |
+| DH acknowledgement | Direct LOE queue insert       | REST call to lis-request-svc         |
+| Deployment         | On-premises Unix process      | OpenShift container pod              |
 
 ### Slide: Background - Supported Labs
 | labNo | Lab  | Prefix 1 | Prefix 2 | Source System |
