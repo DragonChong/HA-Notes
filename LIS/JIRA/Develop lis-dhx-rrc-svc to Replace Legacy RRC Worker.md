@@ -176,7 +176,7 @@ flowchart LR
     subgraph Internal["HA"]
             WS("DhxEaiInsertion <br> WebService")
             INT_DB[("INT Database")]
-            SCH_SVC("lis-common-scheduler-svc")
+            SCH_SVC("lis-scheduler<br>(in lis-dhx-rrc-svc)")
             RRC_SVC("lis-dhx-rrc-svc")
             PAT_SVC("lis-patient-svc")
             REQ_SVC("lis-request-svc")
@@ -224,7 +224,7 @@ Service sets database routing context from labNo before processing begins
 ### Diagram: happy-path-sequence
 ```mermaid
 sequenceDiagram
-    participant SCH as lis-common-scheduler-svc
+    participant SCH as lis-scheduler<br>(in lis-dhx-rrc-svc)
     participant RRC as lis-dhx-rrc-svc
     participant INT as INT database
     participant PAT as lis-patient-svc
