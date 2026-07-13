@@ -203,14 +203,6 @@ flowchart LR
 
 ```
 
-### Slide: Proposed Change - API Endpoint
-POST /api/rrcProcess accepts JSON body with labNo (1 = CPS, 3 = HMS, 7 = MBS)
-HTTP status is always 200; business outcome signalled via response code field (legacy convention)
-Success: code 200, message "RRC process completed successfully"
-Partial failure: code 400, message lists failed DH request numbers
-Invalid labNo: code 400, message "Lab No. is invalid"
-Service sets database routing context from labNo before processing begins
-
 ### Slide: Proposed Change - Processing Stages
 1. Request claiming - stamp outstanding EDI rows as in-progress (status 98)
 2. Patient demographics - PMI lookup with local fallback and anonymous creation
