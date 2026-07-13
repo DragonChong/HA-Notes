@@ -41,7 +41,7 @@ The revamped `lis-dhx-rrc-svc` Spring Boot microservice has been designed to rep
 1. **Replace legacy RRC worker with cloud application (`lis-dhx-rrc-svc`):**
    - Re-implement all RRC business logic from `lis_sp_lisg_rrc.c` / `rrc_work.c` in Java 17 / Spring Boot 3.3, preserving lab-number–driven prefix routing (CPS/HMS/MBS), patient resolution, re-send (wipeout) detection, specimen mapping, test-result dictionary validation, PDF order insertion, and DH acknowledgement dispatch.
    - Expose `POST /api/rrcProcess` (triggered by `lis-common-scheduler-svc`) as the replacement for the continuous Unix socket daemon polling model.
-   - Integrate with `lis-patient-svc` (PMI patient resolution) and `lis-request-svc` (request registration/wipeout and DH ACK dispatch).
+   - Integrate with `lis-patient-svc` (PMI patient resolution) and `lis-request-svc` (CRS request registration and activation). DH acknowledgement is handled internally within `lis-dhx-rrc-svc`.
 
 2. **Support dynamic Sybase or PostgreSQL connectivity per environment:**
    - Use the `data-source` library and `DataSourceContextHolder` for thread-local routing between INT_DB (Sybase — EDI source) and LAB_DB (PostgreSQL — CRS target).
@@ -136,7 +136,7 @@ Each scheduler trigger passes labNo to route prefix and source-system filters
 DH submits test results via DhxEaiInsertion WebService into INT_DB EDI tables
 Legacy RRC daemon polls INT_DB for outstanding EDI_REQUEST rows (status = 0)
 For each request: resolve patient, register or wipeout CRS request, translate test results
-Write CRS-native records to LAB_DB and dispatch DH acknowledgement
+Write CRS-native records to LAB_DB; queue DH acknowledgement via TRANS_TESTRSLT_WKT on sendout hospital
 Update EDI_REQUEST status to completed (99), dictionary error (11), or failure (10)
 
 ### Slide: Existing Design - EDI Request Status Lifecycle
@@ -200,7 +200,7 @@ flowchart LR
 5. Specimen mapping - MBS only, maps DH specimen type to CRS keyword
 6. Test result construction - EDI to CRS dictionary mapping with validation
 7. CRS record insertion - request, detail, translated results, PDF order, task list
-8. DH acknowledgement - dispatch ACK via lis-request-svc and mark EDI complete
+8. DH acknowledgement - insert TRANS_TESTRSLT_WKT on sendout hospital LAB_DB and mark EDI complete
 
 ### Diagram: happy-path-sequence
 ```mermaid
@@ -287,7 +287,16 @@ Per-request database transaction ensures all LAB_DB writes commit or roll back t
 | Service                  | Purpose                                                            |
 | ------------------------ | ------------------------------------------------------------------ |
 | lis-patient-svc          | PMI patient lookup, update, and anonymous patient creation         |
-| lis-request-svc          | CRS request registration, wipeout, and DH acknowledgement dispatch |
+| lis-request-svc          | CRS request registration and activation |
+
+### Slide: Proposed Change - DH Acknowledgement
+ACK handled within lis-dhx-rrc-svc - no external service call
+Skipped for CPS and HMS labs, and when DH lab number is invalid or no ACK hospitals configured
+For MBS: when sendout hospital is in configured ACK list, switch to sendout hospital server
+Insert or update TRANS_TESTRSLT_WKT with action type 14 on sendout hospital LAB_DB
+VRS requests (prefix V) route acknowledgement to VRS lab server
+ACK write failure sets EDI_REQUEST status 10; CRS registration is retained (no compensation rollback)
+ACK write success sets EDI_REQUEST status 99
 Endpoint URLs configured per environment via OpenShift ConfigMaps
 
 ### Slide: Proposed Change - Error Handling and Monitoring
