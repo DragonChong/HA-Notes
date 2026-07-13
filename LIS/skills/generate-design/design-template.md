@@ -78,6 +78,20 @@ sequenceDiagram
 | `### Slide: {title}` | One CP3 slide; body until next `###` heading |
 | `### Diagram: {name}` | Mermaid stored in JIRA note; export PNG to project `docs/` if needed for slides |
 
+## Plain English rule
+
+**Do not put class names or method names on slides.** Describe what the system does in everyday language.
+
+- Bad: `MessageQueueProcessor` calls `findProcessableMessages`
+- Good: Scheduled job runs every 10 seconds and selects the next batch of ready messages
+
+- Bad: Extend `countPreviousBlockingMessages` to match `oldHkid`
+- Good: Extend the blocking check so earlier messages on the patient's old HKID also block
+
+SQL/code fences: use table and column names where needed; avoid ORM entity or JPQL class names. Put the behavioural explanation in bullets above the fence.
+
+**Allowed identifiers:** service names, table/column names, config keys, domain/event codes (A08, A47), status enums.
+
 ## Mapping from JIRA log sections
 
 | JIRA section | Design slides |

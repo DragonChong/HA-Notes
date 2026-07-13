@@ -82,10 +82,24 @@ Use [design-template.md](design-template.md). Structure:
 **Writing rules:**
 
 - Derive slide content from JIRA Background + Change Description — do not duplicate prose verbatim; compress for slides
+- **Use plain English only** — describe behaviour, not code identifiers (see below)
 - Use `-` hyphen not em-dash in slide titles
 - Reuse prior review slides for incremental fixes — cite `**Prior review:** [[note]]`
 - Include Promotion + Fallback for production-impacting changes
 - Sequence diagrams: 3 entities max when possible (e.g. PMI, service, DB table)
+
+**Plain English (no class or method names):**
+
+Slide bullets are for CP3 reviewers (architects, ops, clinical stakeholders), not developers reading source. When drafting from codebase or wiki:
+
+| Avoid | Use instead |
+|-------|-------------|
+| Class names (`MessageQueueProcessor`, `PatientTransactionVo`) | Role or layer ("scheduled job", "inbound patient transaction") |
+| Method or function names (`findProcessableMessages`, `countPreviousBlockingMessages`) | What it does ("selects the next batch of ready messages", "checks for earlier blocking messages") |
+| JPQL / ORM entity names in SQL fences | Table/column names, or a simplified SQL comment; describe logic in bullets above the fence |
+| "Update entity/repository/service" | "Update application code" or name the layer's responsibility |
+
+**Still OK:** service names (`lis-patient-pmi-sync-svc`), JIRA keys, table/column names in schema slides, config keys, domain codes (A08, A47), status values (OUTSTANDING, PROCESSING).
 
 ### Step 5 — Present draft
 
@@ -161,6 +175,7 @@ Worked example: [examples.md](examples.md)
 - [ ] Metadata lines complete (JIRA key, service, date)
 - [ ] Agenda matches slide sequence
 - [ ] No slide block exceeds ~8 bullets or ~10 table rows
+- [ ] Slide bullets use plain English — no class or method names
 - [ ] Promotion and Fallback present for production changes
 - [ ] `## Design` written to Obsidian note
 - [ ] `jira-design-to-slides.py` ran successfully

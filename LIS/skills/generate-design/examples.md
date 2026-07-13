@@ -27,33 +27,34 @@ Q&A
 Production incident on 26 Jun 2026
 Message P5120260626094915113 (A08) set to PROCESSING for patient's old HKID
 Message P5120260626094915193 (A47) picked up concurrently ~2 seconds later
-Root cause: blocking check only compares blocking.hkid = m.hkid (new HKID)
-For A40/A45/A47, old HKID is not stored in message queue table
+Root cause: blocking check only compares the new HKID on each queue row
+For A40/A45/A47, the old HKID is not stored in the message queue table
 
 ### Slide: Background
 | Type | Description | HKID in message |
 | --- | --- | --- |
 | A40 | Merge HKID | new HKID + old HKID |
 | A47 | Change HKID | new HKID + old HKID |
-On enqueue, only new HKID is persisted to patient_pmi_sync_message_queue.hkid
+On enqueue, only the new HKID is saved to patient_pmi_sync_message_queue.hkid
 
 ### Slide: Existing Design - Message Queue Flow
-Scheduler runs every 10 seconds per hospital server (MessageQueueProcessor)
-getNextBatchOfMessages calls findProcessableMessages
+Scheduled job runs every 10 seconds on each hospital server
+Each poll selects the next batch of messages ready to process
 Eligible statuses: OUTSTANDING, RETRY, PENDING
 Blocking statuses: FAILED, RETRY, PROCESSING
 
 ### Slide: Existing Design - Current Blocking Query
+Before picking a message, the service checks for earlier messages still blocking the same patient
+The check matches only on the new HKID stored on the queue row
 ```sql
-SELECT m FROM MessageQueue m
-WHERE blocking.hkid = m.hkid
+-- simplified: blocking match uses new HKID only
+WHERE earlier_message.hkid = current_message.hkid
 ```
-countPreviousBlockingMessages uses the same hkid-only match
 
 ### Slide: Proposed Change - Overview
 Add old_hkid column to patient_pmi_sync_message_queue
-Populate old_hkid on enqueue from PatientTransactionVo.oldHkid
-Extend blocking queries to match on both hkid and old_hkid
+When enqueueing A40/A45/A47, store the patient's previous HKID in old_hkid
+Extend the blocking check to match on both hkid and old_hkid
 
 ### Slide: Proposed Change - Schema
 | Column | Type | Description |
@@ -62,12 +63,12 @@ Extend blocking queries to match on both hkid and old_hkid
 
 ### Slide: Promotion
 Deploy DDL - add old_hkid column on all hospital DBs
-Deploy lis-patient-pmi-sync-svc with entity, repository, and service changes
+Deploy lis-patient-pmi-sync-svc with updated queue and blocking logic
 SIT verify: queue A08 then A47 for same patient
 
 ### Slide: Fallback
 Revert lis-patient-pmi-sync-svc deployment to previous version
-old_hkid column can remain (nullable, unused by old code)
+old_hkid column can remain (nullable, unused by previous version)
 
 ### Slide: Q&A
 ```
