@@ -136,11 +136,11 @@ Downstream consumers rely on structured CRS data for report sharing within HA
 | Deployment | On-premises Unix process | OpenShift container pod |
 
 ### Slide: Background - Supported Labs
-| labNo | Lab | Prefix 1 | Prefix 2 | Source System |
-| --- | --- | --- | --- | --- |
-| 1 | CPS (Castle Peak Hospital) | A | _(none)_ | C |
-| 3 | HMS (Haven of Hope Marine) | N | _(none)_ | N |
-| 7 | MBS (MacLehose Birthing Service) | M | V | M |
+| labNo | Lab  | Prefix 1 | Prefix 2 | Source System |
+| ----- | ---- | -------- | -------- | ------------- |
+| 1     | CPS  | A        | _(none)_ | C             |
+| 3     | HMS  | N        | _(none)_ | N             |
+| 7     | MBS  | M        | V        | M             |
 Each scheduler trigger passes labNo to route prefix and source-system filters
 
 ### Slide: Existing Design - Legacy Processing Flow
