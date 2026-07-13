@@ -162,7 +162,7 @@ Atomic claim prevents concurrent daemon instances from double-processing the sam
 
 ### Slide: Proposed Change - Overview
 1. Build cloud application lis-dhx-rrc-svc to replace legacy C RRC worker
-2. Expose POST /api/rrcProcess triggered by lis-common-scheduler-svc per lab
+2. Triggered by lis-scheduler per lab
 3. Re-implement all business logic with identical output to legacy worker
 4. Support dynamic Sybase or PostgreSQL connectivity per environment via central config
 5. Integrate with lis-patient-svc and lis-request-svc for PMI and request operations
