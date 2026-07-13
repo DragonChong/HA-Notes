@@ -273,14 +273,14 @@ No code change required when a hospital switches from Sybase to PostgreSQL
 Service reads and updates status on EDI_REQUEST and EDI_TESTRSLT during processing
 
 ### Slide: Proposed Change - LAB_DB Target Tables
-| Table | Purpose |
-| --- | --- |
-| CRS_REQUEST | Master CRS request record (req_station = RRC fingerprint) |
-| CRS_REQUEST_DETAIL | One row per test ordered |
-| TRANS_TESTRSLT | Translated test results in CRS format |
-| SENDOUT_REQNO_MAP | DH to CRS request number mapping for re-send detection |
-| PDF_ORDER | Associates DH PDF file path with registered request |
-| LISG_TASKLIST | Queues downstream CRS tasks (printing, signout) |
+| Table              | Purpose                                                   |
+| ------------------ | --------------------------------------------------------- |
+| CRS_REQUEST        | Master CRS request record (req_station = RRC fingerprint) |
+| CRS_REQUEST_DETAIL | One row per test ordered                                  |
+| TRANS_TESTRSLT     | Translated test results in CRS format                     |
+| SENDOUT_REQNO_MAP  | DH to CRS request number mapping for re-send detection    |
+| PDF_ORDER          | Associates DH PDF file path with registered request       |
+| LISG_TASKLIST      | Queues downstream CRS tasks (printing, signout)           |
 Per-request database transaction ensures all LAB_DB writes commit or roll back together
 
 ### Slide: Proposed Change - External Service Integration
