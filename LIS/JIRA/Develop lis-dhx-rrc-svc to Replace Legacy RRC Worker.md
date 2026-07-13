@@ -62,7 +62,7 @@ flowchart LR
     subgraph Internal["HA"]
             WS("DhxEaiInsertion <br> WebService")
             INT_DB[("INT Database")]
-            SCH_SVC("lis-common-scheduler-svc")
+            SCH_SVC("lis-scheduler<br>(in lis-dhx-rrc-svc)")
             RRC_SVC("lis-dhx-rrc-svc")
             PAT_SVC("lis-patient-svc")
             REQ_SVC("lis-request-svc")
