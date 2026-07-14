@@ -198,7 +198,7 @@ flowchart LR
 3. Re-send detection - wipeout previous CRS data when DH resends same request
 4. Request number assignment - generate new or reuse wiped-out CRS request number
 5. Specimen mapping - MBS only, maps DH specimen type to CRS keyword
-6. Test result construction - EDI to CRS dictionary mapping with validation
+6. Test result construction - EDI to CRS mapping in memory; TRANS_TESTRSLT_WKT insert deferred to lis-request-svc registration
 7. CRS record insertion - request, detail, translated results, PDF order, task list
 8. DH acknowledgement - insert TRANS_TESTRSLT_WKT on sendout hospital LAB_DB and mark EDI complete
 9. CRS / RCS worker - Trigger CRS worker for registration
@@ -279,7 +279,7 @@ Service reads and updates status on EDI_REQUEST and EDI_TESTRSLT during processi
 | ------------------ | --------------------------------------------------------- |
 | CRS_REQUEST        | Master CRS request record (req_station = RRC fingerprint) |
 | CRS_REQUEST_DETAIL | One row per test ordered                                  |
-| TRANS_TESTRSLT     | Translated test results in CRS format                     |
+| TRANS_TESTRSLT_WKT | Worksheet transaction results; written by lis-request-svc during register |
 | SENDOUT_REQNO_MAP  | DH to CRS request number mapping for re-send detection    |
 | PDF_ORDER          | Associates DH PDF file path with registered request       |
 | LISG_TASKLIST      | Queues downstream CRS tasks (printing, signout)           |
@@ -289,7 +289,7 @@ Per-request database transaction ensures all LAB_DB writes commit or roll back t
 | Service | Purpose |
 | --- | --- |
 | lis-patient-svc | PMI patient lookup and update of existing local PATIENT records |
-| lis-request-svc | CRS request registration and activation; PATIENT insert for new patients |
+| lis-request-svc | CRS request registration and activation; PATIENT insert and TRANS_TESTRSLT_WKT insert for converted results |
 
 ### Slide: Proposed Change - DH Acknowledgement
 ACK handled within lis-dhx-rrc-svc - no external service call
@@ -332,5 +332,8 @@ Credentials stored in OpenShift Secrets, not in application code
 3. Revert OpenShift deployment to previous lis-dhx-rrc-svc version if needed
 4. EDI_REQUEST rows in status 98 may require manual reset to status 0 for re-processing
 5. CRS data written during cloud service run remains valid; no automatic rollback of LAB_DB inserts
+
+### Slide: Q&A
+id; no automatic rollback of LAB_DB inserts
 
 ### Slide: Q&A
