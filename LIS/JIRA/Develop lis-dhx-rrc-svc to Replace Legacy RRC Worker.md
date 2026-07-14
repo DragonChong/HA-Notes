@@ -194,7 +194,7 @@ flowchart LR
 
 ### Slide: Proposed Change - Processing Stages
 1. Request claiming - stamp outstanding EDI rows as in-progress (status 98)
-2. Patient demographics - PMI lookup with local fallback and anonymous creation
+2. Patient demographics - resolve PatientVo via PMI or local/EDI fallback; PATIENT insert deferred to lis-request-svc registration
 3. Re-send detection - wipeout previous CRS data when DH resends same request
 4. Request number assignment - generate new or reuse wiped-out CRS request number
 5. Specimen mapping - MBS only, maps DH specimen type to CRS keyword
@@ -238,11 +238,12 @@ Prevents concurrent pod instances from double-processing the same EDI request
 If claim or retrieval fails, entire cycle returns error without partial processing
 
 ### Slide: Proposed Change - Patient Resolution
-If EDI_DH_INFO validity flag is Y, search PMI via lis-patient-svc by HKID, hospital, and encounter
-If PMI not found or validity flag is N, fall back to local PATIENT table search
-If no match found, create anonymous patient record via lis-patient-svc
-Patient age and unit calculated before CRS registration proceeds
-PMI failure raises rejection and marks EDI request as status 10
+If EDI_DH_INFO validity flag is Y, resolve patient via PMI using hospital and encounter (lis-patient-svc)
+If patient already exists locally, refresh from PMI; otherwise build PatientVo from PMI for registration
+If PMI not found or validity flag is N, fall back to local PATIENT lookup by HKID, or build PatientVo from EDI (percent encounter / anonymous)
+lis-dhx-rrc-svc does not insert PATIENT - PatientVo is passed in the registration payload
+PATIENT create or update for new patients is performed by lis-request-svc during register
+Age and unit calculated on PatientVo before registration; PMI or patient API failure raises rejection type 13
 
 ### Slide: Proposed Change - Re-send Wipeout Detection
 Check SENDOUT_REQNO_MAP for existing DH request number mapping
@@ -285,10 +286,10 @@ Service reads and updates status on EDI_REQUEST and EDI_TESTRSLT during processi
 Per-request database transaction ensures all LAB_DB writes commit or roll back together
 
 ### Slide: Proposed Change - External Service Integration
-| Service                  | Purpose                                                            |
-| ------------------------ | ------------------------------------------------------------------ |
-| lis-patient-svc          | PMI patient lookup, update, and anonymous patient creation         |
-| lis-request-svc          | CRS request registration and activation |
+| Service | Purpose |
+| --- | --- |
+| lis-patient-svc | PMI patient lookup and update of existing local PATIENT records |
+| lis-request-svc | CRS request registration and activation; PATIENT insert for new patients |
 
 ### Slide: Proposed Change - DH Acknowledgement
 ACK handled within lis-dhx-rrc-svc - no external service call
