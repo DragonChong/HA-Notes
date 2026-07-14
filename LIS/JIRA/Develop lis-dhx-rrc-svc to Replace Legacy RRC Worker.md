@@ -256,7 +256,6 @@ New requests increment DICT_COUNTER and format request number as YYLNNNNNNN
 Read EDI_TESTRSLT rows from INT_DB for each claimed DH request
 Map DH test codes to CRS alpha codes via KEYWORD_LIST dictionary
 Validate result types against TEST_DICT master
-lis-dhx-rrc-svc builds converted result objects in memory only - no local TRANS_TESTRSLT or TRANS_TESTRSLT_GP insert
 Only TRANS_TESTRSLT_WKT is written, deferred to lis-request-svc during register
 Dictionary errors flag request as status 11 without full rollback
 
