@@ -49,7 +49,7 @@ The revamped `lis-dhx-rrc-svc` Spring Boot microservice has been designed to rep
 
 3. **Preserve data model and processing semantics:**
    - Read/update INT_DB tables: `EDI_REQUEST`, `EDI_DH_INFO`, `EDI_TESTRSLT` (status lifecycle: `0` → `98` → `99`/`10`/`11`).
-   - Write LAB_DB tables: `CRS_REQUEST`, `CRS_REQUEST_DETAIL`, `TRANS_TESTRSLT`, `SENDOUT_REQNO_MAP`, `PDF_ORDER`, `LISG_TASKLIST`, and related CRS entities.
+   - Write LAB_DB tables via registration and DHX-local steps: `CRS_REQUEST`, `CRS_REQUEST_DETAIL`, `TRANS_TESTRSLT_WKT` (via `lis-request-svc` register), `SENDOUT_REQNO_MAP`, `PDF_ORDER`, `LISG_TASKLIST`, and related CRS entities.
    - Maintain per-request `@Transactional` boundaries and atomic request claiming to prevent double-processing across concurrent pod instances.
 
 ### System Architecture
@@ -199,7 +199,7 @@ flowchart LR
 4. Request number assignment - generate new or reuse wiped-out CRS request number
 5. Specimen mapping - MBS only, maps DH specimen type to CRS keyword
 6. Test result construction - EDI to CRS mapping in memory; TRANS_TESTRSLT_WKT insert deferred to lis-request-svc registration
-7. CRS record insertion - request, detail, translated results, PDF order, task list
+7. CRS record insertion - request/detail via lis-request-svc; DHX-local PDF order, report enquiry cache, sendout map
 8. DH acknowledgement - insert TRANS_TESTRSLT_WKT on sendout hospital LAB_DB and mark EDI complete
 9. CRS / RCS worker - Trigger CRS worker for registration
 
@@ -256,7 +256,8 @@ New requests increment DICT_COUNTER and format request number as YYLNNNNNNN
 Read EDI_TESTRSLT rows from INT_DB for each claimed DH request
 Map DH test codes to CRS alpha codes via KEYWORD_LIST dictionary
 Validate result types against TEST_DICT master
-Insert translated rows into TRANS_TESTRSLT, TRANS_TESTRSLT_GP, and TRANS_TESTRSLT_WKT
+lis-dhx-rrc-svc builds converted result objects in memory only - no local TRANS_TESTRSLT or TRANS_TESTRSLT_GP insert
+Only TRANS_TESTRSLT_WKT is written, deferred to lis-request-svc during register
 Dictionary errors flag request as status 11 without full rollback
 
 ### Slide: Proposed Change - Dynamic Database Routing
@@ -332,8 +333,5 @@ Credentials stored in OpenShift Secrets, not in application code
 3. Revert OpenShift deployment to previous lis-dhx-rrc-svc version if needed
 4. EDI_REQUEST rows in status 98 may require manual reset to status 0 for re-processing
 5. CRS data written during cloud service run remains valid; no automatic rollback of LAB_DB inserts
-
-### Slide: Q&A
-id; no automatic rollback of LAB_DB inserts
 
 ### Slide: Q&A
