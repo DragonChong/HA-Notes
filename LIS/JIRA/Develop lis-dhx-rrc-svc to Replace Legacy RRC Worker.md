@@ -259,13 +259,6 @@ Validate result types against TEST_DICT master
 Only TRANS_TESTRSLT_WKT is written, deferred to lis-request-svc during register
 Dictionary errors flag request as status 11 without full rollback
 
-### Slide: Proposed Change - Dynamic Database Routing
-INT_DB (EDI source) connects to Sybase during migration transition
-LAB_DB (CRS target) connects to PostgreSQL
-Environment-specific JDBC URLs bound via OpenShift ConfigMaps and Secrets
-Spring profiles (dev, devqa, sit, lpt, prd) select per-environment connection parameters
-No code change required when a hospital switches from Sybase to PostgreSQL
-
 ### Slide: Proposed Change - INT_DB Source Tables
 | Table        | Purpose                                                     |
 | ------------ | ----------------------------------------------------------- |
@@ -275,14 +268,14 @@ No code change required when a hospital switches from Sybase to PostgreSQL
 Service reads and updates status on EDI_REQUEST and EDI_TESTRSLT during processing
 
 ### Slide: Proposed Change - LAB_DB Target Tables
-| Table              | Purpose                                                   |
-| ------------------ | --------------------------------------------------------- |
-| CRS_REQUEST        | Master CRS request record (req_station = RRC fingerprint) |
-| CRS_REQUEST_DETAIL | One row per test ordered                                  |
+| Table              | Purpose                                                                   |
+| ------------------ | ------------------------------------------------------------------------- |
+| CRS_REQUEST        | Master CRS request record (req_station = RRC fingerprint)                 |
+| CRS_REQUEST_DETAIL | One row per test ordered                                                  |
 | TRANS_TESTRSLT_WKT | Worksheet transaction results; written by lis-request-svc during register |
-| SENDOUT_REQNO_MAP  | DH to CRS request number mapping for re-send detection    |
-| PDF_ORDER          | Associates DH PDF file path with registered request       |
-| LISG_TASKLIST      | Queues downstream CRS tasks (printing, signout)           |
+| SENDOUT_REQNO_MAP  | DH to CRS request number mapping for re-send detection                    |
+| PDF_ORDER          | Associates DH PDF file path with registered request                       |
+| LISG_TASKLIST      | Queues downstream CRS tasks (printing, signout)                           |
 Per-request database transaction ensures all LAB_DB writes commit or roll back together
 
 ### Slide: Proposed Change - External Service Integration
