@@ -201,6 +201,7 @@ flowchart LR
 6. Test result construction - EDI to CRS dictionary mapping with validation
 7. CRS record insertion - request, detail, translated results, PDF order, task list
 8. DH acknowledgement - insert TRANS_TESTRSLT_WKT on sendout hospital LAB_DB and mark EDI complete
+9. CRS / RCS worker - Trigger CRS worker for registration
 
 ### Diagram: happy-path-sequence
 ```mermaid
