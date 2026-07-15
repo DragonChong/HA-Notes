@@ -15,7 +15,7 @@ status: draft
 created: '2026-07-15'
 reference_jira: []
 ---
-# Create `dynamic_job_definition` Table and OpenShift ConfigMap Keys for `lis-scheduler` Mandatory Setup
+# Create `dynamic_job_definition` Table and OpenShift Configuration for `lis-scheduler` Mandatory Setup
 
 ## Request Type
 
@@ -24,7 +24,7 @@ reference_jira: []
 
 ## Request Summary
 
-Create `dynamic_job_definition` Table and OpenShift ConfigMap Keys for `lis-scheduler` Mandatory Setup
+Create `dynamic_job_definition` Table and OpenShift Configuration for `lis-scheduler` Mandatory Setup
 
 ## Background
 
