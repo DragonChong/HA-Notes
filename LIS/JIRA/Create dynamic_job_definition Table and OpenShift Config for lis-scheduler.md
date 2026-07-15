@@ -42,7 +42,6 @@ Shared OpenShift ConfigMap `scheduler-svc-config` already provides `PG_SCH_URL` 
    - Columns include: `application_name`, `job_name`, `bean_name`, `method_name`, `cron_expression`, concurrency/retry flags, `parameters`, `enabled`, `status` / `status_message`, and audit timestamps.
    - Create unique index `uq_dynamic_job_definition_application_job` on `(application_name, job_name)`.
    - Create pickup index `idx_dynamic_job_definition_pickup` on `(application_name, status, enabled, updated_at)`.
-   - Note: `application_name` must match the consuming service `spring.application.name` (version-agnostic; not `cms-scheduler.schedulerName`).
 
 2. **Add keys to shared OpenShift ConfigMap `scheduler-svc-config` (per environment):**
    - `SCHEDULER_DB_SCHEMA` — `scheduler` (PostgreSQL schema for Quartz / dynamic job tables)
