@@ -1,9 +1,62 @@
+filters:
+  and:
+    - file.inFolder("LIS/JIRA")
+    - file.hasTag("jira-log")
+    - 'file.ext == "md"'
+    - '!file.hasTag("index")'
+
+properties:
+  created:
+    displayName: Created
+  jira:
+    displayName: JIRA
+  title:
+    displayName: Summary
+  services:
+    displayName: Service
+  request_type:
+    displayName: Type
+  priority:
+    displayName: Priority
+  target_completion_date:
+    displayName: Target Date
+  status:
+    displayName: Status
+  file.name:
+    displayName: Note
+
 views:
   - type: table
-    name: Table
+    name: All logs
+    order:
+      - created
+      - jira
+      - title
+      - services
+      - request_type
+      - priority
+      - target_completion_date
+      - status
+      - file.name
+    sort:
+      - property: created
+        direction: DESC
+
+  - type: table
+    name: With JIRA key
     filters:
       and:
         - "!jira.isEmpty()"
     order:
+      - created
       - jira
+      - title
+      - services
+      - request_type
+      - priority
+      - target_completion_date
+      - status
       - file.name
+    sort:
+      - property: created
+        direction: DESC

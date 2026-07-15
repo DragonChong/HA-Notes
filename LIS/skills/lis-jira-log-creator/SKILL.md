@@ -3,17 +3,22 @@ name: lis-jira-log-creator
 description: >
   Prepares LIS change-request JIRA log content (Request Type, Summary, Background,
   Change Description, Justification, Target Completion Date) from user descriptions
-  and technical context, then creates an Obsidian note in LIS/JIRA and updates
-  LIS/JIRA/JIRA Log List. Use when the user asks to create a JIRA log, prepare a
-  change request, document a LIS service change for JIRA submission, or says
-  "request to create change". Also use when the user provides a JIRA ticket number
-  to record on an existing log (update note `jira` property and JIRA Log List).
+  and technical context, then creates an Obsidian note in LIS/JIRA. The index
+  LIS/JIRA/JIRA Log List.base picks up new notes automatically from frontmatter.
+  Use when the user asks to create a JIRA log, prepare a change request, document
+  a LIS service change for JIRA submission, or says "request to create change".
+  Also use when the user provides a JIRA ticket number to set on an existing note
+  (`jira` property).
 ---
 
 # LIS JIRA Log Creator
 
 Prepare structured JIRA change-request content and persist it in the Obsidian vault
 (`LIS/JIRA/`). Follow team email conventions (SM → SA change requests).
+
+The index is an Obsidian Base: `LIS/JIRA/JIRA Log List.base`. It lists notes under
+`LIS/JIRA/` tagged `jira-log` (excluding `index`). **Do not maintain a Markdown table** —
+correct frontmatter on the note is enough for the Base to show the row.
 
 ## Workflow
 
@@ -23,8 +28,8 @@ Task Progress:
 - [ ] Step 2: Draft all six sections
 - [ ] Step 3: Confirm with user (if details are incomplete)
 - [ ] Step 4: Create Obsidian note via MCP
-- [ ] Step 5: Update JIRA Log List
-- [ ] Step 6: When JIRA key is assigned — update note + list
+- [ ] Step 5: Confirm note appears in JIRA Log List.base (frontmatter only)
+- [ ] Step 6: When JIRA key is assigned — set note `jira` property
 ```
 
 ### Step 1: Gather inputs
@@ -80,10 +85,10 @@ the Markdown body, equivalent to what `write_note` would produce.
 
 - Frontmatter `title`, `#` H1, and the **Request Summary** section body must be **identical** to the Request Summary string from Step 2 (do not shorten or rephrase)
 - **Filename** is that same string, with only filesystem-illegal characters replaced: `/` and `\` → `-` (e.g. `A40/A45/A47` → `A40-A45-A47`, `Sybase/PostgreSQL` → `Sybase-PostgreSQL`). Do not otherwise shorten or drop the leading verb
-- Wikilinks in JIRA Log List must target the **filename** (sanitized). Content `title` / H1 keep the original Request Summary text (with `/` if present)
+- Content `title` / H1 keep the original Request Summary text (with `/` if present)
 - Example path: `LIS/JIRA/Fix Race Condition in lis-gcr-order-inf-svc.md` when that is the full Request Summary
 
-**Frontmatter:**
+**Frontmatter** (these properties are the Base columns):
 
 ```yaml
 ---
@@ -104,65 +109,122 @@ design_status: draft
 ---
 ```
 
-| Property | Purpose |
-|---|---|
-| `title` | Exact Request Summary (same as H1 / Request Summary body) |
-| `jira` | This change request’s JIRA log number (e.g. `LIS-10723`). Empty until assigned |
-| `reference_jira` | Related / background tickets only (not `jira`) |
+| Property | Purpose | Base column |
+|---|---|---|
+| `created` | Log creation date | Created |
+| `jira` | This CR’s JIRA key (e.g. `LIS-10723`) | JIRA |
+| `title` | Exact Request Summary | Summary |
+| `services` | Service name(s) | Service |
+| `request_type` | e.g. Change Request | Type |
+| `priority` | e.g. Medium | Priority |
+| `target_completion_date` | ISO date in YAML | Target Date |
+| `status` | e.g. draft | Status |
+| `file.name` | Note filename (auto) | Note |
+| `reference_jira` | Related tickets only — not shown as JIRA column | — |
+
+**Do not** add the `index` tag to log notes (reserved for archived Markdown indexes).
 
 **Body:** Use the section headings from [template.md](template.md). Add `## Reference Logs` only when reference JIRA tickets exist.
 
 Call `write_note` with `path`, `content`, and `frontmatter`.
 
-### Step 5: Update JIRA Log List
+### Step 5: Confirm JIRA Log List.base
 
-1. `read_note` → `LIS/JIRA/JIRA Log List.md`
-2. If empty or missing the table header, initialize using the list template below
-3. If the header is missing the **JIRA** column, migrate the header and every existing row to include it (empty cell when unknown)
-4. `patch_note` to prepend a new row after the table header row (newest first)
+The Base at `LIS/JIRA/JIRA Log List.base` auto-includes notes that:
 
-If the user-obsidian MCP is not available, use the file-editing tools directly instead:
-read `LIS/JIRA/JIRA Log List.md`, initialize/migrate as above, then insert the new row
-directly after the header row (newest first).
+- live in `LIS/JIRA/`
+- have tag `jira-log`
+- are Markdown (`file.ext == "md"`)
+- do not have tag `index`
 
-**List template** (initialize when file is empty):
+After creating the note, **no list-file edit is required**. Optionally open the Base to confirm the new row (views: **All logs**, **With JIRA key**).
 
-```markdown
-# JIRA Log List
+If the Base file is missing, recreate it from the schema below (do not revive `JIRA Log List (old).md` as the live index).
 
-Index of LIS change-request JIRA logs. Newest entries at the top.
+**Base schema** (`LIS/JIRA/JIRA Log List.base`):
 
-| Created | JIRA | Summary | Service | Type | Priority | Target Date | Status | Note |
-|---|---|---|---|---|---|---|---|---|
+```yaml
+filters:
+  and:
+    - file.inFolder("LIS/JIRA")
+    - file.hasTag("jira-log")
+    - 'file.ext == "md"'
+    - '!file.hasTag("index")'
+
+properties:
+  created:
+    displayName: Created
+  jira:
+    displayName: JIRA
+  title:
+    displayName: Summary
+  services:
+    displayName: Service
+  request_type:
+    displayName: Type
+  priority:
+    displayName: Priority
+  target_completion_date:
+    displayName: Target Date
+  status:
+    displayName: Status
+  file.name:
+    displayName: Note
+
+views:
+  - type: table
+    name: All logs
+    order:
+      - created
+      - jira
+      - title
+      - services
+      - request_type
+      - priority
+      - target_completion_date
+      - status
+      - file.name
+    sort:
+      - property: created
+        direction: DESC
+
+  - type: table
+    name: With JIRA key
+    filters:
+      and:
+        - "!jira.isEmpty()"
+    order:
+      - created
+      - jira
+      - title
+      - services
+      - request_type
+      - priority
+      - target_completion_date
+      - status
+      - file.name
+    sort:
+      - property: created
+        direction: DESC
 ```
-
-**New row format:**
-
-```markdown
-| 2026-07-02 |  | Fix Race Condition in lis-gcr-order-inf-svc | lis-gcr-order-inf-svc | Change Request | Medium | 29th May, 2026 | draft | [[Fix Race Condition in lis-gcr-order-inf-svc]] |
-```
-
-- **JIRA** column: the value of note frontmatter `jira` (e.g. `LIS-10723`), or empty if not yet assigned
-- **Note** column: wikilink to the **note filename** (sanitized Request Summary) — Obsidian resolves by filename
-- **Summary** column: exact Request Summary text (with `/` if present; backticks optional for table readability)
 
 ### Step 6: Record JIRA log number (when assigned)
 
 When the user provides the JIRA ticket for an existing log (or it is known at create time):
 
 1. Set note frontmatter `jira: LIS-XXXXX` (do not put this key in `reference_jira`)
-2. Update the matching row’s **JIRA** cell in `LIS/JIRA/JIRA Log List.md`
-3. If the note was created in the same run with a known key, write `jira` and the list cell in Steps 4–5 — Step 6 is then a no-op
+2. The Base **JIRA** column updates automatically — do not edit `JIRA Log List.base` or any Markdown index table
+3. If the note was created in the same run with a known key, set `jira` in Step 4 — Step 6 is then a no-op
 
 ## Obsidian MCP quick reference
 
 | Action | Tool | Key args | Direct-file fallback (no MCP) |
 |---|---|---|---|
-| Read list or note | `read_note` | `path` | `Read` on the vault file path |
+| Read note / Base | `read_note` | `path` | `Read` on the vault file path |
 | Create log note | `write_note` | `path`, `content`, `frontmatter` | `Write` the file with YAML frontmatter + Markdown body |
-| Add / update list row | `patch_note` | `path`, `oldString`, `newString` | `Edit` to insert or update the row |
 | Update note `jira` | `patch_note` / frontmatter edit | `path` | Edit YAML `jira:` on the note |
 | Search existing logs | `search_notes` | `query`, `limit` | `Grep`/`Glob` over `LIS/JIRA/` |
+| Index | — | — | Open `LIS/JIRA/JIRA Log List.base` (auto from note properties) |
 
 Paths are relative to vault root (e.g. `LIS/JIRA/...`). In Cowork, the vault root is the
 mounted folder, and file tools (`Read`/`Write`/`Edit`) operate on it directly — no MCP
@@ -173,14 +235,15 @@ required.
 - [ ] Summary is one clear sentence naming the service
 - [ ] `title`, H1, and Request Summary body are the exact same Request Summary string
 - [ ] Filename matches Request Summary except `/` `\` → `-`
-- [ ] Frontmatter includes `jira` (value or empty) distinct from `reference_jira`
+- [ ] Frontmatter includes all Base columns (`created`, `jira`, `title`, `services`, `request_type`, `priority`, `target_completion_date`, `status`)
+- [ ] Tags include `jira-log` (and not `index`)
 - [ ] Background explains *why*, not just *what*
 - [ ] Change Description names concrete artefacts (classes, endpoints, tables)
 - [ ] Justification states operational impact
-- [ ] Target date uses team format (`Dth Mon YYYY`)
+- [ ] Target date uses team format (`Dth Mon YYYY`) in the body; ISO date in frontmatter
 - [ ] Obsidian note created under `LIS/JIRA/`
-- [ ] JIRA Log List row added with **JIRA** column + wikilink to note filename
-- [ ] If JIRA key known: note `jira` and list **JIRA** cell both set
+- [ ] No Markdown table edit to the old index — Base picks up the note
+- [ ] If JIRA key known: note `jira` set
 
 ## Additional resources
 

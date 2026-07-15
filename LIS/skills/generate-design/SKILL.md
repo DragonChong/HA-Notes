@@ -41,7 +41,7 @@ Task Progress:
 Find the note under `LIS/JIRA/`:
 
 - User provides path or wikilink (`[[Fix Message Queue Old HKID Blocking…]]`)
-- Search via Obsidian MCP `search_notes` or `read_note` on `LIS/JIRA/JIRA Log List.md`
+- Search via Obsidian MCP `search_notes`, or browse `LIS/JIRA/JIRA Log List.base`
 - Direct file read when vault is mounted (Cowork)
 
 **Prerequisite:** Note must exist from **lis-jira-log-creator** (has Background, Change Description, etc.).
