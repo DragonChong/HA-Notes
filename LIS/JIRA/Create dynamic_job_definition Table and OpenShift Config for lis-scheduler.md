@@ -32,7 +32,7 @@ LIS microservices are adopting the embedded `lis-scheduler` library (`hk.org.ha.
 
 Table-driven jobs require the `dynamic_job_definition` table in the shared scheduler schema. `DynamicJobDefinitionMonitorJob` polls `OUTSTANDING` rows and creates corresponding Quartz jobs. This table does not yet exist and must be created as mandatory setup before services can use table-driven scheduling.
 
-Shared OpenShift ConfigMap `scheduler-svc-config` already provides `PG_SCH_URL` (and Secret `scheduler-svc-login` already exists). Additional keys for schema/prefix and the dynamic job monitor cron must be added so consuming services can bind `cms-scheduler.db_schema`, `cms-scheduler.db_prefix`, and `CRON_EXPRESSION_DYNAMIC_JOB_DEFINITION_MONITOR`.
+Additional keys for schema/prefix and the dynamic job monitor cron must be added so consuming services can bind `cms-scheduler.db_schema`, `cms-scheduler.db_prefix`, and `CRON_EXPRESSION_DYNAMIC_JOB_DEFINITION_MONITOR`.
 
 ## Change Description
 
