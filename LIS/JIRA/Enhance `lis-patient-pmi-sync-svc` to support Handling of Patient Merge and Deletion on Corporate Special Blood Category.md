@@ -1,5 +1,5 @@
 ---
-created: 09/07/2026
+created: 2026-07-09
 priority: Medium
 reference_jira:
   - LIS-7291
@@ -12,7 +12,7 @@ tags:
   - jira-log
   - lis
   - lis-patient-pmi-sync-svc
-target_completion_date: 2026-04-17T00:00:00.000Z
+target_completion_date: 2026-07-31
 title: Enhance `lis-patient-pmi-sync-svc` to support Handling of Patient Merge and Deletion on Corporate Special Blood Category
 jira: LIS-10583
 design_status: draft
