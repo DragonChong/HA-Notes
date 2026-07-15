@@ -1,5 +1,5 @@
 ---
-created: 2026-07-09T00:00:00.000Z
+created: 09/07/2026
 priority: Medium
 reference_jira:
   - LIS-7291

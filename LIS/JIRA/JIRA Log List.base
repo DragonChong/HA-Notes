@@ -2,9 +2,8 @@ filters:
   and:
     - file.inFolder("LIS/JIRA")
     - file.hasTag("jira-log")
-    - 'file.ext == "md"'
+    - file.ext == "md"
     - '!file.hasTag("index")'
-
 properties:
   created:
     displayName: Created
@@ -24,7 +23,6 @@ properties:
     displayName: Status
   file.name:
     displayName: Note
-
 views:
   - type: table
     name: All logs
@@ -41,7 +39,6 @@ views:
     sort:
       - property: created
         direction: DESC
-
   - type: table
     name: With JIRA key
     filters:
