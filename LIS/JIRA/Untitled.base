@@ -1,6 +1,9 @@
 views:
   - type: table
     name: Table
+    filters:
+      and:
+        - "!jira.isEmpty()"
     order:
-      - file.name
       - jira
+      - file.name
