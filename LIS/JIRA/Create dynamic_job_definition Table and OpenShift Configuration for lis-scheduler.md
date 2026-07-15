@@ -45,7 +45,7 @@ Additional keys for schema/prefix and the dynamic job monitor cron must be added
 2. **Add keys to shared OpenShift ConfigMap `scheduler-svc-config` (per environment):**
    - `SCHEDULER_DB_SCHEMA` — `scheduler` (PostgreSQL schema for Quartz / dynamic job tables)
    - `SCHEDULER_DB_PREFIX` — `lis` (Quartz table prefix `lis_sfwk_*`)
-   - `CRON_EXPRESSION_DYNAMIC_JOB_DEFINITION_MONITOR` — `0 0/1 * * * ?` (cron for `DynamicJobDefinitionMonitorJob`, every 1 minute)
+   - `CRON_EXPRESSION_DYNAMIC_JOB_CREATOR` — `0 0/1 * * * ?` (cron for `DynamicJobDefinitionMonitorJob`, every 1 minute)
 
 ## Justification
 
