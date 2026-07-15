@@ -52,13 +52,13 @@ From the JIRA note frontmatter and body:
 
 | Source | Use for |
 |--------|---------|
-| `title`, `services`, `reference_jira` | Title slide metadata |
+| `title`, `services`, `jira`, `reference_jira` | Title slide metadata (`jira` = this CR’s key) |
 | Background | Background slides, sequence diagrams |
 | Change Description | Proposed Change slides |
 | Justification | Impact bullets on Background or Overview |
 | Codebase / wiki | Existing Design slides, SQL samples |
 
-Ask user for **review date** and **JIRA key** if missing from note.
+Ask user for **review date** and **JIRA key** if note frontmatter `jira` is empty.
 
 ### Step 3 — Classify review type
 
