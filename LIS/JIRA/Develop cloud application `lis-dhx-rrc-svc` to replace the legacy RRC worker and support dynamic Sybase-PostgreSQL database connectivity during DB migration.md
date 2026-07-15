@@ -1,8 +1,5 @@
 ---
-title: >-
-  Develop cloud application `lis-dhx-rrc-svc` to replace the legacy RRC worker
-  and support dynamic Sybase/PostgreSQL database connectivity during DB
-  migration
+title: Develop cloud application `lis-dhx-rrc-svc` to replace the legacy RRC worker and support dynamic Sybase/PostgreSQL database connectivity during DB migration
 tags:
   - jira-log
   - lis
@@ -10,11 +7,11 @@ request_type: Change Request
 priority: Medium
 services:
   - lis-dhx-rrc-svc
-target_completion_date: '2026-07-30'
+target_completion_date: 2026-07-30
 status: draft
-created: '2026-07-10'
+created: 2026-07-10
+jira: LIS-10325
 reference_jira:
-  - LIS-10325
 design_status: draft
 ---
 # Develop cloud application `lis-dhx-rrc-svc` to replace the legacy RRC worker and support dynamic Sybase/PostgreSQL database connectivity during DB migration
@@ -26,7 +23,7 @@ design_status: draft
 
 ## Request Summary
 
-Develop cloud application `lis-dhx-rrc-svc` to replace the legacy RRC worker and support dynamic Sybase/PostgreSQL database connectivity during DB migration.
+Develop cloud application `lis-dhx-rrc-svc` to replace the legacy RRC worker and support dynamic Sybase/PostgreSQL database connectivity during DB migration
 
 ## Background
 

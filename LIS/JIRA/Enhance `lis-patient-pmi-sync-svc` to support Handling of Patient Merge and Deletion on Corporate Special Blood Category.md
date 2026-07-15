@@ -4,7 +4,6 @@ priority: Medium
 reference_jira:
   - LIS-7291
   - LIS-8200
-  - LIS-10583
 request_type: Change Request
 services:
   - lis-patient-pmi-sync-svc
@@ -14,9 +13,8 @@ tags:
   - lis
   - lis-patient-pmi-sync-svc
 target_completion_date: 2026-04-17T00:00:00.000Z
-title: >-
-  Enhance `lis-patient-pmi-sync-svc` to support Handling of Patient Merge and
-  Deletion on Corporate Special Blood Category
+title: Enhance `lis-patient-pmi-sync-svc` to support Handling of Patient Merge and Deletion on Corporate Special Blood Category
+jira: LIS-10583
 design_status: draft
 ---
 # Enhance `lis-patient-pmi-sync-svc` to support Handling of Patient Merge and Deletion on Corporate Special Blood Category
@@ -28,7 +26,7 @@ design_status: draft
 
 ## Request Summary
 
-Enhance `lis-patient-pmi-sync-svc` to support Handling of Patient Merge and Deletion on Corporate Special Blood Category.
+Enhance `lis-patient-pmi-sync-svc` to support Handling of Patient Merge and Deletion on Corporate Special Blood Category
 
 ## Background
 

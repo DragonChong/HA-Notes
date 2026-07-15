@@ -5,7 +5,7 @@ Use this structure for the Obsidian note body (frontmatter is separate).
 ---
 
 ```markdown
-# <Request Summary>
+# <Request Summary — exact; same as frontmatter title (filename = this with / \ → -)>
 
 ## Request Type
 
@@ -14,7 +14,7 @@ Use this structure for the Obsidian note body (frontmatter is separate).
 
 ## Request Summary
 
-<One-sentence summary — same as note title>
+<Identical to frontmatter title / H1 — no shortening or rephrasing>
 
 ## Background
 

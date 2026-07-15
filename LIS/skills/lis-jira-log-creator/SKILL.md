@@ -52,7 +52,7 @@ Use [template.md](template.md) for structure and [examples.md](examples.md) for 
 **Writing rules:**
 
 1. **Request Type** — `Change Request` (default) or user-specified type; include **Priority** on the same line or immediately below.
-2. **Request Summary** — One sentence. Start with a verb (`Fix`, `Develop`, `Enhance`). Name the service in backticks. Mirror email subject lines. **This string is the note title** (filename, frontmatter `title`, H1, and Request Summary body must match exactly — see Step 4).
+2. **Request Summary** — One sentence. Start with a verb (`Fix`, `Develop`, `Enhance`). Name the service in backticks. Mirror email subject lines. **This string is the note title** (frontmatter `title`, H1, and Request Summary body must match exactly; filename uses the same string with `/` `\` sanitized — see Step 4).
 3. **Background** — 2–4 short paragraphs: current state → problem or migration driver → scope of this change. Name legacy components (triggers, socket programs, tables) when relevant.
 4. **Change Description** — Numbered list for distinct work items; use sub-bullets for file/class/API specifics. Include Mermaid diagrams only when architecture clarity helps (new services, inbound/outbound flows).
 5. **Justification** — 1–2 paragraphs on business/technical impact: reliability, data integrity, DHP migration, load handling.
@@ -78,9 +78,9 @@ the Markdown body, equivalent to what `write_note` would produce.
 
 **Title = Request Summary (exact match):**
 
-- File name (without `.md`), frontmatter `title`, `#` H1, and the **Request Summary** section body must be **identical** to the Request Summary string from Step 2
-- Do **not** shorten, rephrase, or drop the leading verb for the filename
-- Replace only characters illegal on the filesystem: `/` and `\` → `-`
+- Frontmatter `title`, `#` H1, and the **Request Summary** section body must be **identical** to the Request Summary string from Step 2 (do not shorten or rephrase)
+- **Filename** is that same string, with only filesystem-illegal characters replaced: `/` and `\` → `-` (e.g. `A40/A45/A47` → `A40-A45-A47`, `Sybase/PostgreSQL` → `Sybase-PostgreSQL`). Do not otherwise shorten or drop the leading verb
+- Wikilinks in JIRA Log List must target the **filename** (sanitized). Content `title` / H1 keep the original Request Summary text (with `/` if present)
 - Example path: `LIS/JIRA/Fix Race Condition in lis-gcr-order-inf-svc.md` when that is the full Request Summary
 
 **Frontmatter:**
@@ -106,7 +106,7 @@ design_status: draft
 
 | Property | Purpose |
 |---|---|
-| `title` | Exact Request Summary (same as note filename / H1) |
+| `title` | Exact Request Summary (same as H1 / Request Summary body) |
 | `jira` | This change request’s JIRA log number (e.g. `LIS-10723`). Empty until assigned |
 | `reference_jira` | Related / background tickets only (not `jira`) |
 
@@ -143,8 +143,8 @@ Index of LIS change-request JIRA logs. Newest entries at the top.
 ```
 
 - **JIRA** column: the value of note frontmatter `jira` (e.g. `LIS-10723`), or empty if not yet assigned
-- **Note** column: wikilink whose target is the **exact Request Summary** (same as note title / filename) — Obsidian resolves by title
-- **Summary** column: same Request Summary text (may omit backticks for table readability if needed, but keep wording identical)
+- **Note** column: wikilink to the **note filename** (sanitized Request Summary) — Obsidian resolves by filename
+- **Summary** column: exact Request Summary text (with `/` if present; backticks optional for table readability)
 
 ### Step 6: Record JIRA log number (when assigned)
 
@@ -171,14 +171,15 @@ required.
 ## Quality checklist
 
 - [ ] Summary is one clear sentence naming the service
-- [ ] Note filename, `title`, H1, and Request Summary body are exactly the same string
+- [ ] `title`, H1, and Request Summary body are the exact same Request Summary string
+- [ ] Filename matches Request Summary except `/` `\` → `-`
 - [ ] Frontmatter includes `jira` (value or empty) distinct from `reference_jira`
 - [ ] Background explains *why*, not just *what*
 - [ ] Change Description names concrete artefacts (classes, endpoints, tables)
 - [ ] Justification states operational impact
 - [ ] Target date uses team format (`Dth Mon YYYY`)
 - [ ] Obsidian note created under `LIS/JIRA/`
-- [ ] JIRA Log List row added with **JIRA** column + wikilink to exact title
+- [ ] JIRA Log List row added with **JIRA** column + wikilink to note filename
 - [ ] If JIRA key known: note `jira` and list **JIRA** cell both set
 
 ## Additional resources
