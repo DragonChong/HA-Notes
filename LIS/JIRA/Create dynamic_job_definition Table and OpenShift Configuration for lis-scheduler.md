@@ -30,9 +30,9 @@ Create `dynamic_job_definition` Table and OpenShift Configuration for `lis-sched
 
 LIS microservices are adopting the embedded `lis-scheduler` library (`hk.org.ha.lis:lis-scheduler`) primarily to support **canary deployment** of services that use a scheduler. Embedding Quartz in-process (instead of the centralized `lis-common-scheduler-svc`) allows each service version to use an isolated Quartz `sched_name`, so v1 and v2 pods can run concurrently without sharing the same job set or double-firing schedules.
 
-Jobs can be registered at compile time (`@CmsScheduler`) or at runtime through table-driven definitions in PostgreSQL. Table-driven jobs require the `dynamic_job_definition` table in the shared scheduler schema. `DynamicJobDefinitionMonitorJob` polls `OUTSTANDING` rows and creates corresponding Quartz jobs. This table does not yet exist and must be created as mandatory setup before services can use table-driven scheduling.
+Jobs can be registered at compile time (`@CmsScheduler`) or at runtime through table-driven definitions in PostgreSQL. Table-driven jobs require the `dynamic_job_definition` table in the shared scheduler schema. `DynamicJobCreatorJob` polls `OUTSTANDING` rows and creates corresponding Quartz jobs. This table does not yet exist and must be created as mandatory setup before services can use table-driven scheduling.
 
-Additional keys for schema/prefix and the dynamic job monitor cron must be added so consuming services can bind `cms-scheduler.db_schema`, `cms-scheduler.db_prefix`, and `CRON_EXPRESSION_DYNAMIC_JOB_DEFINITION_MONITOR`.
+Additional keys for schema/prefix and the dynamic job monitor cron must be added so consuming services can bind `cms-scheduler.db_schema`, `cms-scheduler.db_prefix`, and `CRON_EXPRESSION_DYNAMIC_JOB_CREATOR`.
 
 ## Change Description
 
