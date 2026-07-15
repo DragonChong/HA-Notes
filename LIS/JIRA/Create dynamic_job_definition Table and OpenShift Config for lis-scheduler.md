@@ -37,9 +37,8 @@ Shared OpenShift ConfigMap `scheduler-svc-config` already provides `PG_SCH_URL` 
 ## Change Description
 
 1. **Create PostgreSQL table `dynamic_job_definition`:**
-   - Run DDL from `lis-scheduler` (`db_dynamic_job_definition_postgresql.sql`) against the scheduler PostgreSQL database.
-   - Replace `{db_schema}` with `SCHEDULER_DB_SCHEMA` (target: `scheduler`), yielding `scheduler.dynamic_job_definition`.
-   - Columns include: `application_name`, `job_name`, `bean_name`, `method_name`, `cron_expression`, concurrency/retry flags, `parameters`, `enabled`, `status` / `status_message`, and audit timestamps.
+   - Create `scheduler.dynamic_job_definition` table in the scheduler PostgreSQL database.
+	   - Columns include: `application_name`, `job_name`, `bean_name`, `method_name`, `cron_expression`, concurrency/retry flags, `parameters`, `enabled`, `status` / `status_message`, and audit timestamps.
    - Create unique index `uq_dynamic_job_definition_application_job` on `(application_name, job_name)`.
    - Create pickup index `idx_dynamic_job_definition_pickup` on `(application_name, status, enabled, updated_at)`.
 
