@@ -28,9 +28,9 @@ Create `dynamic_job_definition` Table and OpenShift ConfigMap Keys for `lis-sche
 
 ## Background
 
-LIS microservices are adopting the embedded `lis-scheduler` library (`hk.org.ha.lis:lis-scheduler`) so Quartz jobs run in-process within each consuming service. Jobs can be registered at compile time (`@CmsScheduler`) or at runtime through table-driven definitions in PostgreSQL.
+LIS microservices are adopting the embedded `lis-scheduler` library (`hk.org.ha.lis:lis-scheduler`) primarily to support **canary deployment** of services that use a scheduler. Embedding Quartz in-process (instead of the centralized `lis-common-scheduler-svc` HTTP trigger model) allows each service version to use an isolated Quartz `sched_name`, so v1 and v2 pods can run concurrently without sharing the same job set or double-firing schedules.
 
-Table-driven jobs require the `dynamic_job_definition` table in the shared scheduler schema. `DynamicJobDefinitionMonitorJob` polls `OUTSTANDING` rows and creates corresponding Quartz jobs. This table does not yet exist and must be created as mandatory setup before services can use table-driven scheduling.
+Jobs can be registered at compile time (`@CmsScheduler`) or at runtime through table-driven definitions in PostgreSQL. Table-driven jobs require the `dynamic_job_definition` table in the shared scheduler schema. `DynamicJobDefinitionMonitorJob` polls `OUTSTANDING` rows and creates corresponding Quartz jobs. This table does not yet exist and must be created as mandatory setup before services can use table-driven scheduling.
 
 Additional keys for schema/prefix and the dynamic job monitor cron must be added so consuming services can bind `cms-scheduler.db_schema`, `cms-scheduler.db_prefix`, and `CRON_EXPRESSION_DYNAMIC_JOB_DEFINITION_MONITOR`.
 
@@ -49,7 +49,7 @@ Additional keys for schema/prefix and the dynamic job monitor cron must be added
 
 ## Justification
 
-This mandatory shared setup unblocks adoption of `lis-scheduler` for table-driven dynamic jobs. Creating `dynamic_job_definition` and completing `scheduler-svc-config` with schema, prefix, and monitor cron ensures all consuming services share a consistent scheduler PostgreSQL layout and can poll new job definitions without redeploying for each schedule change.
+This mandatory shared setup unblocks adoption of `lis-scheduler`, which enables canary deployment of scheduler-backed LIS services through versioned Quartz namespaces and phased job cutover. Creating `dynamic_job_definition` and completing `scheduler-svc-config` with schema, prefix, and monitor cron ensures all consuming services share a consistent scheduler PostgreSQL layout and can poll new job definitions without redeploying for each schedule change.
 
 ## Target Completion Date
 
