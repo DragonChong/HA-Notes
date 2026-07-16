@@ -190,40 +190,52 @@ Wipeout, DHX-local PDF/map/cache, and DH acknowledgement remain inside lis-dhx-r
 ### Diagram: new-architecture
 ```mermaid
 flowchart LR
-    subgraph External["External"]
-        DH["DH System"]
+    subgraph External["External System"]
+            DH["DH System"]
     end
-    subgraph HA["HA Cloud"]
-        WS["DhxEaiInsertion WebService"]
-        INT_DB[("INT_DB")]
-        SCH["Scheduler"]
-        RRC["lis-dhx-rrc-svc"]
-        PAT["lis-patient-svc"]
-        REQ["lis-request-svc"]
-        CRS_DB[("CRS LAB_DB")]
-        HOSP_DB[("Sendout hospital LAB_DB")]
+    subgraph Internal["HA"]
+            WS("DhxEaiInsertion <br> WebService")
+            INT_DB[("INT Database")]
+            SCH_SVC("lis-scheduler<br>(in lis-dhx-rrc-svc)")
+            RRC_SVC("lis-dhx-rrc-svc")
+            PAT_SVC("lis-patient-svc")
+            REQ_SVC("lis-request-svc")
+            CRS_DB[("CRS Database")]
+            LAB_DB[("Lab Databases")]
     end
-    DH --> WS --> INT_DB
-    SCH -->|POST rrcProcess| RRC
-    RRC --> INT_DB
-    RRC --> PAT
-    RRC --> REQ
-    REQ --> CRS_DB
-    REQ --> PAT
-    RRC --> HOSP_DB
+    DH --> WS
+    WS --> INT_DB
+    SCH_SVC -- Trigger--> RRC_SVC
+    RRC_SVC -- Retrieve Outstanding Records --> INT_DB
+    RRC_SVC -- Retrieve PMI Patient --> PAT_SVC
+    RRC_SVC -- Register/Wipeout Request --> REQ_SVC
+    REQ_SVC -- Insert/Delete Request --> CRS_DB
+    REQ_SVC -- Insert Patient --> PAT_SVC
+    RRC_SVC -- Acknowledgement --> LAB_DB
+
+    classDef external fill:#ffebee,stroke:#f44336,stroke-width:2px,color:#000
+    classDef internal fill:#e3f2fd,stroke:#2196f3,stroke-width:2px,color:#000
+    classDef webservice fill:#e8f5e8,stroke:#4caf50,stroke-width:2px,color:#000
+    classDef database fill:#fff3e0,stroke:#ff9800,stroke-width:2px,color:#000
+    classDef service fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px,color:#000
+
+    class DH external
+    class WS webservice
+    class INT_DB,CRS_DB,LAB_DB database
+    class RRC_SVC,PAT_SVC,REQ_SVC,SCH_SVC service
 ```
 
 ### Slide: New Design - Legacy vs Revamped
-| Aspect | C program | Revamp |
-| --- | --- | --- |
-| Trigger | Continuous Unix daemon poll | Scheduled HTTP POST per lab |
-| Protocol | Unix socket / CT-Lib | REST JSON over HTTPS |
-| Patient PMI | Direct SQL | lis-patient-svc |
-| New PATIENT insert | Inside C RRC | lis-request-svc register |
-| CRS request / detail / task list | Local inserts in C | lis-request-svc register and activate |
-| Converted result WKT | Inserted in C during construct | Built in memory in RRC; inserted at register |
-| DH acknowledgement | C switches server and inserts WKT | Same ownership in lis-dhx-rrc-svc |
-| Deployment | On-premises Unix process | OpenShift container |
+| Aspect                           | C program                         | Revamp                                       |
+| -------------------------------- | --------------------------------- | -------------------------------------------- |
+| Trigger                          | Continuous Unix daemon poll       | Scheduled HTTP POST per lab                  |
+| Protocol                         | Unix socket / CT-Lib              | REST JSON over HTTPS                         |
+| Patient PMI                      | Direct SQL                        | lis-patient-svc                              |
+| New PATIENT insert               | Inside C RRC                      | lis-request-svc register                     |
+| CRS request / detail / task list | Local inserts in C                | lis-request-svc register and activate        |
+| Converted result WKT             | Inserted in C during construct    | Built in memory in RRC; inserted at register |
+| DH acknowledgement               | C switches server and inserts WKT | Same ownership in lis-dhx-rrc-svc            |
+| Deployment                       | On-premises Unix process          | OpenShift container                          |
 
 ### Slide: New Design - External Service Ownership
 | Capability | C program | Revamp owner |
