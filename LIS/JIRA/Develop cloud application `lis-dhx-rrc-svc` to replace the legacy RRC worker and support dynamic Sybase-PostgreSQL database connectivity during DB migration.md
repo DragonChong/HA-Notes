@@ -137,7 +137,7 @@ All business steps run inside the C process using CT-Lib multi-connection access
 Patient Master Index, CRS tables, and acknowledgements are written directly from the daemon
 No external HA microservices; configuration is compile-time constants and OS environment variables
 
-### Diagram: existing-c-architecture
+### Slide: Existing Design - C Architecture Diagram
 ```mermaid
 flowchart LR
     subgraph External["External"]
@@ -146,7 +146,7 @@ flowchart LR
     subgraph OnPrem["On-premises HA"]
         WS["DhxEaiInsertion WebService"]
         INT_DB[("INT_DB Sybase")]
-        C_RRC["C program RRC"]
+        C_RRC["C RRC daemon"]
         PMI[("PMI / PATIENT")]
         CRS_DB[("CRS LAB_DB")]
         HOSP_DB[("Sendout hospital LAB_DB")]
@@ -157,6 +157,7 @@ flowchart LR
     C_RRC --> CRS_DB
     C_RRC --> HOSP_DB
 ```
+All processing and database writes run inside the single C daemon process
 
 ### Slide: Existing Design - C Processing Stages
 1. Claim outstanding EDI rows (status 0 to 98) and fetch batch
@@ -187,43 +188,32 @@ Patient PMI lookup and refresh of existing PATIENT go through lis-patient-svc
 CRS core registration, PATIENT insert for new patients, and worksheet result insert go through lis-request-svc
 Wipeout, DHX-local PDF/map/cache, and DH acknowledgement remain inside lis-dhx-rrc-svc
 
-### Diagram: new-architecture
+### Slide: New Design - Architecture Diagram
 ```mermaid
 flowchart LR
     subgraph External["External System"]
-            DH["DH System"]
+        DH["DH System"]
     end
-    subgraph Internal["HA"]
-            WS("DhxEaiInsertion <br> WebService")
-            INT_DB[("INT Database")]
-            SCH_SVC("lis-scheduler<br>(in lis-dhx-rrc-svc)")
-            RRC_SVC("lis-dhx-rrc-svc")
-            PAT_SVC("lis-patient-svc")
-            REQ_SVC("lis-request-svc")
-            CRS_DB[("CRS Database")]
-            LAB_DB[("Lab Databases")]
+    subgraph Internal["HA Cloud"]
+        WS["DhxEaiInsertion WebService"]
+        INT_DB[("INT Database")]
+        SCH["Scheduler"]
+        RRC["lis-dhx-rrc-svc"]
+        PAT["lis-patient-svc"]
+        REQ["lis-request-svc"]
+        CRS_DB[("CRS Database")]
+        LAB_DB[("Sendout hospital LAB_DB")]
     end
-    DH --> WS
-    WS --> INT_DB
-    SCH_SVC -- Trigger--> RRC_SVC
-    RRC_SVC -- Retrieve Outstanding Records --> INT_DB
-    RRC_SVC -- Retrieve PMI Patient --> PAT_SVC
-    RRC_SVC -- Register/Wipeout Request --> REQ_SVC
-    REQ_SVC -- Insert/Delete Request --> CRS_DB
-    REQ_SVC -- Insert Patient --> PAT_SVC
-    RRC_SVC -- Acknowledgement --> LAB_DB
-
-    classDef external fill:#ffebee,stroke:#f44336,stroke-width:2px,color:#000
-    classDef internal fill:#e3f2fd,stroke:#2196f3,stroke-width:2px,color:#000
-    classDef webservice fill:#e8f5e8,stroke:#4caf50,stroke-width:2px,color:#000
-    classDef database fill:#fff3e0,stroke:#ff9800,stroke-width:2px,color:#000
-    classDef service fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px,color:#000
-
-    class DH external
-    class WS webservice
-    class INT_DB,CRS_DB,LAB_DB database
-    class RRC_SVC,PAT_SVC,REQ_SVC,SCH_SVC service
+    DH --> WS --> INT_DB
+    SCH -->|POST rrcProcess| RRC
+    RRC --> INT_DB
+    RRC --> PAT
+    RRC --> REQ
+    REQ --> CRS_DB
+    REQ --> PAT
+    RRC --> LAB_DB
 ```
+Highlighted changes: PMI and CRS registration delegated to external services; ACK stays in lis-dhx-rrc-svc
 
 ### Slide: New Design - Legacy vs Revamped
 | Aspect                           | C program                         | Revamp                                       |
