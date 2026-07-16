@@ -117,215 +117,204 @@ Fallback
 Q&A
 
 ### Slide: Background
-RRC (Request and Result Conversion) converts inbound DH laboratory test results into HA LIS CRS-native data
-Legacy worker runs as a C Unix socket daemon polling Sybase INT_DB for EDI records
-Tightly coupled to CT-Lib and Sybase stored-procedure-style database access
-Sybase-to-PostgreSQL migration requires a cloud-native replacement with identical business output
-Downstream consumers rely on structured CRS data for report sharing within HA
+RRC converts inbound DH laboratory test results into HA LIS CRS-native data for downstream sharing
+Today this runs as a legacy C Unix socket daemon tightly coupled to Sybase via CT-Lib
+Sybase-to-PostgreSQL migration requires a cloud replacement with identical business output
+This review focuses on what changes from the C program versus what stays the same
 
 ### Slide: Background - Supported Labs
-| labNo | Lab  | Prefix 1 | Prefix 2 | Source System |
-| ----- | ---- | -------- | -------- | ------------- |
-| 1     | CPS  | A        | _(none)_ | C             |
-| 3     | HMS  | N        | _(none)_ | N             |
-| 7     | MBS  | M        | V        | M             |
-Each scheduler trigger passes labNo to route prefix and source-system filters
+| labNo | Lab | Prefix 1 | Prefix 2 | Source System |
+| --- | --- | --- | --- | --- |
+| 1 | CPS | A | _(none)_ | C |
+| 3 | HMS | N | _(none)_ | N |
+| 7 | MBS | M | V | M |
+Lab number drives EDI prefix and source-system filters in both C and revamp
 
-### Slide: Existing Design - Legacy Processing Flow
-DH submits test results via DhxEaiInsertion WebService into INT_DB EDI tables
-Legacy RRC daemon polls INT_DB for outstanding EDI_REQUEST rows (status = 0)
-For each request: resolve patient, register or wipeout CRS request, translate test results
-Write CRS-native records to LAB_DB; queue DH acknowledgement via TRANS_TESTRSLT_WKT on sendout hospital
-Update EDI_REQUEST status to completed (99), dictionary error (11), or failure (10)
+### Slide: Existing Design - C Architecture
+DH submits results via DhxEaiInsertion WebService into Sybase INT_DB EDI tables
+C RRC daemon runs continuously on an on-premises Unix host and polls INT_DB
+All business steps run inside the C process using CT-Lib multi-connection access
+Patient Master Index, CRS tables, and acknowledgements are written directly from the daemon
+No external HA microservices; configuration is compile-time constants and OS environment variables
 
-### Slide: Existing Design - EDI Request Status Lifecycle
+### Diagram: existing-c-architecture
+```mermaid
+flowchart LR
+    subgraph External["External"]
+        DH["DH System"]
+    end
+    subgraph OnPrem["On-premises HA"]
+        WS["DhxEaiInsertion WebService"]
+        INT_DB[("INT_DB Sybase")]
+        C_RRC["C RRC daemon"]
+        PMI[("PMI / PATIENT")]
+        CRS_DB[("CRS LAB_DB")]
+        HOSP_DB[("Sendout hospital LAB_DB")]
+    end
+    DH --> WS --> INT_DB
+    C_RRC --> INT_DB
+    C_RRC --> PMI
+    C_RRC --> CRS_DB
+    C_RRC --> HOSP_DB
+```
+
+### Slide: Existing Design - C Processing Stages
+1. Claim outstanding EDI rows (status 0 to 98) and fetch batch
+2. Resolve patient via PMI path or local/EDI fallback; insert PATIENT locally
+3. Re-send check on sendout map; wipeout prior CRS data and reuse lab number if needed
+4. Assign new CRS request number from dictionary counter when not reusing
+5. Specimen mapping for MBS only
+6. Convert EDI test results and insert worksheet transaction rows locally
+7. Register CRS request, detail, copy hist, MB request, and task list locally
+8. Insert PDF order, report enquiry cache, and sendout map locally
+9. DH acknowledgement - switch to sendout hospital DB and insert ACK worksheet row
+10. Update EDI request status to 99, 11, or 10
+
+### Slide: Existing Design - EDI Status Lifecycle
 | Status | Meaning |
 | --- | --- |
 | 0 | Outstanding - awaiting processing |
 | 98 | Claimed - stamped with processing datetime |
 | 99 | Completed successfully |
 | 11 | Registered with dictionary error |
-| 10 | Processing failure (transaction rolled back) |
-Atomic claim prevents concurrent daemon instances from double-processing the same row
+| 10 | Processing failure |
+Status semantics are preserved in the revamp; atomic claim still prevents double-processing
 
-### Slide: Proposed Change - Overview
-1. Build cloud application lis-dhx-rrc-svc to replace legacy C RRC worker
-2. Triggered by lis-scheduler per lab
-3. Re-implement all business logic with identical output to legacy worker
-4. Support dynamic Sybase or PostgreSQL connectivity per environment via central config
-5. Integrate with lis-patient-svc and lis-request-svc for PMI and request operations
+### Slide: New Design - Architecture Overview
+Cloud application lis-dhx-rrc-svc replaces the C daemon; triggered by scheduled HTTP call per lab
+INT_DB still holds EDI source data; LAB_DB / CRS is PostgreSQL with dynamic Sybase/PG routing
+Patient PMI lookup and refresh of existing PATIENT go through lis-patient-svc
+CRS core registration, PATIENT insert for new patients, and worksheet result insert go through lis-request-svc
+Wipeout, DHX-local PDF/map/cache, and DH acknowledgement remain inside lis-dhx-rrc-svc
 
-### Diagram: system-architecture
+### Diagram: new-architecture
 ```mermaid
 flowchart LR
-    subgraph External["External System"]
-            DH["DH System"]
+    subgraph External["External"]
+        DH["DH System"]
     end
-    subgraph Internal["HA"]
-            WS("DhxEaiInsertion <br> WebService")
-            INT_DB[("INT Database")]
-            SCH_SVC("lis-scheduler<br>(in lis-dhx-rrc-svc)")
-            RRC_SVC("lis-dhx-rrc-svc")
-            PAT_SVC("lis-patient-svc")
-            REQ_SVC("lis-request-svc")
-            CRS_DB[("CRS Database")]
-            LAB_DB[("Lab Databases")]
+    subgraph HA["HA Cloud"]
+        WS["DhxEaiInsertion WebService"]
+        INT_DB[("INT_DB")]
+        SCH["Scheduler"]
+        RRC["lis-dhx-rrc-svc"]
+        PAT["lis-patient-svc"]
+        REQ["lis-request-svc"]
+        CRS_DB[("CRS LAB_DB")]
+        HOSP_DB[("Sendout hospital LAB_DB")]
     end
-    DH --> WS
-    WS --> INT_DB
-    SCH_SVC -- Trigger--> RRC_SVC
-    RRC_SVC -- Retrieve Outstanding Records --> INT_DB
-    RRC_SVC -- Retrieve PMI Patient --> PAT_SVC
-    RRC_SVC -- Register/Wipeout Request --> REQ_SVC
-    REQ_SVC -- Insert/Delete Request --> CRS_DB
-    REQ_SVC -- Insert Patient --> PAT_SVC
-    RRC_SVC -- Acknowledgement --> LAB_DB
-
-    classDef external fill:#ffebee,stroke:#f44336,stroke-width:2px,color:#000
-    classDef internal fill:#e3f2fd,stroke:#2196f3,stroke-width:2px,color:#000
-    classDef webservice fill:#e8f5e8,stroke:#4caf50,stroke-width:2px,color:#000
-    classDef database fill:#fff3e0,stroke:#ff9800,stroke-width:2px,color:#000
-    classDef service fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px,color:#000
-
-    class DH external
-    class WS webservice
-    class INT_DB,CRS_DB,LAB_DB database
-    class RRC_SVC,PAT_SVC,REQ_SVC,SCH_SVC service
-
+    DH --> WS --> INT_DB
+    SCH -->|POST rrcProcess| RRC
+    RRC --> INT_DB
+    RRC --> PAT
+    RRC --> REQ
+    REQ --> CRS_DB
+    REQ --> PAT
+    RRC --> HOSP_DB
 ```
 
-### Slide: Proposed Change - Processing Stages
-1. Request claiming - stamp outstanding EDI rows as in-progress (status 98)
-2. Patient demographics - resolve PatientVo via PMI or local/EDI fallback; PATIENT insert deferred to lis-request-svc registration
-3. Re-send detection - wipeout previous CRS data when DH resends same request
-4. Request number assignment - generate new or reuse wiped-out CRS request number
-5. Specimen mapping - MBS only, maps DH specimen type to CRS keyword
-6. Test result construction - EDI to CRS mapping in memory; TRANS_TESTRSLT_WKT insert deferred to lis-request-svc registration
-7. CRS record insertion - request/detail via lis-request-svc; DHX-local PDF order, report enquiry cache, sendout map
-8. DH acknowledgement - insert TRANS_TESTRSLT_WKT on sendout hospital LAB_DB and mark EDI complete
-9. CRS / RCS worker - Trigger CRS worker for registration
+### Slide: New Design - Legacy vs Revamped
+| Aspect | C program | Revamp |
+| --- | --- | --- |
+| Trigger | Continuous Unix daemon poll | Scheduled HTTP POST per lab |
+| Protocol | Unix socket / CT-Lib | REST JSON over HTTPS |
+| Patient PMI | Direct SQL | lis-patient-svc |
+| New PATIENT insert | Inside C RRC | lis-request-svc register |
+| CRS request / detail / task list | Local inserts in C | lis-request-svc register and activate |
+| Converted result WKT | Inserted in C during construct | Built in memory in RRC; inserted at register |
+| DH acknowledgement | C switches server and inserts WKT | Same ownership in lis-dhx-rrc-svc |
+| Deployment | On-premises Unix process | OpenShift container |
 
-### Diagram: happy-path-sequence
-```mermaid
-sequenceDiagram
-    participant SCH as lis-scheduler<br>(in lis-dhx-rrc-svc)
-    participant RRC as lis-dhx-rrc-svc
-    participant INT as INT database
-    participant PAT as lis-patient-svc
-    participant REQ as lis-request-svc
-    participant CRS as CRS database
+### Slide: New Design - External Service Ownership
+| Capability | C program | Revamp owner |
+| --- | --- | --- |
+| Trigger / poll | C daemon | Scheduled HTTP trigger into lis-dhx-rrc-svc |
+| PMI lookup / refresh existing PATIENT | Direct SQL | lis-patient-svc |
+| PATIENT insert for new patients | Local insert in RRC | lis-request-svc register |
+| CRS request, detail, MB, task list | Local insert in C | lis-request-svc register and activate |
+| TRANS_TESTRSLT_WKT for converted results | Local insert during construct | Built in RRC; inserted by lis-request-svc |
+| PDF, sendout map, report enquiry | Local in C | Still lis-dhx-rrc-svc |
+| Wipeout | Local deletes in C | Still lis-dhx-rrc-svc |
+| DH ACK to hospital LAB_DB | Local server switch + WKT | Still lis-dhx-rrc-svc |
+| Sybase / PostgreSQL connectivity | CT-Lib Sybase only | Dynamic data-source routing via OpenShift config |
 
-    SCH->>RRC: Trigger RRC processing for one lab
-    RRC->>INT: Claim and retrieve outstanding records
-    INT-->>RRC: Return outstanding request list
+### Slide: Stage Diff - Request Claiming
+C: daemon claims matching EDI_REQUEST and EDI_TESTRSLT from status 0 to 98, then fetches up to 100 rows
+Revamp: same claim and fetch semantics against INT_DB
+Difference: continuous daemon poll replaced by scheduled REST trigger per lab
+Owner: lis-dhx-rrc-svc (unchanged business ownership)
 
-    loop For each outstanding request
-        RRC->>INT: Read request detail and test results
-        RRC->>PAT: Retrieve PMI patient
-        PAT-->>RRC: Return patient information
-        RRC->>REQ: Register or wipeout request
-        REQ->>CRS: Insert or delete request records
-        REQ-->>RRC: Confirm registration complete
-        RRC->>INT: Mark request as completed
-    end
+### Slide: Stage Diff - Patient Resolution
+C: PMI or local/EDI fallback, then insert or update PATIENT inside the RRC transaction
+Revamp: resolve patient data via lis-patient-svc; build registration payload only
+Difference: lis-dhx-rrc-svc does not insert PATIENT for new patients
+New PATIENT create and payload-driven persistence happen in lis-request-svc during register
+Existing local PATIENT may still be refreshed via lis-patient-svc before registration
 
-    RRC-->>SCH: Return success result
-```
+### Slide: Stage Diff - Re-send Wipeout
+C: if DH request already mapped, wipe prior CRS tables and reuse previous lab number
+Revamp: same wipeout and reuse ownership inside lis-dhx-rrc-svc
+Difference: if worksheet rows still exist for the prior request, processing is deferred for later retry
+Owner: lis-dhx-rrc-svc (not moved to lis-request-svc)
 
-### Slide: Proposed Change - Request Claiming
-Before fetching, atomically stamp all matching EDI_REQUEST and EDI_TESTRSLT rows from status 0 to 98
-Filter by lab prefix, source system, and create_datetime before processing start time
-Retrieve up to 100 claimed rows ordered by create_datetime
-Prevents concurrent pod instances from double-processing the same EDI request
-If claim or retrieval fails, entire cycle returns error without partial processing
+### Slide: Stage Diff - Request Number Assignment
+C: new requests allocate lab number from dictionary counter; re-sends reuse wiped-out number
+Revamp: same counter and reuse behaviour inside lis-dhx-rrc-svc
+Difference: none material to business outcome
+Owner: lis-dhx-rrc-svc
 
-### Slide: Proposed Change - Patient Resolution
-If EDI_DH_INFO validity flag is Y, resolve patient via PMI using hospital and encounter (lis-patient-svc)
-If patient already exists locally, refresh from PMI; otherwise build PatientVo from PMI for registration
-If PMI not found or validity flag is N, fall back to local PATIENT lookup by HKID, or build PatientVo from EDI (percent encounter / anonymous)
-lis-dhx-rrc-svc does not insert PATIENT - PatientVo is passed in the registration payload
-PATIENT create or update for new patients is performed by lis-request-svc during register
-Age and unit calculated on PatientVo before registration; PMI or patient API failure raises rejection type 13
+### Slide: Stage Diff - Specimen Mapping
+C: MBS only maps DH specimen type to CRS keyword; CPS and HMS skip
+Revamp: same MBS-only mapping inside lis-dhx-rrc-svc
+Difference: none material to business outcome
+Owner: lis-dhx-rrc-svc
 
-### Slide: Proposed Change - Re-send Wipeout Detection
-Check SENDOUT_REQNO_MAP for existing DH request number mapping
-If mapping exists and TRANS_TESTRSLT_WKT is empty, wipeout previous CRS data and reuse request number
-If TRANS_TESTRSLT_WKT has records, skip request (downstream still processing prior result)
-Wipeout clears 16 related CRS tables and records audit entry before delete
-New requests increment DICT_COUNTER and format request number as YYLNNNNNNN
-
-### Slide: Proposed Change - Test Result Conversion
-Read EDI_TESTRSLT rows from INT_DB for each claimed DH request
-Map DH test codes to CRS alpha codes via KEYWORD_LIST dictionary
-Validate result types against TEST_DICT master
+### Slide: Stage Diff - Test Result Construction
+C: convert EDI results and insert worksheet transaction rows during construct
+Revamp: convert and validate in memory only inside lis-dhx-rrc-svc
+Difference: no local TRANS_TESTRSLT or TRANS_TESTRSLT_GP insert from RRC
 Only TRANS_TESTRSLT_WKT is written, deferred to lis-request-svc during register
-Dictionary errors flag request as status 11 without full rollback
+Dictionary errors still flag EDI status 11 without full rollback of registration path
 
-### Slide: Proposed Change - INT_DB Source Tables
-| Table        | Purpose                                                     |
-| ------------ | ----------------------------------------------------------- |
-| EDI_REQUEST  | One row per inbound DH request; status drives processing    |
-| EDI_DH_INFO  | DH metadata: encounter, hospital, lab number, validity flag |
-| EDI_TESTRSLT | Individual test result rows from DH                         |
-Service reads and updates status on EDI_REQUEST and EDI_TESTRSLT during processing
+### Slide: Stage Diff - CRS Registration
+C: prepare and insert CRS request, detail, copy hist, MB request, and task list inside RRC
+Revamp: build registration payload in lis-dhx-rrc-svc; call lis-request-svc register then activate
+Difference: CRS core writes and new PATIENT insert move to lis-request-svc
+On post-register failure, revamp compensates register and rethrows (mirrors C rollback gate)
+Owner: lis-request-svc for core CRS; lis-dhx-rrc-svc orchestrates the call
 
-### Slide: Proposed Change - LAB_DB Target Tables
-| Table              | Purpose                                                                   |
-| ------------------ | ------------------------------------------------------------------------- |
-| CRS_REQUEST        | Master CRS request record (req_station = RRC fingerprint)                 |
-| CRS_REQUEST_DETAIL | One row per test ordered                                                  |
-| TRANS_TESTRSLT_WKT | Worksheet transaction results; written by lis-request-svc during register |
-| SENDOUT_REQNO_MAP  | DH to CRS request number mapping for re-send detection                    |
-| PDF_ORDER          | Associates DH PDF file path with registered request                       |
-| LISG_TASKLIST      | Queues downstream CRS tasks (printing, signout)                           |
-Per-request database transaction ensures all LAB_DB writes commit or roll back together
+### Slide: Stage Diff - DHX-local Post-Register
+C: PDF order, report enquiry cache, and sendout map written in the same local transaction as CRS
+Revamp: after successful register, lis-dhx-rrc-svc still writes PDF, cache, and sendout map
+Task list is queued via lis-request-svc activate rather than a direct local insert from RRC
+Difference: split between DHX-local tables (RRC) and task list activation (lis-request-svc)
 
-### Slide: Proposed Change - External Service Integration
-| Service | Purpose |
-| --- | --- |
-| lis-patient-svc | PMI patient lookup and update of existing local PATIENT records |
-| lis-request-svc | CRS request registration and activation; PATIENT insert and TRANS_TESTRSLT_WKT insert for converted results |
+### Slide: Stage Diff - DH Acknowledgement
+C: for eligible MBS hospitals, switch to sendout hospital server and insert ACK worksheet row
+Revamp: same ownership inside lis-dhx-rrc-svc - not an lis-request-svc API
+CPS and HMS skip ACK; invalid DH lab number or empty hospital list also skip
+ACK write failure sets EDI status 10; CRS registration is retained without compensation rollback
+Difference: platform and config only; business ACK model matches C
 
-### Slide: Proposed Change - DH Acknowledgement
-ACK handled within lis-dhx-rrc-svc - no external service call
-Skipped for CPS and HMS labs, and when DH lab number is invalid or no ACK hospitals configured
-For MBS: when sendout hospital is in configured ACK list, switch to sendout hospital server
-Insert or update TRANS_TESTRSLT_WKT with action type 14 on sendout hospital LAB_DB
-VRS requests (prefix V) route acknowledgement to VRS lab server
-ACK write failure sets EDI_REQUEST status 10; CRS registration is retained (no compensation rollback)
-ACK write success sets EDI_REQUEST status 99
-Endpoint URLs configured per environment via OpenShift ConfigMaps
-
-### Slide: Proposed Change - Error Handling and Monitoring
-Deadlock on per-request processing retried up to maximum retry count before marking failed
-Failed requests set EDI_REQUEST status to 10 and continue processing remaining batch
-Structured ALS logging with DH request number and server/lab context on every request
-Support team verifies processing via EDI_REQUEST status queries and CRS_REQUEST req_station = RRC
-Post-live SQL queries documented for outstanding, claimed, completed, and failed requests
-
-### Slide: Proposed Change - OpenShift Configuration
-| ConfigMap | Purpose |
-| --- | --- |
-| spring-profiles-active | Selects environment profile (dev, sit, lpt, prd) |
-| sybase-jdbc | INT_DB Sybase JDBC connection URL |
-| postgresql-jdbc | LAB_DB PostgreSQL JDBC connection URL |
-| patient-api-config | lis-patient-svc base URL and API paths |
-| request-api-config | lis-request-svc base URL and API paths |
-Credentials stored in OpenShift Secrets, not in application code
+### Slide: Stage Diff - EDI Status Update
+C: final EDI_REQUEST status 99 success, 11 dictionary error, or 10 failure
+Revamp: same final status values and meanings
+Difference: failure handling spans INT_DB status update plus optional register compensation
+Owner: lis-dhx-rrc-svc updates EDI status after orchestration completes
 
 ### Slide: Promotion
 1. Deploy lis-dhx-rrc-svc to DEV and DEVQA with Sybase INT_DB and PostgreSQL LAB_DB config
-2. Execute test plan covering all three labs (CPS, HMS, MBS) and negative scenarios
-3. Promote to SIT and LPT; verify EDI status lifecycle and CRS output match legacy worker
-4. Configure lis-common-scheduler-svc to trigger cloud service per lab on schedule
-5. Parallel-run or cutover per hospital: disable legacy C daemon, enable scheduler trigger
-6. Monitor EDI_REQUEST status distribution and CRS_REQUEST registrations post go-live
+2. Execute test plan covering all three labs and negative scenarios against C-equivalent outcomes
+3. Promote to SIT and LPT; verify EDI status lifecycle and CRS output match legacy C worker
+4. Enable scheduled HTTP trigger per lab for the cloud service
+5. Cutover per hospital: disable legacy C daemon, enable cloud trigger
+6. Monitor EDI_REQUEST status distribution and CRS registrations post go-live
 
 ### Slide: Fallback
-1. Re-enable legacy C RRC daemon on affected hospital server
-2. Disable lis-common-scheduler-svc trigger for lis-dhx-rrc-svc
+1. Re-enable legacy C RRC daemon on the affected hospital server
+2. Disable scheduled HTTP trigger for lis-dhx-rrc-svc
 3. Revert OpenShift deployment to previous lis-dhx-rrc-svc version if needed
-4. EDI_REQUEST rows in status 98 may require manual reset to status 0 for re-processing
-5. CRS data written during cloud service run remains valid; no automatic rollback of LAB_DB inserts
+4. EDI_REQUEST rows left in status 98 may need manual reset to status 0 for re-processing
+5. CRS data already written by the cloud service remains; no automatic LAB_DB rollback
 
 ### Slide: Q&A
