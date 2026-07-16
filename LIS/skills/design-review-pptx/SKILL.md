@@ -206,6 +206,7 @@ countPreviousBlockingMessages uses the same hkid-only match
 | Body contains ` ``` ` fence | Title and Content + Consolas code |
 | `![](image.png)` with 0–2 caption lines | Title and Content + centred diagram + caption |
 | `![](image.png)` with 3+ label lines | Title and Content + text left, image right |
+| Everything else | Title and Content (bullets) |
 
 ### Rules
 
