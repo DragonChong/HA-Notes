@@ -146,7 +146,7 @@ flowchart LR
     subgraph OnPrem["On-premises HA"]
         WS["DhxEaiInsertion WebService"]
         INT_DB[("INT_DB Sybase")]
-        C_RRC["C RRC daemon"]
+        C_RRC["C program RRC"]
         PMI[("PMI / PATIENT")]
         CRS_DB[("CRS LAB_DB")]
         HOSP_DB[("Sendout hospital LAB_DB")]
