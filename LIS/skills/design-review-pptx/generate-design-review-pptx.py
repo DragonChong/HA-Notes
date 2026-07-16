@@ -175,7 +175,9 @@ def classify_slide(slide: dict, index: int, *, has_image: bool = False) -> str:
     if any(is_table_line(line) for line in body):
         return "table"
     if has_image:
-        return "diagram"
+        caption_lines = [line.strip() for line in body if line.strip()]
+        if len(caption_lines) <= 2:
+            return "diagram"
     return "bullets"
 
 
@@ -365,17 +367,16 @@ def _resolve_image_path(image_ref: str) -> Path:
 
 def add_diagram_slide(prs: Presentation, slide: dict, image_ref: str) -> None:
     """Large centred diagram with optional caption below (avoids title overlap)."""
-    s = prs.slides.add_slide(prs.slide_layouts[LAYOUT_TITLE_CONTENT])
-    s.shapes.title.text = slide["title"]
-    _hide_placeholder(body_placeholder(s))
-
     image_path = _resolve_image_path(image_ref)
     caption_lines = [line.strip() for line in slide["body"] if line.strip()]
     if not image_path.exists():
         print(f"Warning: image not found, skipping embed: {image_path}", file=sys.stderr)
-        if caption_lines:
-            add_bullet_slide(prs, slide)
+        add_bullet_slide(prs, slide)
         return
+
+    s = prs.slides.add_slide(prs.slide_layouts[LAYOUT_TITLE_CONTENT])
+    s.shapes.title.text = slide["title"]
+    _hide_placeholder(body_placeholder(s))
 
     caption_height = Inches(0.35 * len(caption_lines) + 0.15) if caption_lines else Inches(0)
     image_area_bottom = CONTENT_BOTTOM - caption_height - Inches(0.1)
