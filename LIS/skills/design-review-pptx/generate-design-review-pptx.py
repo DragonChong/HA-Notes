@@ -301,6 +301,7 @@ def add_table_slide(prs: Presentation, slide: dict) -> None:
     remainder = total_width - col_width * col_count
     for c in range(col_count):
         table.columns[c].width = col_width + (remainder if c == col_count - 1 else 0)
+    for r, row in enumerate(table_rows):
         for c, value in enumerate(row):
             _set_cell_text(
                 table.cell(r, c),
