@@ -109,7 +109,9 @@ This change ensures uninterrupted DH lab result conversion services during and a
 
 ### Agenda
 Background
-Design Review
+Existing Design (C Program)
+New Design and Key Changes
+Stage Differences (C vs Revamp)
 Promotion
 Fallback
 Q&A
