@@ -175,6 +175,7 @@ flowchart LR
     RRC_SVC -- Retrieve PMI Patient --> PAT_SVC
     RRC_SVC -- Register/Wipeout Request --> REQ_SVC
     REQ_SVC -- Insert/Delete Request --> CRS_DB
+    REQ_SVC -- Insert Patient --> PAT_SVC
 
     classDef external fill:#ffebee,stroke:#f44336,stroke-width:2px,color:#000
     classDef internal fill:#e3f2fd,stroke:#2196f3,stroke-width:2px,color:#000
