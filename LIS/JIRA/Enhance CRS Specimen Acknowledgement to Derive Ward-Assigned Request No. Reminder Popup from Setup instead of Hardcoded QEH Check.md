@@ -31,7 +31,7 @@ Enhance CRS Specimen Acknowledgement to Derive Ward-Assigned Request No. Reminde
 
 ## Background
 
-In Specimen Acknowledgement, when a specimen is retrieved in a lab that supports the ward-assigned request no. feature but the specimen has not been assigned a ward-assigned request no., the system prompts: *"Please assign Lab No. to acknowledge this specimen!"* Users may suppress the prompt until log-off; suppression is audited (`GCR_AUDIT_ACTION_LABNO_REMINDER`).
+In Specimen Acknowledgement, when a specimen is retrieved in a lab that supports the ward-assigned request no. feature but the specimen has not been assigned a ward-assigned request no., the system prompts: *"Please assign Lab No. to acknowledge this specimen!"* 
 
 After the blood-taking-within-cluster enhancement in LIS-8437, ward-assigned request numbers from other hospitals (e.g. QEH) can be retrieved in KWH CRS. That caused the Lab No. assignment reminder to appear incorrectly for KWH users. LIS-9632 addressed this by hardcoding the popup so it only shows when `LisGlobal.hospital == CommonConstants.HOSPITAL_QEH` in `GcrSpecAckUIComponents.as`.
 
