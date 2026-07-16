@@ -20,7 +20,7 @@ from pathlib import Path
 from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
-from pptx.util import Emu, Inches, Pt
+from pptx.util import Inches, Pt
 
 # Content area geometry (10" x 7.5" slide; title band ~1.3")
 CONTENT_LEFT = Inches(0.65)
@@ -46,6 +46,18 @@ LAYOUT_TITLE_CONTENT = 1
 LAYOUT_TITLE_ONLY = 7
 
 IMAGE_RE = re.compile(r"^!\[[^\]]*\]\(([^)]+)\)$")
+
+
+def _emu(value) -> int:
+    """Integer EMU — float values in xfrm attributes corrupt Office XML."""
+    return int(round(value))
+
+
+def _add_title_only_slide(prs: Presentation, title: str):
+    """Content slide with title only (no body placeholder)."""
+    s = prs.slides.add_slide(prs.slide_layouts[LAYOUT_TITLE_ONLY])
+    s.shapes.title.text = title
+    return s
 
 
 def delete_all_slides(prs: Presentation) -> None:
@@ -181,16 +193,6 @@ def classify_slide(slide: dict, index: int, *, has_image: bool = False) -> str:
     return "bullets"
 
 
-def _hide_placeholder(ph) -> None:
-    """Remove empty placeholder chrome when laying out shapes manually."""
-    if ph is None:
-        return
-    ph.left = Emu(0)
-    ph.top = Emu(0)
-    ph.width = Emu(0)
-    ph.height = Emu(0)
-
-
 def _set_cell_text(cell, text: str, *, bold: bool = False, size: Pt = TABLE_BODY_PT) -> None:
     cell.text = text
     for paragraph in cell.text_frame.paragraphs:
@@ -271,20 +273,18 @@ def add_table_slide(prs: Presentation, slide: dict) -> None:
         add_bullet_slide(prs, slide)
         return
 
-    s = prs.slides.add_slide(prs.slide_layouts[LAYOUT_TITLE_CONTENT])
-    s.shapes.title.text = slide["title"]
-    _hide_placeholder(body_placeholder(s))
+    s = _add_title_only_slide(prs, slide["title"])
 
     table_rows = [headers, *rows]
     row_count = len(table_rows)
     col_count = len(headers)
-    table_height = ROW_HEIGHT * row_count
-    footnote_space = Inches(0.55) if footnotes else Inches(0)
-    available = CONTENT_BOTTOM - CONTENT_TOP - footnote_space
-    if table_height < available * 0.75:
-        table_top = CONTENT_TOP + (available - table_height) / 2
+    table_height = _emu(ROW_HEIGHT * row_count)
+    footnote_space = Inches(0.55) if footnotes else 0
+    available = _emu(CONTENT_BOTTOM - CONTENT_TOP - footnote_space)
+    if table_height < _emu(available * 0.75):
+        table_top = _emu(CONTENT_TOP + (available - table_height) / 2)
     else:
-        table_top = CONTENT_TOP
+        table_top = _emu(CONTENT_TOP)
         table_height = min(table_height, available)
 
     table_shape = s.shapes.add_table(
@@ -296,11 +296,11 @@ def add_table_slide(prs: Presentation, slide: dict) -> None:
         table_height,
     )
     table = table_shape.table
-    col_width = int(CONTENT_WIDTH / col_count)
+    total_width = _emu(CONTENT_WIDTH)
+    col_width = total_width // col_count
+    remainder = total_width - col_width * col_count
     for c in range(col_count):
-        table.columns[c].width = col_width
-    for r, row in enumerate(table_rows):
-        table.rows[r].height = ROW_HEIGHT
+        table.columns[c].width = col_width + (remainder if c == col_count - 1 else 0)
         for c, value in enumerate(row):
             _set_cell_text(
                 table.cell(r, c),
@@ -310,7 +310,7 @@ def add_table_slide(prs: Presentation, slide: dict) -> None:
             )
 
     if footnotes:
-        note_top = table_top + table_height + Inches(0.12)
+        note_top = _emu(table_top + table_height + Inches(0.12))
         box = s.shapes.add_textbox(CONTENT_LEFT, note_top, CONTENT_WIDTH, Inches(0.45))
         tf = box.text_frame
         tf.word_wrap = True
@@ -324,15 +324,12 @@ def add_table_slide(prs: Presentation, slide: dict) -> None:
 
 
 def add_code_slide(prs: Presentation, slide: dict) -> None:
-    s = prs.slides.add_slide(prs.slide_layouts[LAYOUT_TITLE_CONTENT])
-    s.shapes.title.text = slide["title"]
-
     code, notes = parse_code_block(slide["body"])
     if not code:
         add_bullet_slide(prs, slide)
         return
 
-    _hide_placeholder(body_placeholder(s))
+    s = _add_title_only_slide(prs, slide["title"])
     code_height = Inches(min(0.22 * max(len(code.splitlines()), 1) + 0.3, 4.8))
     box = s.shapes.add_textbox(CONTENT_LEFT, CONTENT_TOP, CONTENT_WIDTH, code_height)
     tf = box.text_frame
@@ -374,13 +371,11 @@ def add_diagram_slide(prs: Presentation, slide: dict, image_ref: str) -> None:
         add_bullet_slide(prs, slide)
         return
 
-    s = prs.slides.add_slide(prs.slide_layouts[LAYOUT_TITLE_CONTENT])
-    s.shapes.title.text = slide["title"]
-    _hide_placeholder(body_placeholder(s))
+    s = _add_title_only_slide(prs, slide["title"])
 
-    caption_height = Inches(0.35 * len(caption_lines) + 0.15) if caption_lines else Inches(0)
-    image_area_bottom = CONTENT_BOTTOM - caption_height - Inches(0.1)
-    image_area_height = image_area_bottom - CONTENT_TOP
+    caption_height = Inches(0.35 * len(caption_lines) + 0.15) if caption_lines else 0
+    image_area_bottom = _emu(CONTENT_BOTTOM - caption_height - Inches(0.1))
+    image_area_height = _emu(image_area_bottom - CONTENT_TOP)
 
     pic = s.shapes.add_picture(
         str(image_path),
@@ -390,13 +385,13 @@ def add_diagram_slide(prs: Presentation, slide: dict, image_ref: str) -> None:
     )
     if pic.height > image_area_height:
         scale = image_area_height / pic.height
-        pic.width = int(pic.width * scale)
-        pic.height = int(pic.height * scale)
-    pic.left = int(CONTENT_LEFT + (CONTENT_WIDTH - pic.width) / 2)
-    pic.top = int(CONTENT_TOP + (image_area_height - pic.height) / 2)
+        pic.width = _emu(pic.width * scale)
+        pic.height = _emu(pic.height * scale)
+    pic.left = _emu(CONTENT_LEFT + (CONTENT_WIDTH - pic.width) / 2)
+    pic.top = _emu(CONTENT_TOP + (image_area_height - pic.height) / 2)
 
     if caption_lines:
-        cap_top = int(pic.top + pic.height + Inches(0.12))
+        cap_top = _emu(pic.top + pic.height + Inches(0.12))
         cap = s.shapes.add_textbox(CONTENT_LEFT, cap_top, CONTENT_WIDTH, caption_height)
         tf = cap.text_frame
         tf.word_wrap = True
@@ -423,7 +418,7 @@ def embed_image_beside_text(slide, image_ref: str, kind: str) -> None:
             body.left = CONTENT_LEFT
             body.top = CONTENT_TOP
             body.width = Inches(4.35)
-            body.height = CONTENT_BOTTOM - CONTENT_TOP
+            body.height = _emu(CONTENT_BOTTOM - CONTENT_TOP)
         except RuntimeError:
             pass
 
