@@ -227,29 +227,18 @@ flowchart LR
 ```
 Highlighted changes: PMI and CRS registration delegated to external services; ACK stays in lis-dhx-rrc-svc
 
-### Slide: New Design - Legacy vs Revamped
-| Aspect                           | C program                         | Revamp                                       |
-| -------------------------------- | --------------------------------- | -------------------------------------------- |
-| Trigger                          | Cron                              | Scheduler in lis-dhx-rrc-svc (lis-scheduler) |
-| Patient PMI                      | Direct SQL                        | lis-patient-svc                              |
-| New PATIENT insert               | Inside C RRC                      | lis-request-svc register                     |
-| CRS request / detail / task list | Local inserts in C                | lis-request-svc register and activate        |
-| Converted result WKT             | Inserted in C during construct    | Built in memory in RRC; inserted at register |
-| DH acknowledgement               | C switches server and inserts WKT | Same ownership in lis-dhx-rrc-svc            |
-
-
 ### Slide: New Design - External Service Ownership
-| Capability | C program | Revamp owner |
-| --- | --- | --- |
-| Trigger / poll | C daemon | Scheduled HTTP trigger into lis-dhx-rrc-svc |
-| PMI lookup / refresh existing PATIENT | Direct SQL | lis-patient-svc |
-| PATIENT insert for new patients | Local insert in RRC | lis-request-svc register |
-| CRS request, detail, MB, task list | Local insert in C | lis-request-svc register and activate |
-| TRANS_TESTRSLT_WKT for converted results | Local insert during construct | Built in RRC; inserted by lis-request-svc |
-| PDF, sendout map, report enquiry | Local in C | Still lis-dhx-rrc-svc |
-| Wipeout | Local deletes in C | Still lis-dhx-rrc-svc |
-| DH ACK to hospital LAB_DB | Local server switch + WKT | Still lis-dhx-rrc-svc |
-| Sybase / PostgreSQL connectivity | CT-Lib Sybase only | Dynamic data-source routing via OpenShift config |
+| Capability                               | C program                     | Revamp owner                                     |
+| ---------------------------------------- | ----------------------------- | ------------------------------------------------ |
+| Trigger                                  | Cron                          | Scheduled trigger in lis-dhx-rrc-svc             |
+| PMI lookup / refresh existing PATIENT    | Direct SQL                    | lis-patient-svc                                  |
+| PATIENT insert for new patients          | Local insert in RRC           | lis-request-svc register                         |
+| CRS request, detail, MB, task list       | Local insert in C             | lis-request-svc register and activate            |
+| TRANS_TESTRSLT_WKT for converted results | Local insert during construct | Built in RRC; inserted by lis-request-svc        |
+| PDF, sendout map, report enquiry         | Local in C                    | Still lis-dhx-rrc-svc                            |
+| Wipeout                                  | Local deletes in C            | Still lis-dhx-rrc-svc                            |
+| DH ACK to hospital LAB_DB                | Local server switch + WKT     | Still lis-dhx-rrc-svc                            |
+| Sybase / PostgreSQL connectivity         | CT-Lib Sybase only            | Dynamic data-source routing via OpenShift config |
 
 ### Slide: Stage Diff - Request Claiming
 C: daemon claims matching EDI_REQUEST and EDI_TESTRSLT from status 0 to 98, then fetches up to 100 rows
