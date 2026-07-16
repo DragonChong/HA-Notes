@@ -192,33 +192,45 @@ Wipeout, DHX-local PDF/map/cache, and DH acknowledgement remain inside lis-dhx-r
 ```mermaid
 flowchart LR
     subgraph External["External System"]
-        DH["DH System"]
+            DH["DH System"]
     end
-    subgraph Internal["HA Cloud"]
-        WS["DhxEaiInsertion WebService"]
-        INT_DB[("INT Database")]
-        SCH["Scheduler"]
-        RRC["lis-dhx-rrc-svc"]
-        PAT["lis-patient-svc"]
-        REQ["lis-request-svc"]
-        CRS_DB[("CRS Database")]
-        LAB_DB[("Sendout hospital LAB_DB")]
+    subgraph Internal["HA"]
+            WS("DhxEaiInsertion <br> WebService")
+            INT_DB[("INT Database")]
+            SCH_SVC("lis-scheduler<br>(in lis-dhx-rrc-svc)")
+            RRC_SVC("lis-dhx-rrc-svc")
+            PAT_SVC("lis-patient-svc")
+            REQ_SVC("lis-request-svc")
+            CRS_DB[("CRS Database")]
+            LAB_DB[("Lab Databases")]
     end
-    DH --> WS --> INT_DB
-    SCH -->|POST rrcProcess| RRC
-    RRC --> INT_DB
-    RRC --> PAT
-    RRC --> REQ
-    REQ --> CRS_DB
-    REQ --> PAT
-    RRC --> LAB_DB
+    DH --> WS
+    WS --> INT_DB
+    SCH_SVC -- Trigger--> RRC_SVC
+    RRC_SVC -- Retrieve Outstanding Records --> INT_DB
+    RRC_SVC -- Retrieve PMI Patient --> PAT_SVC
+    RRC_SVC -- Register/Wipeout Request --> REQ_SVC
+    REQ_SVC -- Insert/Delete Request --> CRS_DB
+    REQ_SVC -- Insert Patient --> PAT_SVC
+    RRC_SVC -- Acknowledgement --> LAB_DB
+
+    classDef external fill:#ffebee,stroke:#f44336,stroke-width:2px,color:#000
+    classDef internal fill:#e3f2fd,stroke:#2196f3,stroke-width:2px,color:#000
+    classDef webservice fill:#e8f5e8,stroke:#4caf50,stroke-width:2px,color:#000
+    classDef database fill:#fff3e0,stroke:#ff9800,stroke-width:2px,color:#000
+    classDef service fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px,color:#000
+
+    class DH external
+    class WS webservice
+    class INT_DB,CRS_DB,LAB_DB database
+    class RRC_SVC,PAT_SVC,REQ_SVC,SCH_SVC service
 ```
 Highlighted changes: PMI and CRS registration delegated to external services; ACK stays in lis-dhx-rrc-svc
 
 ### Slide: New Design - Legacy vs Revamped
 | Aspect                           | C program                         | Revamp                                       |
 | -------------------------------- | --------------------------------- | -------------------------------------------- |
-| Trigger                          | Continuous Unix daemon poll       | Scheduled HTTP POST per lab                  |
+| Trigger                          | Continuous Unix daemon poll       | Scheduler in lis-dhx-rrc-svc (lis-scheduler) |
 | Protocol                         | Unix socket / CT-Lib              | REST JSON over HTTPS                         |
 | Patient PMI                      | Direct SQL                        | lis-patient-svc                              |
 | New PATIENT insert               | Inside C RRC                      | lis-request-svc register                     |
