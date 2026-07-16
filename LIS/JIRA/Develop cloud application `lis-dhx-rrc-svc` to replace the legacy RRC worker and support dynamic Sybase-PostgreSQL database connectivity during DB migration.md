@@ -182,7 +182,7 @@ All processing and database writes run inside the single C daemon process
 Status semantics are preserved in the revamp; atomic claim still prevents double-processing
 
 ### Slide: New Design - Architecture Overview
-Cloud application lis-dhx-rrc-svc replaces the C daemon; triggered by scheduled HTTP call per lab
+Cloud application lis-dhx-rrc-svc replaces the C daemon; triggered by lis-scheduler in lis-dhx-rrc-svc per lab
 INT_DB still holds EDI source data; LAB_DB / CRS is PostgreSQL with dynamic Sybase/PG routing
 Patient PMI lookup and refresh of existing PATIENT go through lis-patient-svc
 CRS core registration, PATIENT insert for new patients, and worksheet result insert go through lis-request-svc
