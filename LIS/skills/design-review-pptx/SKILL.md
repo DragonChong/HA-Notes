@@ -144,9 +144,9 @@ Style is defined by `ha-lis-design-review-template.pptx` in this skill folder. *
 | Q&A slide | Title Only, centred 48pt |
 | Agenda items | Bold, one per paragraph |
 | Body bullets | Plain paragraphs; use `- ` prefix or indent for level-1 sub-bullets |
-| Tables | Header row bold 12pt; body 11pt; optional footnotes below |
+| Tables | Header row bold 12pt; body 11pt; full content width; vertically centred when short; optional footnotes below |
 | Code blocks | Consolas 10pt in textbox below title |
-| Diagram slides | `![](image.png)` — embedded automatically by the generator (path resolved relative to the input `.md` file); dominant/centred if the slide has no other body text, placed beside the text otherwise |
+| Diagram slides | `![](image.png)` — full-width centred image; 1–2 caption lines centred below; 3+ label lines use side-by-side layout |
 
 Reference decks: LIS-10672 (6 slides, incremental), LIS-10583 (13 slides, incremental with Promotion/Fallback).
 
@@ -202,9 +202,10 @@ countPreviousBlockingMessages uses the same hkid-only match
 | First slide with `CP3` in body | Title Slide |
 | `# Agenda` | Title and Content (bold items) |
 | `# Q&A` | Title Only (centred) |
-| Body contains `\| col \|` table | Title and Content + table |
+| Body contains `\| col \|` table | Title and Content + full-width table |
 | Body contains ` ``` ` fence | Title and Content + Consolas code |
-| Everything else | Title and Content (bullets) |
+| `![](image.png)` with 0–2 caption lines | Title and Content + centred diagram + caption |
+| `![](image.png)` with 3+ label lines | Title and Content + text left, image right |
 
 ### Rules
 

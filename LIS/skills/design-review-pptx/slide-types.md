@@ -131,9 +131,9 @@ API Consumer
 lis-crs-gcrOrderServices-sam3Auth-app
 ```
 
-Place `![](...)` first or immediately under title. Follow with labeled components as plain lines (not bullets).
+Place `![](...)` first or immediately under title. Follow with one or two caption lines (centred below the diagram). For many labelled components (3+ lines), use plain lines — the generator places them beside the image on the left.
 
-**Layout:** Diagram dominant (60–70% width); labels around or beside diagram.
+**Layout:** Full-width centred diagram (~8.7"); 1–2 caption lines in 14pt italic below. Multi-line labels: text left, image right.
 
 ---
 
