@@ -1,7 +1,5 @@
 ---
-title: >-
-  Create `dynamic_job_definition` Table and OpenShift ConfigMap Keys for
-  `lis-scheduler` Mandatory Setup
+title: Create `dynamic_job_definition` Table and OpenShift ConfigMap Keys for `lis-scheduler` Mandatory Setup
 tags:
   - jira-log
   - lis
@@ -10,9 +8,9 @@ request_type: Service Request
 priority: Medium
 services:
   - lis-scheduler
-target_completion_date: '2026-07-17'
+target_completion_date: 2026-07-30
 status: draft
-created: '2026-07-15'
+created: 2026-07-15
 reference_jira: []
 design_status: draft
 ---

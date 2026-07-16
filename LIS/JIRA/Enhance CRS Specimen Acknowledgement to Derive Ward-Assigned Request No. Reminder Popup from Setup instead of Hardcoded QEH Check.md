@@ -1,7 +1,5 @@
 ---
-title: >-
-  Enhance CRS Specimen Acknowledgement to Derive Ward-Assigned Request No.
-  Reminder Popup from Setup instead of Hardcoded QEH Check
+title: Enhance CRS Specimen Acknowledgement to Derive Ward-Assigned Request No. Reminder Popup from Setup instead of Hardcoded QEH Check
 tags:
   - jira-log
   - lis
@@ -9,10 +7,10 @@ request_type: Change Request
 priority: Medium
 services:
   - lis-ecpath5-app
-target_completion_date: '2026-07-31'
+target_completion_date: 2026-07-30
 status: draft
-created: '2026-07-16'
-jira: null
+created: 2026-07-16
+jira:
 reference_jira:
   - LIS-9632
   - LIS-8437
