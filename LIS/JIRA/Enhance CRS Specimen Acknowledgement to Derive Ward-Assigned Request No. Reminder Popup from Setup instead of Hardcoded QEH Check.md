@@ -42,13 +42,12 @@ Ward-assigned request no. feature enablement is already represented in `loe_cont
 ## Change Description
 
 1. **Remove QEH-hardcoded hospital check for the Lab No. assignment reminder:**
-   - In `GcrSpecAckUIComponents.as` (Specimen Acknowledgement), replace the condition `LisGlobal.hospital == CommonConstants.HOSPITAL_QEH` that gates the *"Please assign Lab No. to acknowledge this specimen!"* popup (`GcrAlertDialogue` / `w_lis_loe_labno_reg_reminder_popup`).
-   - Retain existing behaviour: user suppress-until-log-off checkbox, and GCR audit when the reminder is turned off.
+   - In `GcrSpecAckUIComponents.as` (Specimen Acknowledgement), replace the condition `LisGlobal.hospital == CommonConstants.HOSPITAL_QEH` that gates the *"Please assign Lab No. to acknowledge this specimen!"* popup (`GcrAlertDialogue`).
 
 2. **Derive popup visibility from existing `loe_control` / dictionary setup:**
    - Show the reminder when the hospital has ward-assigned request no. feature implemented, defined as:
      - `WARD_PRINT_LABNO_LABEL = 'Y'` (already parsed as `dictionaryParam.isWardPrintReqNumberLabelEnabled`); and
-     - `RELABEL_WARD_ASSIGN_REQ_NO` is not `'Y'` or does not exist (already parsed as `dictionaryParam.isRelabelWardAssignRequestNo`).
+	 - `RELABEL_WARD_ASSIGN_REQ_NO` is not `'Y'` or does not exist (already parsed as `dictionaryParam.isRelabelWardAssignRequestNo`).
    - Condition effectively: `isWardPrintReqNumberLabelEnabled && !isRelabelWardAssignRequestNo`.
    - Hospitals without this combination (e.g. KWH with both controls `'Y'`) must not see the popup when retrieving cross-hospital ward-assigned request numbers.
    - Hospitals that meet the setup (QEH today; KTH when configured the same way) continue to see the reminder when acknowledging a specimen without a ward-assigned request no.
