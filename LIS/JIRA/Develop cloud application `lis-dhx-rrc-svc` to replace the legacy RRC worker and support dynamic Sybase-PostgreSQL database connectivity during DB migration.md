@@ -230,14 +230,13 @@ Highlighted changes: PMI and CRS registration delegated to external services; AC
 ### Slide: New Design - Legacy vs Revamped
 | Aspect                           | C program                         | Revamp                                       |
 | -------------------------------- | --------------------------------- | -------------------------------------------- |
-| Trigger                          | Continuous Unix daemon poll       | Scheduler in lis-dhx-rrc-svc (lis-scheduler) |
-| Protocol                         | Unix socket / CT-Lib              | REST JSON over HTTPS                         |
+| Trigger                          | Cron                              | Scheduler in lis-dhx-rrc-svc (lis-scheduler) |
 | Patient PMI                      | Direct SQL                        | lis-patient-svc                              |
 | New PATIENT insert               | Inside C RRC                      | lis-request-svc register                     |
 | CRS request / detail / task list | Local inserts in C                | lis-request-svc register and activate        |
 | Converted result WKT             | Inserted in C during construct    | Built in memory in RRC; inserted at register |
 | DH acknowledgement               | C switches server and inserts WKT | Same ownership in lis-dhx-rrc-svc            |
-| Deployment                       | On-premises Unix process          | OpenShift container                          |
+
 
 ### Slide: New Design - External Service Ownership
 | Capability | C program | Revamp owner |
