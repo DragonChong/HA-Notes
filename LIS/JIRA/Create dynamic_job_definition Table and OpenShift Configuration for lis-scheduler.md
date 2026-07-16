@@ -14,6 +14,7 @@ target_completion_date: '2026-07-17'
 status: draft
 created: '2026-07-15'
 reference_jira: []
+design_status: draft
 ---
 # Create `dynamic_job_definition` Table and OpenShift Configuration for `lis-scheduler` Mandatory Setup
 
@@ -57,4 +58,91 @@ This mandatory shared setup unblocks adoption of `lis-scheduler`, which enables 
 
 ## Design
 
-<!-- Populated by generate-design skill before CP3 review. -->
+**Review type:** incremental
+**JIRA key:** (pending)
+**Service:** lis-scheduler
+**Review forum:** CP3
+**Review date:** 16th Jul, 2026
+**Prior review:** none
+
+### Agenda
+Background
+Design Review
+Promotion
+Fallback
+Q&A
+
+### Slide: Background
+LIS microservices adopt embedded lis-scheduler for canary-friendly scheduling
+Each service version uses an isolated Quartz sched_name
+Jobs can be defined in source code or at runtime via PostgreSQL
+Table-driven jobs need a shared definition table that does not yet exist
+Shared OpenShift ConfigMap also lacks schema, prefix, and creator cron keys
+
+### Slide: Background - Why Table-Driven Jobs
+Allow new or changed schedules without redeploying the consuming service
+application_name matches spring.application.name (version-agnostic)
+A scheduled creator job polls OUTSTANDING rows and registers Quartz jobs
+Supports phased cutover alongside versioned sched_name for canary
+
+### Slide: Proposed Change - Overview
+Create scheduler.dynamic_job_definition in scheduler PostgreSQL
+Add unique index on (application_name, job_name)
+Add pickup index on (application_name, status, enabled, updated_at)
+Add three keys to shared ConfigMap scheduler-svc-config (per environment)
+
+### Slide: Proposed Change - Schema
+| Column | Type | Description |
+| --- | --- | --- |
+| application_name | VARCHAR(120) | Consuming service name |
+| job_name | VARCHAR(200) | Quartz job name (unique per application) |
+| bean_name / method_name | VARCHAR(100) | Target bean and method |
+| cron_expression | VARCHAR(120) | Quartz cron |
+| concurrent / skip_on_overdue / max_retry | flags | Execution behaviour |
+| parameters | TEXT | Method arguments |
+| enabled | BOOLEAN | Row active flag |
+| status / status_message | VARCHAR / TEXT | OUTSTANDING → PROCESSING → COMPLETED / FAILED |
+
+### Slide: Proposed Change - ConfigMap Keys
+| Key | Example | Purpose |
+| --- | --- | --- |
+| SCHEDULER_DB_SCHEMA | scheduler | PostgreSQL schema for Quartz / definition tables |
+| SCHEDULER_DB_PREFIX | lis | Quartz table prefix (lis_sfwk_*) |
+| CRON_EXPRESSION_DYNAMIC_JOB_CREATOR | 0 0/1 * * * ? | Creator job cron (every 1 minute) |
+
+### Diagram: dynamic-job-creator-flow
+```mermaid
+sequenceDiagram
+    autonumber
+    participant App as Consuming service
+    participant Def as dynamic_job_definition
+    participant Qz as Quartz tables
+
+    App->>Def: Poll OUTSTANDING rows (enabled=true)
+    Def-->>App: Definition row
+    App->>Def: Claim row (OUTSTANDING to PROCESSING)
+    App->>Qz: Create job / trigger / cron trigger
+    App->>Def: Mark COMPLETED (or FAILED)
+```
+
+### Slide: Status Lifecycle
+| Status | Meaning |
+| --- | --- |
+| OUTSTANDING | Inserted; awaiting creator pickup |
+| PROCESSING | Claimed by creator |
+| COMPLETED | Quartz job created (or already exists) |
+| FAILED | Creation error recorded in status_message |
+
+### Slide: Promotion
+Run DDL on scheduler PostgreSQL (replace schema from SCHEDULER_DB_SCHEMA)
+Add SCHEDULER_DB_SCHEMA, SCHEDULER_DB_PREFIX, CRON_EXPRESSION_DYNAMIC_JOB_CREATOR to scheduler-svc-config
+Restart / redeploy consuming services that mount the shared ConfigMap
+Verify creator job runs and an OUTSTANDING test row becomes COMPLETED
+
+### Slide: Fallback
+Remove or roll back the three ConfigMap keys if not yet consumed
+Drop dynamic_job_definition only if no service depends on it
+Consuming services remain usable with source-code jobs when table-driven path is unused
+Disable creator only via SCHEDULER_DYNAMIC_JOB_CREATOR_ENABLED=false if needed
+
+### Slide: Q&A
