@@ -18,8 +18,21 @@ import sys
 from pathlib import Path
 
 from pptx import Presentation
+from pptx.dml.color import RGBColor
 from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
-from pptx.util import Inches, Pt
+from pptx.util import Emu, Inches, Pt
+
+# Content area geometry (10" x 7.5" slide; title band ~1.3")
+CONTENT_LEFT = Inches(0.65)
+CONTENT_WIDTH = Inches(8.7)
+CONTENT_TOP = Inches(1.45)
+CONTENT_BOTTOM = Inches(6.85)
+ROW_HEIGHT = Inches(0.42)
+TABLE_HEADER_PT = Pt(12)
+TABLE_BODY_PT = Pt(11)
+BODY_PT = Pt(18)
+CAPTION_PT = Pt(14)
+CODE_PT = Pt(10)
 
 SKILL_DIR = Path(__file__).resolve().parent
 TEMPLATE = SKILL_DIR / "ha-lis-design-review-template.pptx"
@@ -141,7 +154,7 @@ def parse_code_block(body: list[str]) -> tuple[str | None, list[str]]:
     return code, notes
 
 
-def classify_slide(slide: dict, index: int) -> str:
+def classify_slide(slide: dict, index: int, *, has_image: bool = False) -> str:
     title = slide["title"]
     body = slide["body"]
 
@@ -161,7 +174,33 @@ def classify_slide(slide: dict, index: int) -> str:
         return "code"
     if any(is_table_line(line) for line in body):
         return "table"
+    if has_image:
+        return "diagram"
     return "bullets"
+
+
+def _hide_placeholder(ph) -> None:
+    """Remove empty placeholder chrome when laying out shapes manually."""
+    if ph is None:
+        return
+    ph.left = Emu(0)
+    ph.top = Emu(0)
+    ph.width = Emu(0)
+    ph.height = Emu(0)
+
+
+def _set_cell_text(cell, text: str, *, bold: bool = False, size: Pt = TABLE_BODY_PT) -> None:
+    cell.text = text
+    for paragraph in cell.text_frame.paragraphs:
+        paragraph.font.name = "Calibri"
+        paragraph.font.size = size
+        paragraph.font.bold = bold
+    cell.text_frame.word_wrap = True
+    cell.vertical_anchor = MSO_ANCHOR.MIDDLE
+    cell.margin_left = Inches(0.06)
+    cell.margin_right = Inches(0.06)
+    cell.margin_top = Inches(0.03)
+    cell.margin_bottom = Inches(0.03)
 
 
 def add_title_slide(prs: Presentation, slide: dict) -> None:
@@ -219,47 +258,67 @@ def add_bullet_slide(prs: Presentation, slide: dict) -> None:
         p = body.text_frame.paragraphs[0] if i == 0 else body.text_frame.add_paragraph()
         p.text = text
         p.level = level
+        p.font.name = "Calibri"
+        p.font.size = BODY_PT
+        p.space_after = Pt(6)
 
 
 def add_table_slide(prs: Presentation, slide: dict) -> None:
-    s = prs.slides.add_slide(prs.slide_layouts[LAYOUT_TITLE_CONTENT])
-    s.shapes.title.text = slide["title"]
-
     headers, rows, footnotes = parse_markdown_table(slide["body"])
     if not headers:
         add_bullet_slide(prs, slide)
         return
 
+    s = prs.slides.add_slide(prs.slide_layouts[LAYOUT_TITLE_CONTENT])
+    s.shapes.title.text = slide["title"]
+    _hide_placeholder(body_placeholder(s))
+
     table_rows = [headers, *rows]
     row_count = len(table_rows)
     col_count = len(headers)
+    table_height = ROW_HEIGHT * row_count
+    footnote_space = Inches(0.55) if footnotes else Inches(0)
+    available = CONTENT_BOTTOM - CONTENT_TOP - footnote_space
+    if table_height < available * 0.75:
+        table_top = CONTENT_TOP + (available - table_height) / 2
+    else:
+        table_top = CONTENT_TOP
+        table_height = min(table_height, available)
+
     table_shape = s.shapes.add_table(
         row_count,
         col_count,
-        Inches(0.9),
-        Inches(1.35),
-        Inches(8.8),
-        Inches(max(0.38 * row_count, 0.8)),
+        CONTENT_LEFT,
+        table_top,
+        CONTENT_WIDTH,
+        table_height,
     )
     table = table_shape.table
-
+    col_width = int(CONTENT_WIDTH / col_count)
+    for c in range(col_count):
+        table.columns[c].width = col_width
     for r, row in enumerate(table_rows):
+        table.rows[r].height = ROW_HEIGHT
         for c, value in enumerate(row):
-            cell = table.cell(r, c)
-            cell.text = value
-            for paragraph in cell.text_frame.paragraphs:
-                paragraph.font.size = Pt(12 if r == 0 else 11)
-                paragraph.font.bold = r == 0
+            _set_cell_text(
+                table.cell(r, c),
+                value,
+                bold=(r == 0),
+                size=TABLE_HEADER_PT if r == 0 else TABLE_BODY_PT,
+            )
 
     if footnotes:
-        top = Inches(1.35 + 0.38 * row_count + 0.15)
-        box = s.shapes.add_textbox(Inches(0.9), top, Inches(8.8), Inches(1.2))
+        note_top = table_top + table_height + Inches(0.12)
+        box = s.shapes.add_textbox(CONTENT_LEFT, note_top, CONTENT_WIDTH, Inches(0.45))
         tf = box.text_frame
         tf.word_wrap = True
         for i, note in enumerate(footnotes):
             p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
             p.text = note
-            p.font.size = Pt(11)
+            p.font.name = "Calibri"
+            p.font.size = TABLE_BODY_PT
+            p.font.italic = True
+            p.font.color.rgb = RGBColor(0x44, 0x44, 0x44)
 
 
 def add_code_slide(prs: Presentation, slide: dict) -> None:
@@ -271,52 +330,108 @@ def add_code_slide(prs: Presentation, slide: dict) -> None:
         add_bullet_slide(prs, slide)
         return
 
-    box = s.shapes.add_textbox(Inches(0.9), Inches(1.25), Inches(8.8), Inches(3.2))
+    _hide_placeholder(body_placeholder(s))
+    code_height = Inches(min(0.22 * max(len(code.splitlines()), 1) + 0.3, 4.8))
+    box = s.shapes.add_textbox(CONTENT_LEFT, CONTENT_TOP, CONTENT_WIDTH, code_height)
     tf = box.text_frame
-    tf.word_wrap = True
+    tf.word_wrap = False
     p = tf.paragraphs[0]
     p.text = code
     p.font.name = "Consolas"
-    p.font.size = Pt(10)
+    p.font.size = CODE_PT
 
     if notes:
-        note_box = s.shapes.add_textbox(Inches(0.9), Inches(4.55), Inches(8.8), Inches(0.8))
+        note_box = s.shapes.add_textbox(
+            CONTENT_LEFT,
+            CONTENT_TOP + code_height + Inches(0.15),
+            CONTENT_WIDTH,
+            Inches(0.8),
+        )
         note_tf = note_box.text_frame
         note_tf.word_wrap = True
         for i, note in enumerate(notes):
             np = note_tf.paragraphs[0] if i == 0 else note_tf.add_paragraph()
             np.text = note
-            np.font.size = Pt(11)
+            np.font.name = "Calibri"
+            np.font.size = TABLE_BODY_PT
 
 
-def embed_image(slide, image_ref: str, kind: str, has_text: bool) -> None:
-    """Add the diagram referenced by a slide's `![](...)` line as a picture.
-
-    - No other body text (pure diagram slide): dominant, centred image.
-    - Body text present (e.g. Architecture Diagram labels, Flow steps):
-      image placed beside the text on the right, and the bullet/agenda
-      content placeholder is narrowed so the two don't overlap.
-    """
+def _resolve_image_path(image_ref: str) -> Path:
     image_path = Path(image_ref)
     if not image_path.is_absolute():
         image_path = (MD_DIR / image_path).resolve()
+    return image_path
 
+
+def add_diagram_slide(prs: Presentation, slide: dict, image_ref: str) -> None:
+    """Large centred diagram with optional caption below (avoids title overlap)."""
+    s = prs.slides.add_slide(prs.slide_layouts[LAYOUT_TITLE_CONTENT])
+    s.shapes.title.text = slide["title"]
+    _hide_placeholder(body_placeholder(s))
+
+    image_path = _resolve_image_path(image_ref)
+    caption_lines = [line.strip() for line in slide["body"] if line.strip()]
     if not image_path.exists():
         print(f"Warning: image not found, skipping embed: {image_path}", file=sys.stderr)
+        if caption_lines:
+            add_bullet_slide(prs, slide)
         return
 
-    if not has_text:
-        slide.shapes.add_picture(str(image_path), Inches(1.3), Inches(1.3), width=Inches(7.4))
+    caption_height = Inches(0.35 * len(caption_lines) + 0.15) if caption_lines else Inches(0)
+    image_area_bottom = CONTENT_BOTTOM - caption_height - Inches(0.1)
+    image_area_height = image_area_bottom - CONTENT_TOP
+
+    pic = s.shapes.add_picture(
+        str(image_path),
+        CONTENT_LEFT,
+        CONTENT_TOP,
+        width=CONTENT_WIDTH,
+    )
+    if pic.height > image_area_height:
+        scale = image_area_height / pic.height
+        pic.width = int(pic.width * scale)
+        pic.height = int(pic.height * scale)
+    pic.left = int(CONTENT_LEFT + (CONTENT_WIDTH - pic.width) / 2)
+    pic.top = int(CONTENT_TOP + (image_area_height - pic.height) / 2)
+
+    if caption_lines:
+        cap_top = int(pic.top + pic.height + Inches(0.12))
+        cap = s.shapes.add_textbox(CONTENT_LEFT, cap_top, CONTENT_WIDTH, caption_height)
+        tf = cap.text_frame
+        tf.word_wrap = True
+        for i, line in enumerate(caption_lines):
+            p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+            p.text = line
+            p.font.name = "Calibri"
+            p.font.size = CAPTION_PT
+            p.font.italic = True
+            p.font.color.rgb = RGBColor(0x44, 0x44, 0x44)
+            p.alignment = PP_ALIGN.CENTER
+
+
+def embed_image_beside_text(slide, image_ref: str, kind: str) -> None:
+    """Image on the right when substantial bullet text shares the slide."""
+    image_path = _resolve_image_path(image_ref)
+    if not image_path.exists():
+        print(f"Warning: image not found, skipping embed: {image_path}", file=sys.stderr)
         return
 
     if kind in ("bullets", "agenda"):
         try:
             body = body_placeholder(slide)
-            body.width = Inches(4.6)
+            body.left = CONTENT_LEFT
+            body.top = CONTENT_TOP
+            body.width = Inches(4.35)
+            body.height = CONTENT_BOTTOM - CONTENT_TOP
         except RuntimeError:
             pass
 
-    slide.shapes.add_picture(str(image_path), Inches(5.4), Inches(1.3), width=Inches(4.0))
+    slide.shapes.add_picture(
+        str(image_path),
+        Inches(5.25),
+        CONTENT_TOP,
+        width=Inches(4.1),
+    )
 
 
 def add_qa_slide(prs: Presentation) -> None:
@@ -352,7 +467,11 @@ def build_presentation(slides: list[dict], output_path: Path) -> Presentation:
         image_ref, body_wo_image = extract_image(slide["body"])
         working_slide = {"title": slide["title"], "body": body_wo_image}
 
-        kind = classify_slide(working_slide, i)
+        kind = classify_slide(working_slide, i, has_image=bool(image_ref))
+        if kind == "diagram":
+            add_diagram_slide(prs, working_slide, image_ref)
+            continue
+
         handler = handlers[kind]
         if kind == "qa":
             handler(prs, working_slide)
@@ -360,7 +479,7 @@ def build_presentation(slides: list[dict], output_path: Path) -> Presentation:
             handler(prs, working_slide)
 
         if image_ref:
-            embed_image(prs.slides[-1], image_ref, kind, has_text=bool(body_wo_image))
+            embed_image_beside_text(prs.slides[-1], image_ref, kind)
 
     return prs
 
