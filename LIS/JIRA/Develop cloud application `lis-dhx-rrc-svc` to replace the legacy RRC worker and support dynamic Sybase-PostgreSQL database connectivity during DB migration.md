@@ -138,25 +138,7 @@ Patient Master Index, CRS tables, and acknowledgements are written directly from
 No external HA microservices; configuration is compile-time constants and OS environment variables
 
 ### Slide: Existing Design - C Architecture Diagram
-```mermaid
-flowchart LR
-    subgraph External["External"]
-        DH["DH System"]
-    end
-    subgraph OnPrem["On-premises HA"]
-        WS["DhxEaiInsertion WebService"]
-        INT_DB[("INT_DB Sybase")]
-        C_RRC["C RRC daemon"]
-        PMI[("PMI / PATIENT")]
-        CRS_DB[("CRS LAB_DB")]
-        HOSP_DB[("Sendout hospital LAB_DB")]
-    end
-    DH --> WS --> INT_DB
-    C_RRC --> INT_DB
-    C_RRC --> PMI
-    C_RRC --> CRS_DB
-    C_RRC --> HOSP_DB
-```
+![](c-architecture-diagram.png)
 All processing and database writes run inside the single C daemon process
 
 ### Slide: Existing Design - C Processing Stages
