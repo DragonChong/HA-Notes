@@ -167,6 +167,7 @@ flowchart LR
             PAT_SVC("lis-patient-svc")
             REQ_SVC("lis-request-svc")
             CRS_DB[("CRS Database")]
+            LAB_DB[("Lab Databases")]
     end
     DH --> WS
     WS --> INT_DB
@@ -176,6 +177,7 @@ flowchart LR
     RRC_SVC -- Register/Wipeout Request --> REQ_SVC
     REQ_SVC -- Insert/Delete Request --> CRS_DB
     REQ_SVC -- Insert Patient --> PAT_SVC
+    RRC_SVC -- Acknowledgement --> LAB_DB
 
     classDef external fill:#ffebee,stroke:#f44336,stroke-width:2px,color:#000
     classDef internal fill:#e3f2fd,stroke:#2196f3,stroke-width:2px,color:#000
@@ -185,7 +187,7 @@ flowchart LR
 
     class DH external
     class WS webservice
-    class INT_DB,CRS_DB database
+    class INT_DB,CRS_DB,LAB_DB database
     class RRC_SVC,PAT_SVC,REQ_SVC,SCH_SVC service
 
 ```
