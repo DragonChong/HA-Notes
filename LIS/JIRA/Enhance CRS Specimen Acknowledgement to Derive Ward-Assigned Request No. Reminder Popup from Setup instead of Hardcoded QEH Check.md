@@ -47,7 +47,7 @@ Ward-assigned request no. feature enablement is already represented in `loe_cont
 2. **Derive popup visibility from existing `loe_control` / dictionary setup:**
    - Show the reminder when the hospital has ward-assigned request no. feature implemented, defined as:
      - `WARD_PRINT_LABNO_LABEL = 'Y'` (already parsed as `dictionaryParam.isWardPrintReqNumberLabelEnabled`); and
-	 - `RELABEL_WARD_ASSIGN_REQ_NO` is not `'Y'` or does not exist (already parsed as `dictionaryParam.isRelabelWardAssignRequestNo`).
+     - `RELABEL_WARD_ASSIGN_REQ_NO` is not `'Y'` or does not exist (already parsed as `dictionaryParam.isRelabelWardAssignRequestNo`).
    - Condition effectively: `isWardPrintReqNumberLabelEnabled && !isRelabelWardAssignRequestNo`.
    - Hospitals without this combination (e.g. KWH with both controls `'Y'`) must not see the popup when retrieving cross-hospital ward-assigned request numbers.
    - Hospitals that meet the setup (QEH today; KTH when configured the same way) continue to see the reminder when acknowledging a specimen without a ward-assigned request no.
