@@ -56,7 +56,22 @@ def _emu(value) -> int:
 def _add_title_only_slide(prs: Presentation, title: str):
     """Content slide with title only (no body placeholder)."""
     s = prs.slides.add_slide(prs.slide_layouts[LAYOUT_TITLE_ONLY])
-    s.shapes.title.text = title
+    title_shape = s.shapes.title
+    title_shape.text = title
+    # Title-only layout in the HA template uses oversized centered title text.
+    # Reposition it to match the standard content-slide title band.
+    title_shape.left = Inches(0.85)
+    title_shape.top = Inches(0.14)
+    title_shape.width = Inches(9.1)
+    title_shape.height = Inches(0.72)
+    tf = title_shape.text_frame
+    tf.word_wrap = True
+    tf.vertical_anchor = MSO_ANCHOR.TOP
+    for paragraph in tf.paragraphs:
+        paragraph.alignment = PP_ALIGN.LEFT
+        for run in paragraph.runs:
+            run.font.name = "Calibri Light"
+            run.font.size = Pt(28)
     return s
 
 
