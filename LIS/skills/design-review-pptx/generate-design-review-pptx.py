@@ -34,6 +34,17 @@ BODY_PT = Pt(18)
 CAPTION_PT = Pt(14)
 CODE_PT = Pt(10)
 
+# Title band from Title and Content layout (must match bullet slides).
+# Title Only layout uses a different band (italic, #00B0F0, oversized) — never
+# leave those placeholder styles on table/code/diagram slides.
+TITLE_LEFT = 902911
+TITLE_TOP = 144488
+TITLE_WIDTH = 10402799
+TITLE_HEIGHT = 1045769
+TITLE_COLOR = RGBColor(0x00, 0x70, 0xC0)
+TITLE_FONT = "Calibri Light"
+TITLE_SIZE = Pt(32)
+
 SKILL_DIR = Path(__file__).resolve().parent
 TEMPLATE = SKILL_DIR / "ha-lis-design-review-template.pptx"
 
@@ -54,24 +65,31 @@ def _emu(value) -> int:
 
 
 def _add_title_only_slide(prs: Presentation, title: str):
-    """Content slide with title only (no body placeholder)."""
+    """Content slide with title only (no body placeholder).
+
+    Uses the Title Only layout so tables/diagrams can own the content area,
+    but restyles the title to match Title and Content slides (position, font,
+    colour). Without this, Title Only inherits italic #00B0F0 at a different
+    title band and looks misaligned next to bullet slides.
+    """
     s = prs.slides.add_slide(prs.slide_layouts[LAYOUT_TITLE_ONLY])
     title_shape = s.shapes.title
     title_shape.text = title
-    # Title-only layout in the HA template uses oversized centered title text.
-    # Reposition it to match the standard content-slide title band.
-    title_shape.left = Inches(0.85)
-    title_shape.top = Inches(0.14)
-    title_shape.width = Inches(9.1)
-    title_shape.height = Inches(0.72)
+    title_shape.left = TITLE_LEFT
+    title_shape.top = TITLE_TOP
+    title_shape.width = TITLE_WIDTH
+    title_shape.height = TITLE_HEIGHT
     tf = title_shape.text_frame
     tf.word_wrap = True
     tf.vertical_anchor = MSO_ANCHOR.TOP
     for paragraph in tf.paragraphs:
         paragraph.alignment = PP_ALIGN.LEFT
         for run in paragraph.runs:
-            run.font.name = "Calibri Light"
-            run.font.size = Pt(28)
+            run.font.name = TITLE_FONT
+            run.font.size = TITLE_SIZE
+            run.font.bold = True
+            run.font.italic = False
+            run.font.color.rgb = TITLE_COLOR
     return s
 
 
