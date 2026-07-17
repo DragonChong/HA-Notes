@@ -42,7 +42,7 @@ TITLE_TOP = 144488
 TITLE_WIDTH = 10402799
 TITLE_HEIGHT = 1045769
 TITLE_COLOR = RGBColor(0x00, 0x70, 0xC0)
-TITLE_FONT = "Calibri Light"
+TITLE_FONT = "Century Gothic"
 TITLE_SIZE = Pt(32)
 
 SKILL_DIR = Path(__file__).resolve().parent
@@ -81,7 +81,8 @@ def _add_title_only_slide(prs: Presentation, title: str):
     title_shape.height = TITLE_HEIGHT
     tf = title_shape.text_frame
     tf.word_wrap = True
-    tf.vertical_anchor = MSO_ANCHOR.TOP
+    # Middle matches Title and Content / slide-master title placeholders.
+    tf.vertical_anchor = MSO_ANCHOR.MIDDLE
     for paragraph in tf.paragraphs:
         paragraph.alignment = PP_ALIGN.LEFT
         for run in paragraph.runs:
