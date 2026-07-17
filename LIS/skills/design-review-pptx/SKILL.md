@@ -135,7 +135,7 @@ Style is defined by `ha-lis-design-review-template.pptx` in this skill folder. *
 | Element | Style |
 |---------|-------|
 | Theme | Microsoft Office Theme (white background) |
-| Title font | Calibri Light (from slide master) |
+| Title font | Century Gothic (from slide master) |
 | Body font | Calibri |
 | Accent / subtitle | Century Gothic, `#00B0F0` on title slide |
 | Slide numbers | Bottom-right, grey, from master |
