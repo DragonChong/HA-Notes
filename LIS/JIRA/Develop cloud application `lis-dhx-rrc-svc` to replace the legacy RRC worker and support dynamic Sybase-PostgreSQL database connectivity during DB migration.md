@@ -325,7 +325,7 @@ Dictionary errors still flag EDI status 11 without full rollback of registration
 ### Slide: Stage Diff - CRS Registration
 C: prepare and insert CRS request, detail, copy hist, MB request, and task list inside RRC
 Revamp: build registration payload in lis-dhx-rrc-svc; call lis-request-svc register then activate
-Difference: CRS core writes and new PATIENT insert move to lis-request-svc
+Difference: CRS core writes and new PATIENT insert move to lis-patient-svc
 On post-register failure, revamp compensates register and rethrows (mirrors C rollback gate)
 Owner: lis-request-svc for core CRS; lis-dhx-rrc-svc orchestrates the call
 
