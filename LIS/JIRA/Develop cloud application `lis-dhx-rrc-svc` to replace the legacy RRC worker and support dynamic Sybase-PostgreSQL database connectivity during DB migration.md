@@ -148,7 +148,7 @@ flowchart LR
         INT_DB[("INT Database")]
         C_RRC["RRC C program"]
         CRS_DB[("CRS LAB_DB")]
-        HOSP_DB[("Sendout hospital lab database")]
+        HOSP_DB[("Sendout Hospital<br>Lab Database")]
     end
     DH --> WS --> INT_DB
     C_RRC -- Retrieve Outstanding Records --> INT_DB
