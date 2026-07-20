@@ -167,6 +167,55 @@ All processing and database writes run inside the single C daemon process
 9. DH acknowledgement - switch to sendout hospital DB and insert ACK worksheet row
 10. Update EDI request status to 99, 11, or 10
 
+### Slide: Existing Design - C Processing Sequence Diagram
+```mermaid
+sequenceDiagram
+    autonumber
+    participant C as RRC C program
+    participant INT as INT Database
+    participant PMI as PMI
+    participant CRS as CRS Database
+    participant HOSP as Sendout Hospital Lab Database
+
+    Note over C,HOSP: Existing C Processing Stages
+
+    C->>INT: Claim outstanding EDI rows (status 0 to 98) and fetch batch
+    INT-->>C: Return EDI request batch
+
+    loop For each EDI request
+        alt PMI path
+            C->>PMI: Resolve patient
+            PMI-->>C: Return patient demographics
+        else Local or EDI fallback
+            C->>CRS: Resolve patient from local DB or EDI data
+            CRS-->>C: Return patient data
+        end
+        C->>CRS: Insert PATIENT locally
+
+        C->>CRS: Re-send check on sendout map
+        alt Already mapped (re-send)
+            C->>CRS: Wipeout prior CRS data and reuse lab number
+        else New request
+            C->>CRS: Assign new CRS request number from dictionary counter
+        end
+
+        opt MBS only
+            C->>CRS: Specimen mapping
+        end
+
+        C->>CRS: Convert EDI test results and insert worksheet transaction rows
+        C->>CRS: Register CRS request, detail, copy hist, MB request, and task list
+        C->>CRS: Insert PDF order, report enquiry cache, and sendout map
+
+        opt Eligible MBS hospital
+            C->>HOSP: Switch DB and insert ACK worksheet row
+        end
+
+        C->>INT: Update EDI request status to 99, 11, or 10
+    end
+```
+All ten stages run inside the single C daemon; only DH ACK switches to the sendout hospital lab database
+
 ### Slide: Existing Design - EDI Status Lifecycle
 | Status | Meaning |
 | --- | --- |
