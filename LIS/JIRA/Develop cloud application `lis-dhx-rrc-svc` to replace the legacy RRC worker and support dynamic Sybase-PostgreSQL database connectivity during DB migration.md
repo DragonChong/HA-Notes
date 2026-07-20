@@ -146,14 +146,18 @@ flowchart LR
         INT_DB[("INT Database<br>[DHX]")]
         C_RRC["RRC C program"]
         CRS_DB[("CRS Database<br>[DHX]")]
+        CRS_W["CRS worker"]
+        LAB_DB[("Lab Database<br>[DHX]")]
         HOSP_DB[("Lab Database<br>[Sendout Hospital]")]
     end
     DH --> WS --> INT_DB
     C_RRC -- Retrieve Outstanding Records --> INT_DB
     C_RRC -- Retrieve PMI Patient, Register/Wipeout Request--> CRS_DB
+    CRS_W -- Copy registered request --> CRS_DB
+    CRS_W -- Copy to lab --> LAB_DB
     C_RRC -- Acknowledgement--> HOSP_DB
 ```
-All processing and database writes run inside the single C daemon process
+RRC writes to CRS Database [DHX]; CRS worker then copies registered data to Lab Database [DHX]
 
 ### Slide: Existing Design - C Processing Stages
 1. Claim outstanding EDI rows (status 0 to 98) and fetch batch
@@ -166,16 +170,19 @@ All processing and database writes run inside the single C daemon process
 8. Insert PDF order, report enquiry cache, and sendout map locally
 9. DH acknowledgement - switch to sendout hospital DB and insert ACK worksheet row
 10. Update EDI request status to 99, 11, or 10
+11. CRS worker copies registered request from CRS Database [DHX] to Lab Database [DHX]
 
 ### Slide: Existing Design - C Processing Sequence Diagram
 ```mermaid
 sequenceDiagram
     autonumber
     participant C as RRC C program
-    participant INT as INT Database
+    participant INT as INT Database [DHX]
     participant PMI as PMI
-    participant CRS as CRS Database
-    participant HOSP as Sendout Hospital Lab Database
+    participant CRS as CRS Database [DHX]
+    participant CRSW as CRS worker
+    participant LAB as Lab Database [DHX]
+    participant HOSP as Lab Database [Sendout Hospital]
 
     Note over C,HOSP: Existing C Processing Stages
 
@@ -212,9 +219,13 @@ sequenceDiagram
         end
 
         C->>INT: Update EDI request status to 99, 11, or 10
+
+        CRSW->>CRS: Read registered request from CRS Database [DHX]
+        CRS-->>CRSW: Return request data
+        CRSW->>LAB: Copy request data to Lab Database [DHX]
     end
 ```
-All ten stages run inside the single C daemon; only DH ACK switches to the sendout hospital lab database
+RRC stages 1–10 run in the C daemon; CRS worker then copies CRS Database [DHX] to Lab Database [DHX]
 
 ### Slide: Existing Design - EDI Status Lifecycle
 | Status | Meaning |
