@@ -143,19 +143,17 @@ flowchart LR
     subgraph External["External"]
         DH["DH System"]
     end
-    subgraph OnPrem["On-premises HA"]
+    subgraph HA["HA"]
         WS["DhxEaiInsertion WebService"]
-        INT_DB[("INT_DB Sybase")]
-        C_RRC["C RRC daemon"]
-        PMI[("PMI / PATIENT")]
+        INT_DB[("INT Database")]
+        C_RRC["RRC C program"]
         CRS_DB[("CRS LAB_DB")]
         HOSP_DB[("Sendout hospital LAB_DB")]
     end
     DH --> WS --> INT_DB
-    C_RRC --> INT_DB
-    C_RRC --> PMI
-    C_RRC --> CRS_DB
-    C_RRC --> HOSP_DB
+    C_RRC -- Retrieve Outstanding Records --> INT_DB
+    C_RRC -- Retrieve PMI patient, Register/Wipeout Request--> CRS_DB
+    C_RRC -- Acknowledgement--> HOSP_DB
 ```
 All processing and database writes run inside the single C daemon process
 
