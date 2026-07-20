@@ -143,10 +143,10 @@ flowchart LR
     end
     subgraph HA["HA"]
         WS["DhxEaiInsertion WebService"]
-        INT_DB[("INT Database")]
+        INT_DB[("INT Database<br>[DHX]")]
         C_RRC["RRC C program"]
-        CRS_DB[("CRS Database")]
-        HOSP_DB[("Sendout Hospital<br>Lab Database")]
+        CRS_DB[("CRS Database<br>[DHX]")]
+        HOSP_DB[("Lab Database<br>[Sendout Hospital]")]
     end
     DH --> WS --> INT_DB
     C_RRC -- Retrieve Outstanding Records --> INT_DB
