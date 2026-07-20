@@ -238,7 +238,7 @@ RRC stages 1–10 run in the C daemon; CRS worker then copies CRS Database [DHX]
 Status semantics are preserved in the revamp; atomic claim still prevents double-processing
 
 ### Slide: New Design - Architecture Overview
-Cloud application lis-dhx-rrc-svc replaces the C daemon; triggered by lis-scheduler in lis-dhx-rrc-svc per lab
+Cloud application lis-dhx-rrc-svc replaces the C program; triggered by lis-scheduler in lis-dhx-rrc-svc per lab
 INT_DB still holds EDI source data; LAB_DB / CRS is PostgreSQL with dynamic Sybase/PG routing
 Patient PMI lookup and refresh of existing PATIENT go through lis-patient-svc
 CRS core registration, PATIENT insert for new patients, and worksheet result insert go through lis-request-svc
