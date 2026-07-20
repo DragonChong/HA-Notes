@@ -220,9 +220,9 @@ sequenceDiagram
 
         C->>INT: Update EDI request status to 99, 11, or 10
 
-        CRSW->>CRS: Read registered request from CRS Database [DHX]
+        CRSW->>CRS: Read registered request
         CRS-->>CRSW: Return request data
-        CRSW->>LAB: Copy request data to Lab Database [DHX]
+        CRSW->>LAB: Copy request data
     end
 ```
 RRC stages 1–10 run in the C daemon; CRS worker then copies CRS Database [DHX] to Lab Database [DHX]
