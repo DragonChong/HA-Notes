@@ -228,13 +228,13 @@ sequenceDiagram
 RRC stages 1–10 run in the C daemon; CRS worker then copies CRS Database [DHX] to Lab Database [DHX]
 
 ### Slide: Existing Design - EDI Status Lifecycle
-| Status | Meaning |
-| --- | --- |
-| 0 | Outstanding - awaiting processing |
-| 98 | Claimed - stamped with processing datetime |
-| 99 | Completed successfully |
-| 11 | Registered with dictionary error |
-| 10 | Processing failure |
+| Status | Meaning                                    |
+| ------ | ------------------------------------------ |
+| 0      | Outstanding - awaiting processing          |
+| 98     | Claimed - stamped with processing datetime |
+| 99     | Completed successfully                     |
+| 11     | Registered with dictionary error           |
+| 10     | Processing failure                         |
 Status semantics are preserved in the revamp; atomic claim still prevents double-processing
 
 ### Slide: New Design - Architecture Overview
