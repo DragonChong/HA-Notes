@@ -253,13 +253,13 @@ flowchart LR
     end
     subgraph Internal["HA"]
             WS("DhxEaiInsertion <br> WebService")
-            INT_DB[("INT Database")]
+            INT_DB[("INT Database<br>[DHX]")]
             SCH_SVC("lis-scheduler<br>(in lis-dhx-rrc-svc)")
             RRC_SVC("lis-dhx-rrc-svc")
             PAT_SVC("lis-patient-svc")
             REQ_SVC("lis-request-svc")
-            CRS_DB[("CRS Database")]
-            LAB_DB[("Lab Databases")]
+            CRS_DB[("CRS Database<br>[DHX]")]
+            LAB_DB[("Lab Databases<br>[Sendout Hospital]")]
     end
     DH --> WS
     WS --> INT_DB
