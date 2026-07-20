@@ -148,11 +148,11 @@ flowchart LR
         INT_DB[("INT Database")]
         C_RRC["RRC C program"]
         CRS_DB[("CRS LAB_DB")]
-        HOSP_DB[("Sendout hospital LAB_DB")]
+        HOSP_DB[("Sendout hospital lab database")]
     end
     DH --> WS --> INT_DB
     C_RRC -- Retrieve Outstanding Records --> INT_DB
-    C_RRC -- Retrieve PMI patient, Register/Wipeout Request--> CRS_DB
+    C_RRC -- Retrieve PMI Patient, Register/Wipeout Request--> CRS_DB
     C_RRC -- Acknowledgement--> HOSP_DB
 ```
 All processing and database writes run inside the single C daemon process
