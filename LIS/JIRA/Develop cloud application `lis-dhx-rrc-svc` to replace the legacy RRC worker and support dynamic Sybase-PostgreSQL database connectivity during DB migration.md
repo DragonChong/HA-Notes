@@ -133,8 +133,7 @@ Lab number drives EDI prefix and source-system filters in both C and revamp
 ### Slide: Existing Design - C Architecture
 DH submits results via DhxEaiInsertion WebService into Sybase INT_DB EDI tables
 C RRC daemon runs continuously on an on-premises Unix host and polls INT_DB
-All business steps run inside the C process using CT-Lib multi-connection access
-Patient Master Index, CRS tables, and acknowledgements are written directly from the daemon
+PMI, CRS tables, and acknowledgements are read or written directly from the daemon
 No external HA microservices; configuration is compile-time constants and OS environment variables
 
 ### Slide: Existing Design - C Architecture Diagram
