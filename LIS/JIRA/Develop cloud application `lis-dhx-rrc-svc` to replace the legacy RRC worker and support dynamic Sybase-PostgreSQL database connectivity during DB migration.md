@@ -147,7 +147,7 @@ flowchart LR
         WS["DhxEaiInsertion WebService"]
         INT_DB[("INT Database")]
         C_RRC["RRC C program"]
-        CRS_DB[("CRS LAB_DB")]
+        CRS_DB[("CRS Database")]
         HOSP_DB[("Sendout Hospital<br>Lab Database")]
     end
     DH --> WS --> INT_DB
