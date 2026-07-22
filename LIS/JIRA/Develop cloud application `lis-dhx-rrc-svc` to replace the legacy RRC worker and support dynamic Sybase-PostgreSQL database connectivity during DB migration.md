@@ -138,10 +138,10 @@ PMI, CRS tables, and acknowledgements are read or written directly from the daem
 ### Slide: Existing Design - C Architecture Diagram
 ```mermaid
 flowchart LR
-    subgraph External["External"]
+ subgraph External["External"]
         DH["DH System"]
-    end
-    subgraph HA["HA"]
+  end
+ subgraph HA["HA"]
         WS["DhxEaiInsertion WebService"]
         INT_DB[("INT Database<br>[DHX]")]
         C_RRC["RRC C program"]
@@ -149,13 +149,15 @@ flowchart LR
         CRS_W["CRS worker"]
         LAB_DB[("Lab Database<br>[DHX]")]
         HOSP_DB[("Lab Database<br>[Sendout Hospital]")]
-    end
-    DH --> WS --> INT_DB
+  end
+    DH --> WS
+    WS --> INT_DB
     C_RRC -- Retrieve Outstanding Records --> INT_DB
-    C_RRC -- Retrieve PMI Patient, Register/Wipeout Request--> CRS_DB
+    C_RRC -- Retrieve PMI Patient, Register Request --> CRS_DB
+    C_RRC -- Wipeout Request --> LAB_DB
     CRS_W -- Copy registered request --> CRS_DB
     CRS_W -- Copy to lab --> LAB_DB
-    C_RRC -- Acknowledgement--> HOSP_DB
+    C_RRC -- Acknowledgement --> HOSP_DB
     C_RRC -- Trigger --> CRS_W
 ```
 RRC writes to CRS Database [DHX]; CRS worker then copies registered data to Lab Database [DHX]
