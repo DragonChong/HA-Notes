@@ -156,6 +156,7 @@ flowchart LR
     CRS_W -- Copy registered request --> CRS_DB
     CRS_W -- Copy to lab --> LAB_DB
     C_RRC -- Acknowledgement--> HOSP_DB
+    C_RRC -- Trigger --> CRS_W
 ```
 RRC writes to CRS Database [DHX]; CRS worker then copies registered data to Lab Database [DHX]
 
