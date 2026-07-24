@@ -10,7 +10,7 @@ services:
 target_completion_date: 2026-07-30
 status: draft
 created: 2026-07-16
-jira: LIS-10474
+jira: LIS-10747
 reference_jira:
   - LIS-9632
   - LIS-8437
