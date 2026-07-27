@@ -159,6 +159,15 @@ flowchart LR
     CRS_W -- Copy to lab --> LAB_DB
     C_RRC -- Acknowledgement --> HOSP_DB
     C_RRC -- Trigger --> CRS_W
+	
+    classDef external fill:#ffebee,stroke:#f44336,stroke-width:2px,color:#000
+    classDef internal fill:#e3f2fd,stroke:#2196f3,stroke-width:2px,color:#000
+    classDef webservice fill:#e8f5e8,stroke:#4caf50,stroke-width:2px,color:#000
+    classDef database fill:#fff3e0,stroke:#ff9800,stroke-width:2px,color:#000
+
+    class DH external
+    class WS webservice
+    class INT_DB,CRS_DB,LAB_DB,HOSP_DB database
 ```
 RRC writes to CRS Database [DHX]; CRS worker then copies registered data to Lab Database [DHX]
 
