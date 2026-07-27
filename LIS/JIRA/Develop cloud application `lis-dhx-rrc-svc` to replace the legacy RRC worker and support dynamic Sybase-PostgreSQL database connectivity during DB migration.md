@@ -264,6 +264,7 @@ flowchart LR
             CRS_DB[("CRS Database<br>[DHX]")]
             LAB_DB[("Lab Database<br>[DHX]")]
             HOSP_DB[("Lab Databases<br>[Sendout Hospital]")]
+            CRS_W["CRS worker<br>[Triggered by cron]"]
     end
     DH --> WS
     WS --> INT_DB
@@ -275,6 +276,8 @@ flowchart LR
     REQ_SVC -- Insert Request --> CRS_DB
     REQ_SVC -- Insert Patient --> PAT_SVC
     RRC_SVC -- Acknowledgement --> HOSP_DB
+    CRS_W -- Copy registered request --> CRS_DB
+    CRS_W -- Copy to lab --> LAB_DB
 
     classDef external fill:#ffebee,stroke:#f44336,stroke-width:2px,color:#000
     classDef internal fill:#e3f2fd,stroke:#2196f3,stroke-width:2px,color:#000

@@ -1,7 +1,5 @@
 ---
-title: >-
-  Release `lis-scheduler` — LIS Common Scheduler Framework with Dynamic Job
-  Creation and Versioning
+title: Release `lis-scheduler` — LIS Common Scheduler Framework with Dynamic Job Creation and Versioning
 tags:
   - jira-log
   - lis
@@ -10,11 +8,12 @@ request_type: Change Request
 priority: Medium
 services:
   - lis-scheduler
-target_completion_date: '2026-07-17'
+target_completion_date: 2026-07-17
 status: draft
-created: '2026-07-15'
+created: 2026-07-15
 reference_jira: []
 design_status: draft
+jira: LIS-10748
 ---
 # Release `lis-scheduler` — LIS Common Scheduler Framework with Dynamic Job Creation and Versioning
 
