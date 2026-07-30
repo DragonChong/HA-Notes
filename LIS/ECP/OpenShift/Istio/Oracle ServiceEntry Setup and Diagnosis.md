@@ -77,8 +77,8 @@ Validated mandatory set for `lis-gcr-u01` (GCR_UAT):
 | # | ServiceEntry name | Role | Host / address | Port | Resolution |
 |---|---|---|---|---|---|
 | 1 | `oracle-lis-sit-lis-gcr-u01` | SCAN | `lis-gcr-u01.serverdev.hadev.org.hk` | 29801 | **DNS** (no endpoints) |
-| 2 | `oracle-lis-sit-lisgcru1-vip-112` | Redirect VIP | `160.85.116.112/32` | 24002 | **STATIC** + IP |
-| 3 | `oracle-lis-sit-lisgcru1-vip-113` | Redirect VIP | `160.85.116.113/32` | 24002 | **STATIC** + IP |
+| 2 | `oracle-lis-sit-lisgcru1-vip-112` | Redirect VIP | `cdctst30-vip` + `160.85.116.112/32` | 24002 | **STATIC** + IP |
+| 3 | `oracle-lis-sit-lisgcru1-vip-113` | Redirect VIP | `cdctst39-vip` + `160.85.116.113/32` | 24002 | **STATIC** + IP |
 | 4 | `oracle-lis-sit-cdctst30` | Node host | `cdctst30` | 24002 | **DNS** (no endpoints) |
 | 5 | `oracle-lis-sit-cdctst39` | Node host | `cdctst39` | 24002 | **DNS** (no endpoints) |
 
@@ -86,7 +86,10 @@ Validated mandatory set for `lis-gcr-u01` (GCR_UAT):
 > Use `oracle-lis-sit-lis-gcr-u01` for the SCAN SE (cluster FQDN). Do **not** keep a separate `*-fqdn` resource name.
 
 > [!tip] DNS vs STATIC
-> For hostname-based SEs, prefer **Option A** (`resolution: DNS`). Only instance VIP redirect SEs must pin IPs (`STATIC`).
+> For hostname-based SEs (SCAN / node hosts), prefer **Option A** (`resolution: DNS`).
+> Instance VIPs often have DNS too (e.g. `cdctst30-vip` → `.112`), but JDBC **redirects by IP**, so VIP SEs still need `addresses:` + `STATIC`. DNS-only VIP SE will BlackHole IP redirects.
+>
+> Discover VIP DNS: `nslookup <vip-ip>` (reverse lookup).
 
 Example VIP SE (critical piece):
 
@@ -102,9 +105,9 @@ spec:
   exportTo:
     - lis-sit
   hosts:
-    - oracle-lisgcru1-vip-112.local   # placeholder; TCP requires exactly one host
+    - cdctst30-vip                     # real VIP DNS short name
   addresses:
-    - 160.85.116.112/32               # required for IP-based redirect
+    - 160.85.116.112/32               # required — JDBC redirects by IP
   location: MESH_EXTERNAL
   ports:
     - name: tcp-24002
