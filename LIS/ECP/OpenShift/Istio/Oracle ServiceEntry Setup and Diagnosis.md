@@ -66,24 +66,27 @@ App JDBC  →  SCAN host:port (e.g. lis-gcr-u01:29801)
 |---|---|
 | TCP ServiceEntry allows **one** `hosts` entry | One SE per hostname / placeholder |
 | Protocol must be **TCP** | Do not use HTTP/HTTPS for Oracle JDBC |
-| Prefer `resolution: STATIC` for SCAN | Pin SCAN VIP endpoints explicitly |
-| Client may connect by **IP** after redirect | Use `addresses:` + `endpoints:` for instance VIPs |
+| Hostname SEs (SCAN / nodes) | Use `resolution: DNS` — no endpoints/IPs required |
+| Client may connect by **IP** after redirect | VIP SEs: `resolution: STATIC` + `addresses:` + `endpoints:` |
 | Outbound policy often REGISTRY_ONLY | Missing SE → `BlackHoleCluster` / `UH` → app `Broken pipe` |
 
 ### 2.3 Mandatory ServiceEntry set (LISGCRU1 / SIT)
 
 Validated mandatory set for `lis-gcr-u01` (GCR_UAT):
 
-| # | ServiceEntry name | Role | Host / address | Port |
-|---|---|---|---|---|
-| 1 | `oracle-lis-sit-lis-gcr-u01` | SCAN | `lis-gcr-u01.serverdev.hadev.org.hk` → SCAN VIPs `.114/.115/.116` | 29801 |
-| 2 | `oracle-lis-sit-lisgcru1-vip-112` | Redirect VIP | `160.85.116.112/32` | 24002 |
-| 3 | `oracle-lis-sit-lisgcru1-vip-113` | Redirect VIP | `160.85.116.113/32` | 24002 |
-| 4 | `oracle-lis-sit-cdctst30` | Node host | `cdctst30` → `.103` | 24002 |
-| 5 | `oracle-lis-sit-cdctst39` | Node host | `cdctst39` → `.120` | 24002 |
+| # | ServiceEntry name | Role | Host / address | Port | Resolution |
+|---|---|---|---|---|---|
+| 1 | `oracle-lis-sit-lis-gcr-u01` | SCAN | `lis-gcr-u01.serverdev.hadev.org.hk` | 29801 | **DNS** (no endpoints) |
+| 2 | `oracle-lis-sit-lisgcru1-vip-112` | Redirect VIP | `160.85.116.112/32` | 24002 | **STATIC** + IP |
+| 3 | `oracle-lis-sit-lisgcru1-vip-113` | Redirect VIP | `160.85.116.113/32` | 24002 | **STATIC** + IP |
+| 4 | `oracle-lis-sit-cdctst30` | Node host | `cdctst30` | 24002 | **DNS** (no endpoints) |
+| 5 | `oracle-lis-sit-cdctst39` | Node host | `cdctst39` | 24002 | **DNS** (no endpoints) |
 
 > [!note] Naming
 > Use `oracle-lis-sit-lis-gcr-u01` for the SCAN SE (cluster FQDN). Do **not** keep a separate `*-fqdn` resource name.
+
+> [!tip] DNS vs STATIC
+> For hostname-based SEs, prefer **Option A** (`resolution: DNS`). Only instance VIP redirect SEs must pin IPs (`STATIC`).
 
 Example VIP SE (critical piece):
 
@@ -242,13 +245,13 @@ App Oracle Broken pipe?
 
 ## 5. Example — GCR UAT / LISGCRU1 mandatory SEs
 
-| ServiceEntry                      | Target                       | Port  | Role                 |
-| --------------------------------- | ---------------------------- | ----- | -------------------- |
-| `oracle-lis-sit-lis-gcr-u01`      | SCAN FQDN → `.114/.115/.116` | 29801 | JDBC initial connect |
-| `oracle-lis-sit-lisgcru1-vip-112` | `.112`                       | 24002 | Post-SCAN redirect   |
-| `oracle-lis-sit-lisgcru1-vip-113` | `.113`                       | 24002 | Post-SCAN redirect   |
-| `oracle-lis-sit-cdctst30`         | `cdctst30` → `.103`          | 24002 | Node host            |
-| `oracle-lis-sit-cdctst39`         | `cdctst39` → `.120`          | 24002 | Node host            |
+| ServiceEntry | Target | Port | Resolution | Role |
+|---|---|---|---|---|
+| `oracle-lis-sit-lis-gcr-u01` | SCAN FQDN | 29801 | DNS | JDBC initial connect |
+| `oracle-lis-sit-lisgcru1-vip-112` | `.112` | 24002 | STATIC + IP | Post-SCAN redirect |
+| `oracle-lis-sit-lisgcru1-vip-113` | `.113` | 24002 | STATIC + IP | Post-SCAN redirect |
+| `oracle-lis-sit-cdctst30` | `cdctst30` | 24002 | DNS | Node host |
+| `oracle-lis-sit-cdctst39` | `cdctst39` | 24002 | DNS | Node host |
 
 ---
 
