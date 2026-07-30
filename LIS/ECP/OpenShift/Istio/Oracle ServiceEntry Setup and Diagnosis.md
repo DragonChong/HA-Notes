@@ -11,7 +11,8 @@ tags:
 aliases:
   - Oracle Istio ServiceEntry
   - Oracle SCAN ServiceEntry
-created: '2026-07-30'
+created: 2026-07-30
+updated: 2026-07-30
 source: lis-gcr-order-inf-svc SIT troubleshooting
 ---
 
@@ -20,7 +21,7 @@ source: lis-gcr-order-inf-svc SIT troubleshooting
 Guideline for allowing Oracle JDBC egress from Istio-injected pods, including **Oracle SCAN** and **instance VIP redirect**.
 
 > [!summary] Bottom line
-> For Oracle SCAN you usually need **more than one** ServiceEntry: SCAN host:port **plus** the redirect instance VIP:port. `nslookup` on the SCAN name alone is not enough.
+> For Oracle SCAN you need **SCAN + instance VIP redirect + node hosts**. `nslookup` on the SCAN name alone is not enough — redirect VIPs must be discovered (DBA or Istio `BlackHoleCluster` logs).
 
 ---
 
@@ -32,16 +33,15 @@ App JDBC  →  SCAN host:port (e.g. lis-gcr-u01:29801)
           →  Oracle redirects → Instance VIP:local_port (.112/.113:24002)
 ```
 
-| Layer                        | Example                 | How to discover                           |
-| ---------------------------- | ----------------------- | ----------------------------------------- |
-| SCAN DNS name                | `lis-gcr-u01`           | JDBC URL `HOST=`                          |
-| SCAN port                    | `29801`                 | JDBC URL `PORT=`                          |
-| SCAN VIP IPs                 | `.114/.115/.116`        | `nslookup <SCAN>`                         |
-| Node hostnames               | `cdctst30` / `cdctst39` | DB inventory                              |
-| Node host IPs                | `.103` / `.120`         | `nslookup` node hosts                     |
-| **Instance VIPs (redirect)** | `.112` / `.113`         | DBA, or Istio `BlackHoleCluster` logs     |
-| Local listener port          | `24002`                 | Inventory / `Test-NetConnection` on nodes |
-|                              |                         |                                           |
+| Layer | Example | How to discover |
+|---|---|---|
+| SCAN DNS name | `lis-gcr-u01` / FQDN | JDBC URL `HOST=` |
+| SCAN port | `29801` | JDBC URL `PORT=` |
+| SCAN VIP IPs | `.114/.115/.116` | `nslookup <SCAN>` |
+| Node hostnames | `cdctst30` / `cdctst39` | DB inventory |
+| Node host IPs | `.103` / `.120` | `nslookup` node hosts |
+| **Instance VIPs (redirect)** | `.112` / `.113` | DBA, or Istio `BlackHoleCluster` logs |
+| Local listener port | `24002` | Inventory / `Test-NetConnection` on nodes |
 
 > [!warning] SCAN DNS ≠ instance VIP
 > `nslookup lis-gcr-u01` only returns SCAN VIPs. Redirect targets are separate IPs and often have no useful DNS name from the app’s point of view.
@@ -64,18 +64,26 @@ App JDBC  →  SCAN host:port (e.g. lis-gcr-u01:29801)
 
 | Rule | Implication |
 |---|---|
-| TCP ServiceEntry allows **one** `hosts` entry | Split short name and FQDN into separate SEs |
+| TCP ServiceEntry allows **one** `hosts` entry | One SE per hostname / placeholder |
 | Protocol must be **TCP** | Do not use HTTP/HTTPS for Oracle JDBC |
 | Prefer `resolution: STATIC` for SCAN | Pin SCAN VIP endpoints explicitly |
 | Client may connect by **IP** after redirect | Use `addresses:` + `endpoints:` for instance VIPs |
 | Outbound policy often REGISTRY_ONLY | Missing SE → `BlackHoleCluster` / `UH` → app `Broken pipe` |
 
-### 2.3 Minimum ServiceEntry set
+### 2.3 Mandatory ServiceEntry set (LISGCRU1 / SIT)
 
-1. **SCAN SE** — host = JDBC `HOST` (e.g. `lis-gcr-u01`), port = JDBC port, endpoints = SCAN VIPs.
-2. **SCAN FQDN SE** (optional) — cluster-resolvable FQDN only, same endpoints/port.
-3. **Instance VIP SE(s)** — one host placeholder each (TCP single-host rule), with `addresses: [<vip>/32]` and endpoint on **local listener port**.
-4. **Node hostname SEs** (optional) — if redirect/DNS uses hostnames like `cdctst30`.
+Validated mandatory set for `lis-gcr-u01` (GCR_UAT):
+
+| # | ServiceEntry name | Role | Host / address | Port |
+|---|---|---|---|---|
+| 1 | `oracle-lis-sit-lis-gcr-u01` | SCAN | `lis-gcr-u01.serverdev.hadev.org.hk` → SCAN VIPs `.114/.115/.116` | 29801 |
+| 2 | `oracle-lis-sit-lisgcru1-vip-112` | Redirect VIP | `160.85.116.112/32` | 24002 |
+| 3 | `oracle-lis-sit-lisgcru1-vip-113` | Redirect VIP | `160.85.116.113/32` | 24002 |
+| 4 | `oracle-lis-sit-cdctst30` | Node host | `cdctst30` → `.103` | 24002 |
+| 5 | `oracle-lis-sit-cdctst39` | Node host | `cdctst39` → `.120` | 24002 |
+
+> [!note] Naming
+> Use `oracle-lis-sit-lis-gcr-u01` for the SCAN SE (cluster FQDN). Do **not** keep a separate `*-fqdn` resource name.
 
 Example VIP SE (critical piece):
 
@@ -112,12 +120,18 @@ spec:
 ### 2.4 Apply
 
 ```bash
-oc apply -f serviceentry-oracle-....yaml -n <namespace>
+oc apply -f docs/serviceentry-oracle-lis-sit-lis-gcr-u01.yaml -n lis-sit
 ```
 
-No app redeploy or “Istio workflow” is required for the SE itself to take effect; `istiod` pushes to existing sidecars. Redeploy only if JDBC ConfigMap/Secret changed.
+If an old `oracle-lis-sit-lis-gcr-u01-fqdn` exists, delete it after the renamed SCAN SE is applied:
 
-Reference example: `lis-gcr-order-inf-svc/docs/serviceentry-oracle-lis-sit-lis-gcr-u01.yaml`.
+```bash
+oc delete se oracle-lis-sit-lis-gcr-u01-fqdn -n lis-sit
+```
+
+No app redeploy is required for the SE itself; `istiod` pushes to existing sidecars. Redeploy only if JDBC ConfigMap/Secret changed.
+
+Reference: `lis-gcr-order-inf-svc/docs/serviceentry-oracle-lis-sit-lis-gcr-u01.yaml`.
 
 ---
 
@@ -226,17 +240,19 @@ App Oracle Broken pipe?
 
 ---
 
-## 5. Example port pattern (GCR UAT / LISGCRU1)
+## 5. Example — GCR UAT / LISGCRU1 mandatory SEs
 
-| Target | Port | Role |
-|---|---|---|
-| `lis-gcr-u01` (SCAN) | 29801 | JDBC initial connect |
-| Instance VIPs `.112` / `.113` | 24002 | Post-SCAN redirect (required in SE) |
-| `cdctst30` / `cdctst39` | 24002 | Node hosts (optional SE) |
+| ServiceEntry | Target | Port | Role |
+|---|---|---|---|
+| `oracle-lis-sit-lis-gcr-u01` | SCAN FQDN → `.114/.115/.116` | 29801 | JDBC initial connect |
+| `oracle-lis-sit-lisgcru1-vip-112` | `.112` | 24002 | Post-SCAN redirect |
+| `oracle-lis-sit-lisgcru1-vip-113` | `.113` | 24002 | Post-SCAN redirect |
+| `oracle-lis-sit-cdctst30` | `cdctst30` → `.103` | 24002 | Node host |
+| `oracle-lis-sit-cdctst39` | `cdctst39` → `.120` | 24002 | Node host |
 
 ---
 
 ## Related
 
-- Repo draft: `lis-gcr-order-inf-svc/docs/serviceentry-oracle-lis-sit-lis-gcr-u01.yaml`
+- Repo: `lis-gcr-order-inf-svc/docs/serviceentry-oracle-lis-sit-lis-gcr-u01.yaml`
 - Case: SIT Istio pod `lis-gcr-order-inf-svc-istio-release-2-...` (2026-07-30)
