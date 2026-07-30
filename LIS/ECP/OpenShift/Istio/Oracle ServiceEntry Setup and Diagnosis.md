@@ -32,15 +32,16 @@ App JDBC  →  SCAN host:port (e.g. lis-gcr-u01:29801)
           →  Oracle redirects → Instance VIP:local_port (.112/.113:24002)
 ```
 
-| Layer | Example | How to discover |
-|---|---|---|
-| SCAN DNS name | `lis-gcr-u01` | JDBC URL `HOST=` |
-| SCAN port | `29801` | JDBC URL `PORT=` |
-| SCAN VIP IPs | `.114/.115/.116` | `nslookup <SCAN>` |
-| Node hostnames | `cdctst30` / `cdctst39` | DB inventory |
-| Node host IPs | `.103` / `.120` | `nslookup` node hosts |
-| **Instance VIPs (redirect)** | `.112` / `.113` | DBA, or Istio `BlackHoleCluster` logs |
-| Local listener port | `24002` | Inventory / `Test-NetConnection` on nodes |
+| Layer                        | Example                 | How to discover                           |
+| ---------------------------- | ----------------------- | ----------------------------------------- |
+| SCAN DNS name                | `lis-gcr-u01`           | JDBC URL `HOST=`                          |
+| SCAN port                    | `29801`                 | JDBC URL `PORT=`                          |
+| SCAN VIP IPs                 | `.114/.115/.116`        | `nslookup <SCAN>`                         |
+| Node hostnames               | `cdctst30` / `cdctst39` | DB inventory                              |
+| Node host IPs                | `.103` / `.120`         | `nslookup` node hosts                     |
+| **Instance VIPs (redirect)** | `.112` / `.113`         | DBA, or Istio `BlackHoleCluster` logs     |
+| Local listener port          | `24002`                 | Inventory / `Test-NetConnection` on nodes |
+|                              |                         |                                           |
 
 > [!warning] SCAN DNS ≠ instance VIP
 > `nslookup lis-gcr-u01` only returns SCAN VIPs. Redirect targets are separate IPs and often have no useful DNS name from the app’s point of view.
