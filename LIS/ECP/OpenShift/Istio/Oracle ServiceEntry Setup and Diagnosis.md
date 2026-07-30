@@ -242,13 +242,13 @@ App Oracle Broken pipe?
 
 ## 5. Example — GCR UAT / LISGCRU1 mandatory SEs
 
-| ServiceEntry | Target | Port | Role |
-|---|---|---|---|
-| `oracle-lis-sit-lis-gcr-u01` | SCAN FQDN → `.114/.115/.116` | 29801 | JDBC initial connect |
-| `oracle-lis-sit-lisgcru1-vip-112` | `.112` | 24002 | Post-SCAN redirect |
-| `oracle-lis-sit-lisgcru1-vip-113` | `.113` | 24002 | Post-SCAN redirect |
-| `oracle-lis-sit-cdctst30` | `cdctst30` → `.103` | 24002 | Node host |
-| `oracle-lis-sit-cdctst39` | `cdctst39` → `.120` | 24002 | Node host |
+| ServiceEntry                      | Target                       | Port  | Role                 |
+| --------------------------------- | ---------------------------- | ----- | -------------------- |
+| `oracle-lis-sit-lis-gcr-u01`      | SCAN FQDN → `.114/.115/.116` | 29801 | JDBC initial connect |
+| `oracle-lis-sit-lisgcru1-vip-112` | `.112`                       | 24002 | Post-SCAN redirect   |
+| `oracle-lis-sit-lisgcru1-vip-113` | `.113`                       | 24002 | Post-SCAN redirect   |
+| `oracle-lis-sit-cdctst30`         | `cdctst30` → `.103`          | 24002 | Node host            |
+| `oracle-lis-sit-cdctst39`         | `cdctst39` → `.120`          | 24002 | Node host            |
 
 ---
 
