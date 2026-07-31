@@ -7,6 +7,11 @@ user_story: CRST-5
 related_issues:
   - CRST-18
   - CRST-37
+  - CRST-166
+  - CRST-168
+  - CRST-169
+  - CRST-170
+  - CRST-172
 tags:
   - workflow
   - specimen-acknowledgement
