@@ -70,4 +70,3 @@ If you made a mistake, you can easily delete a tag.
   ```bash
   git push origin --delete v1.0.0
   ```
-  
