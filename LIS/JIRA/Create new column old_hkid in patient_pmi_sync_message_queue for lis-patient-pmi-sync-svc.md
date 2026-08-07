@@ -1,7 +1,5 @@
 ---
-title: >-
-  Create new column `old_hkid` in `patient_pmi_sync_message_queue` for
-  `lis-patient-pmi-sync-svc`
+title: Create new column `old_hkid` in `patient_pmi_sync_message_queue` for `lis-patient-pmi-sync-svc`
 tags:
   - jira-log
   - lis
@@ -10,10 +8,10 @@ request_type: Service Request
 priority: Medium
 services:
   - lis-patient-pmi-sync-svc
-target_completion_date: '2026-08-14'
+target_completion_date: 2026-08-13
 status: draft
-created: '2026-08-07'
-jira: ''
+created: 2026-08-07
+jira: ""
 reference_jira:
   - LIS-10723
 design_status: draft
