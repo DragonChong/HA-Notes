@@ -29,9 +29,7 @@ Create new index `old_hkid_Idx` on `patient_pmi_sync_message_queue.old_hkid` for
 
 ## Background
 
-LIS-10723 adds `old_hkid` to `patient_pmi_sync_message_queue` and extends blocking checks to match on both `hkid` and `old_hkid`. Without an index on `old_hkid`, those lookups can scan the queue table under load.
-
-This Service Request covers creating the nonclustered index on all hospital Sybase and PostgreSQL LAB databases after the column exists.
+For message processing of A40 (Merge HKID), A45 (Move Episode), and A47 (Change HKID) messages in `lis-patient-pmi-sync-svc`, `old_hkid` column is used to check for earlier blocking messages (status FAILED, RETRY, or PROCESSING). Without an index on `old_hkid`, there may be full-table scan and lead to performance issue.
 
 ## Change Description
 

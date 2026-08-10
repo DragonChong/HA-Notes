@@ -29,9 +29,7 @@ Create new column `old_hkid` in `patient_pmi_sync_message_queue` for `lis-patien
 
 ## Background
 
-`lis-patient-pmi-sync-svc` queues PMI sync messages in `patient_pmi_sync_message_queue` and blocks later messages by matching on `hkid`. For A40/A45/A47, the old HKID is only in `parsed_message` and is not stored as a column, so blocking cannot see in-flight messages on the old HKID.
-
-Under LIS-10723, the service will persist and use `old_hkid` in blocking queries. The column must be added on all hospital Sybase and PostgreSQL LAB databases before application deployment.
+For message processing of patient update in `lis-patient-pmi-sync-svc`, A40 (Merge HKID), A45 (Move Episode), and A47 (Change HKID) messages carry both a new HKID and an old HKID. On insert, only the new HKID is stored in the `hkid` column. Before a message is picked up, the scheduler checks for earlier blocking messages (status FAILED, RETRY, or PROCESSING) with the same HKID. New column has to be added in order to ensure A40 / A45 / A47 messages are processed sequentially.
 
 ## Change Description
 
@@ -51,7 +49,7 @@ Under LIS-10723, the service will persist and use `old_hkid` in blocking queries
 
 ## Justification
 
-DDL is required so the LIS-10723 application can store previous HKID for A40/A45/A47 and include it in message-queue blocking, preserving sequential-per-patient processing.
+Old HKID could be stored in message queue and ensure A40 (Merge HKID), A45 (Move Episode), and A47 (Change HKID) messages are processed sequentially by message-queue blocking.
 
 ## Target Completion Date
 
