@@ -18,11 +18,12 @@ Use this structure for the Obsidian note body (frontmatter is separate).
 
 ## Background
 
-<Paragraph 1: current state / legacy behaviour>
-
-<Paragraph 2: problem, migration driver, or enhancement need>
-
-<Paragraph 3 (optional): scope — what this change covers and what it does not>
+<One focused paragraph (two max):
+  1. Operational context in the named service
+  2. Concrete artefacts — message types with expansions, statuses, tables/columns
+  3. Current gap or risk in that flow
+  4. Closing sentence: what must be done and why (reason for this ticket)
+Do not lead with parent JIRA keys; put them under Reference Logs.>
 
 ## Change Description
 
@@ -35,7 +36,7 @@ Use this structure for the Obsidian note body (frontmatter is separate).
 
 ## Justification
 
-<1–2 paragraphs on reliability, data integrity, architecture alignment, load handling, or DHP migration>
+<1 short paragraph: operational outcome this change enables, using the same named artefacts as Background>
 
 ## Target Completion Date
 

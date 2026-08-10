@@ -1,6 +1,8 @@
 # JIRA Log Examples
 
-Three reference examples from team change-request emails.
+Reference examples from team change-request / service-request emails.
+
+**Background style (canonical):** one focused paragraph — operational context → concrete artefacts → gap/risk → closing “why this ticket” sentence. See Example 4.
 
 ---
 
@@ -72,3 +74,49 @@ The existing GCRS-LIS order interface is a legacy socket-based Java program usin
 Modernization supports DHP migration, service-oriented architecture, and improved maintainability and scalability over the legacy socket/XML interface.
 
 **Target Completion Date:** [TBD — not specified in source email]
+
+---
+
+## Example 4: Service Request (DDL — column) — preferred Background style
+
+**Request Type:** Service Request | **Priority:** Medium
+
+**Request Summary:**  
+Create new column `old_hkid` in `patient_pmi_sync_message_queue` for `lis-patient-pmi-sync-svc`
+
+**Background:**  
+For message processing of patient update in `lis-patient-pmi-sync-svc`, A40 (Merge HKID), A45 (Move Episode), and A47 (Change HKID) messages carry both a new HKID and an old HKID. On insert, only the new HKID is stored in the `hkid` column. Before a message is picked up, the scheduler checks for earlier blocking messages (status FAILED, RETRY, or PROCESSING) with the same HKID. New column has to be added in order to ensure A40 / A45 / A47 messages are processed sequentially.
+
+**Change Description:**
+
+- Add `old_hkid` column in `patient_pmi_sync_message_queue` table
+
+**Justification:**  
+Old HKID could be stored in message queue and ensure A40 (Merge HKID), A45 (Move Episode), and A47 (Change HKID) messages are processed sequentially by message-queue blocking.
+
+**Reference Logs:** LIS-10723
+
+**Target Completion Date:** 14th Aug, 2026
+
+---
+
+## Example 5: Service Request (DDL — index) — preferred Background style
+
+**Request Type:** Service Request | **Priority:** Medium
+
+**Request Summary:**  
+Create new index on `patient_pmi_sync_message_queue.old_hkid` for `lis-patient-pmi-sync-svc`
+
+**Background:**  
+For message processing of A40 (Merge HKID), A45 (Move Episode), and A47 (Change HKID) messages in `lis-patient-pmi-sync-svc`, `old_hkid` column is used to check for earlier blocking messages (status FAILED, RETRY, or PROCESSING). Without an index on `old_hkid`, there may be full-table scan and lead to performance issue.
+
+**Change Description:**
+
+- Create index on `patient_pmi_sync_message_queue.old_hkid` column
+
+**Justification:**  
+The index supports efficient blocking queries that match on `old_hkid`, reducing full-table scan risk for the message-queue scheduler.
+
+**Reference Logs:** LIS-10723
+
+**Target Completion Date:** 14th Aug, 2026

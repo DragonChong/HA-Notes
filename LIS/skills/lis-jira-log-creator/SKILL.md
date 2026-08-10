@@ -58,9 +58,16 @@ Use [template.md](template.md) for structure and [examples.md](examples.md) for 
 
 1. **Request Type** — `Change Request` (default) or user-specified type; include **Priority** on the same line or immediately below.
 2. **Request Summary** — One sentence. Start with a verb (`Fix`, `Develop`, `Enhance`). Name the service in backticks. Mirror email subject lines. **This string is the note title** (frontmatter `title`, H1, and Request Summary body must match exactly; filename uses the same string with `/` `\` sanitized — see Step 4).
-3. **Background** — 2–4 short paragraphs: current state → problem or migration driver → scope of this change. Name legacy components (triggers, socket programs, tables) when relevant.
-4. **Change Description** — Numbered list for distinct work items; use sub-bullets for file/class/API specifics. Include Mermaid diagrams only when architecture clarity helps (new services, inbound/outbound flows).
-5. **Justification** — 1–2 paragraphs on business/technical impact: reliability, data integrity, DHP migration, load handling.
+3. **Background** — Prefer **one focused paragraph** (two only if needed). Follow this style so the reason for the ticket is unmistakable:
+   - Start with the **operational context** in the named service (what runs today — e.g. message processing, scheduler, table).
+   - Name **concrete artefacts** with expansions in parentheses: message types (`A40 (Merge HKID)`), statuses (`FAILED`, `RETRY`, `PROCESSING`), columns/tables.
+   - State the **current gap or risk** in the same flow (what is stored / checked today vs what is missing).
+   - End with an **explicit why-this-ticket sentence** — what must be done and the outcome it ensures  
+     (e.g. “New column has to be added in order to ensure A40 / A45 / A47 messages are processed sequentially.”).
+   - **Do not** lead with parent JIRA keys (“Under LIS-XXXX…”) or abstract migration prose; put related tickets in Reference Logs.
+   - Avoid burying the ask in architecture overview; the last sentence should make the request purpose clear without reading Change Description.
+4. **Change Description** — Numbered list for distinct work items; use sub-bullets for file/class/API specifics. Include Mermaid diagrams only when architecture clarity helps (new services, inbound/outbound flows). For Service Requests (DDL), a short bullet naming table/column/index is enough.
+5. **Justification** — 1 short paragraph on the **operational outcome** enabled by the change (sequential processing, data integrity, performance). Reuse the same named artefacts as Background; avoid vague “modernize architecture” when a concrete outcome exists.
 6. **Target Completion Date** — Format: `Dth Mon YYYY` (e.g. `29th May, 2026`, `17th Apr 2026`).
 
 Mark unknowns as `[TBD]` and ask the user before writing to Obsidian.
@@ -237,9 +244,10 @@ required.
 - [ ] Filename matches Request Summary except `/` `\` → `-`
 - [ ] Frontmatter includes all Base columns (`created`, `jira`, `title`, `services`, `request_type`, `priority`, `target_completion_date`, `status`)
 - [ ] Tags include `jira-log` (and not `index`)
-- [ ] Background explains *why*, not just *what*
+- [ ] Background names concrete artefacts and ends with an explicit why-this-ticket sentence
+- [ ] Background does not lead with parent JIRA keys or bury the ask
 - [ ] Change Description names concrete artefacts (classes, endpoints, tables)
-- [ ] Justification states operational impact
+- [ ] Justification states operational impact in the same concrete terms as Background
 - [ ] Target date uses team format (`Dth Mon YYYY`) in the body; ISO date in frontmatter
 - [ ] Obsidian note created under `LIS/JIRA/`
 - [ ] No Markdown table edit to the old index — Base picks up the note
