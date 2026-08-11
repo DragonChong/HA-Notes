@@ -66,10 +66,11 @@ Ask user for **review date** and **JIRA key** if note frontmatter `jira` is empt
 
 | Type | When | Design slide count |
 |------|------|-------------------|
-| **incremental** | Bug fix, race condition, targeted change | 5–15 |
-| **full** | New service, major migration | 20–35 |
+| **incremental** | Bug fix, race condition, targeted change | 6–10 |
+| **full** | New service, major migration | 14–22 |
 
-Follow outlines in [design-template.md](design-template.md) and [design-review-pptx slide-types.md](../design-review-pptx/slide-types.md).
+Follow outlines in [design-template.md](design-template.md) and the archetype
+catalogue in [design-review-pptx references/slide-archetypes.md](../design-review-pptx/references/slide-archetypes.md).
 
 ### Step 4 — Draft ## Design section
 
@@ -77,31 +78,48 @@ Use [design-template.md](design-template.md). Structure:
 
 1. **Metadata lines** — review type, JIRA key, service, forum, date
 2. **`### Agenda`** — one item per line
-3. **`### Slide: {title}`** — one slide per block (max ~8 bullets or ~10 table rows)
+3. **`### Slide: {title}`** — one slide per block; roughly 40 words of body copy
 4. **`### Diagram: {name}`** — Mermaid (optional; stays in JIRA note unless exported to PNG)
 5. End with **`### Slide: Q&A`**
+
+Optionally add **`**Archetype:** matrix`** under a slide title when you have a
+clear view of the shape (a decision tree, a per-site grid). Otherwise leave it
+out and let design-review-pptx choose.
 
 **Writing rules:**
 
 - Derive slide content from JIRA Background + Change Description — do not duplicate prose verbatim; compress for slides
-- **Use plain English only** — describe behaviour, not code identifiers (see below)
+- **Plain English in prose; identifiers in the structures built for them** (see below)
 - Use `-` hyphen not em-dash in slide titles
 - Reuse prior review slides for incremental fixes — cite `**Prior review:** [[note]]`
 - Include Promotion + Fallback for production-impacting changes
 - Sequence diagrams: 3 entities max when possible (e.g. PMI, service, DB table)
 
-**Plain English (no class or method names):**
+**Where identifiers belong:**
 
-Slide bullets are for CP3 reviewers (architects, ops, clinical stakeholders), not developers reading source. When drafting from codebase or wiki:
+CP3 reviewers are architects, ops and clinical stakeholders, not developers
+reading source — so a *paragraph* full of camel-case is noise. But an identifier
+set in a code panel or a table cell reads as precision, and the deck has
+dedicated places for exactly that.
 
-| Avoid | Use instead |
-|-------|-------------|
-| Class names (`MessageQueueProcessor`, `PatientTransactionVo`) | Role or layer ("scheduled job", "inbound patient transaction") |
-| Method or function names (`findProcessableMessages`, `countPreviousBlockingMessages`) | What it does ("selects the next batch of ready messages", "checks for earlier blocking messages") |
-| JPQL / ORM entity names in SQL fences | Table/column names, or a simplified SQL comment; describe logic in bullets above the fence |
-| "Update entity/repository/service" | "Update application code" or name the layer's responsibility |
+| Put it in | Identifiers welcome |
+|-----------|--------------------|
+| a code panel (`code-findings`, `compare`) | file, class, method, the condition being changed |
+| a table cell, a `tag` chip, the condition strip | column names, setup controls, service names |
+| a prose bullet | avoid — describe the behaviour instead |
 
-**Still OK:** service names (`lis-patient-pmi-sync-svc`), JIRA keys, table/column names in schema slides, config keys, domain codes (A08, A47), status values (OUTSTANDING, PROCESSING).
+So this is fine, in a code panel captioned "Hospital identity decides the
+behaviour":
+
+```
+if (LisGlobal.hospital == CommonConstants.HOSPITAL_QEH) {
+```
+
+…while a bullet should still say "the reminder is gated on hospital identity",
+not "`GcrSpecAckUIComponents.as` calls `LisGlobal.hospital`".
+
+**Always fine anywhere:** service names, JIRA keys, table/column names, config
+keys, domain codes (A08, A47), status values (OUTSTANDING, PROCESSING).
 
 ### Step 5 — Present draft
 
@@ -116,24 +134,23 @@ Append or replace `## Design` in the JIRA note:
 
 Update frontmatter `design_status: draft` if frontmatter is editable.
 
-### Step 7 — Convert to slide markdown
+### Step 7 — Hand off to design-review-pptx
+
+Only when the user actually asked for a deck. The `## Design` section is a
+finished artifact on its own — most of the time this skill stops at step 6.
+
+Read the **design-review-pptx** skill and follow its workflow. It takes the
+`## Design` section from this note as its input, writes a `{Title}.deck.json`
+spec, and renders it:
 
 ```bash
-python <skill-dir>/jira-design-to-slides.py \
-  "<vault>/LIS/JIRA/{Note Title}.md" \
-  "<repo>/docs/{Title} ({JIRA-KEY}).md"
+node <design-review-skill-dir>/generate-deck.js "docs/{Title}.deck.json"
+node <design-review-skill-dir>/qa-deck.js       "docs/{Title}.deck.json"
+node <design-review-skill-dir>/preview-deck.js  "docs/{Title}.deck.json"
 ```
 
-`<skill-dir>` = folder containing this SKILL.md (`~/.cursor/skills/generate-design`).
-
-### Step 8 — Hand off to design-review-pptx
-
-Read **design-review-pptx** skill. Run:
-
-```bash
-python <design-review-skill-dir>/qa-design-review-pptx.py "docs/{Title}.md"
-python <design-review-skill-dir>/generate-design-review-pptx.py "docs/{Title}.md"
-```
+Do not write the deck spec from here — archetype selection and the visual
+system belong to that skill.
 
 ---
 
