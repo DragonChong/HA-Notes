@@ -193,12 +193,11 @@ Worked example: [examples.md](examples.md)
 - [ ] Review type classified (incremental / full)
 - [ ] Metadata lines complete (JIRA key, service, date)
 - [ ] Agenda matches slide sequence
-- [ ] No slide block exceeds ~8 bullets or ~10 table rows
-- [ ] Slide bullets use plain English — no class or method names
+- [ ] Each slide block is one idea, roughly 40 words of body copy
+- [ ] Prose bullets are plain English; identifiers confined to code blocks and tables
 - [ ] Promotion and Fallback present for production changes
-- [ ] `## Design` written to Obsidian note
-- [ ] `jira-design-to-slides.py` ran successfully
-- [ ] design-review-pptx handoff completed (optional unless user requests .pptx)
+- [ ] `## Design` written to Obsidian note, `design_status: draft` set
+- [ ] design-review-pptx handoff completed (only if a deck was requested)
 
 ---
 
@@ -208,9 +207,8 @@ Worked example: [examples.md](examples.md)
 |------|---------|
 | [design-template.md](design-template.md) | ## Design section structure |
 | [examples.md](examples.md) | LIS-10583 pipeline example |
-| [jira-design-to-slides.py](jira-design-to-slides.py) | JIRA Design → slide-ready `.md` |
 
 ## Related skills
 
 - **lis-jira-log-creator** — creates the JIRA note (upstream)
-- **design-review-pptx** — generates `.pptx` from slide markdown (downstream)
+- **design-review-pptx** — reads `## Design` and generates the `.pptx` (downstream)

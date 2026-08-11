@@ -1,7 +1,8 @@
 # Design Section Template
 
 Append or replace the `## Design` section in a JIRA Obsidian note (`LIS/JIRA/<note>.md`).
-The **design-review-pptx** skill converts this to slide-ready Markdown via `jira-design-to-slides.py`.
+The **design-review-pptx** skill reads this section directly and turns each block
+into a slide.
 
 ---
 
@@ -76,11 +77,16 @@ sequenceDiagram
 | Metadata lines (`**Review type:**` etc.) | Title slide + classification for design-review-pptx |
 | `### Agenda` | Agenda slide (one item per line) |
 | `### Slide: {title}` | One CP3 slide; body until next `###` heading |
+| `**Archetype:** {name}` | Optional hint under a slide title when the shape is obvious |
 | `### Diagram: {name}` | Mermaid stored in JIRA note; export PNG to project `docs/` if needed for slides |
 
 ## Plain English rule
 
-**Do not put class names or method names on slides.** Describe what the system does in everyday language.
+**Prose describes behaviour; identifiers live in code blocks and tables.**
+
+A bullet full of camel-case is noise to a CP3 audience. The same identifier in a
+code fence or a table cell is precision — and the deck has dedicated places for
+it (`code-findings` panels, `tag` chips, table cells, the condition strip).
 
 - Bad: `MessageQueueProcessor` calls `findProcessableMessages`
 - Good: Scheduled job runs every 10 seconds and selects the next batch of ready messages
@@ -88,9 +94,11 @@ sequenceDiagram
 - Bad: Extend `countPreviousBlockingMessages` to match `oldHkid`
 - Good: Extend the blocking check so earlier messages on the patient's old HKID also block
 
-SQL/code fences: use table and column names where needed; avoid ORM entity or JPQL class names. Put the behavioural explanation in bullets above the fence.
+But a code fence showing the condition being changed is exactly right, with the
+behavioural explanation in the bullets above it.
 
-**Allowed identifiers:** service names, table/column names, config keys, domain/event codes (A08, A47), status enums.
+**Always fine anywhere:** service names, table/column names, config keys,
+domain/event codes (A08, A47), status enums.
 
 ## Mapping from JIRA log sections
 
@@ -107,4 +115,4 @@ SQL/code fences: use table and column names where needed; avoid ORM entity or JP
 
 **Incremental** (bug fix, race condition): Background → Existing Design (reference) → Proposed Change (2–4 slides) → Promotion → Fallback → Q&A
 
-**Full** (new service, migration): Add domain tables, architecture, schema, config, production stats per [design-review-pptx slide-types.md](../design-review-pptx/slide-types.md).
+**Full** (new service, migration): Add domain tables, architecture, schema, config and production stats — see the archetype catalogue in [design-review-pptx references/slide-archetypes.md](../design-review-pptx/references/slide-archetypes.md).
