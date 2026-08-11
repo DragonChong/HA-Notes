@@ -1,21 +1,27 @@
 ---
 name: design-review-pptx
 description: >
-  Prepares Markdown slide outlines and generates .pptx for LIS/HA CP3 design reviews
-  using the canonical HA template (LIS-10672 / LIS-10583 style). Use when the user asks
-  to prepare design review slides, create a design review deck, write slide content in
-  markdown for PowerPoint, document a change for CP3 review, or generate presentation
-  material. Triggers on "design review", "CP3", "prepare slides", "slide outline".
+  Generates visual .pptx decks for LIS/HA CP3 design reviews from a declarative
+  deck spec — cards, flowcharts, matrices and code panels rather than bullet
+  lists. Use when the user asks to prepare design review slides, create a design
+  review deck, build a presentation from a JIRA design note, document a change
+  for CP3 review, or generate presentation material. Triggers on "design review",
+  "CP3", "prepare slides", "deck", "slide outline", "presentation".
 ---
 
 # Design Review PowerPoint
 
-Produce **slide-ready Markdown**, then generate `.pptx` with the **canonical HA/LIS template** so every deck matches the style of:
+Produce a **deck spec** (JSON), then render it with the bundled generator. The
+visual system is extracted from the approved LIS-10747 deck and lives in
+`deck-kit.js`: 15 palette tokens, a 3-family type ladder, a fixed grid, and 12
+slide archetypes.
 
-- `Fix Race Condition in lis-gcr-order-inf-svc… (LIS-10672).pptx`
-- `Fix Message Queue Old HKID Blocking (LIS-10583).pptx`
+**Never hand-write pptxgenjs or python-pptx for a design review.** The whole
+point of the kit is that colours and coordinates are decided once. A deck spec
+names archetypes and fills slots; it does not set positions.
 
-**Always use the bundled generator** — do not use pptxgenjs or custom colour themes for CP3 design reviews.
+> The previous HA-template generator (python-pptx, 4:3, bullet lists) is retired
+> in `legacy/`. See `legacy/README.md` if you specifically need that template.
 
 ---
 
@@ -23,267 +29,176 @@ Produce **slide-ready Markdown**, then generate `.pptx` with the **canonical HA/
 
 ```
 Task Progress:
-- [ ] 1. Classify review type (full vs incremental)
-- [ ] 2. Gather inputs (JIRA, service, audience, scope)
-- [ ] 3. Draft slide outline (titles only) — reuse prior slides via extract-slides.py for incremental reviews
-- [ ] 4. Write slide content in Markdown
-- [ ] 5. Self-check against QA checklist
-- [ ] 6. Generate .pptx with generate-design-review-pptx.py
-- [ ] 7. Content QA (qa-design-review-pptx.py, then markitdown for a final read)
+- [ ] 1. Gather inputs (JIRA note, service, review type, date)
+- [ ] 2. Choose the slide sequence
+- [ ] 3. Write the deck spec JSON
+- [ ] 4. Generate the .pptx
+- [ ] 5. QA — must exit 0
+- [ ] 6. Preview and actually look at it
 ```
 
-### Step 1 — Classify review type
+### Step 0 — Resolve the skill directory and install
 
-| Type | When | Typical slide count |
-|------|------|---------------------|
-| **Full** | New service, major migration, first design review | 20–35 |
-| **Incremental** | Bug fix, race condition, targeted change to existing design | 5–15 |
+`<skill-dir>` is the folder containing **this** SKILL.md. In Cursor that is
+wherever the skill was surfaced from; in the vault it is
+`LIS/skills/design-review-pptx/`. Do not hardcode either path — derive it.
 
-### Step 2 — Gather inputs
+```bash
+cd <skill-dir> && npm install
+```
+
+Node 18+. The only dependency is `pptxgenjs`.
+
+### Step 1 — Gather inputs
 
 | Field | Example | Required |
 |-------|---------|----------|
-| Title | GCRS Order Interface DHP Migration | Yes |
-| JIRA key | LIS-10569 | Yes |
-| Service / repo | lis-gcr-order-inf-svc | Yes |
-| Review forum | CP3 | Yes (default CP3) |
-| Date | 22nd May 2026 | Yes |
-| Agenda topics | Design Review, Promotion, Fallback | Yes |
-| Diagrams | architecture PNG/SVG, sequence flows | As needed |
-| Code/message samples | XML, JSON, SQL | As needed |
-| **JIRA design note** | `LIS/JIRA/{note}.md` ## Design section | Yes (from **generate-design**) |
+| JIRA key | LIS-10747 | Yes |
+| Title | Setup-Driven Reminder for Ward-Assigned Request No. | Yes |
+| Service / repo | lis-ecpath5-app | Yes |
+| Review forum | CP3 | Yes |
+| Target date | 31 Jul 2026 | Yes |
+| Review type | incremental / full | Yes |
+| JIRA design note | `LIS/JIRA/{Note}.md` | Yes |
+| Diagrams | architecture PNG/SVG | As needed |
 
-**Preferred input:** `## Design` section in the JIRA Obsidian note created by **lis-jira-log-creator** and populated by **generate-design**. Convert to slide markdown first:
+Preferred input is the `## Design` section of the JIRA note written by
+**lis-jira-log-creator** and populated by **generate-design**. If that section is
+empty, build from Background + Change Description + Justification and mark the
+design status as draft on the closing slide — do not invent design detail.
 
-```bash
-python <generate-design-skill-dir>/jira-design-to-slides.py \
-  "<vault>/LIS/JIRA/{Note}.md" \
-  "<repo>/docs/{Title}.md"
+See [references/content-rules.md](references/content-rules.md) for the full
+section-to-archetype mapping.
+
+### Step 2 — Choose the slide sequence
+
+**Incremental** (bug fix, targeted change) — 6–10 slides:
+
+```
+title-hero → evolution → code-findings → decision-flow
+           → matrix → steps-sidebar → closing
 ```
 
-If no Design section exists yet, run **generate-design** first, or write slide markdown manually per Step 4 below.
+That is exactly the LIS-10747 deck; start from `examples/LIS-10747.deck.json`.
 
-### Step 3 — Choose slide outline
+**Full** (new service, migration) — 14–22 slides: add `agenda` second, `image`
+for architecture, `compare` for before/after, and `cards` for Promotion and
+Fallback before `closing`.
 
-**Full design review** — default outline; drop or add slides per scope:
+Pick per slide from the table at the end of
+[references/slide-archetypes.md](references/slide-archetypes.md).
 
-1. Title → 2. Agenda → 3–4. Background → 5–7. Domain reference → 8–11. Architecture / processing → 12. Schema → 13–14. Retry / concurrency → 15–16. OpenShift config → 17. Production stats → 18–19. Promotion / Fallback → 20. Q&A
+### Step 3 — Write the deck spec
 
-**Incremental design review** — minimal outline:
+`docs/{Title}.deck.json` in the project repo, or beside the JIRA note.
 
-1. Title → 2. Agenda → 3. Background (problem) → 4+. Existing design / proposed change → Promotion / Fallback → Q&A
-
-When a prior full review already documented the architecture/flow, reuse those slides
-instead of rewriting them (see examples.md, "Reusing prior design slides"). Discover and
-pull them forward with `extract-slides.py`:
-
-```bash
-# List slide titles in the prior deck
-python <skill-dir>/extract-slides.py "docs/{Prior Title}.md"
-
-# Extract matching slide(s), renumbered from a given position
-python <skill-dir>/extract-slides.py "docs/{Prior Title}.md" \
-  --title "Message Processing Mechanism" --start-number 4
+```json
+{
+  "meta": { "title": "LIS-10747 Ward-Assigned Request No. Reminder",
+            "subject": "…", "author": "LIS Team", "company": "Hospital Authority" },
+  "slides": [
+    { "archetype": "title-hero", "headline": "…", "notes": "…" },
+    { "archetype": "evolution", "eyebrow": "Background", "title": "…",
+      "steps": [ … ], "notes": "…" }
+  ]
+}
 ```
 
-If a reused slide references an image, copy that image file alongside the **new** deck's
-`.md` — paths resolve relative to wherever the new markdown lives, not the source deck.
+Rules:
 
-See [slide-types.md](slide-types.md) and [examples.md](examples.md).
+- **Every slide** needs `archetype` and `notes`. Content slides also need
+  `eyebrow` and `title`.
+- **Never put a hex colour, font name, or x/y coordinate in a spec.** Use tone
+  names (`neutral`, `accent`, `warn`, `danger`, `ink`) and colour tokens
+  (`ink`, `body`, `accent`, `warnInk`, …). QA rejects anything off-palette.
+- **Amber text uses `warnInk`, not `warn`** — `warn` is for fills and 18pt+
+  display type only. See the Contrast section in
+  [references/design-system.md](references/design-system.md).
+- Image paths resolve relative to the spec file — keep diagrams beside it.
+- Reuse a slide from a prior deck:
+  ```bash
+  node <skill-dir>/generate-deck.js prior.deck.json --extract "Message Processing"
+  ```
+  `--list` prints every slide with its archetype.
 
-### Step 4 — Write Markdown
-
-Save as `{Title}.md` in the project `docs/` folder (same basename as target `.pptx`).
-
-### Step 6 — Generate .pptx
-
-Resolve `<skill-dir>` to the folder containing **this** SKILL.md — e.g. `~/.cursor/skills/design-review-pptx` when invoked via Cursor's symlink into the vault, or the vault path `LIS/skills/design-review-pptx/` directly (Cowork, or any environment without that symlink). Do not hardcode the Cursor path; it only resolves through that specific symlink.
-
-```bash
-pip install -r <skill-dir>/requirements.txt
-
-python <skill-dir>/generate-design-review-pptx.py \
-  "docs/{Title}.md" \
-  "docs/{Title}.pptx"
-```
-
-Omit the second argument to write `{Title}.pptx` next to the `.md` file.
-
-### Step 7 — Content QA
-
-Run the mechanical checks first — they cover the checkable half of the QA checklist below
-(title-slide fields, placeholder text, slide/table size limits, agenda coverage) and fail
-with a non-zero exit code if anything's wrong:
+### Step 4 — Generate
 
 ```bash
-python <skill-dir>/qa-design-review-pptx.py "docs/{Title}.md"
+node <skill-dir>/generate-deck.js "docs/{Title}.deck.json" "docs/{Title}.pptx"
 ```
 
-Then do a final human-readable pass over the generated deck for the judgment-based items
-(Promotion/Fallback relevance, terminology consistency):
+Omit the output path to write `{Title}.pptx` beside the spec.
+
+### Step 5 — QA
 
 ```bash
-python -m markitdown "docs/{Title}.pptx"
+node <skill-dir>/qa-deck.js "docs/{Title}.deck.json"
 ```
+
+Must exit 0 before you hand the deck over. It checks what the eye misses:
+contrast against the resolved background, safe-area bounds, table extent and
+collisions, text overflow, palette and font drift, missing notes, placeholder
+text, agenda coverage.
+
+Add `--strict` for WCAG AA (4.5:1) if the deck will be read on screen rather
+than projected; the default 4.0 floor is tuned for projection.
+
+### Step 6 — Preview
+
+There is no headless pptx renderer on the LIS boxes, so this is how you look at
+a deck before PowerPoint:
+
+```bash
+node <skill-dir>/preview-deck.js "docs/{Title}.deck.json"
+```
+
+Writes `{Title}.preview.html` — a 1:1 render at 96px/inch from the same recorded
+draw calls the generator emits. Open it and check every slide. Fonts and text
+wrapping are the browser's approximation; all geometry is exact.
 
 ---
 
-## Visual Style (canonical template)
-
-Style is defined by `ha-lis-design-review-template.pptx` in this skill folder. **Do not override** with custom colours or pptxgenjs themes.
-
-| Element | Style |
-|---------|-------|
-| Theme | Microsoft Office Theme (white background) |
-| Title font | Century Gothic (from slide master) |
-| Body font | Calibri |
-| Accent / subtitle | Century Gothic, `#00B0F0` on title slide |
-| Slide numbers | Bottom-right, grey, from master |
-| Title slide layout | Title + subtitle placeholder (`CP3` + date) |
-| Content slides | Title and Content (layout index 1) |
-| Q&A slide | Title Only, centred 48pt |
-| Agenda items | Bold, one per paragraph |
-| Body bullets | Plain paragraphs; use `- ` prefix or indent for level-1 sub-bullets |
-| Tables | Header row bold 12pt; body 11pt; full content width; vertically centred when short; optional footnotes below |
-| Code blocks | Consolas 10pt in textbox below title |
-| Diagram slides | `![](image.png)` — full-width centred image; 1–2 caption lines centred below; 3+ label lines use side-by-side layout |
-
-Reference decks: LIS-10672 (6 slides, incremental), LIS-10583 (13 slides, incremental with Promotion/Fallback).
-
----
-
-## Markdown Format
-
-Each slide is a level-1 heading block preceded by a slide-number comment.
-
-```markdown
-<!-- Slide number: 1 -->
-# Fix Message Queue Old HKID Blocking (LIS-10583)
-(lis-patient-pmi-sync-svc)
-CP3
-3rd Jul, 2026
-
-<!-- Slide number: 2 -->
-# Agenda
-Background
-Design Review
-Promotion
-Fallback
-Q&A
-
-<!-- Slide number: 3 -->
-# Background
-Production incident on 26 Jun 2026
-Root cause: blocking check only compares blocking.hkid = m.hkid
-
-<!-- Slide number: 4 -->
-# Background
-| Type | Description | HKID in message |
-| --- | --- | --- |
-| A47 | Change HKID | new HKID + old HKID |
-On enqueue, only new HKID is persisted (footnote line after table)
-
-<!-- Slide number: 5 -->
-# Existing Design - Current Blocking Query
-```sql
-SELECT m FROM MessageQueue m
-WHERE blocking.hkid = m.hkid
-```
-countPreviousBlockingMessages uses the same hkid-only match
-
-<!-- Slide number: N -->
-# Q&A
-```
-
-### Slide type auto-detection
-
-| Markdown pattern | Layout used |
-|------------------|-------------|
-| First slide with `CP3` in body | Title Slide |
-| `# Agenda` | Title and Content (bold items) |
-| `# Q&A` | Title Only (centred) |
-| Body contains `\| col \|` table | Title and Content + full-width table |
-| Body contains ` ``` ` fence | Title and Content + Consolas code |
-| `![](image.png)` with 0–2 caption lines | Title and Content + centred diagram + caption |
-| `![](image.png)` with 3+ label lines | Title and Content + text left, image right |
-| Everything else | Title and Content (bullets) |
-
-### Rules
-
-- **One `#` heading per slide** — becomes the slide title.
-- **No `##` sub-headings** in slide body — use plain lines or tables.
-- **Bullets**: plain lines (no `-` required). Use `- ` or indent for sub-bullets.
-- **Tables**: GFM with header row; non-table lines after the table become footnotes.
-- **Code**: fenced block with language tag (`sql`, `xml`, `json`); lines after fence become notes.
-- **Diagrams**: `![]({filename})` — one per slide; the generator embeds it automatically, resolving `{filename}` relative to the input `.md` file's own directory (so keep image assets alongside the markdown, e.g. in the same `docs/` folder). List assets in `<!-- Assets: ... -->` at top of file for reference only — it isn't parsed.
-- **Hyphens not em-dashes** in titles (`Existing Design - Overview`) — avoids encoding issues.
-- **Do not** put slide numbers in body — template adds them.
-
----
-
-## Content Guidelines
-
-### Title slide
-
-```
-# {Descriptive Title} ({JIRA-KEY})
-({microservice-name})
-CP3
-{D Day Month Year}
-```
-
-### Agenda slide
-
-Bold items, one per line. Incremental: `Background`, `Design Review`. Full reviews add `Promotion`, `Fallback`.
-
-### Background (bug fix)
-
-Symptom → trigger → root cause → impact. One slide; detail on Design Review slides.
-
-### Promotion / Fallback
-
-Ordered steps; name concrete artifacts (Helm release, cron job, DDL script).
-
-### Q&A
-
-Title only: `# Q&A`
-
----
-
-## QA Checklist
-
-Items marked **(auto)** are checked by `qa-design-review-pptx.py` — run it before the
-human pass rather than eyeballing these:
-
-- [ ] Title slide has JIRA key, service name, CP3, date **(auto)**
-- [ ] Agenda matches slide sequence **(auto, warning-level)**
-- [ ] Every slide has a `#` title **(auto)**
-- [ ] No slide exceeds ~10 table rows or ~8 top-level bullets **(auto, warning-level)**
-- [ ] Promotion and Fallback included for production-impacting changes — judgment call
-- [ ] Terminology consistent (OUTSTANDING, RETRY, service names) — judgment call
-- [ ] No placeholder text (`TBD`, `lorem`) **(auto)**
-- [ ] Generated via `generate-design-review-pptx.py` (not pptxgenjs)
-- [ ] `qa-design-review-pptx.py` passed with no errors, then markitdown reviewed by eye
-
----
-
-## Skill assets
+## Files
 
 | File | Purpose |
 |------|---------|
-| `ha-lis-design-review-template.pptx` | Canonical master (from LIS-10672 deck) |
-| `generate-design-review-pptx.py` | Markdown → styled .pptx, including diagram embedding |
-| `qa-design-review-pptx.py` | Mechanical QA checks (Step 7) |
-| `extract-slides.py` | Pull slides forward from a prior deck's markdown (Step 3, incremental reviews) |
-| `requirements.txt` | `python-pptx` dependency |
-| [slide-types.md](slide-types.md) | Per-slide content reference |
-| [examples.md](examples.md) | Real deck excerpts |
+| `deck-kit.js` | Palette, type ladder, grid, drawing primitives |
+| `archetypes.js` | The 12 slide patterns |
+| `generate-deck.js` | Deck spec → .pptx (`--list`, `--extract`) |
+| `qa-deck.js` | Mechanical checks (`--strict`, `--warn-only`) |
+| `preview-deck.js` | Deck spec → 1:1 HTML preview |
+| `record.js` | Shared draw-call recorder behind QA and preview |
+| `examples/LIS-10747.deck.json` | The approved reference deck |
+| [references/design-system.md](references/design-system.md) | Palette, type, grid, craft rules |
+| [references/slide-archetypes.md](references/slide-archetypes.md) | All 12 with slot schemas |
+| [references/content-rules.md](references/content-rules.md) | JIRA-note mapping, writing rules |
+| `legacy/` | Retired HA-template generator |
 
 ---
 
+## Extending
+
+Adding an archetype is a change to `archetypes.js` — compose it from `deck-kit`
+primitives (`panel`, `badge`, `chip`, `richText`, `connector`, `shapeText`,
+`bottomBand`) and export it. It then works in the generator, QA and preview at
+once, because all three run the same code.
+
+Changing a colour or a size is a change to `deck-kit.js`, never to a deck spec.
+If two decks need the same one-off, it is an archetype, not a `custom` slide.
+
+## Gotchas
+
+- **`addShape(shape, { text })` silently drops the text** in pptxgenjs 3.12. Use
+  `deck-kit.shapeText()`, which wraps the working `addText(str, { shape })`.
+- **Table height is set by row heights, not the `h` you pass.** A matrix with
+  more than 5 body rows collides with its takeaway cards; QA catches this.
+- **PowerPoint does not clip overflowing text**, it spills it over whatever is
+  underneath. Heed the overflow warnings.
+- **Only Cambria, Calibri and Courier New.** Anything else may not exist on an
+  HA desktop and will resolve to a substitute that breaks the layout.
+
 ## Related skills
 
-- **lis-jira-log-creator** — change request note (upstream)
-- **generate-design** — `## Design` section in JIRA note (upstream)
-- [slide-types.md](slide-types.md) — per-slide content reference
-- [examples.md](examples.md) — real deck excerpts
+- **lis-jira-log-creator** — the change-request note (upstream)
+- **generate-design** — the `## Design` section in that note (upstream)
+- **mermaid-diagrams** — diagrams to embed via the `image` archetype

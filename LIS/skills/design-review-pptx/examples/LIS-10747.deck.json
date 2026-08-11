@@ -1,0 +1,373 @@
+{
+  "meta": {
+    "title": "LIS-10747 Ward-Assigned Request No. Reminder",
+    "subject": "CRS Specimen Acknowledgement - setup-driven reminder popup",
+    "author": "LIS Team",
+    "company": "Hospital Authority"
+  },
+  "slides": [
+    {
+      "archetype": "title-hero",
+      "eyebrow": "LIS-10747   ·   CHANGE REQUEST   ·   PRIORITY: MEDIUM",
+      "headline": "Setup-Driven Reminder for\nWard-Assigned Request No.",
+      "lede": "CRS Specimen Acknowledgement — replace the hardcoded QEH hospital check with control driven by existing loe_control setup, so any hospital can enable the feature without a code change.",
+      "stats": [
+        {
+          "label": "Service",
+          "value": "lis-ecpath5-app"
+        },
+        {
+          "label": "Target completion",
+          "value": "31 Jul 2026"
+        },
+        {
+          "label": "References",
+          "value": "LIS-9632 · LIS-8437"
+        }
+      ],
+      "footer": "Design status: draft  ·  for CP3 review",
+      "notes": "LIS-10747. Change request against lis-ecpath5-app. The ask: remove the QEH-only hardcode added by LIS-9632 and drive the Lab No. reminder popup from existing loe_control setup instead."
+    },
+    {
+      "archetype": "evolution",
+      "eyebrow": "Background",
+      "title": "How we got here",
+      "steps": [
+        {
+          "badge": 1,
+          "tone": "neutral",
+          "tag": "LIS-8437",
+          "title": "Blood taking within cluster",
+          "body": "Ward-assigned request numbers from other hospitals (e.g. QEH) became retrievable in KWH CRS."
+        },
+        {
+          "badge": 2,
+          "tone": "danger",
+          "tag": "LIS-9632",
+          "title": "Hardcoded QEH check",
+          "body": "The Lab No. reminder fired incorrectly for KWH users, so the popup was gated on LisGlobal.hospital == HOSPITAL_QEH."
+        },
+        {
+          "badge": 3,
+          "tone": "accent",
+          "tag": "LIS-10747",
+          "title": "Derive from setup",
+          "body": "KTH will implement the same feature. The hospital-specific hardcode must give way to setup-driven control."
+        }
+      ],
+      "callout": {
+        "lead": "The blocker:",
+        "text": "QEH is the only hospital hardcoded today. Rolling the feature out to KTH — or anywhere else — needs a further code change and release for each site."
+      },
+      "notes": "LIS-8437 made cross-hospital ward-assigned request numbers retrievable. LIS-9632 patched the resulting false reminder with a QEH hardcode. That hardcode is now the blocker for KTH."
+    },
+    {
+      "archetype": "code-findings",
+      "eyebrow": "Current behaviour",
+      "title": "What the code does today",
+      "code": {
+        "filename": "GcrSpecAckUIComponents.as",
+        "lines": [
+          [
+            {
+              "text": "if (",
+              "color": "white"
+            },
+            {
+              "text": "LisGlobal.hospital",
+              "color": "warn"
+            },
+            {
+              "text": " ==",
+              "color": "white"
+            }
+          ],
+          [
+            {
+              "text": "        CommonConstants.HOSPITAL_QEH) {",
+              "color": "white"
+            }
+          ],
+          [
+            {
+              "text": "    // GcrAlertDialogue",
+              "color": "comment"
+            }
+          ],
+          [
+            {
+              "text": "    \"Please assign Lab No. to",
+              "color": "white"
+            }
+          ],
+          [
+            {
+              "text": "     acknowledge this specimen!\"",
+              "color": "white"
+            }
+          ],
+          [
+            {
+              "text": "}",
+              "color": "white"
+            }
+          ]
+        ],
+        "caption": "Hospital identity decides the behaviour — not the feature setup."
+      },
+      "findings": [
+        {
+          "title": "Rollout needs code",
+          "body": "Every new site adopting ward-assigned request no. requires a source change, build and release."
+        },
+        {
+          "title": "Site logic in the UI layer",
+          "body": "Hospital identity is embedded in a shared Specimen Acknowledgement component."
+        },
+        {
+          "title": "Setup already says it",
+          "body": "loe_control already records which hospitals implement the feature — the code just ignores it."
+        }
+      ],
+      "footnote": "Note: KWH must keep seeing no reminder — it retrieves other hospitals' ward-assigned request numbers but does not implement the feature locally.",
+      "notes": "The popup is gated on hospital identity in GcrSpecAckUIComponents.as. Whatever we replace it with must still suppress the reminder at KWH."
+    },
+    {
+      "archetype": "decision-flow",
+      "eyebrow": "Change",
+      "title": "Proposed logic — driven by loe_control",
+      "start": {
+        "text": "Acknowledge specimen\nwith no ward-assigned\nrequest no.",
+        "w": 2.35
+      },
+      "decisions": [
+        {
+          "text": "WARD_PRINT_LABNO_LABEL\n= 'Y' ?",
+          "w": 3.25,
+          "fallthrough": {
+            "label": "No",
+            "title": "No popup",
+            "body": "Feature not implemented at this hospital"
+          }
+        },
+        {
+          "text": "RELABEL_WARD_ASSIGN_REQ_NO\n= 'Y' ?",
+          "w": 3.35,
+          "fontSize": 10,
+          "inLabel": "Yes",
+          "fallthrough": {
+            "label": "Yes",
+            "title": "No popup",
+            "body": "Relabel / cross-hospital retrieval (e.g. KWH)"
+          }
+        }
+      ],
+      "terminal": {
+        "label": "No",
+        "text": "Show reminder popup"
+      },
+      "condition": {
+        "label": "Effective condition",
+        "code": "isWardPrintReqNumberLabelEnabled && !isRelabelWardAssignRequestNo",
+        "note": "Both flags are already parsed into dictionaryParam — no new setup required."
+      },
+      "notes": "Both controls are already parsed as dictionaryParam.isWardPrintReqNumberLabelEnabled and dictionaryParam.isRelabelWardAssignRequestNo, so this is a condition swap in GcrSpecAckUIComponents.as with no new setup or DB work."
+    },
+    {
+      "archetype": "matrix",
+      "eyebrow": "loe_control matrix",
+      "title": "How each hospital resolves",
+      "table": {
+        "y": 1.95,
+        "colWidths": [
+          1.55,
+          2.75,
+          3.05,
+          2.83,
+          1.95
+        ],
+        "headers": [
+          "Hospital",
+          {
+            "text": "WARD_PRINT_LABNO_LABEL",
+            "mono": true
+          },
+          {
+            "text": "RELABEL_WARD_ASSIGN_REQ_NO",
+            "mono": true
+          },
+          "Feature implemented",
+          "Reminder popup"
+        ],
+        "rows": [
+          [
+            {
+              "text": "QEH",
+              "bold": true
+            },
+            {
+              "text": "Y",
+              "color": "accent",
+              "bold": true
+            },
+            {
+              "text": "not set",
+              "color": "body"
+            },
+            "Yes",
+            {
+              "text": "Shown",
+              "tone": "warn",
+              "color": "warnInk",
+              "bold": true
+            }
+          ],
+          [
+            {
+              "text": "KWH",
+              "bold": true
+            },
+            {
+              "text": "Y",
+              "color": "accent",
+              "bold": true
+            },
+            {
+              "text": "Y",
+              "color": "accent",
+              "bold": true
+            },
+            "No — relabel / cross-hospital only",
+            {
+              "text": "Suppressed",
+              "tone": "neutral",
+              "color": "body",
+              "bold": true
+            }
+          ],
+          [
+            {
+              "text": "KTH",
+              "bold": true
+            },
+            {
+              "text": "Y",
+              "color": "accent",
+              "bold": true
+            },
+            {
+              "text": "not set",
+              "color": "body"
+            },
+            "Yes — once configured",
+            {
+              "text": "Shown",
+              "tone": "warn",
+              "color": "warnInk",
+              "bold": true
+            }
+          ],
+          [
+            {
+              "text": "Other sites",
+              "bold": true
+            },
+            {
+              "text": "not set",
+              "color": "body"
+            },
+            {
+              "text": "not set",
+              "color": "body"
+            },
+            "No",
+            {
+              "text": "Suppressed",
+              "tone": "neutral",
+              "color": "body",
+              "bold": true
+            }
+          ]
+        ]
+      },
+      "takeaways": [
+        {
+          "tone": "accent",
+          "title": "Enabling a new site",
+          "body": "Set WARD_PRINT_LABNO_LABEL = 'Y' and leave RELABEL_WARD_ASSIGN_REQ_NO unset. No source change, no release."
+        },
+        {
+          "tone": "neutral",
+          "title": "Behaviour preserved",
+          "body": "KWH keeps both controls set to 'Y', so the LIS-9632 fix for cross-hospital retrieval still holds after the hardcode is removed."
+        }
+      ],
+      "notes": "The matrix is the regression check: QEH unchanged, KWH still suppressed, KTH enabled by setup alone, all other sites unaffected."
+    },
+    {
+      "archetype": "steps-sidebar",
+      "eyebrow": "What we touch",
+      "title": "Scope of change",
+      "steps": [
+        {
+          "badge": 1,
+          "title": "Remove the QEH hardcode",
+          "body": "In GcrSpecAckUIComponents.as, drop the LisGlobal.hospital == CommonConstants.HOSPITAL_QEH condition gating the GcrAlertDialogue popup.",
+          "tag": "lis-ecpath5-app"
+        },
+        {
+          "badge": 2,
+          "title": "Gate on dictionary setup",
+          "body": "Replace it with isWardPrintReqNumberLabelEnabled && !isRelabelWardAssignRequestNo, both already parsed from loe_control into dictionaryParam.",
+          "tag": "lis-ecpath5-app"
+        },
+        {
+          "badge": 3,
+          "title": "Regression on all four cases",
+          "body": "Verify QEH still prompts, KWH stays silent on cross-hospital retrieval, KTH prompts once configured, and unconfigured sites are unaffected.",
+          "tag": "Test"
+        }
+      ],
+      "sidebar": {
+        "eyebrow": "Why now",
+        "headline": "KTH is next",
+        "body": "KTH will implement ward-assigned request no. under the same setup as QEH. Left as-is, the hardcode forces another hospital-specific patch — and one more for every site after that.",
+        "points": [
+          "No DB migration",
+          "No new control",
+          "No setup data change"
+        ]
+      },
+      "notes": "Scope is one condition in one ActionScript file plus regression across the four hospital setup cases. No database or setup-data work."
+    },
+    {
+      "archetype": "closing",
+      "eyebrow": "Next",
+      "headline": "Target completion",
+      "stat": "31 JUL 2026",
+      "note": "Design status: draft — to be populated before CP3 review.",
+      "nextSteps": [
+        {
+          "badge": 1,
+          "title": "Complete design section",
+          "body": "Populate the design write-up in the change log ahead of CP3."
+        },
+        {
+          "badge": 2,
+          "title": "Confirm KTH setup",
+          "body": "Verify KTH's loe_control values match the QEH pattern before release."
+        },
+        {
+          "badge": 3,
+          "title": "Regression sign-off",
+          "body": "QEH, KWH, KTH and an unconfigured site, per the setup matrix."
+        }
+      ],
+      "identity": {
+        "key": "LIS-10747",
+        "meta": "lis-ecpath5-app  ·  Change Request  ·  Medium  ·  refs LIS-9632, LIS-8437"
+      },
+      "notes": "Close on the date, the outstanding design write-up, and the regression matrix as the sign-off gate."
+    }
+  ]
+}

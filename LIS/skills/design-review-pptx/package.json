@@ -1,0 +1,19 @@
+{
+  "name": "lis-design-review-deck",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Declarative deck spec -> visual LIS/HA design review .pptx",
+  "type": "commonjs",
+  "bin": {
+    "generate-deck": "./generate-deck.js",
+    "qa-deck": "./qa-deck.js",
+    "preview-deck": "./preview-deck.js"
+  },
+  "scripts": {
+    "qa": "node qa-deck.js",
+    "example": "node generate-deck.js examples/LIS-10747.deck.json"
+  },
+  "dependencies": {
+    "pptxgenjs": "^3.12.0"
+  }
+}
