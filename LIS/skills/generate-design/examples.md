@@ -73,15 +73,26 @@ old_hkid column can remain (nullable, unused by previous version)
 ### Slide: Q&A
 ```
 
-**Convert to slides:**
+**Turn it into a deck:**
+
+Hand off to **design-review-pptx** — it reads this `## Design` section, writes a
+deck spec, and renders it:
 
 ```bash
-python ~/.cursor/skills/generate-design/jira-design-to-slides.py \
-  "LIS/JIRA/Fix Message Queue Old HKID Blocking in lis-patient-pmi-sync-svc.md" \
-  "docs/Fix Message Queue Old HKID Blocking (LIS-10583).md"
+node <design-review-skill-dir>/generate-deck.js "docs/Fix Message Queue Old HKID Blocking (LIS-10583).deck.json"
 ```
 
-Then hand off to **design-review-pptx** for `.pptx` generation.
+Roughly how these blocks land as archetypes:
+
+| Design block | Archetype |
+|--------------|-----------|
+| `Slide: Background` (bullets) | `evolution` if it has a history, else `cards` |
+| `Slide: Background` (table) | `matrix` |
+| `Slide: Existing Design - Current Blocking Query` | `code-findings` |
+| `Slide: Proposed Change - Overview` | `steps-sidebar` |
+| `Slide: Proposed Change - Schema` | `matrix` |
+| `Slide: Promotion` / `Fallback` | `cards` |
+| `Slide: Q&A` | `statement` |
 
 ---
 
@@ -89,7 +100,6 @@ Then hand off to **design-review-pptx** for `.pptx` generation.
 
 ```
 lis-jira-log-creator  →  LIS/JIRA/{note}.md  (sections 1–6)
-generate-design       →  adds ## Design section in same note
-jira-design-to-slides →  docs/{Title}.md     (slide-ready)
-design-review-pptx    →  docs/{Title}.pptx   (CP3 deck)
+generate-design       →  adds ## Design section in same note   ← ends here
+design-review-pptx    →  {Title}.deck.json  →  {Title}.pptx    (CP3 deck)
 ```
