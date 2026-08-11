@@ -14,11 +14,14 @@ description: >
 Bridge skill between **lis-jira-log-creator** and **design-review-pptx**.
 
 ```
-lis-jira-log-creator  →  LIS/JIRA/{note}.md     (change request sections)
-generate-design       →  ## Design in same note  (CP3 design content)
-jira-design-to-slides →  docs/{Title}.md        (slide-ready markdown)
-design-review-pptx    →  docs/{Title}.pptx      (final deck)
+lis-jira-log-creator  →  LIS/JIRA/{note}.md      (change request sections)
+generate-design       →  ## Design in same note   (CP3 design content)  ← ends here
+design-review-pptx    →  {Title}.deck.json → .pptx
 ```
+
+**design-review-pptx reads the `## Design` section directly.** There is no
+intermediate slide-markdown file — choosing how a design block becomes a slide
+is a judgment call that skill makes against its archetype catalogue.
 
 ---
 
@@ -32,8 +35,7 @@ Task Progress:
 - [ ] 4. Draft ## Design section
 - [ ] 5. Confirm with user (if incomplete)
 - [ ] 6. Write Design to Obsidian note
-- [ ] 7. Convert to slide markdown (jira-design-to-slides.py)
-- [ ] 8. Hand off to design-review-pptx for .pptx
+- [ ] 7. Hand off to design-review-pptx (only if a deck was asked for)
 ```
 
 ### Step 1 — Locate JIRA note
