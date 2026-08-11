@@ -72,7 +72,8 @@ Revamping the handling of patient merge and deletion on corporate special blood 
 **JIRA key:** LIS-10583
 **Service:** lis-patient-pmi-sync-svc
 **Review forum:** CP3
-**Review date:** 9th Jul, 2026
+**Review date:** TBC — 9th Jul 2026 lapsed
+**Target completion:** TBC — frontmatter says 30 Jul 2026, body says 17 Apr 2026; both lapsed
 **Prior review:** none
 
 ### Agenda
@@ -82,63 +83,76 @@ Promotion
 Fallback
 Q&A
 
-### Slide: Background
-Corporate special blood category for patient merge/deletion is handled by legacy trigger transaction_log_tr
-Trigger fires on INSERT to transaction_log
-Supports CPI types 020 (Merge HKID), 031 (Change HKID), 250 (PMI Deletion)
-Logic revamp into lis-patient-pmi-sync-svc to align with PMI subscription architecture
+### Slide: How we got here
+**Archetype:** evolution
+Corporate special blood requirements have always been maintained by a database trigger
+The PMI sync service later took over patient merge and change-HKID handling, but not blood category
+Both mechanisms now touch the same records — the trigger is the last piece left behind
 
-### Slide: Background
-| CPI type | HL7 / ADT | Trigger action on bb_corp_blood_category |
-| --- | --- | --- |
-| 020 | A40 Merge HKID | Copy active requirements from old HKID to new HKID |
-| 031 | A47 Change HKID | Copy active requirements from old HKID to new HKID |
-| 250 | A29 PMI Deletion | Reset requirements to default values |
+### Slide: Which events matter
+**Archetype:** matrix
+| CPI type | ADT event | Action on bb_corp_blood_category | Today | After |
+| --- | --- | --- | --- | --- |
+| 020 | A40 Merge HKID | Copy active requirements old to new HKID | Trigger | Service |
+| 031 | A47 Change HKID | Copy active requirements old to new HKID | Trigger | Service |
+| 250 | A29 PMI Deletion | Reset requirements to default values | Trigger | Service - new subscription |
+The service already subscribes to A40 and A47; A29 is the one new subscription
 
-### Slide: Existing Design - Legacy Trigger Logic
-Iterate latest active bb_corp_blood_category per blood_key for old HKID (merge) or patient HKID (deletion)
-Merge/change: copy record when blood_value = 1 and not already active on new HKID
-Deletion: insert reset record (blood_value 0, or 2 when blood_key = 537)
-Set corp_alert_status = 21 on new records
+### Slide: What the trigger does today
+**Archetype:** code-findings
+The trigger fires on every insert to the transaction log and walks the patient's active blood categories
 Reference: docs/LIS-10583/transaction_log_tr.sql
+```sql
+-- transaction_log_tr : AFTER INSERT ON transaction_log
+FOR each latest active bb_corp_blood_category per blood_key
+  IF cpi_type IN ('020','031')          -- merge / change HKID
+     AND blood_value = 1
+     AND no active record on new HKID
+    INSERT copy -> new HKID
+  IF cpi_type = '250'                   -- PMI deletion
+    INSERT reset (blood_value 0, or 2 when blood_key = 537)
+  SET corp_alert_status = 21
+```
+Findings: database-tier logic is invisible to service logging; no per-hospital switch; deletion never reached the service
 
-### Slide: Existing Design - PMI Sync Flow
-PMI publishes HL7 messages to lis-patient-pmi-sync-svc
-PatientSyncServiceImpl routes by transaction type (A40, A47, A29, ...)
-A40/A47: PatientAppServiceImpl.mergePid() then patientUpdate()
-A29: PatientAppServiceImpl.deletePMI()
+### Slide: Proposed routing
+**Archetype:** decision-flow
+Every inbound merge, change-HKID or deletion message passes one gate before any blood category work
+A per-hospital feature flag decides whether the service handles it at all
+Merge and change-HKID copy the requirements forward; deletion resets them
+```
+BbCorpBloodCatSetup.isBbCorpBloodCatEnable()
+```
+Read from lab_option per hospital server, so sites can be switched on one at a time
 
-### Slide: Proposed Change - Overview
-Migrate transaction_log_tr logic to BbCorpBloodCategoryService
-Handle A40/A47 merge and change HKID blood category copy in mergePid()
-Handle A29 PMI deletion blood category reset in deletePMI()
-Gate all processing via BbCorpBloodCatSetup per-hospital lab_option flag
+### Slide: The two handlers
+**Archetype:** compare
+Merge and change-HKID copy active requirements from the old HKID to the new one, stamping the
+originating CPI type. Deletion writes reset records instead of removing anything, so the history
+survives.
+| Handler | Trigger events | Writes | patient_log_type |
+| --- | --- | --- | --- |
+| Merge or change HKID | A40, A47 | Copy of each active requirement on the new HKID | 020 or 031 |
+| PMI deletion | A29 | Reset record, blood_value 0 (2 when blood_key = 537) | 250 |
+Both set corp_alert_status = 21; a blood category failure rolls the patient merge back
 
-### Slide: Proposed Change - BbCorpBloodCatSetup
-Hospital-level feature flag via lab_option (BbCorpBloodCatSetup.java)
-| Key | Value |
+### Slide: Feature flag
+**Archetype:** matrix
+| Setting | Value |
 | --- | --- |
 | lab | 9 (CRS) |
 | group | LIS_PATIENT_PMI_SYNC_SVC |
 | code | BB_CORP_BLOOD_CAT_ENABLED |
 | Enabled | option_value = 1 |
-| Scope | Per hospital server (DataSourceContextHolder) |
-When disabled: mergePid skips blood category copy; deletePMI returns success with skip message
-PatientSyncController logs ALS info when flag is false at message entry
+| Scope | Per hospital server |
+When disabled, the merge still completes and blood category work is skipped with an audit entry
 
-### Slide: Proposed Change - Merge and Change HKID (A40/A47)
-After successful mergePid, call processBloodCategoryForPidChange when flag enabled
-BbCorpBloodCategoryService.getActiveBloodCategories(oldHkid)
-BbCorpBloodCategoryService.processBbCorpBloodCatForMergeOrChangeHKID
-Sets patient_log_type 020 (A40) or 031 (A47)
-Rollback merge on blood category failure (RollbackException)
-
-### Slide: Proposed Change - PMI Deletion (A29)
-PatientSyncServiceImpl routes A29 to deletePMI()
-Skip when BB_CORP_BLOOD_CAT_ENABLED is false
-BbCorpBloodCategoryService.processBbCorpBloodCatForPMIDeletion
-Reset active records: blood_value 0 (or 2 for blood_key 537)
-Sets patient_log_type 250; remark documents patient deletion reset
+### Slide: Scope of change
+**Archetype:** steps-sidebar
+Move the trigger's behaviour into the service's blood category component
+Call it after a successful merge for A40 and A47, and on the deletion path for A29
+Subscribe to A29, which the service does not receive today
+Audit every decision and failure through ALS, including the skip when the flag is off
 
 ### Diagram: corp-blood-category-flow
 ```mermaid
@@ -160,14 +174,16 @@ sequenceDiagram
 ```
 
 ### Slide: Promotion
-Deploy lis-patient-pmi-sync-svc with BbCorpBloodCategoryService changes
-Configure lab_option BB_CORP_BLOOD_CAT_ENABLED = 1 per hospital before go-live
-Verify A40, A47, A29 processing in SIT with flag enabled and disabled
-Retire or disable transaction_log_tr after parallel-run validation
+**Archetype:** cards
+Deploy the service with the blood category component and the A29 subscription
+Leave the feature flag off, then enable it one hospital at a time
+Verify merge, change-HKID and deletion in SIT with the flag both on and off
+Retire the trigger only after a parallel run confirms both paths agree
 
 ### Slide: Fallback
-Revert lis-patient-pmi-sync-svc deployment
-Set BB_CORP_BLOOD_CAT_ENABLED = 0 to disable service-side processing per hospital
-Re-enable transaction_log_tr if legacy trigger path is still required
+**Archetype:** cards
+Set BB_CORP_BLOOD_CAT_ENABLED = 0 — the fastest reversal, per hospital, no deployment
+Revert the service deployment if the problem is not confined to blood category handling
+Re-enable the trigger if it was already retired
 
 ### Slide: Q&A

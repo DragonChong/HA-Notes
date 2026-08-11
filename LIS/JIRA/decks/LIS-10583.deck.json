@@ -1,0 +1,541 @@
+{
+  "meta": {
+    "title": "LIS-10583 Corporate Special Blood Category on Merge and Deletion",
+    "subject": "Revamp transaction_log_tr into lis-patient-pmi-sync-svc",
+    "author": "LIS Team",
+    "company": "Hospital Authority"
+  },
+  "slides": [
+    {
+      "archetype": "title-hero",
+      "eyebrow": "LIS-10583   ·   CHANGE REQUEST   ·   PRIORITY: MEDIUM",
+      "headline": "Corporate Special Blood Category\non Merge and Deletion",
+      "lede": "Move patient merge, change-HKID and deletion handling out of the database trigger and into lis-patient-pmi-sync-svc, behind a per-hospital flag.",
+      "stats": [
+        {
+          "label": "Service",
+          "value": "lis-patient-pmi-sync-svc"
+        },
+        {
+          "label": "Target completion",
+          "value": "TBC"
+        },
+        {
+          "label": "References",
+          "value": "LIS-7291 · LIS-8200"
+        }
+      ],
+      "footer": "Design status: draft  ·  for CP3 review",
+      "notes": "LIS-10583, a change request against lis-patient-pmi-sync-svc. We are retiring the transaction_log trigger that maintains corporate special blood requirements and rebuilding that behaviour in the PMI sync service, gated per hospital. Target date needs reconfirming — every date on the ticket has lapsed."
+    },
+    {
+      "archetype": "agenda",
+      "eyebrow": "Agenda",
+      "title": "What we will cover",
+      "items": [
+        {
+          "title": "Background",
+          "note": "why the trigger is still there"
+        },
+        {
+          "title": "Design Review",
+          "note": "events, routing, the two handlers"
+        },
+        "Promotion",
+        "Fallback",
+        "Q&A"
+      ],
+      "notes": "Incremental review. The bulk of the time should go on the routing and the two handlers."
+    },
+    {
+      "archetype": "evolution",
+      "eyebrow": "Background",
+      "title": "How we got here",
+      "steps": [
+        {
+          "badge": 1,
+          "tone": "neutral",
+          "tag": "LIS-7291",
+          "title": "Trigger maintains the requirements",
+          "body": "Copied and reset by a database trigger on transaction_log."
+        },
+        {
+          "badge": 2,
+          "tone": "neutral",
+          "tag": "LIS-8200",
+          "title": "Sync service takes over PMI",
+          "body": "It took over merge and change-HKID, but blood category stayed in the database."
+        },
+        {
+          "badge": 3,
+          "tone": "accent",
+          "tag": "LIS-10583",
+          "title": "Move the last piece",
+          "body": "Two mechanisms now touch the same records. The trigger is what is left."
+        }
+      ],
+      "callout": {
+        "lead": "The problem:",
+        "text": "database-tier logic is invisible to service logging and cannot be switched off per hospital."
+      },
+      "notes": "The trigger is not broken — it is simply the last piece of patient handling still living in the database while everything around it moved to the service."
+    },
+    {
+      "archetype": "matrix",
+      "eyebrow": "Domain reference",
+      "title": "Which events matter",
+      "table": {
+        "y": 1.95,
+        "colWidths": [
+          1.35,
+          2.15,
+          4.13,
+          1.7,
+          2.8
+        ],
+        "headers": [
+          "CPI type",
+          "ADT event",
+          "Action on bb_corp_blood_category",
+          "Today",
+          "After"
+        ],
+        "rows": [
+          [
+            {
+              "text": "020",
+              "bold": true,
+              "mono": true
+            },
+            "A40 Merge HKID",
+            "Copy active requirements old → new HKID",
+            {
+              "text": "Trigger",
+              "color": "body"
+            },
+            {
+              "text": "Service",
+              "tone": "accent",
+              "color": "accent",
+              "bold": true
+            }
+          ],
+          [
+            {
+              "text": "031",
+              "bold": true,
+              "mono": true
+            },
+            "A47 Change HKID",
+            "Copy active requirements old → new HKID",
+            {
+              "text": "Trigger",
+              "color": "body"
+            },
+            {
+              "text": "Service",
+              "tone": "accent",
+              "color": "accent",
+              "bold": true
+            }
+          ],
+          [
+            {
+              "text": "250",
+              "bold": true,
+              "mono": true
+            },
+            "A29 PMI Deletion",
+            "Reset requirements to default values",
+            {
+              "text": "Trigger",
+              "color": "body"
+            },
+            {
+              "text": "Service — new subscription",
+              "tone": "warn",
+              "color": "warnInk",
+              "bold": true
+            }
+          ]
+        ]
+      },
+      "takeaways": [
+        {
+          "tone": "accent",
+          "title": "Two already arrive",
+          "body": "A40 and A47 already reach the service for the PID merge — we extend an existing path."
+        },
+        {
+          "tone": "warn",
+          "title": "One is new",
+          "body": "A29 is not received today. It is the only new subscription in this change."
+        }
+      ],
+      "notes": "Worth dwelling on the last column. Two of the three events already reach the service, so most of this is extending an existing handler. A29 is the genuinely new piece."
+    },
+    {
+      "archetype": "code-findings",
+      "eyebrow": "Current behaviour",
+      "title": "What the trigger does today",
+      "code": {
+        "filename": "transaction_log_tr  ·  AFTER INSERT ON transaction_log",
+        "lines": [
+          [
+            {
+              "text": "FOR each latest active category per blood_key",
+              "color": "white"
+            }
+          ],
+          [
+            {
+              "text": "  IF cpi_type IN ",
+              "color": "white"
+            },
+            {
+              "text": "('020','031')",
+              "color": "warn"
+            }
+          ],
+          [
+            {
+              "text": "     AND blood_value = 1",
+              "color": "white"
+            }
+          ],
+          [
+            {
+              "text": "     AND no active record on new HKID",
+              "color": "white"
+            }
+          ],
+          [
+            {
+              "text": "    INSERT copy -> new HKID",
+              "color": "white"
+            }
+          ],
+          [
+            {
+              "text": "  IF cpi_type = ",
+              "color": "white"
+            },
+            {
+              "text": "'250'",
+              "color": "warn"
+            }
+          ],
+          [
+            {
+              "text": "    INSERT reset (0, or 2 if key 537)",
+              "color": "white"
+            }
+          ],
+          [
+            {
+              "text": "  SET corp_alert_status = 21",
+              "color": "comment"
+            }
+          ]
+        ],
+        "caption": "Simplified. Full statement in docs/LIS-10583/transaction_log_tr.sql"
+      },
+      "findings": [
+        {
+          "title": "Invisible to service logging",
+          "body": "Runs in the database tier, so nothing appears in ALS beside the merge it belongs to."
+        },
+        {
+          "title": "No per-hospital switch",
+          "body": "On or off for the whole database. No way to pilot a single site."
+        },
+        {
+          "title": "Deletion never reaches us",
+          "body": "A29 is handled entirely by the trigger — the service never sees a deletion."
+        }
+      ],
+      "footnote": "Behaviour is preserved exactly: same records, same reset values, same corp_alert_status.",
+      "notes": "The behaviour itself is correct and stays correct. What we are fixing is where it lives — three consequences of that, on the right."
+    },
+    {
+      "archetype": "decision-flow",
+      "eyebrow": "Change",
+      "title": "Proposed routing",
+      "start": {
+        "text": "Merge, change-HKID\nor deletion message\narrives",
+        "w": 2.35
+      },
+      "decisions": [
+        {
+          "text": "BB_CORP_BLOOD_CAT_ENABLED\n= 1 ?",
+          "w": 3.3,
+          "fontSize": 10,
+          "fallthrough": {
+            "label": "No",
+            "title": "Skip",
+            "body": "Merge still completes; skip recorded in ALS"
+          }
+        },
+        {
+          "text": "A29 PMI deletion ?",
+          "w": 3.3,
+          "inLabel": "Yes",
+          "fallthrough": {
+            "label": "No",
+            "title": "Copy requirements",
+            "body": "old HKID → new HKID (A40 / A47)"
+          }
+        }
+      ],
+      "terminal": {
+        "label": "Yes",
+        "text": "Reset to default"
+      },
+      "condition": {
+        "label": "Feature gate",
+        "code": "BbCorpBloodCatSetup.isBbCorpBloodCatEnable()",
+        "note": "Read from lab_option per hospital server, so sites can be switched on one at a time."
+      },
+      "notes": "One gate, then a two-way split. The important property is that when the flag is off the patient merge still completes normally — the blood category work is skipped, not failed."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "Design Review",
+      "title": "The two handlers",
+      "left": {
+        "label": "A40 / A47",
+        "tone": "accent",
+        "title": "Merge or change HKID",
+        "code": [
+          "copy each active requirement",
+          "  -> new HKID"
+        ],
+        "points": [
+          "Only when blood_value = 1 and the new HKID has none",
+          "Stamps patient_log_type 020 or 031",
+          "Failure rolls the merge back"
+        ]
+      },
+      "right": {
+        "label": "A29",
+        "tone": "warn",
+        "title": "PMI deletion",
+        "code": [
+          "insert reset record",
+          "  blood_value 0 (2 if key 537)"
+        ],
+        "points": [
+          "Writes reset records — history survives",
+          "Stamps patient_log_type 250",
+          "Remark records the deletion"
+        ]
+      },
+      "callout": {
+        "lead": "Both:",
+        "text": "set corp_alert_status = 21 on every record written, matching the trigger."
+      },
+      "notes": "The asymmetry worth calling out: a merge failure rolls back the whole merge, because leaving a patient merged without their requirements would be clinically wrong. Deletion has no such coupling."
+    },
+    {
+      "archetype": "matrix",
+      "eyebrow": "Setup",
+      "title": "The per-hospital flag",
+      "table": {
+        "y": 2.05,
+        "colWidths": [
+          3.4,
+          8.73
+        ],
+        "headers": [
+          "Setting",
+          "Value"
+        ],
+        "rows": [
+          [
+            "Lookup in lab_option",
+            {
+              "text": "9 · LIS_PATIENT_PMI_SYNC_SVC · BB_CORP_BLOOD_CAT_ENABLED",
+              "mono": true
+            }
+          ],
+          [
+            "Enabled when",
+            {
+              "text": "option_value = 1",
+              "mono": true,
+              "color": "accent",
+              "bold": true
+            }
+          ],
+          [
+            "Scope",
+            "Per hospital server — each site switches independently"
+          ]
+        ]
+      },
+      "takeaways": [
+        {
+          "tone": "accent",
+          "title": "Off is safe",
+          "body": "With the flag off the merge completes as it does today and the skip is recorded in ALS. Nothing fails."
+        },
+        {
+          "tone": "neutral",
+          "title": "No new table",
+          "body": "This reuses the existing lab_option setup — no schema change and no new configuration mechanism."
+        }
+      ],
+      "notes": "This is also the fallback switch. Turning a site off needs no deployment, which is why it is the first line in the fallback plan."
+    },
+    {
+      "archetype": "steps-sidebar",
+      "eyebrow": "What we touch",
+      "title": "Scope of change",
+      "steps": [
+        {
+          "badge": 1,
+          "title": "Rebuild the trigger's behaviour",
+          "body": "Move the copy and reset logic into the service, preserving values exactly.",
+          "tag": "service"
+        },
+        {
+          "badge": 2,
+          "title": "Hook the existing merge path",
+          "body": "Call it after a successful merge for A40 and A47 — both already handled.",
+          "tag": "service"
+        },
+        {
+          "badge": 3,
+          "title": "Subscribe to A29",
+          "body": "Add the deletion subscription and route it to the reset handler.",
+          "tag": "new"
+        },
+        {
+          "badge": 4,
+          "title": "Audit and regress",
+          "body": "ALS on every decision and skip; regress all three events, flag on and off.",
+          "tag": "Test"
+        }
+      ],
+      "sidebar": {
+        "eyebrow": "Why now",
+        "headline": "One owner",
+        "body": "Patient merge already lives in the service. Leaving blood category in a trigger means two mechanisms on the same records.",
+        "points": [
+          "No schema change",
+          "No new setup table",
+          "Existing flag mechanism"
+        ]
+      },
+      "notes": "Four work items, one of which — the A29 subscription — is genuinely new. Everything else extends a path that already runs in production."
+    },
+    {
+      "archetype": "cards",
+      "eyebrow": "Promotion",
+      "title": "How this goes out",
+      "perRow": 4,
+      "cards": [
+        {
+          "badge": 1,
+          "tone": "neutral",
+          "tag": "deploy",
+          "title": "Deploy dark",
+          "body": "Release the service with the component and the A29 subscription, flag off everywhere."
+        },
+        {
+          "badge": 2,
+          "tone": "accent",
+          "tag": "setup",
+          "title": "Enable one site",
+          "body": "Set the flag for a single hospital and watch ALS for merge, change-HKID and deletion."
+        },
+        {
+          "badge": 3,
+          "tone": "neutral",
+          "tag": "SIT",
+          "title": "Verify both states",
+          "body": "Confirm all three events behave correctly with the flag both on and off."
+        },
+        {
+          "badge": 4,
+          "tone": "ink",
+          "tag": "cleanup",
+          "title": "Retire the trigger",
+          "body": "Only after a parallel run shows both paths writing the same records."
+        }
+      ],
+      "callout": {
+        "lead": "Parallel run:",
+        "text": "the trigger stays live while the flag is on. Both paths skip when the new HKID already has an active record, so neither double-writes."
+      },
+      "notes": "The order matters. Deploying dark separates the release risk from the behaviour change, and the flag lets us pilot one hospital rather than the whole cluster."
+    },
+    {
+      "archetype": "cards",
+      "eyebrow": "Fallback",
+      "title": "If it goes wrong",
+      "perRow": 3,
+      "cards": [
+        {
+          "badge": 1,
+          "tone": "accent",
+          "tag": "seconds",
+          "title": "Turn the flag off",
+          "body": "Per hospital, no deployment. The merge keeps working and the trigger carries on as before."
+        },
+        {
+          "badge": 2,
+          "tone": "neutral",
+          "tag": "release",
+          "title": "Revert the service",
+          "body": "Only needed if the problem is outside blood category handling — the A29 subscription goes with it."
+        },
+        {
+          "badge": 3,
+          "tone": "neutral",
+          "tag": "db",
+          "title": "Restore the trigger",
+          "body": "Only if it has already been retired. Until then it is still running and needs nothing."
+        }
+      ],
+      "notes": "The first option covers almost every scenario and takes effect immediately, which is the main argument for gating this behind setup rather than shipping it unconditionally."
+    },
+    {
+      "archetype": "closing",
+      "eyebrow": "Next",
+      "headline": "Target completion",
+      "stat": "TBC",
+      "note": "Every date recorded on the ticket has lapsed — target and CP3 review date both need reconfirming.",
+      "nextSteps": [
+        {
+          "badge": 1,
+          "title": "Reconfirm the dates",
+          "body": "Ticket records 17 Apr and 30 Jul 2026, both past."
+        },
+        {
+          "badge": 2,
+          "title": "Confirm parallel-run window",
+          "body": "How long both paths run before the trigger is retired, and who signs off."
+        },
+        {
+          "badge": 3,
+          "title": "Agree the pilot site",
+          "body": "Which hospital enables the flag first, and what we watch in ALS."
+        }
+      ],
+      "identity": {
+        "key": "LIS-10583",
+        "meta": "lis-patient-pmi-sync-svc  ·  Change Request  ·  Medium  ·  refs LIS-7291, LIS-8200"
+      },
+      "notes": "Close on the three open items. The date is the blocker — nothing can be scheduled until it is reset."
+    },
+    {
+      "archetype": "statement",
+      "align": "center",
+      "eyebrow": "Questions",
+      "headline": "Q&A",
+      "body": "LIS-10583  ·  lis-patient-pmi-sync-svc",
+      "notes": "Likely questions: the parallel-run window, whether A29 volume is known, and who owns retiring the trigger."
+    }
+  ]
+}

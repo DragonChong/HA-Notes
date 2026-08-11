@@ -47,13 +47,19 @@ const tone = {
   outline: { fill: color.neutralTint, line: color.onDarkMuted },
 };
 
-/** Accent colour used for a tone's badge / tag / rule. */
+/**
+ * Accent colour used for a tone's badge / tag / label.
+ *
+ * These are applied to *text* and to badge fills behind white text, so the warn
+ * tone resolves to `warnInk` — plain `warn` is unreadable as text on its own
+ * tint (2.81:1).
+ */
 const toneAccent = {
   ink: color.accent,
   elevated: color.accent,
   accent: color.accent,
   neutral: color.body,
-  warn: color.warn,
+  warn: color.warnInk,
   danger: color.danger,
   outline: color.accent,
 };
@@ -96,7 +102,9 @@ const size = {
 // ---------------------------------------------------------------------------
 
 const grid = {
-  W: 13.333,
+  // Widescreen is exactly 40/3 in = 12192000 EMU. Writing 13.333 rounds to
+  // 12191227 and the canvas no longer matches a PowerPoint-authored deck.
+  W: 40 / 3,
   H: 7.5,
 
   margin: 0.6, // content slides
@@ -425,7 +433,20 @@ function bottomBand(pptx, slide, kind, spec = {}) {
 
 /** Set deck-level document properties (fixes PptxGenJS's default subject). */
 function applyDocProps(pptx, meta = {}) {
-  pptx.layout = 'LAYOUT_16x9';
+  // DO NOT use the built-in 'LAYOUT_16x9' — despite the name it is 10 x 5.625in,
+  // not 13.333 x 7.5. Every coordinate in this kit assumes the latter, so that
+  // layout silently pushes the bottom band and the right column off the slide.
+  // Define the canvas from the grid constants instead, so the two cannot drift.
+  pptx.defineLayout({ name: 'LIS_WIDE', width: grid.W, height: grid.H });
+  pptx.layout = 'LIS_WIDE';
+
+  const emu = (inches) => Math.round(inches * 914400);
+  if (pptx.presLayout.width !== emu(grid.W) || pptx.presLayout.height !== emu(grid.H)) {
+    throw new Error(
+      `canvas is ${pptx.presLayout.width / 914400} x ${pptx.presLayout.height / 914400}in, `
+      + `expected ${grid.W} x ${grid.H}in`
+    );
+  }
   pptx.title = meta.title || 'LIS Design Review';
   pptx.subject = meta.subject || meta.title || 'LIS Design Review';
   pptx.author = meta.author || 'LIS Team';

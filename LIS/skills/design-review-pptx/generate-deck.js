@@ -59,6 +59,34 @@ function build(deck, baseDir) {
   return pptx;
 }
 
+/**
+ * Read the canvas size back out of the written file.
+ *
+ * Everything in this kit is positioned against a 13.333 x 7.5in slide. If the
+ * emitted canvas is anything else the coordinates are all still "correct" and
+ * the deck is still silently broken — content simply falls off the edge. The
+ * spec-level QA cannot see this, so check the artifact itself.
+ */
+async function verifyCanvas(file) {
+  let JSZip;
+  try {
+    JSZip = require('pptxgenjs/node_modules/jszip');
+  } catch {
+    try { JSZip = require('jszip'); } catch { return; } // no zip lib — skip
+  }
+  const zip = await JSZip.loadAsync(fs.readFileSync(file));
+  const xml = await zip.file('ppt/presentation.xml').async('string');
+  const m = xml.match(/<p:sldSz[^>]*cx="(\d+)"[^>]*cy="(\d+)"/);
+  if (!m) return;
+
+  const [w, h] = [Number(m[1]) / 914400, Number(m[2]) / 914400];
+  const want = [K.grid.W, K.grid.H];
+  if (Math.abs(w - want[0]) > 0.01 || Math.abs(h - want[1]) > 0.01) {
+    die(`${path.basename(file)} has a ${w} x ${h}in canvas, expected `
+      + `${want[0]} x ${want[1]}in — every slide will be cropped`);
+  }
+}
+
 /** --extract: lift a slide out of a prior deck spec by title, print it. */
 function extract(deck, title) {
   const needle = title.toLowerCase();
@@ -114,6 +142,7 @@ async function main() {
 
   const pptx = build(deck, baseDir);
   await pptx.writeFile({ fileName: outPath });
+  await verifyCanvas(outPath);
 
   console.log(`Wrote ${outPath} (${(deck.slides || []).length} slides)`);
 }

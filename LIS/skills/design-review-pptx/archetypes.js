@@ -359,24 +359,34 @@ function stepsSidebar(pptx, slide, spec) {
   const hasSidebar = !!spec.sidebar;
   const mainW = hasSidebar ? 8.35 : grid.contentW;
   const rows = spec.steps || [];
-  const rowH = 1.2;
-  const pitch = 1.42;
   const y0 = 1.9;
+
+  // 3 rows use the reference deck's measurements exactly. Past that, compress
+  // to fit the band rather than running off the bottom of the slide.
+  const gap = 0.22;
+  const pitch = rows.length <= 3 ? 1.42 : (grid.bandBottom - y0) / rows.length;
+  const rowH = pitch - gap;
+  const tight = rowH < 1.2;
 
   rows.forEach((r, i) => {
     const y = y0 + i * pitch;
     K.panel(pptx, slide, { x: grid.margin, y, w: mainW, h: rowH, tone: r.tone || 'neutral' });
-    K.badge(pptx, slide, r.badge ?? i + 1, { x: grid.margin + 0.32, y: y + 0.39 });
+    K.badge(pptx, slide, r.badge ?? i + 1, {
+      x: grid.margin + 0.32, y: y + (rowH - 0.42) / 2,
+    });
     K.text(slide, r.title, {
-      x: grid.margin + 0.92, y: y + 0.2, w: 5.2, h: 0.34,
-      fontSize: size.cardTitle, color: color.ink,
+      x: grid.margin + 0.92, y: y + (tight ? 0.13 : 0.2), w: 5.2, h: 0.34,
+      fontSize: tight ? size.cardTitleSm : size.cardTitle, color: color.ink,
     });
     K.text(slide, r.body, {
-      x: grid.margin + 0.92, y: y + 0.56, w: mainW - 1.95, h: 0.62,
-      fontSize: size.bodySm, color: color.body,
+      x: grid.margin + 0.92, y: y + (tight ? 0.46 : 0.56), w: mainW - 1.95,
+      h: rowH - (tight ? 0.54 : 0.58),
+      fontSize: tight ? size.small : size.bodySm, color: color.body,
     });
     if (r.tag) {
-      K.chip(pptx, slide, r.tag, { x: grid.margin + 7.12, y: y + 0.2, w: 1.06, h: 0.32 });
+      K.chip(pptx, slide, r.tag, {
+        x: grid.margin + 7.12, y: y + (tight ? 0.13 : 0.2), w: 1.06, h: 0.32,
+      });
     }
   });
 
@@ -404,8 +414,10 @@ function stepsSidebar(pptx, slide, spec) {
       fontSize: size.bodySm, color: color.onDarkMuted,
     });
     if (sb.points && sb.points.length) {
+      // Anchored to the bottom of the panel, not a fixed offset — otherwise a
+      // short body leaves a hole between it and the points.
       K.text(slide, sb.points.join('\n'), {
-        x: sx + grid.pad, y: sy + 3.05, w: stw, h: 1.2,
+        x: sx + grid.pad, y: sy + sh - 1.45, w: stw, h: 1.2,
         fontSize: size.body, color: color.white, lineSpacingMultiple: 1.4,
       });
     }
