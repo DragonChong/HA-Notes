@@ -11,7 +11,7 @@ services:
 target_completion_date: 2026-08-13
 status: draft
 created: 2026-08-07
-jira: ""
+jira: LISB-971
 reference_jira:
   - LIS-10723
 design_status: draft
