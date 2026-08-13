@@ -60,7 +60,79 @@ Hardcoding the reminder to QEH blocks rollout of ward-assigned request no. to ot
 
 ## Design
 
-<!-- Populated by generate-design skill before CP3 review. See design-template.md. -->
+**Review type:** incremental
+**JIRA key:** LIS-10747
+**Service:** lis-ecpath5-app
+**Review forum:** CP3
+**Review date:** TBC
+**Target completion:** TBC — frontmatter says 30 Jul 2026, body says 31 Jul 2026; both lapsed
+**Prior review:** none
+
+### Agenda
+Background
+Design Review
+Promotion
+Fallback
+Q&A
+
+### Slide: How we got here
+**Archetype:** evolution
+Blood taking within the cluster made another hospital's ward-assigned request numbers retrievable locally
+That made the Lab No. reminder fire for users at a site that does not assign those numbers itself
+The fix at the time named one hospital in code, which is what now blocks the next site
+
+### Slide: What the code does today
+**Archetype:** code-findings
+The reminder is gated on the identity of the hospital running the client, not on whether the feature is set up
+```actionscript
+if (LisGlobal.hospital ==
+        CommonConstants.HOSPITAL_QEH) {
+    // GcrAlertDialogue
+    "Please assign Lab No. to
+     acknowledge this specimen!"
+}
+```
+Findings: every new site needs a source change; site identity sits in a shared component; the setup already records the answer
+
+### Slide: Proposed logic
+**Archetype:** decision-flow
+Two controls already describe whether a hospital implements ward-assigned request no.
+A site has the feature when the ward-print control is on and the relabel control is not
+Both are already read into the client's dictionary parameters, so no new setup or database work is needed
+```
+isWardPrintReqNumberLabelEnabled && !isRelabelWardAssignRequestNo
+```
+Cross-hospital retrieval sites keep both controls on, so they stay silent as they do today
+
+### Slide: How each hospital resolves
+**Archetype:** matrix
+| Hospital | WARD_PRINT_LABNO_LABEL | RELABEL_WARD_ASSIGN_REQ_NO | Feature implemented | Reminder popup |
+| --- | --- | --- | --- | --- |
+| QEH | Y | not set | Yes | Shown |
+| KWH | Y | Y | No - relabel / cross-hospital only | Suppressed |
+| KTH | Y | not set | Yes - once configured | Shown |
+| Other sites | not set | not set | No | Suppressed |
+This matrix is the regression list: behaviour must be unchanged for QEH and KWH
+
+### Slide: Scope of change
+**Archetype:** steps-sidebar
+Replace the hospital check in Specimen Acknowledgement with the setup-driven condition
+No new control, no setup data change and no database work - both flags are already parsed
+Regression across all four cases in the matrix above
+
+### Slide: Promotion
+**Archetype:** cards
+Release the client with the condition change - QEH is already configured, so nothing to set
+Verify at QEH that the reminder still appears, and at KWH that it stays suppressed
+KTH enables the feature by setting the ward-print control when they are ready, with no further release
+
+### Slide: Fallback
+**Archetype:** cards
+Revert the client release - the previous hardcoded behaviour returns immediately
+Nothing to unwind: the change introduces no setup data and no schema change
+If KTH was configured early, unset the ward-print control to return them to no reminder
+
+### Slide: Q&A
 
 ## Reference Logs
 
