@@ -39,9 +39,7 @@ Table-driven scheduling in `lis-scheduler` currently stores job nature and insta
    - Drop `enabled` and `max_retry`. Pickup index `(application, version, status)`.
    - DDL: `docs/db_job_definition_postgresql.sql` and `docs/job-normalization/deploy.sql`.
 
-2. **Rename poller to `JobManager` and derive Quartz job names:**
-   - Replace `DynamicJobCreatorJob` with `JobManager` (`@CmsScheduler` name `JobManager`).
-   - Config: `lis.scheduler.job-manager.enabled` / `SCHEDULER_JOB_MANAGER_ENABLED`, `cronExpression.jobManager` / `CRON_EXPRESSION_JOB_MANAGER`.
+1. **Derive Quartz job names by `JobManager`:**
    - `JobNameBuilder`: `{PascalCase(application)}_{job}_{hosp}_{lab}_{paramSegments}_Sch{schedule}` (omit blank segments). Method args = `hosp` + `lab` + split(`parameters`). Table-driven CREATE uses `maxRetry=0`.
    - Implement `CREATE`; stub `UPDATE`/`DELETE` as `FAILED` (“not implemented yet”).
 
