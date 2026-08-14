@@ -1,0 +1,19 @@
+{
+  "name": "generate-pptx",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Declarative deck spec -> 16:9 HA visual .pptx for any content",
+  "type": "commonjs",
+  "bin": {
+    "generate-deck": "./generate-deck.js",
+    "qa-deck": "./qa-deck.js",
+    "preview-deck": "./preview-deck.js"
+  },
+  "scripts": {
+    "qa": "node qa-deck.js",
+    "example": "node generate-deck.js examples/cluster-cutover-briefing.deck.json"
+  },
+  "dependencies": {
+    "pptxgenjs": "^3.12.0"
+  }
+}

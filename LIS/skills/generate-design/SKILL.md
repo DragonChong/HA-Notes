@@ -16,8 +16,11 @@ Bridge skill between **lis-jira-log-creator** and **design-review-pptx**.
 ```
 lis-jira-log-creator  →  LIS/JIRA/{note}.md      (change request sections)
 generate-design       →  ## Design in same note   (CP3 design content)  ← ends here
-design-review-pptx    →  {Title}.deck.json → .pptx
+design-review-pptx    →  {Title}.deck.json → .pptx   (CP3 only)
 ```
+
+For any other PowerPoint (meeting notes, training, runbooks, wiki pages), skip
+this skill and use **generate-pptx**.
 
 **design-review-pptx reads the `## Design` section directly.** There is no
 intermediate slide-markdown file — choosing how a design block becomes a slide
@@ -197,7 +200,7 @@ Worked example: [examples.md](examples.md)
 - [ ] Prose bullets are plain English; identifiers confined to code blocks and tables
 - [ ] Promotion and Fallback present for production changes
 - [ ] `## Design` written to Obsidian note, `design_status: draft` set
-- [ ] design-review-pptx handoff completed (only if a deck was requested)
+- [ ] design-review-pptx handoff completed (only if a CP3 deck was requested)
 
 ---
 
@@ -211,4 +214,5 @@ Worked example: [examples.md](examples.md)
 ## Related skills
 
 - **lis-jira-log-creator** — creates the JIRA note (upstream)
-- **design-review-pptx** — reads `## Design` and generates the `.pptx` (downstream)
+- **design-review-pptx** — CP3 decks from this note's `## Design` section
+- **generate-pptx** — any other .pptx from notes, markdown, or pasted content

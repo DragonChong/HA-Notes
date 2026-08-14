@@ -3,10 +3,11 @@ name: design-review-pptx
 description: >
   Generates visual .pptx decks for LIS/HA CP3 design reviews from a declarative
   deck spec — cards, flowcharts, matrices and code panels rather than bullet
-  lists. Use when the user asks to prepare design review slides, create a design
-  review deck, build a presentation from a JIRA design note, document a change
-  for CP3 review, or generate presentation material. Triggers on "design review",
-  "CP3", "prepare slides", "deck", "slide outline", "presentation".
+  lists. Use when the user asks to prepare CP3 design review slides, create a
+  design review deck, or build a presentation from a JIRA design note. Triggers
+  on "design review", "CP3", "JIRA design note to slides". For any other
+  PowerPoint, deck, or presentation from notes, markdown, meetings, or pasted
+  content, use generate-pptx.
 ---
 
 # Design Review PowerPoint
@@ -201,4 +202,5 @@ If two decks need the same one-off, it is an archetype, not a `custom` slide.
 
 - **lis-jira-log-creator** — the change-request note (upstream)
 - **generate-design** — the `## Design` section in that note (upstream)
+- **generate-pptx** — the same visual kit for any non-CP3 content
 - **mermaid-diagrams** — diagrams to embed via the `image` archetype

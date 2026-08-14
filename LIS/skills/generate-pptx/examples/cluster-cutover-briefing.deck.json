@@ -1,0 +1,204 @@
+{
+  "meta": {
+    "title": "Cluster Cutover Briefing",
+    "subject": "Saturday 02:00 window — Hub BFF route flip to CRS spec-ack",
+    "author": "LIS Team",
+    "company": "Hospital Authority"
+  },
+  "slides": [
+    {
+      "archetype": "title-hero",
+      "eyebrow": "OPERATIONS BRIEFING   ·   14 AUG 2026   ·   ON-CALL",
+      "headline": "Cluster Cutover\nSaturday 02:00",
+      "lede": "Flip the Hub BFF route onto the new CRS specimen-acknowledgement service during the first quiet window this month. No schema change. Rollback is the previous Helm revision.",
+      "stats": [
+        { "label": "Window", "value": "02:00–03:00" },
+        { "label": "Audience", "value": "On-call + duty AM" },
+        { "label": "Owner", "value": "LIS Team" }
+      ],
+      "footer": "Draft — from the 12 Aug cutover huddle",
+      "notes": "This is an operations briefing, not a design review. The decision is already made; tonight is execution. Quiet window starts at 02:00 because Friday outpatient phlebotomy runs until midnight."
+    },
+    {
+      "archetype": "evolution",
+      "eyebrow": "Background",
+      "title": "How we got to Saturday 02:00",
+      "steps": [
+        {
+          "badge": 1,
+          "tone": "neutral",
+          "tag": "weekday",
+          "title": "Daytime is too hot",
+          "body": "A08 traffic and ward collections overlap until evening. A daytime flip would strand acknowledgements in flight."
+        },
+        {
+          "badge": 2,
+          "tone": "warn",
+          "tag": "Fri night",
+          "title": "Friday is still live",
+          "body": "Outpatient phlebotomy runs until midnight. Queue depth falls only after the last batch."
+        },
+        {
+          "badge": 3,
+          "tone": "accent",
+          "tag": "Sat 02:00",
+          "title": "First quiet window",
+          "body": "One-hour window. Rollback is the previous Helm revision, kept for 72 hours."
+        }
+      ],
+      "callout": {
+        "lead": "The constraint:",
+        "text": "Wait for the queue to drain. Do not pause clinical traffic to make the window."
+      },
+      "notes": "Friday night still has outpatient traffic until midnight. Saturday 02:00 is the first quiet window this month. If the queue has not drained by 02:20 we slip a week rather than cutting hot."
+    },
+    {
+      "archetype": "cards",
+      "eyebrow": "Scope",
+      "title": "What changes tonight",
+      "perRow": 3,
+      "cards": [
+        {
+          "badge": 1,
+          "tone": "accent",
+          "tag": "route",
+          "title": "Hub BFF flips",
+          "body": "The shell points acknowledgements at the new CRS spec-ack service. Callers do not change."
+        },
+        {
+          "badge": 2,
+          "tone": "neutral",
+          "tag": "cache",
+          "title": "Dictionary warms",
+          "body": "Warm the keyword and location cache for fifteen minutes before the flip so the first ack is not cold."
+        },
+        {
+          "badge": 3,
+          "tone": "ink",
+          "tag": "no DDL",
+          "title": "Nothing in the database",
+          "body": "No schema change, no PMI backfill, no setup-data load. If we roll back, we only roll the route."
+        }
+      ],
+      "callout": {
+        "text": "If anything else is in the release train, it does not ride this window."
+      },
+      "notes": "The only moving part is the BFF route plus a cache warm. Saying 'no DDL' out loud stops the 'did we migrate' question in the room."
+    },
+    {
+      "archetype": "steps-sidebar",
+      "eyebrow": "Runbook",
+      "title": "Three steps, then watch",
+      "steps": [
+        {
+          "badge": 1,
+          "title": "Drain inbound A08",
+          "body": "Watch queue depth until flat. Do not flip while acks are landing.",
+          "tag": "before 02:00"
+        },
+        {
+          "badge": 2,
+          "title": "Flip the BFF route",
+          "body": "Helm revision on the BFF only. Confirm the spec-ack target in the live config.",
+          "tag": "02:00"
+        },
+        {
+          "badge": 3,
+          "title": "Verify the first ack",
+          "body": "One real acknowledgement from a quiet ward, then watch error rate for 20 minutes.",
+          "tag": "02:10"
+        }
+      ],
+      "sidebar": {
+        "eyebrow": "Abort",
+        "headline": "Slip a week",
+        "body": "If the queue is still moving at 02:20, we do not cut. Next window is Saturday.",
+        "points": ["No partial flip", "Prior revision stays"]
+      },
+      "notes": "Drain, flip, verify. The abort is a date, not a heroics clause — 02:20 and we are done for the night."
+    },
+    {
+      "archetype": "matrix",
+      "eyebrow": "Go / no-go",
+      "title": "We cut only if every row is green",
+      "table": {
+        "y": 1.95,
+        "colWidths": [2.4, 3.4, 3.4, 2.93],
+        "headers": [
+          "Check",
+          "Go",
+          "No-go",
+          { "text": "Owner", "mono": true }
+        ],
+        "rows": [
+          [
+            { "text": "Queue depth", "bold": true },
+            { "text": "Flat for 10 min", "tone": "accent", "color": "accent", "bold": true },
+            { "text": "Still falling", "tone": "danger" },
+            "On-call"
+          ],
+          [
+            { "text": "Error rate", "bold": true },
+            { "text": "Baseline", "tone": "accent", "color": "accent", "bold": true },
+            { "text": "Above baseline", "tone": "danger" },
+            "Duty AM"
+          ],
+          [
+            { "text": "Last live ack", "bold": true },
+            { "text": "Seen on new route", "tone": "accent", "color": "accent", "bold": true },
+            { "text": "None by 02:15", "tone": "danger" },
+            "On-call"
+          ],
+          [
+            { "text": "Rollback ready", "bold": true },
+            { "text": "Previous revision pinned", "tone": "accent", "color": "accent", "bold": true },
+            { "text": "Revision unknown", "tone": "danger" },
+            "Duty AM"
+          ]
+        ]
+      },
+      "takeaways": [
+        {
+          "tone": "accent",
+          "title": "All four Go, then flip",
+          "body": "The matrix is the go-live checklist. Do not add a fifth check."
+        },
+        {
+          "tone": "warn",
+          "title": "Any No-go slips a week",
+          "body": "Do not negotiate a weaker row at 02:00. The next window is already held."
+        }
+      ],
+      "notes": "Read the matrix top to bottom before the flip, not after. Queue depth is the one that usually fails — that is why drain is step one."
+    },
+    {
+      "archetype": "closing",
+      "eyebrow": "Next",
+      "headline": "Window opens",
+      "stat": "14 AUG 2026",
+      "note": "02:00–03:00. If we abort, the next Saturday is already held.",
+      "nextSteps": [
+        {
+          "badge": 1,
+          "title": "Pin the previous Helm revision",
+          "body": "Before the window, not during it. Rollback is a one-line roll, not a hunt."
+        },
+        {
+          "badge": 2,
+          "title": "On-call on the bridge at 01:45",
+          "body": "Queue watch starts fifteen minutes early so 02:00 is a decision, not a surprise."
+        },
+        {
+          "badge": 3,
+          "title": "Write the outcome by 09:00",
+          "body": "Cut or slipped, with the matrix row that decided it. Duty AM owns the note."
+        }
+      ],
+      "identity": {
+        "key": "CUTOVER",
+        "meta": "Hub BFF  ·  Operations briefing"
+      },
+      "notes": "Leave with three owners: pin the revision, be on the bridge at 01:45, write the outcome in the morning. The date on the slide is the window, not a target completion for a change request."
+    }
+  ]
+}

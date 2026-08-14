@@ -1,0 +1,8 @@
+node_modules/
+package-lock.json
+
+# Generated from the .deck.json specs — regenerate with preview-deck.js /
+# generate-deck.js rather than committing them.
+*.preview.html
+*.pptx
+!legacy/*.pptx
