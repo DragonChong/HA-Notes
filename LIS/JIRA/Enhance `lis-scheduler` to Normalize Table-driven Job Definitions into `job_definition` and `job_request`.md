@@ -45,8 +45,7 @@ Table-driven scheduling in `lis-scheduler` currently stores all job details in o
    - `JobNameBuilder`: `{PascalCase(application)}_{job}_{hosp}_{lab}_{paramSegments}_Sch{schedule}` (omit blank segments). Method args = `hosp` + `lab` + split(`parameters`).
    - 
 
-1. **Release `lis-scheduler` 1.1.0**
-   - `JobNameBuilder`: 
+3. **Release `lis-scheduler` 1.1.0**
  
 ## Justification
 
