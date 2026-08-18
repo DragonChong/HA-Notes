@@ -55,7 +55,7 @@ Table-driven scheduling in `lis-scheduler` currently stores all job details in o
  
 ## Justification
 
-Normalization lets ops define a job nature once and insert hospital/lab/schedule-specific `job_request` rows without repeating bean/method settings. Derived names keep Quartz keys consistent, and `action` plus `version` keep canary pickup and future update/delete on the same work queue.
+Normalization allow defining a job nature once and insert hospital/lab/schedule-specific `job_request` rows without repeating bean/method settings. Derived names keep Quartz keys consistent.
 
 ## Target Completion Date
 
