@@ -116,17 +116,17 @@ max_retry and enabled are removed. Table-driven create always uses retry count 0
 **Archetype:** matrix
 One row is one operation. Foreign key to job_definition. version sits after job for canary pickup.
 
-| Column | Description |
-| --- | --- |
-| id | Surrogate key |
-| application, job | FK to job_definition |
-| version | APP_VERSION when include-version is on; otherwise NULL |
-| action | CREATE, UPDATE or DELETE (default CREATE) |
-| schedule | Optional discriminator; name suffix Sch{n} |
-| cron_expression | Required for CREATE |
-| hosp, lab | Naming segments and method arguments |
-| parameters | Extra method arguments, comma-separated |
-| status | OUTSTANDING, PROCESSING, COMPLETED, FAILED |
+| Column           | Description                                            |
+| ---------------- | ------------------------------------------------------ |
+| id               | Surrogate key                                          |
+| application, job | FK to job_definition                                   |
+| version          | APP_VERSION when include-version is on; otherwise NULL |
+| action           | CREATE, UPDATE or DELETE (default CREATE)              |
+| schedule         | Optional discriminator; name suffix Sch{n}             |
+| cron_expression  | Required for CREATE                                    |
+| hosp, lab        | Naming segments and method arguments                   |
+| parameters       | Extra method arguments, comma-separated                |
+| status           | OUTSTANDING, PROCESSING, COMPLETED, FAILED             |
 
 This release implements CREATE only. UPDATE and DELETE are recorded as FAILED (not implemented yet).
 
