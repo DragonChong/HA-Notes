@@ -30,22 +30,19 @@ Enhance `lis-scheduler` to Normalize Table-driven Job Definitions into `job_defi
 
 ## Background
 
-Table-driven scheduling in `lis-scheduler` currently stores job nature and instance details together in `dynamic_job_definition`. `DynamicJobCreatorJob` polls `OUTSTANDING` rows (scoped by `application_name` and optional `version` for canary) and creates Quartz jobs using stored `job_name`, `bean_name`, `method_name`, `cron_expression`, `concurrent`, `skip_on_overdue`, `max_retry`, and `parameters`. Fields that are the same for a given job nature (`bean_name`, `method`, `concurrent`, `skip_on_overdue`) are repeated on every hospital, lab, parameter, and schedule row, and Quartz job names must be supplied manually. The table has to be normalized so that job nature is defined once in `job_definition` and each create/update/delete operation is queued in `job_request`, with Quartz names derived from `application`, `job`, `hosp`, `lab`, `parameters`, and `schedule`.
+Table-driven scheduling in `lis-scheduler` currently stores all job details in one table `dynamic_job_definition`. Fields common to the same job nature (`bean_name`, `method_name`, `concurrent`, `skip_on_overdue`) are repeated on every hospital, lab, and schedule row. The table has to be normalized so that job nature is defined once and job creation is queued separately.
 
 ## Change Description
 
-1. **Normalize PostgreSQL tables (breaking):**
-   - Replace `dynamic_job_definition` with `job_definition` (PK `application` + `job`; `bean_name`, `method`, `concurrent`, `skip_on_overdue`) and `job_request` (work queue: `application`/`job` FK, `version`, `action` CREATE/UPDATE/DELETE, `schedule`, `cron_expression`, `hosp`, `lab`, `parameters`, `status`/`status_message`).
-   - Drop `enabled` and `max_retry`. Pickup index `(application, version, status)`.
-   - DDL: `docs/db_job_definition_postgresql.sql` and `docs/job-normalization/deploy.sql`.
+1. **Normalize `dynamic_job_definition` into two tables:**
+   - `job_definition` — catalog of job nature (PK `application` + `job`):
+     - `application`, `job`, `bean_name`, `method`, `concurrent`, `skip_on_overdue`
+   - `job_request` — work queue for job creation (and future update/delete):
+     - `id`, `application`, `job` (FK), `version`, `action` (CREATE / UPDATE / DELETE), `schedule`, `cron_expression`, `hosp`, `lab`, `parameters`, `status`, `status_message`, `created_at`, `updated_at`
+   - Remove `max_retry` and `enabled`. Quartz job name is derived from `application`, `job`, `hosp`, `lab`, `parameters`, and `schedule`.
 
-1. **Derive Quartz job names by `JobManager`:**
-   - `JobNameBuilder`: `{PascalCase(application)}_{job}_{hosp}_{lab}_{paramSegments}_Sch{schedule}` (omit blank segments). Method args = `hosp` + `lab` + split(`parameters`). Table-driven CREATE uses `maxRetry=0`.
-   - Implement `CREATE`; stub `UPDATE`/`DELETE` as `FAILED` (“not implemented yet”).
-
-3. **Release `lis-scheduler` 1.1.0 and update consumers:**
-   - Bump library version; update wiki (Job Creation, Canary, Promotion Handbook, Configuration, OpenShift).
-   - Align `lis-template-svc` Maven dependency and `application.yml` keys.
+2. **Rename poller to `JobManager`:**
+   - Replace `DynamicJobCreatorJob` with `JobManager`. Implement `CREATE`; stub `UPDATE` / `DELETE` as not implemented yet.
 
 ## Justification
 
