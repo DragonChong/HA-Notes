@@ -30,7 +30,7 @@ Enhance `lis-scheduler` to Normalize Table-driven Job Definitions into `job_defi
 
 ## Background
 
-Table-driven scheduling in `lis-scheduler` currently stores all job details in one table `dynamic_job_definition`. Fields common to the same job nature (`bean_name`, `method_name`, `concurrent`, `skip_on_overdue`) are repeated on every hospital, lab, and schedule row. The table has to be normalized so that job nature is defined once and job creation is queued separately.
+Table-driven scheduling in `lis-scheduler` currently stores all job creation details in one table `dynamic_job_definition`. Fields common to the same job nature (`bean_name`, `method_name`, `concurrent`, `skip_on_overdue`) are repeated on every row for different hospital and lab. The table has to be normalized so that job nature is defined once and job creation is queued separately.
 
 ## Change Description
 
@@ -39,13 +39,13 @@ Table-driven scheduling in `lis-scheduler` currently stores all job details in o
      - `application`, `job`, `bean_name`, `method`, `concurrent`, `skip_on_overdue`
    - `job_request` — work queue for job creation (and future update/delete):
      - `id`, `application`, `job` (FK), `version`, `action` (CREATE / UPDATE / DELETE), `schedule`, `cron_expression`, `hosp`, `lab`, `parameters`, `status`, `status_message`, `created_at`, `updated_at`
-   - Remove `max_retry` and `enabled`. Quartz job name is derived from `application`, `job`, `hosp`, `lab`, `parameters`, and `schedule`.
+   - Remove `max_retry` and `enabled`
 
 2. **Derive Quartz job names by `JobManager`:**
    - Derive job name based on `application`, `job`, `hosp`, `lab`, `parameters`, `schedule` columns
-   - `JobNameBuilder`: `{PascalCase(application)}_{job}_{hosp}_{lab}_{paramSegments}_Sch{schedule}` 
+	   - Format: `{PascalCase(application)}_{job}_{hosp}_{lab}_{paramSegments}_Sch{schedule}` 
 	   - omit blank segments. 
-	   - Method args = `hosp` + `lab` + split(`parameters`).
+	   - Method parmaters = `hosp` + `lab` + split(`parameters`).
    - Example:
 	   - `LisTemplateSvc_AHN_CPS`
 	   - `LisTemplateSvc_Echo_AHN_CPS_PARAM1_PARAM2`
