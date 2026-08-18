@@ -45,7 +45,9 @@ Table-driven scheduling in `lis-scheduler` currently stores all job details in o
    - `JobNameBuilder`: `{PascalCase(application)}_{job}_{hosp}_{lab}_{paramSegments}_Sch{schedule}` (omit blank segments). Method args = `hosp` + `lab` + split(`parameters`).
    - 
 
-1. **
+1. **Release `lis-scheduler` 1.1.0**
+   - `JobNameBuilder`: 
+ 
 ## Justification
 
 Normalization lets ops define a job nature once and insert hospital/lab/schedule-specific `job_request` rows without repeating bean/method settings. Derived names (`LisTemplateSvc_AHN_CPS`, `LisTemplateSvc_Echo_AHN_CPS_PARAM1_PARAM2`, `LisTemplateSvc_AHN_CPS_Sch1`) keep Quartz keys consistent, and `action` plus `version` keep canary pickup and future update/delete on the same work queue.
