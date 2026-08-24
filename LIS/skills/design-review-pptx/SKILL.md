@@ -14,7 +14,7 @@ description: >
 
 Produce a **deck spec** (JSON), then render it with the bundled generator. The
 visual system is extracted from the approved LIS-10747 deck and lives in
-`deck-kit.js`: 15 palette tokens, a 3-family type ladder, a fixed grid, and 12
+`deck-kit.js`: 15 palette tokens, a 3-family type ladder, a fixed grid, and 14
 slide archetypes.
 
 **Never hand-write pptxgenjs or python-pptx for a design review.** The whole
@@ -76,15 +76,24 @@ section-to-archetype mapping.
 **Incremental** (bug fix, targeted change) — 6–10 slides:
 
 ```
-title-hero → evolution → code-findings → decision-flow
-           → matrix → steps-sidebar → closing
+title-hero → evolution → code-findings|compare|image → decision-flow|steps-sidebar
+           → cards (Promotion) → cards (Fallback) → asks → statement (Q&A) → closing
 ```
 
-That is exactly the LIS-10747 deck; start from `examples/LIS-10747.deck.json`.
+Start from `examples/LIS-10747.deck.json` and add an `asks` slide before Q&A.
 
-**Full** (new service, migration) — 14–22 slides: add `agenda` second, `image`
-for architecture, `compare` for before/after, and `cards` for Promotion and
-Fallback before `closing`.
+**Full** (new service, migration) — 14–22 slides:
+
+```
+title-hero → agenda → thesis (Executive Summary)
+           → Background → Existing (visual-first) → Proposed (+ compare)
+           → Deep Dive (optional) → Trade-offs → Impact
+           → Promotion → Fallback → asks → Q&A → closing
+```
+
+Full reviews require Open Questions (`asks`) before the closing Q&A `statement`.
+Promotion maps Best Practices “Implementation Plan” in narrative only — keep
+`cards` / `steps-sidebar`. Run QA with `--profile cp3`.
 
 Pick per slide from the table at the end of
 [references/slide-archetypes.md](references/slide-archetypes.md).

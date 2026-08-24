@@ -1,5 +1,5 @@
 /**
- * archetypes.js — the 12 slide patterns.
+ * archetypes.js — the 14 slide patterns.
  *
  * Each archetype takes a spec object (slots) and draws a slide using only
  * deck-kit primitives. No coordinate or colour is invented here that isn't
@@ -10,6 +10,7 @@
 
 'use strict';
 
+const fs = require('fs');
 const K = require('./deck-kit');
 const { color, font, size, grid, columns } = K;
 
@@ -18,6 +19,41 @@ function header(slide, spec, onDark = false) {
   if (spec.eyebrow) K.eyebrow(slide, spec.eyebrow, { onDark });
   if (spec.title) K.heading(slide, spec.title, { onDark });
   return grid.bandTop;
+}
+
+/** Pixel size of a PNG or JPEG — used to keep image aspect ratio on slides. */
+function imagePixelSize(filePath) {
+  if (!filePath || !fs.existsSync(filePath)) return null;
+  const buf = fs.readFileSync(filePath);
+  if (buf.length >= 24 && buf[0] === 0x89 && buf.toString('ascii', 1, 4) === 'PNG') {
+    return { w: buf.readUInt32BE(16), h: buf.readUInt32BE(20) };
+  }
+  if (buf[0] === 0xff && buf[1] === 0xd8) {
+    let i = 2;
+    while (i < buf.length - 8) {
+      if (buf[i] !== 0xff) { i += 1; continue; }
+      const marker = buf[i + 1];
+      if (marker === 0xc0 || marker === 0xc1 || marker === 0xc2) {
+        return { w: buf.readUInt16BE(i + 7), h: buf.readUInt16BE(i + 5) };
+      }
+      if (marker === 0xd9 || marker === 0xda) break;
+      const len = buf.readUInt16BE(i + 2);
+      i += 2 + len;
+    }
+  }
+  return null;
+}
+
+/** Largest size that fits in the box without changing aspect ratio. */
+function fitContain(boxW, boxH, imgW, imgH) {
+  const ratio = imgW / imgH;
+  let w = boxW;
+  let h = boxW / ratio;
+  if (h > boxH) {
+    h = boxH;
+    w = boxH * ratio;
+  }
+  return { w, h };
 }
 
 // ---------------------------------------------------------------------------
@@ -65,6 +101,17 @@ function titleHero(pptx, slide, spec) {
         x: x + 0.22, y: 5.76, w: w - 0.45, h: 0.34,
         fontSize: size.lead, color: color.white,
       });
+    });
+  }
+
+  // Optional identity row: presenters / reviewers (Best Practices title slide).
+  if (spec.presenters || spec.reviewers) {
+    const bits = [];
+    if (spec.presenters) bits.push(`Presenters: ${spec.presenters}`);
+    if (spec.reviewers) bits.push(`Reviewers: ${spec.reviewers}`);
+    K.text(slide, bits.join('   ·   '), {
+      x: M, y: 6.35, w: 11.5, h: 0.28,
+      fontSize: size.small, color: color.onDarkMuted,
     });
   }
 
@@ -566,32 +613,56 @@ function cards(pptx, slide, spec) {
 }
 
 // ---------------------------------------------------------------------------
-// 10. image — captioned diagram
+// 10. image — captioned diagram (native aspect ratio, max fit)
 // ---------------------------------------------------------------------------
 function image(pptx, slide, spec) {
   header(slide, spec);
 
-  const capH = spec.caption ? 0.5 : 0;
-  const y = grid.bandTop;
-  const maxH = 6.5 - y - capH;
+  const capReserve = spec.caption ? 0.48 : 0;
+  const bandY = grid.bandTop;
+  // Leave room for the page mark under the content band.
+  const bandBottom = Math.min(grid.bandBottom, 6.55 - capReserve);
+  const availW = grid.contentW;
+  const availH = bandBottom - bandY;
+  const innerPad = 0.18;
+  const boxW = availW - innerPad * 2;
+  const boxH = availH - innerPad * 2;
+
+  const px = imagePixelSize(spec.path);
+  const fitted = px
+    ? fitContain(boxW, boxH, px.w, px.h)
+    : { w: boxW, h: boxH };
+
+  const panelW = fitted.w + innerPad * 2;
+  const panelH = fitted.h + innerPad * 2;
+  const panelX = grid.margin + (availW - panelW) / 2;
+  const panelY = bandY + Math.max(0, (availH - panelH) / 2);
 
   if (spec.panel !== false) {
-    K.panel(pptx, slide, { x: grid.margin, y, w: grid.contentW, h: maxH, tone: spec.tone || 'neutral' });
+    K.panel(pptx, slide, {
+      x: panelX, y: panelY, w: panelW, h: panelH,
+      tone: spec.tone || 'neutral',
+    });
   }
 
+  // Pass exact w/h from the natural ratio — do not stretch.
   slide.addImage({
     path: spec.path,
-    x: grid.margin + 0.2,
-    y: y + 0.2,
-    w: grid.contentW - 0.4,
-    h: maxH - 0.4,
-    sizing: { type: 'contain', w: grid.contentW - 0.4, h: maxH - 0.4 },
+    x: panelX + innerPad,
+    y: panelY + innerPad,
+    w: fitted.w,
+    h: fitted.h,
   });
 
   if (spec.caption) {
     K.text(slide, spec.caption, {
-      x: grid.margin, y: y + maxH + 0.1, w: grid.contentW, h: 0.4,
-      fontSize: size.small, color: color.body, align: 'center',
+      x: grid.margin,
+      y: Math.min(panelY + panelH + 0.1, 6.55),
+      w: grid.contentW,
+      h: 0.38,
+      fontSize: size.small,
+      color: color.body,
+      align: 'center',
     });
   }
 }
@@ -690,6 +761,101 @@ function custom(pptx, slide, spec) {
   });
 }
 
+// ---------------------------------------------------------------------------
+// 13. thesis — executive summary / meeting goal (Asymmetric Thesis)
+// ---------------------------------------------------------------------------
+function thesis(pptx, slide, spec) {
+  header(slide, spec);
+
+  const proofs = (spec.proofs || []).slice(0, 3);
+  const hasGoal = Boolean(spec.goal);
+  const y0 = grid.bandTop;
+  // Callout sits at 5.45; keep proof cards clear of it.
+  const calloutY = 5.45;
+  const contentBottom = hasGoal ? calloutY - 0.12 : grid.bandBottom;
+
+  let cursor = y0;
+  if (spec.lede) {
+    // Compact lede so three proof cards still fit above the meeting-goal band.
+    const ledeH = hasGoal ? 0.78 : 1.15;
+    K.text(slide, spec.lede, {
+      x: grid.margin, y: cursor, w: 11.5, h: ledeH,
+      face: font.display, fontSize: size.cardTitleLg, color: color.ink,
+      lineSpacingMultiple: 1.12,
+    });
+    cursor += ledeH + 0.18;
+  }
+
+  if (proofs.length) {
+    const cols = columns(proofs.length, 0.28);
+    const ph = Math.max(2.0, contentBottom - cursor);
+    proofs.forEach((p, i) => {
+      const { x, w } = cols[i];
+      K.panel(pptx, slide, { x, y: cursor, w, h: ph, tone: p.tone || 'neutral' });
+      const inner = x + grid.pad;
+      const innerW = w - grid.pad * 2;
+      K.badge(pptx, slide, p.badge !== undefined ? p.badge : i + 1, {
+        x: inner, y: cursor + 0.18, fill: color.accent,
+      });
+      K.text(slide, p.title, {
+        x: inner, y: cursor + 0.72, w: innerW, h: 0.4,
+        face: font.display, fontSize: size.cardTitle, color: color.ink,
+      });
+      K.text(slide, p.body, {
+        x: inner, y: cursor + 1.2, w: innerW, h: ph - 1.4,
+        fontSize: size.bodySm, color: color.body,
+      });
+    });
+  }
+
+  if (hasGoal) {
+    K.bottomBand(pptx, slide, 'callout', {
+      lead: spec.goalLead || 'Meeting goal:',
+      text: spec.goal,
+      y: calloutY,
+    });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 14. asks — numbered open questions for reviewers
+// ---------------------------------------------------------------------------
+function asks(pptx, slide, spec) {
+  header(slide, spec);
+
+  const items = (spec.asks || []).slice(0, 6);
+  const hasCallout = Boolean(spec.callout);
+  const top = grid.bandTop;
+  // Leave a clear gap above the callout (or slide number band).
+  const bottom = hasCallout ? 5.35 : 6.5;
+  const gap = 0.1;
+  const n = Math.max(items.length, 1);
+  const rowH = Math.min(0.78, (bottom - top - gap * (n - 1)) / n);
+
+  items.forEach((a, i) => {
+    const y = top + i * (rowH + gap);
+    const q = typeof a === 'string' ? a : a.q;
+    const why = typeof a === 'string' ? null : a.why;
+    const qH = why ? Math.min(0.36, rowH * 0.52) : rowH;
+
+    K.badge(pptx, slide, i + 1, { x: grid.margin, y: y + 0.02, fill: color.accent });
+    K.text(slide, q, {
+      x: grid.margin + 0.7, y, w: 11.0, h: qH,
+      face: font.display, fontSize: size.cardTitleSm, color: color.ink,
+    });
+    if (why) {
+      K.text(slide, why, {
+        x: grid.margin + 0.7, y: y + qH, w: 11.0, h: Math.max(0.22, rowH - qH - 0.02),
+        fontSize: size.small, color: color.body,
+      });
+    }
+  });
+
+  if (hasCallout) {
+    K.bottomBand(pptx, slide, 'callout', { ...spec.callout, y: 5.5, h: 0.85 });
+  }
+}
+
 module.exports = {
   'title-hero': titleHero,
   evolution,
@@ -703,5 +869,7 @@ module.exports = {
   image,
   statement,
   compare,
+  thesis,
+  asks,
   custom,
 };

@@ -15,7 +15,7 @@ description: >
 
 Produce a **deck spec** (JSON), then render it with the bundled generator. The
 visual system lives in `deck-kit.js`: 15 palette tokens, a 3-family type ladder,
-a fixed grid, and 12 slide archetypes.
+a fixed grid, and 14 slide archetypes (including `thesis` and `asks`).
 
 **Never hand-write pptxgenjs or python-pptx.** A spec names archetypes and fills
 slots; it does not set positions, hex colours, or fonts.
@@ -169,14 +169,14 @@ wrapping are the browser's approximation; all geometry is exact.
 | File | Purpose |
 |------|---------|
 | `deck-kit.js` | Palette, type ladder, grid, drawing primitives |
-| `archetypes.js` | The 12 slide patterns |
+| `archetypes.js` | The 14 slide patterns |
 | `generate-deck.js` | Deck spec → .pptx (`--list`, `--extract`) |
 | `qa-deck.js` | Mechanical checks (`--strict`, `--profile cp3`, `--warn-only`) |
 | `preview-deck.js` | Deck spec → 1:1 HTML preview |
 | `record.js` | Shared draw-call recorder behind QA and preview |
 | [examples/cluster-cutover-briefing.deck.json](examples/cluster-cutover-briefing.deck.json) | Brief-length reference |
 | [references/design-system.md](references/design-system.md) | Palette, type, grid, craft rules |
-| [references/slide-archetypes.md](references/slide-archetypes.md) | All 12 with slot schemas |
+| [references/slide-archetypes.md](references/slide-archetypes.md) | All 14 with slot schemas |
 | [references/content-rules.md](references/content-rules.md) | Any-content mapping, writing rules |
 | [slides-template.md](slides-template.md) | Optional `### Slide:` outline |
 

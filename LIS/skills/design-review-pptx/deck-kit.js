@@ -1,9 +1,10 @@
 /**
- * deck-kit.js — design tokens + drawing primitives for LIS/HA design review decks.
+ * deck-kit.js — design tokens + drawing primitives for HA 16:9 decks.
  *
  * Extracted from LIS-10747_Ward_Assigned_Request_No_Reminder.pptx, the approved
  * reference deck. Every colour, font, size and coordinate in the archetypes comes
- * from here — nothing is invented at call sites.
+ * from here — nothing is invented at call sites. generate-pptx uses this kit for
+ * any content; design-review-pptx uses the same visual system for CP3 reviews.
  *
  * Canvas: 16:9, 13.333 x 7.5 in. All geometry is in inches.
  */
@@ -431,6 +432,24 @@ function bottomBand(pptx, slide, kind, spec = {}) {
   });
 }
 
+/**
+ * Quiet page mark for Q&A reference ("3 / 14"). Number every slide.
+ * Use onDark for dark bookends so the mark stays readable.
+ */
+function slideNumber(slide, index, total, { onDark = false } = {}) {
+  const label = `${index} / ${total}`;
+  // Keep inside safe.y1 (6.95) so qa-deck bounds checks stay green.
+  text(slide, label, {
+    x: grid.right - 1.35,
+    y: 6.72,
+    w: 1.2,
+    h: 0.22,
+    fontSize: size.micro,
+    color: onDark ? color.onDarkMuted : color.body,
+    align: 'right',
+  });
+}
+
 /** Set deck-level document properties (fixes PptxGenJS's default subject). */
 function applyDocProps(pptx, meta = {}) {
   // DO NOT use the built-in 'LAYOUT_16x9' — despite the name it is 10 x 5.625in,
@@ -457,5 +476,5 @@ function applyDocProps(pptx, meta = {}) {
 module.exports = {
   color, tone, toneAccent, font, size, grid, columns,
   darkBg, panel, eyebrow, heading, badge, chip, mono, text, richText, shapeText,
-  connector, decisionNode, codePanel, bottomBand, applyDocProps,
+  connector, decisionNode, codePanel, bottomBand, slideNumber, applyDocProps,
 };

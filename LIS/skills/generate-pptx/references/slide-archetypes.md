@@ -1,6 +1,6 @@
 # Slide archetypes
 
-Twelve patterns plus an escape hatch. Each slide in a deck spec names one and
+Fourteen patterns plus an escape hatch. Each slide in a deck spec names one and
 fills its slots. Geometry comes from `deck-kit.js` — a spec never sets
 coordinates except where a slot explicitly takes a width.
 
@@ -13,6 +13,9 @@ Common slots on every content archetype:
 | `title` | string | the H1 |
 | `notes` | string | speaker notes; QA warns if missing |
 
+Every slide is stamped with a quiet `N / total` page mark (bottom-right) by
+`generate-deck.js` / `record.js` for Q&A reference.
+
 ---
 
 ## 1. `title-hero` — dark opening slide
@@ -22,13 +25,18 @@ Common slots on every content archetype:
   "eyebrow": "LIS-10747   ·   CHANGE REQUEST   ·   PRIORITY: MEDIUM",
   "headline": "Setup-Driven Reminder for\nWard-Assigned Request No.",
   "lede": "One or two sentences of what this is.",
-  "stats": [ { "label": "Service", "value": "lis-ecpath5-app" } ],
+  "stats": [ { "label": "Service", "value": "lis-ecpath5-app" },
+             { "label": "Date", "value": "19 Aug 2026" } ],
+  "presenters": "Alice Chan, Bob Lee",
+  "reviewers": "CP3 panel",
   "footer": "Design status: draft  ·  for CP3 review",
   "fullWidth": false }
 ```
 
-2–4 `stats`. `fullWidth: true` spans them to the right edge; the default keeps
-them under the text column (the reference deck's left-weighted look).
+2–4 `stats`. Prefer a date in `eyebrow`, a `stats` chip, or `footer`.
+Optional `presenters` / `reviewers` identity row sits above the footer.
+`fullWidth: true` spans stats to the right edge; the default keeps them under
+the text column (the reference deck's left-weighted look).
 QA warns if there is no date. Under `--profile cp3` it also requires a JIRA key
 and warns if there is no service name.
 
@@ -158,7 +166,9 @@ dark and flips its text colours automatically.
 ```
 
 `path` resolves relative to the **deck spec file**, so keep diagrams beside it.
-The image is contained, never stretched. `panel: false` drops the backing card.
+The image keeps its **original aspect ratio** and is scaled to the largest size
+that fits the content band (centered). The backing panel hugs the image —
+`panel: false` drops it.
 
 ## 11. `statement` — divider / Q&A
 
@@ -182,6 +192,44 @@ requirement.
 ```
 
 Defaults to `danger` left / `accent` right, which reads as problem → solution.
+Prefer `compare` (or `image` / `decision-flow`) for existing-vs-proposed — not a
+prose card grid.
+
+## 13. `thesis` — executive summary / meeting goal
+
+```json
+{ "archetype": "thesis",
+  "eyebrow": "Executive summary",
+  "title": "What we need from this review",
+  "lede": "One-sentence thesis the room should remember.",
+  "proofs": [
+    { "title": "Problem", "body": "…" },
+    { "title": "Change", "body": "…" },
+    { "title": "Impact", "body": "…" }
+  ],
+  "goal": "Confirm the proposed rule and rollout window.",
+  "goalLead": "Meeting goal:" }
+```
+
+2–3 `proofs`. Optional `lede` is the large thesis line; `goal` becomes the
+bottom callout. Maps Best Practices §2 / Awesome “Asymmetric Thesis”.
+
+## 14. `asks` — numbered open questions
+
+```json
+{ "archetype": "asks",
+  "eyebrow": "Open questions",
+  "title": "Confirmation needed",
+  "asks": [
+    { "q": "Is send-out determined by destination lab only?",
+      "why": "Drives soft vs hard validation." },
+    "Do we return sync status to the sorter on every path?"
+  ],
+  "callout": { "text": "Answers unblock API contract freeze." } }
+```
+
+3–6 concrete questions (not “Any feedback?”). Optional `why` under each ask.
+Place before the closing Q&A `statement`.
 
 ## `custom` — escape hatch
 
@@ -204,13 +252,15 @@ shape, it belongs in `archetypes.js` instead.
 |---------------|-----------|
 | the cover | `title-hero` |
 | what we will cover | `agenda` |
+| TL;DR / meeting goal | `thesis` |
 | history / how the problem arose | `evolution` |
 | the current implementation | `code-findings` |
 | old vs. new side by side | `compare` |
 | the new conditional logic | `decision-flow` |
 | per-case behaviour, regression grid | `matrix` |
 | what we are changing | `steps-sidebar` |
-| promotion, fallback, risks, benefits | `cards` |
+| promotion, fallback, risks, benefits, trade-offs | `cards` |
 | an architecture or sequence diagram | `image` |
+| reviewer confirmation questions | `asks` |
 | a section break or Q&A | `statement` |
 | dates, owners, sign-off | `closing` |

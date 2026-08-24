@@ -144,6 +144,9 @@ kept for fidelity. Widen the gap to 0.485 if you want the edges flush.
 ## Craft rules
 
 These are what separate this deck from a bulleted one. They are not decoration.
+Craft sources (structure / density / asks — **not** palette or type): HA
+[General PPTX Preparation Best Practices](file:///D:/ECP/LIS/References/General%20PPTX%20Preparation%20Best%20Practices.md)
+and Awesome-PPT-Design-Skills. Visual kit stays LIS-10747 teal + Cambria/Calibri/Courier New.
 
 1. **Text is not inside the shape.** Panels are fill-only `roundRect`s with a
    separately-positioned textbox laid over them. That is the only way to control
@@ -162,7 +165,8 @@ These are what separate this deck from a bulleted one. They are not decoration.
    navigation — without it a reader landing mid-deck has no idea where they are.
 
 5. **Every slide ends in a bottom band** — a callout, a footnote, a condition
-   strip, or takeaway cards. Nothing floats in dead space.
+   strip, or takeaway cards. Nothing floats in dead space. (Quiet page marks
+   `N / total` sit below the band for Q&A reference.)
 
 6. **Semantic conditional fill.** In a matrix, tint the *outcome* column by
    value (`warnTint` = happens, `neutralTint` = suppressed). The table then
@@ -176,6 +180,15 @@ These are what separate this deck from a bulleted one. They are not decoration.
 
 9. **Speaker notes on every slide** — one to three sentences of what you would
    *say*, not a restatement of what is on screen.
+
+10. **Visual-first.** Existing / proposed flows prefer diagram archetypes
+    (`image`, `decision-flow`, `compare`) over prose card walls.
+
+11. **Negative space.** Prefer ≤3 cards per row; leave quiet margin; one
+    dominant block per slide.
+
+12. **Number every slide** and put concrete `asks` before open Q&A when the
+    meeting needs reviewer confirmation.
 
 10. **Tight word budget.** Roughly 40 body words a slide; `qa-deck.js` warns
     past 90. If it does not fit, it is two slides.

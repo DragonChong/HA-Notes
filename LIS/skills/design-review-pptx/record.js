@@ -9,7 +9,11 @@
 
 'use strict';
 
+const path = require('path');
+const K = require('./deck-kit');
 const ARCHETYPES = require('./archetypes');
+
+const DARK_BOOKENDS = new Set(['title-hero', 'statement', 'closing']);
 
 /** Stand-in for pptxgenjs's ShapeType: any name maps to itself. */
 const ShapeType = new Proxy({}, { get: (_, k) => String(k) });
@@ -77,23 +81,41 @@ class RecordingPptx {
 /**
  * Render a deck spec into recorded slides.
  * Returns { slides, errors } — errors are archetype failures, not QA findings.
+ * Pass `baseDir` (deck.json directory) so image paths resolve for aspect-fit.
  */
-function record(deck) {
+function record(deck, baseDir) {
   const pptx = new RecordingPptx();
   const errors = [];
+  const slides = deck.slides || [];
+  const total = slides.length;
 
-  (deck.slides || []).forEach((spec, i) => {
+  slides.forEach((spec, i) => {
     const draw = ARCHETYPES[spec.archetype];
     const slide = pptx.addSlide();
-    slide.spec = spec;
+    // Shallow clone so path resolution does not mutate the caller's deck.
+    const local = { ...spec };
+    if (baseDir && local.path) local.path = path.resolve(baseDir, local.path);
+    if (baseDir && local.ops) {
+      local.ops = local.ops.map((op) => {
+        if (op.kind !== 'image' || !op.options || !op.options.path) return op;
+        return {
+          ...op,
+          options: { ...op.options, path: path.resolve(baseDir, op.options.path) },
+        };
+      });
+    }
+    slide.spec = local;
 
     if (!draw) {
       errors.push(`slide ${i + 1}: unknown archetype "${spec.archetype}"`);
       return;
     }
     try {
-      draw(pptx, slide, spec);
-      if (spec.notes) slide.addNotes(spec.notes);
+      draw(pptx, slide, local);
+      K.slideNumber(slide, i + 1, total, {
+        onDark: DARK_BOOKENDS.has(spec.archetype),
+      });
+      if (local.notes) slide.addNotes(local.notes);
     } catch (err) {
       errors.push(`slide ${i + 1} (${spec.archetype}): ${err.message}`);
     }

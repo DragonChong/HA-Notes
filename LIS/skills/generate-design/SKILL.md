@@ -77,21 +77,31 @@ catalogue in [design-review-pptx references/slide-archetypes.md](../design-revie
 
 ### Step 4 — Draft ## Design section
 
-Use [design-template.md](design-template.md). Structure:
+Use [design-template.md](design-template.md). Structure follows Best Practices:
 
-1. **Metadata lines** — review type, JIRA key, service, forum, date
-2. **`### Agenda`** — one item per line
-3. **`### Slide: {title}`** — one slide per block; roughly 40 words of body copy
-4. **`### Diagram: {name}`** — Mermaid (optional; stays in JIRA note unless exported to PNG)
-5. End with **`### Slide: Q&A`**
+**Full (default for `full`):**
 
-Optionally add **`**Archetype:** matrix`** under a slide title when you have a
-clear view of the shape (a decision tree, a per-site grid). Otherwise leave it
-out and let design-review-pptx choose.
+1. Metadata lines — review type, JIRA key, service, forum, date
+2. `### Agenda`
+3. `### Slide: Executive Summary` — `**Archetype:** thesis` (meeting goal + TL;DR)
+4. Background → Existing (visual-first) → Proposed → optional Deep Dive
+5. Trade-offs → Impact → Promotion → Fallback
+6. `### Slide: Open Questions` — `**Archetype:** asks` (**required**)
+7. `### Slide: Q&A`
+
+**Incremental (lean):**
+
+Background → Existing (ref) → Proposed (2–4) → Promotion → Fallback → Open Questions → Q&A
+
+Optionally add `**Archetype:** …` under a slide title. Prefer
+`image|compare|decision-flow` for Existing/Proposed, `thesis` for Exec Summary,
+`asks` for Open Questions.
 
 **Writing rules:**
 
-- Derive slide content from JIRA Background + Change Description — do not duplicate prose verbatim; compress for slides
+- Derive slide content from JIRA Background + Change Description — compress for slides; do not dump prose
+- Every full/incremental production review **must** include concrete Open Questions
+- Existing/Proposed prefer visual archetypes over card grids of prose
 - **Plain English in prose; identifiers in the structures built for them** (see below)
 - Use `-` hyphen not em-dash in slide titles
 - Reuse prior review slides for incremental fixes — cite `**Prior review:** [[note]]`
@@ -174,6 +184,7 @@ Background
 Design Review
 Promotion
 Fallback
+Open Questions
 Q&A
 
 ### Slide: Background
@@ -181,6 +192,11 @@ Q&A
 
 ### Slide: Proposed Change - Overview
 <bullets>
+
+### Slide: Open Questions
+**Archetype:** asks
+1. <Concrete question>
+2. <Concrete question>
 
 ### Slide: Q&A
 ```
@@ -195,9 +211,11 @@ Worked example: [examples.md](examples.md)
 - [ ] JIRA note exists with Background and Change Description
 - [ ] Review type classified (incremental / full)
 - [ ] Metadata lines complete (JIRA key, service, date)
-- [ ] Agenda matches slide sequence
+- [ ] Agenda matches slide sequence (full includes Exec Summary; both include Open Questions)
 - [ ] Each slide block is one idea, roughly 40 words of body copy
 - [ ] Prose bullets are plain English; identifiers confined to code blocks and tables
+- [ ] Open Questions present with concrete asks (not “Any feedback?”)
+- [ ] Existing/Proposed prefer image|compare|decision-flow archetypes
 - [ ] Promotion and Fallback present for production changes
 - [ ] `## Design` written to Obsidian note, `design_status: draft` set
 - [ ] design-review-pptx handoff completed (only if a CP3 deck was requested)

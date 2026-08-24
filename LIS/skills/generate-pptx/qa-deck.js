@@ -226,7 +226,22 @@ function checkSlide(slide) {
   }
   if (!slide.notes) warn(n, 'no speaker notes');
 
-  if (words > 90) warn(n, `${words} words on one slide — target is under 90`);
+  if (words > 90) warn(n, `${words} words on one slide — target is under 90; cut body copy or split the slide`);
+
+  // Dense 3-up card grids with heavy copy are hard to present.
+  if (spec.archetype === 'cards') {
+    const perRow = spec.perRow || 3;
+    const count = (spec.cards || []).length;
+    if (perRow >= 3 && count > 3 && words > 90) {
+      warn(n, `dense cards: ${count} cards at perRow ${perRow} with ${words} words — prefer ≤3 cards or shorter bodies`);
+    }
+  }
+
+  // Slide numbers are stamped by record/generate-deck ("3 / 14").
+  const hasNum = slide.ops.some((op) =>
+    (op.runs || []).some((r) => /^\d+\s*\/\s*\d+$/.test(String(r.text || '').trim()))
+  );
+  if (!hasNum) warn(n, 'missing slide number mark (expected "N / total")');
 
   const all = JSON.stringify(spec);
   const ph = all.match(/\b(TBD|TODO|lorem ipsum|XXX|FIXME|placeholder)\b/i);
@@ -239,7 +254,9 @@ function checkDeck(deck, slides) {
     warn(0, 'first slide is not a title-hero');
   } else {
     const blob = JSON.stringify(first);
-    if (!/\d{4}|\b\d{1,2}\s+\w{3}\b/.test(blob)) warn(1, 'title slide carries no date');
+    if (!/\d{4}|\b\d{1,2}\s+\w{3}\b/.test(blob)) {
+      warn(1, 'title slide carries no date — put one in eyebrow, stats, or footer');
+    }
     // CP3 design reviews need a JIRA key and a named service. General decks do not.
     if (PROFILE === 'cp3') {
       if (!/\b[A-Z]{2,5}-\d{3,6}\b/.test(blob)) err(1, 'title slide carries no JIRA key');
@@ -262,6 +279,16 @@ function checkDeck(deck, slides) {
     });
   }
 
+  const hasAsks = (deck.slides || []).some((s) =>
+    s.archetype === 'asks'
+    || /open questions|confirmation/i.test(`${s.eyebrow || ''} ${s.title || ''}`)
+  );
+  const agendaText = JSON.stringify(agenda || {}).toLowerCase();
+  const agendaWantsAsks = /open questions|confirmation/.test(agendaText);
+  if ((PROFILE === 'cp3' || agendaWantsAsks) && !hasAsks) {
+    warn(0, 'deck has no asks / Open Questions slide — add concrete reviewer questions before Q&A');
+  }
+
   if (!slides.length) err(0, 'deck has no slides');
 }
 
@@ -276,7 +303,7 @@ function main() {
   const specPath = path.resolve(args[0]);
   const deck = JSON.parse(fs.readFileSync(specPath, 'utf8'));
 
-  const { slides, errors } = record(deck);
+  const { slides, errors } = record(deck, path.dirname(specPath));
   errors.forEach((e) => err(0, e));
 
   slides.forEach(checkSlide);

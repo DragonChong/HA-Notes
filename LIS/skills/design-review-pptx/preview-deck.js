@@ -4,7 +4,7 @@
  *
  * Usage:  node preview-deck.js <deck.json> [out.html]
  *
- * There is no headless pptx renderer on the LIS build boxes, so this is how you
+ * There is no headless pptx renderer on typical HA boxes, so this is how you
  * actually look at a deck before opening PowerPoint. It replays the same
  * recorded draw calls generate-deck.js emits, so what you see here is the real
  * layout — fonts and text wrapping are the browser's approximation, everything

@@ -177,7 +177,7 @@ function main() {
   }
   const specPath = path.resolve(args[0]);
   const deck = JSON.parse(fs.readFileSync(specPath, 'utf8'));
-  const { slides, errors } = record(deck);
+  const { slides, errors } = record(deck, path.dirname(specPath));
   errors.forEach((e) => console.error(`warning: ${e}`));
 
   const out = args[1]

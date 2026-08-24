@@ -17,7 +17,31 @@
         { "label": "Owner", "value": "LIS Team" }
       ],
       "footer": "Draft — from the 12 Aug cutover huddle",
+      "presenters": "LIS on-call",
+      "reviewers": "Duty AM",
       "notes": "This is an operations briefing, not a design review. The decision is already made; tonight is execution. Quiet window starts at 02:00 because Friday outpatient phlebotomy runs until midnight."
+    },
+    {
+      "archetype": "thesis",
+      "eyebrow": "Executive summary",
+      "title": "What tonight must confirm",
+      "lede": "Flip Hub BFF onto CRS spec-ack in the first quiet window — queue must be flat first.",
+      "proofs": [
+        {
+          "title": "Constraint",
+          "body": "Do not pause clinical traffic. Wait for inbound A08 to drain before the route flip."
+        },
+        {
+          "title": "Change",
+          "body": "BFF Helm revision only, plus a fifteen-minute dictionary cache warm. No DDL."
+        },
+        {
+          "title": "Abort",
+          "body": "If the queue is still moving at 02:20, slip a week. Previous revision stays pinned."
+        }
+      ],
+      "goal": "Agree the go/no-go matrix and abort rule before 01:45 bridge start.",
+      "notes": "Open with the thesis so the room shares one decision frame before the runbook detail."
     },
     {
       "archetype": "evolution",
@@ -170,6 +194,29 @@
         }
       ],
       "notes": "Read the matrix top to bottom before the flip, not after. Queue depth is the one that usually fails — that is why drain is step one."
+    },
+    {
+      "archetype": "asks",
+      "eyebrow": "Open questions",
+      "title": "Confirm before the bridge",
+      "asks": [
+        {
+          "q": "Who owns the go/no-go call at 02:00 — on-call or duty AM?",
+          "why": "Avoid a split decision if one matrix row is amber."
+        },
+        {
+          "q": "Is the previous Helm revision pinned and verified on the bridge host?",
+          "why": "Rollback must be a one-line roll, not a hunt."
+        },
+        {
+          "q": "Which quiet ward supplies the first live ack after the flip?",
+          "why": "Verification step needs a named source before 02:10."
+        }
+      ],
+      "callout": {
+        "text": "Unresolved asks slip the window — do not negotiate them at 02:00."
+      },
+      "notes": "These are confirmation questions, not brainstorming. Get answers before 01:45."
     },
     {
       "archetype": "closing",

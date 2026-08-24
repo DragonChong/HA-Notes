@@ -14,20 +14,36 @@ Do not dump a section of prose onto a slide.
 |------------------|-----------|
 | cover / what this is | `title-hero` |
 | list of topics we will cover | `agenda` |
+| TL;DR, meeting goal, exec summary | `thesis` |
 | history, timeline, how we got here | `evolution` |
 | current implementation / a code excerpt | `code-findings` |
 | old vs new, now vs proposed | `compare` |
 | a branching rule or if/then | `decision-flow` |
 | per-case / per-site / per-row outcomes | `matrix` |
 | an ordered change, runbook, or scope list | `steps-sidebar` |
-| risks, benefits, options, promotion, fallback | `cards` |
+| risks, benefits, options, trade-offs, promotion, fallback | `cards` |
 | a diagram (PNG/SVG) | `image` |
-| a section break or Q&A | `statement` |
+| concrete reviewer questions / confirmation | `asks` |
+| a section break or open Q&A | `statement` |
 | date, owners, next actions | `closing` |
 
 If the source already uses `### Slide:` blocks (the generate-design outline),
 each block is one slide. Honour `**Archetype:**` when present; otherwise choose
 from the table above.
+
+**Visual-first for existing / proposed.** Prefer `image`, `decision-flow`, or
+`compare` over a grid of prose cards. Screenshots and flows beat walls of text.
+
+**Density.** Prefer ≤3 cards per row; leave quiet margin (roughly one-third of
+the band empty when content is short). One idea per slide.
+
+**Asks must be concrete.** “Is send-out determined by destination lab only?”
+not “Any feedback?”. Full / CP3 reviews should include an `asks` slide before
+the closing Q&A `statement`.
+
+Craft sources (not style): `D:\ECP\LIS\References\General PPTX Preparation Best Practices.md`
+and Awesome-PPT-Design-Skills (thesis / negative space / visual-first / QA rigor).
+Keep the approved HA teal kit — do not adopt lifestyle palettes or Inter/serif luxury type.
 
 **When the source is thin** — a few bullets, a meeting scribble — build the
 shortest honest deck (brief, 5–8 slides) and say so in the title-slide footer
@@ -98,10 +114,15 @@ Bad — reads the slide back:
 
 `title-hero` stats are 2–4 chips. Useful chips for a general deck:
 
-- Date / window
+- Date / window (required somewhere: eyebrow, stats, or footer)
 - Audience or forum
 - Owner / team
 - Status (`draft`, `for briefing`, `agreed`)
+
+Optional identity fields (rendered above the footer):
+
+- `presenters` — who is walking the deck
+- `reviewers` — who must confirm (panel, stakeholders)
 
 A JIRA key is optional. Use `--profile cp3` on QA only when this *is* a CP3
 design-review deck that happened to go through this skill.

@@ -26,6 +26,8 @@
         }
       ],
       "footer": "Design status: draft  ·  for CP3 review",
+      "presenters": "LIS Team",
+      "reviewers": "CP3 panel",
       "notes": "LIS-10747. Change request against lis-ecpath5-app. The ask: remove the QEH-only hardcode added by LIS-9632 and drive the Lab No. reminder popup from existing loe_control setup instead."
     },
     {
@@ -339,6 +341,33 @@
         ]
       },
       "notes": "Scope is one condition in one ActionScript file plus regression across the four hospital setup cases. No database or setup-data work."
+    },
+    {
+      "archetype": "asks",
+      "eyebrow": "Open questions",
+      "title": "Confirmation needed before CP3 sign-off",
+      "asks": [
+        {
+          "q": "Confirm KTH loe_control will mirror the QEH ward-print pattern before release.",
+          "why": "Without matching setup, removing the hardcode does not enable KTH."
+        },
+        {
+          "q": "Is regression across QEH, KWH, KTH, and one unconfigured site the agreed sign-off gate?",
+          "why": "Locks the matrix as the exit criterion."
+        },
+        {
+          "q": "Any hospital still relying on the QEH hardcode outside loe_control?",
+          "why": "Rules out a silent behaviour change on cutover."
+        }
+      ],
+      "notes": "Concrete asks for the panel — not an open brainstorm. Answers unblock the design write-up."
+    },
+    {
+      "archetype": "statement",
+      "align": "center",
+      "eyebrow": "Discussion",
+      "headline": "Q&A",
+      "notes": "Hold questions that are not on the asks slide for this slot."
     },
     {
       "archetype": "closing",

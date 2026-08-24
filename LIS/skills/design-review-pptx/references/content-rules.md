@@ -3,6 +3,10 @@
 How to turn a JIRA design note into slide content. The archetypes handle how it
 looks; this is about what goes in them.
 
+Craft sources (structure / asks / visual-first — **not** palette): HA
+`D:\ECP\LIS\References\General PPTX Preparation Best Practices.md` and
+Awesome-PPT-Design-Skills. Keep the approved LIS-10747 teal kit.
+
 ---
 
 ## Mapping a JIRA note to slides
@@ -11,22 +15,36 @@ The source is `LIS/JIRA/{Note}.md` — the change-request note from
 **lis-jira-log-creator**, with its `## Design` section filled in by
 **generate-design**.
 
-| Note section | Becomes |
-|--------------|---------|
-| frontmatter (`jira`, `services`, `priority`, `target_completion_date`, `reference_jira`) | `title-hero` eyebrow + stats |
-| `## Request Summary` | `title-hero` lede |
-| `## Background` | `evolution` (if there is a history) or `cards` |
-| existing code / current behaviour | `code-findings`, or `compare` if the new logic is a direct swap |
-| `## Change Description` | `decision-flow` when it is conditional logic; `steps-sidebar` when it is a list of edits |
-| setup / config tables, per-site behaviour | `matrix` |
-| `## Justification` | the `sidebar` on `steps-sidebar`, or a `callout` |
-| `## Target Completion Date` | `closing` stat |
-| promotion / fallback steps | `cards` |
+| Note section / Design heading | Archetype |
+|-------------------------------|-----------|
+| frontmatter (`jira`, `services`, `priority`, `target_completion_date`) | `title-hero` eyebrow + stats (+ optional `presenters` / `reviewers`) |
+| `## Request Summary` / meeting goal | `title-hero` lede; full reviews also get early `thesis` |
+| `### Agenda` | `agenda` |
+| `### Slide: Executive Summary` / meeting goal | `thesis` |
+| `## Background` / `### Slide: Background` | `evolution` (history) or `cards` |
+| Existing Design | `image`, `compare`, or `code-findings` — visual-first |
+| Proposed Change overview / before-after | `compare` or `decision-flow` |
+| Proposed Change detail / schema | `steps-sidebar`, `matrix`, or `code-findings` |
+| Trade-offs / Alternatives | `cards` |
+| Impact (deps + risks) | `cards` |
+| Promotion / Implementation Plan | `cards` or `steps-sidebar` (docs may say “Implementation Plan”; archetype stays these) |
+| Fallback | `cards` |
+| Open Questions / Confirmation | `asks` (required before Q&A) |
+| Q&A | `statement` |
+| `## Target Completion Date` / next steps | `closing` |
+| `## Justification` | `sidebar` on `steps-sidebar`, or a `callout` |
 
 **When `## Design` is empty** — as it was for LIS-10747 — build from Background,
 Change Description and Justification, and say so on the closing slide
 (`"Design status: draft — to be populated before CP3 review."`). Do not invent
 design detail to fill slides.
+
+**Visual-first for existing / proposed.** Prefer `image`, `decision-flow`, or
+`compare` over a grid of prose cards.
+
+**Asks must be concrete.** “Is send-out determined by destination lab only?”
+not “Any feedback?”. Full reviews and `--profile cp3` QA warn if there is no
+`asks` / Open Questions slide before the closing Q&A `statement`.
 
 ### Deck length
 
@@ -35,8 +53,25 @@ design detail to fill slides.
 | Incremental — bug fix, targeted change | 6–10 |
 | Full — new service, migration, first review | 14–22 |
 
-A full review adds `agenda`, `image` (architecture), `compare`, and `cards` for
-Promotion and Fallback. Incremental reviews usually skip the agenda.
+**Incremental sequence:**
+
+```
+title-hero → Background → Existing (ref) → Proposed (2–4)
+           → Promotion → Fallback → asks → Q&A statement → closing
+```
+
+**Full sequence:**
+
+```
+title-hero → agenda → thesis (exec summary)
+           → Background → Existing → Proposed (+ compare)
+           → Deep Dive (optional) → Trade-offs → Impact
+           → Promotion → Fallback → asks → Q&A → closing
+```
+
+A full review adds `agenda`, `thesis`, `image` (architecture), `compare`, and
+`cards` for Trade-offs / Impact / Promotion / Fallback. Incremental reviews may
+skip the agenda and thesis but still need Open Questions (`asks`).
 
 ---
 
@@ -48,6 +83,8 @@ slide is doing two jobs.
 
 **Roughly 40 body words.** `qa-deck.js` warns past 90 for the whole slide. Card
 bodies want 20–28 words — two lines at 13pt in a 3.12″ column.
+
+**Density.** Prefer ≤3 cards per row; leave quiet margin. One dominant block.
 
 **Titles are statements, not labels.** "What the code does today" beats
 "Current Implementation". "KTH is next" beats "Justification".
@@ -81,33 +118,36 @@ Good — adds the reasoning the slide omits:
 
 Bad — reads the slide back:
 
-> This slide shows the background. There are three steps: LIS-8437, LIS-9632
-> and LIS-10747.
+> This slide shows the background. There are three steps.
 
 ---
 
-## The bits reviewers always ask about
+## What to put on the cover
 
-Include these for anything production-impacting, as `cards`:
+`title-hero` stats are 2–4 chips:
 
-- **Promotion** — ordered steps naming concrete artifacts: Helm release, cron
-  job, DDL script, config map.
-- **Fallback** — what you revert and in what order, and how long you have.
-- **Regression scope** — the cases you will verify. If there is a `matrix`
-  slide, say that the matrix *is* the regression list.
+- Date / forum (required somewhere: eyebrow, stats, or footer)
+- Service
+- Priority / status
+- Owner / team
 
-Say "no DB migration" or "no setup data change" explicitly when true. Reviewers
-ask; answering on the slide saves the round trip.
+Optional identity fields:
+
+- `presenters` — who is walking the deck
+- `reviewers` — CP3 panel / stakeholders
+
+QA under `--profile cp3` requires a JIRA key and warns if there is no service
+name or date.
 
 ---
 
 ## Before you generate
 
 - [ ] One idea per slide, H1 written as a statement
-- [ ] Every slide has an eyebrow and speaker notes
+- [ ] Every slide has an eyebrow (except bookends) and speaker notes
+- [ ] Open Questions (`asks`) present before Q&A for full / CP3 decks
 - [ ] Identifiers in `Courier New`, terminology consistent
-- [ ] Promotion and Fallback present for production-impacting change
 - [ ] No `TBD` / `TODO` / placeholder text — QA errors on these
 - [ ] Matrix has at most 5 body rows when it also carries takeaway cards
-- [ ] `node qa-deck.js <deck.json>` exits 0
+- [ ] `node qa-deck.js <deck.json> --profile cp3` exits 0
 - [ ] Preview opened and actually looked at

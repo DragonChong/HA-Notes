@@ -34,11 +34,16 @@ function resolveImages(slide, baseDir) {
   });
 }
 
+const DARK_BOOKENDS = new Set(['title-hero', 'statement', 'closing']);
+
 function build(deck, baseDir) {
   const pptx = new PptxGenJS();
   K.applyDocProps(pptx, deck.meta || {});
 
-  (deck.slides || []).forEach((spec, i) => {
+  const slides = deck.slides || [];
+  const total = slides.length;
+
+  slides.forEach((spec, i) => {
     const draw = ARCHETYPES[spec.archetype];
     if (!draw) {
       die(`slide ${i + 1}: unknown archetype "${spec.archetype}". ` +
@@ -49,6 +54,9 @@ function build(deck, baseDir) {
     const slide = pptx.addSlide();
     try {
       draw(pptx, slide, spec);
+      K.slideNumber(slide, i + 1, total, {
+        onDark: DARK_BOOKENDS.has(spec.archetype),
+      });
     } catch (err) {
       die(`slide ${i + 1} (${spec.archetype}): ${err.message}`);
     }

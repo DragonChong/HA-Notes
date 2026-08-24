@@ -21,6 +21,7 @@ Background
 Design Review
 Promotion
 Fallback
+Open Questions
 Q&A
 
 ### Slide: Background
@@ -69,6 +70,12 @@ SIT verify: queue A08 then A47 for same patient
 ### Slide: Fallback
 Revert lis-patient-pmi-sync-svc deployment to previous version
 old_hkid column can remain (nullable, unused by previous version)
+
+### Slide: Open Questions
+**Archetype:** asks
+1. Should A40/A45/A47 always persist old_hkid even when the inbound message omits it?
+2. Is a backfill of historical queue rows required before cutover, or only new traffic?
+3. Confirm SIT sign-off owner for the A08-then-A47 race scenario.
 
 ### Slide: Q&A
 ```
