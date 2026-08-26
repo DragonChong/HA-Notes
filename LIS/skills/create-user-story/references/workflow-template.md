@@ -2,16 +2,18 @@
 
 Use applicable sections in this order. If a required-looking section genuinely does not apply, add a short explanation rather than silently omitting it.
 
-```markdown
+````markdown
 ---
 title: <Business Workflow Name>
 status: documented
-screen: <Screen Name>
+context_type: <screen | service>
+screen: <Screen Name; omit for service workflow>
+service: <Service Name; omit for screen workflow>
 epic: <Epic ID>
 user_story: <CRST ID>
 tags:
   - workflow
-  - <screen-tag>
+  - <screen-or-service-tag>
 ---
 
 # <Business Workflow Name>
@@ -134,7 +136,7 @@ sequenceDiagram
 - <Unresolved clarification.>
 
 </details>
-```
+````
 
 ## Template Rules
 
@@ -143,3 +145,5 @@ sequenceDiagram
 - Omit the Data Written table when nothing is saved, but include an explicit read-only statement.
 - Keep source-code locations out of the main narrative. Put traceability evidence in Technical Notes when useful.
 - Use exact database identifiers only after direct verification.
+- For a screen workflow, set `context_type: screen`, include `screen`, and omit `service`.
+- For a service workflow, set `context_type: service`, include `service`, and omit `screen`.
