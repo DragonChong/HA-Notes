@@ -1,6 +1,6 @@
 ---
 name: create-user-story
-description: "Creates revamp-ready LIS business workflow documentation from a CRST/JIRA user story by tracing requirements across legacy and revamp code, resolving intended behavior, documenting scenarios, data sources, configurations, messages, database writes, and parity gaps, then writing the validated note to Obsidian. Always use when the user asks to create, document, analyze, continue, or proceed to a User Story/US; mentions a CRST story; asks for the next story; or wants workflow documentation derived from ActionScript, Java, React, TypeScript, source code, or acceptance criteria."
+description: "Creates revamp-ready LIS business workflow documentation from an existing CRST/JIRA user story by tracing requirements across legacy and revamp code, resolving intended behavior, documenting scenarios, data sources, configurations, messages, database writes, and parity gaps, then writing the validated note to Obsidian. Always use when the user asks to create, document, analyze, continue, or proceed to a User Story/US; mentions a CRST story; asks for the next story; or wants workflow documentation derived from ActionScript, Java, React, TypeScript, source code, or acceptance criteria. Do not use to invent or author a new JIRA story."
 argument-hint: "CRST ticket, User Story file, screen, or 'next US'"
 user-invocable: true
 disable-model-invocation: false
@@ -12,9 +12,10 @@ Create a durable, business-facing workflow note from a LIS User Story and its im
 
 ## Outcome
 
-Produce one Obsidian note at:
+Produce one Obsidian workflow note. Route it by business context:
 
-`Knowledge Base/01_Screens/<Screen Name>/Workflows/<Business Workflow Name>.md`
+- Screen-driven workflow: `Knowledge Base/01_Screens/<Screen Name>/Workflows/<Business Workflow Name>.md`
+- Service-driven workflow with no screen: `Knowledge Base/03_Services/<Service Name>/Workflows/<Business Workflow Name>.md`
 
 The note must be understandable without reading source code and detailed enough to reimplement the behavior in a different technology.
 
@@ -45,7 +46,8 @@ Do not silently choose between conflicting sources. Make the intended behavior c
 2. If the user says “next US,” read the authoritative story catalogue, such as `References/User Story.md`, and continue from the last documented story in catalogue order—not numeric ticket order.
 3. Read the complete User Story, including acceptance criteria, examples, message text, data mappings, and linked stories.
 4. Identify whether the story contains multiple distinct workflows. Keep separate trigger points and scenarios; do not merge unrelated warnings or actions merely because they share a ticket.
-5. Derive a business workflow title. Never use a class, method, event, or internal property name as the note title.
+5. Decide whether the workflow belongs to a user-facing screen or is service-driven. Prefer the screen path when a screen owns the trigger or visible outcome; otherwise use the service path.
+6. Derive a business workflow title. Never use a class, method, event, or internal property name as the note title.
 
 ### 2. Build a Traceability Map
 
@@ -128,6 +130,13 @@ Main narrative rules:
 
 Write through the Obsidian integration so the vault remains synchronized. Do not create the workflow note only as a workspace file.
 
+Choose the destination consistently:
+
+- Use `01_Screens` when a named screen, panel, or user interaction is the workflow boundary.
+- Use `03_Services` for schedulers, integrations, message processing, background jobs, API-only behavior, and other workflows without a screen.
+- Use a stable business screen or service name, not a repository name, unless the repository name is also the accepted service name.
+- If ownership is genuinely ambiguous after code and story analysis, ask the user to choose between the two destinations before writing.
+
 ### 7. Validate Mermaid Diagrams
 
 For every diagram:
@@ -170,7 +179,7 @@ When asked to proceed to the next User Story:
 
 ## Boundaries
 
-- This skill creates business workflow documentation from an existing User Story; it does not implement code unless the user separately asks for code changes.
+- This skill creates business workflow documentation from an existing User Story; it does not author a new JIRA User Story or implement code unless the user separately asks for those tasks.
 - Do not modify source code while documenting parity gaps.
 - Do not treat a defect discovered during analysis as intended behavior.
 - Do not omit a branch because neither implementation currently supports it when the User Story requires it.
