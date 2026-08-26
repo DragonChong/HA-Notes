@@ -405,6 +405,7 @@ Displaying any CRST-162 message, clicking **OK**, choosing **Yes** or **No** for
 - [[Retrieve Order Information by Order Number]] — Supplies no-specimen orders whose test statuses are also evaluated.
 - [[Input Lab Number for DFT Case]] — Retrieves DFT orders whose DFT row statuses feed the restricted-action alerts.
 - [[Alert on Unchecked Patient Demographic Changes]] — Separate Blood Bank patient-demographic alert flow.
+- [[Confirm Leaving Unacknowledged Ward-Assigned Request]] — Separate confirmation before leaving an unacknowledged ward-assigned request.
 
 ---
 
