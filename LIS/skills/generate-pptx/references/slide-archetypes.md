@@ -52,7 +52,8 @@ and warns if there is no service name.
 2–4 `steps`, drawn left to right with arrow connectors. `tone` is one of
 `neutral` / `accent` / `warn` / `danger` and tints both the card and its badge —
 use it to show the arc (neutral → danger → accent reads as "was fine, broke,
-fixed"). `tag` renders monospace. `callout` is optional; `lead` is emphasised in
+fixed"). `tag` renders monospace. Set `"badge": false` to hide the numbered
+circle (the tag still shows). `callout` is optional; `lead` is emphasised in
 `warnInk`.
 
 ## 3. `code-findings` — what the code does today

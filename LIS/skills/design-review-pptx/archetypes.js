@@ -147,22 +147,30 @@ function evolution(pptx, slide, spec) {
     const inner = x + grid.pad;
     const innerW = w - grid.pad * 2;
     const accent = K.toneAccent[t] || color.accent;
+    const showBadge = step.badge !== false && step.badge !== null;
 
-    K.badge(pptx, slide, step.badge ?? i + 1, { x: inner, y: cardY + 0.32, fill: accent });
+    if (showBadge) {
+      K.badge(pptx, slide, step.badge ?? i + 1, { x: inner, y: cardY + 0.32, fill: accent });
+    }
     if (step.tag) {
       K.mono(slide, step.tag, {
-        x: inner + 0.55, y: cardY + 0.36, w: innerW - 0.52, h: 0.34,
+        x: showBadge ? inner + 0.55 : inner,
+        y: cardY + 0.36,
+        w: showBadge ? innerW - 0.52 : innerW,
+        h: 0.34,
         color: accent,
       });
     }
+    const titleY = showBadge ? cardY + 1.0 : cardY + 0.82;
     K.text(slide, step.title, {
-      x: inner, y: cardY + 1.0, w: innerW, h: 0.75,
+      x: inner, y: titleY, w: innerW, h: 0.55,
       face: font.display, fontSize: size.cardTitleXl, color: color.ink,
       lineSpacingMultiple: 1.1,
     });
+    const bodyY = titleY + 0.62;
     K.text(slide, step.body, {
-      x: inner, y: cardY + 1.8, w: innerW, h: 1.0,
-      fontSize: size.body, color: color.body,
+      x: inner, y: bodyY, w: innerW, h: cardY + cardH - bodyY - 0.22,
+      fontSize: size.lead, color: color.body, lineSpacingMultiple: 1.35,
     });
 
     // Arrow in the gutter to the right of every card but the last.
