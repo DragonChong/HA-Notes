@@ -41,23 +41,79 @@ This is the key mechanical detail. `sdlc-orchestrator` must not depend on the ro
 
 Create a Custom Mode named **SDLC**, bound to `sdlc-orchestrator`, and start every project session in it.
 
+## Machines and vault paths
+
+The vault is a git repo (`DragonChong/HA-Notes`), cloned to a different path on each machine. Nothing in the workflow may hardcode a vault path — everything is vault-relative, and only the link created once per machine knows the absolute path.
+
+| Machine | OS | Vault path |
+|---|---|---|
+| Office workstation | Windows | `D:\Github\HA-Notes` |
+| Personal | macOS | `~/Application/Obsidian/HA-Notes` |
+
+Skills are versioned inside the vault, so `git pull` on either machine updates them. The link is per-machine, made once, and never committed.
+
 ## The skills-location problem
 
 Skills discovered at project level come from *the open workspace*. Your work spans the vault plus several repos, so a skill tree that lives only in the vault is invisible when you open `lis-common-scheduler-svc` alone.
 
-**Recommended:** canonical source in the vault, symlinked to global.
+**Recommended:** canonical source in the vault, linked into the global Cursor skills location. This is exactly the pattern you already run for `LIS/skills` — it just moves to the consolidated tree from [[Skill Catalogue#Consolidation]].
+
+### Windows — office workstation
+
+Canonical source: `D:\Github\HA-Notes\.cursor\skills\`
+
+**Preferred — directory junction.** No admin rights, no Developer Mode, works on any local drive:
+
+```cmd
+mklink /J "%USERPROFILE%\.cursor\skills" "D:\Github\HA-Notes\.cursor\skills"
+```
+
+**Alternative — symbolic link.** Needs either an elevated prompt or Windows Developer Mode enabled:
+
+```cmd
+mklink /D "%USERPROFILE%\.cursor\skills" "D:\Github\HA-Notes\.cursor\skills"
+```
+
+```powershell
+New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.cursor\skills" -Target "D:\Github\HA-Notes\.cursor\skills"
+```
+
+Remove with `rmdir "%USERPROFILE%\.cursor\skills"` — **not** `rmdir /S`, and not `del`. `rmdir` on a junction removes the link only; `/S` would walk through it and delete the real skill tree in the vault.
+
+> [!tip] Junction over symlink on a corporate build
+> A junction (`/J`) is the pragmatic choice: it needs no privilege at all, and for a local-drive directory it behaves identically for Cursor's purposes. Reserve `/D` for the case where the target is on a network share, where junctions do not work.
+
+### macOS — personal machine
 
 ```bash
-# canonical, git-tracked, versioned with the vault
-~/Application/Obsidian/HA-Notes/.cursor/skills/
-
-# make it globally available to every Cursor project
 ln -s ~/Application/Obsidian/HA-Notes/.cursor/skills ~/.cursor/skills
 ```
 
-One tree, one git history, available in every repo window. If your setup disallows symlinks, use a small `sync-skills` script run from a git hook instead — but the symlink is better because it cannot drift.
+### Why the link direction matters
 
-**Alternative:** keep the multi-root workspace you already documented in [[Copilot Workflow Optimization]] — vault + repos in one Cursor window — so project-level discovery sees the vault. This also gives the agent the vault and the code in one `@workspace`, which the design and code-review stages both want. Doing both is fine and is what I would do.
+The link lives in `%USERPROFILE%\.cursor\` (or `~/.cursor/`), **outside** the repo, pointing *into* the vault. That is deliberate:
+
+- Git never sees it, so `core.symlinks` on Windows is irrelevant and no `.gitattributes` handling is needed.
+- Each machine makes its own link once; the vault stays platform-neutral.
+- A `git pull` updates every skill on every machine at once, with real version history and rollback.
+
+If your setup ever disallows both junctions and symlinks, fall back to a `sync-skills` script run from a git `post-merge` hook — but the link is better because it cannot drift.
+
+> [!warning] Git on Windows and `SKILL.md`
+> Set `core.autocrlf` consistently across both machines (`input` on macOS, `true` on Windows is the usual pairing). Mixed line endings in `SKILL.md` files show up as whole-file diffs on every pull and make the skills' git history useless for spotting what actually changed.
+
+### Migration from today's `LIS/skills` link
+
+You already have a link pointing at `LIS/skills`. When you move to the consolidated tree:
+
+1. Create `.cursor/skills/` in the vault with the `sdlc/`, `lis/`, `format/`, `legacy-crs/` subfolders.
+2. `git mv` the existing skills into place — this preserves their history, which matters when a skill starts misbehaving and you need to see what changed.
+3. Repoint the link: `rmdir "%USERPROFILE%\.cursor\skills"` then re-run `mklink /J` against the new path.
+4. Confirm discovery still works — a skill that was previously found should still respond to `/name`.
+
+Do step 4 before deleting anything. Discovery is recursive through subfolders, so the category nesting is free, but confirm it on your Cursor build rather than assuming.
+
+**Alternative to all of the above:** keep the multi-root workspace you already documented in [[Copilot Workflow Optimization]] — vault + repos in one Cursor window — so project-level discovery sees the vault directly. This also gives the agent the vault and the code in one `@workspace`, which the design and code-review stages both want. Doing both is fine and is what I would do.
 
 ## AGENTS.md in every repo
 
@@ -67,7 +123,9 @@ Short, always-loaded, points at the system rather than restating it:
 # AGENTS.md — lis-common-scheduler-svc
 
 This repo is developed under the SDLC agentic workflow.
-The knowledge base is the Obsidian vault at ~/Application/Obsidian/HA-Notes.
+The knowledge base is the Obsidian vault (repo: DragonChong/HA-Notes).
+Office: D:\Github\HA-Notes   Personal: ~/Application/Obsidian/HA-Notes
+All paths below are vault-relative.
 
 Before any non-trivial change:
 1. Activate the SDLC Custom Mode (sdlc-orchestrator).
@@ -108,10 +166,10 @@ Put these in `AGENTS.md` at every repo root **and** at the vault root, because t
 
 Before building all twelve skills, prove the plumbing with one throwaway skill:
 
-- [ ] A skill in `~/.cursor/skills/test-ping/SKILL.md` is discovered from a repo window
+- [ ] A skill at `%USERPROFILE%\.cursor\skills\test-ping\SKILL.md` (via the junction) is discovered from a repo window
 - [ ] `/test-ping` invokes it explicitly
 - [ ] A Custom Mode keeps it loaded across turns
-- [ ] The agent can read `SDLC/Projects/…/_Dossier.md` from a repo window
+- [ ] The agent can read `SDLC/Projects/…/_Dossier.md` from a repo window, through the junction
 - [ ] The agent can write a note back into the vault
 - [ ] JIRA MCP can read an issue, then create one in a test project
 - [ ] `nested/category/skill/SKILL.md` is still discovered
