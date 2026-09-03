@@ -78,12 +78,14 @@ Skills currently live in three places: `skills/`, `LIS/skills/`, and `.claude/`.
 **Proposal — one canonical tree in the vault:**
 
 ```
-HA-Notes/.cursor/skills/
+<vault>/.cursor/skills/
   sdlc/          ← L0 + L1  (orchestrator and the 12 stage skills)
   lis/           ← L2 domain (lis-*, cms-design-system, react-*)
   format/        ← L2 rendering (pptx, docx, xlsx, mermaid, obsidian-*)
   legacy-crs/    ← the CRS-Revamp skills until they are generalized
 ```
+
+`<vault>` is `D:\Github\HA-Notes` on the office workstation and `~/Application/Obsidian/HA-Notes` personally. Linking this tree into the global Cursor location — the pattern you already run for `LIS/skills` — is covered in [[Cursor Setup#The skills-location problem]]. Move the existing skills with `git mv` so their history survives.
 
 Subfolders are organisational only — a skill's identity comes from the folder holding its `SKILL.md`, so nesting costs nothing. Git-tracked in the vault gives you versioning and rollback of the skills themselves, which matters once a dozen people depend on them.
 
