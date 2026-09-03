@@ -54,28 +54,47 @@ Skills are versioned inside the vault, so `git pull` on either machine updates t
 
 ## The skills-location problem
 
-Skills discovered at project level come from *the open workspace*. Your work spans the vault plus several repos, so a skill tree that lives only in the vault is invisible when you open `lis-common-scheduler-svc` alone.
+Skills discovered at project level come from *the open workspace*. Your work spans the vault plus several repos, so a skill tree that lives only in the vault is invisible when you open `lis-common-scheduler-svc` alone. The link you already run for `LIS/skills` solves this.
 
-**Recommended:** canonical source in the vault, linked into the global Cursor skills location. This is exactly the pattern you already run for `LIS/skills` — it just moves to the consolidated tree from [[Skill Catalogue#Consolidation]].
+### Keep the canonical tree in a visible vault folder
+
+> [!important] Do not put the canonical tree in `.cursor/skills/` inside the vault
+> Obsidian hides any folder whose name starts with a dot. A skill tree under `<vault>/.cursor/` would vanish from the file explorer, from search, from the graph, and from wikilinks — in a system whose whole premise is that the vault is the centralized brain, that is a bad trade. You would no longer be able to read a `SKILL.md` in Obsidian, link a stage note to the skill that owns it, or search skill bodies alongside your notes.
+>
+> **The link target's folder name is arbitrary.** Discovery comes from the link sitting at `%USERPROFILE%\.cursor\skills`, not from the source folder being called `.cursor`. So point it at a normal, visible folder.
+
+**Recommended:** promote the tree to `Skills/` at the vault root and keep the existing link pattern.
+
+```
+<vault>/Skills/
+  sdlc/          ← L0 + L1  (orchestrator and the 12 stage skills)
+  lis/           ← L2 domain (lis-*, cms-design-system, react-*)
+  format/        ← L2 rendering (pptx, docx, xlsx, mermaid, obsidian-*)
+  legacy-crs/    ← the CRS-Revamp skills until they are generalized
+```
+
+Root rather than `LIS/skills` because the SDLC skills are application-agnostic — CRS, LIS and Patient work all runs through the same orchestrator, and a cross-application skill filed under `LIS/` will confuse the next person who reads the vault. The LIS-specific ones stay together under `Skills/lis/`.
+
+If you would rather not restructure at all, `LIS/skills` keeps working exactly as it does today. The gain from moving is naming honesty and one link instead of two; the cost is one afternoon of `git mv` plus repointing the junction. It is a tidy-up, not a prerequisite — none of the rest of this blueprint depends on it.
 
 ### Windows — office workstation
 
-Canonical source: `D:\Github\HA-Notes\.cursor\skills\`
+Canonical source: `D:\Github\HA-Notes\Skills\`
 
 **Preferred — directory junction.** No admin rights, no Developer Mode, works on any local drive:
 
 ```cmd
-mklink /J "%USERPROFILE%\.cursor\skills" "D:\Github\HA-Notes\.cursor\skills"
+mklink /J "%USERPROFILE%\.cursor\skills" "D:\Github\HA-Notes\Skills"
 ```
 
 **Alternative — symbolic link.** Needs either an elevated prompt or Windows Developer Mode enabled:
 
 ```cmd
-mklink /D "%USERPROFILE%\.cursor\skills" "D:\Github\HA-Notes\.cursor\skills"
+mklink /D "%USERPROFILE%\.cursor\skills" "D:\Github\HA-Notes\Skills"
 ```
 
 ```powershell
-New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.cursor\skills" -Target "D:\Github\HA-Notes\.cursor\skills"
+New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\.cursor\skills" -Target "D:\Github\HA-Notes\Skills"
 ```
 
 Remove with `rmdir "%USERPROFILE%\.cursor\skills"` — **not** `rmdir /S`, and not `del`. `rmdir` on a junction removes the link only; `/S` would walk through it and delete the real skill tree in the vault.
@@ -86,7 +105,7 @@ Remove with `rmdir "%USERPROFILE%\.cursor\skills"` — **not** `rmdir /S`, and n
 ### macOS — personal machine
 
 ```bash
-ln -s ~/Application/Obsidian/HA-Notes/.cursor/skills ~/.cursor/skills
+ln -s ~/Application/Obsidian/HA-Notes/Skills ~/.cursor/skills
 ```
 
 ### Why the link direction matters
@@ -96,24 +115,25 @@ The link lives in `%USERPROFILE%\.cursor\` (or `~/.cursor/`), **outside** the re
 - Git never sees it, so `core.symlinks` on Windows is irrelevant and no `.gitattributes` handling is needed.
 - Each machine makes its own link once; the vault stays platform-neutral.
 - A `git pull` updates every skill on every machine at once, with real version history and rollback.
+- The vault folder stays visible to Obsidian, so skills are notes you can read, search and link like anything else.
 
 If your setup ever disallows both junctions and symlinks, fall back to a `sync-skills` script run from a git `post-merge` hook — but the link is better because it cannot drift.
 
 > [!warning] Git on Windows and `SKILL.md`
 > Set `core.autocrlf` consistently across both machines (`input` on macOS, `true` on Windows is the usual pairing). Mixed line endings in `SKILL.md` files show up as whole-file diffs on every pull and make the skills' git history useless for spotting what actually changed.
 
-### Migration from today's `LIS/skills` link
+### Migration from today's layout
 
-You already have a link pointing at `LIS/skills`. When you move to the consolidated tree:
+Skills are currently spread across `LIS/skills/`, `skills/` at the root, and `.claude/`. To consolidate:
 
-1. Create `.cursor/skills/` in the vault with the `sdlc/`, `lis/`, `format/`, `legacy-crs/` subfolders.
-2. `git mv` the existing skills into place — this preserves their history, which matters when a skill starts misbehaving and you need to see what changed.
-3. Repoint the link: `rmdir "%USERPROFILE%\.cursor\skills"` then re-run `mklink /J` against the new path.
+1. Create `Skills/` at the vault root with the four category subfolders.
+2. `git mv` the existing skills into place — preserves history, which matters when a skill starts misbehaving and you need to see what changed. Root `skills/*` (the CRS-Revamp set) goes to `Skills/legacy-crs/`.
+3. Repoint the link: `rmdir "%USERPROFILE%\.cursor\skills"`, then re-run `mklink /J` against `D:\Github\HA-Notes\Skills`.
 4. Confirm discovery still works — a skill that was previously found should still respond to `/name`.
 
 Do step 4 before deleting anything. Discovery is recursive through subfolders, so the category nesting is free, but confirm it on your Cursor build rather than assuming.
 
-**Alternative to all of the above:** keep the multi-root workspace you already documented in [[Copilot Workflow Optimization]] — vault + repos in one Cursor window — so project-level discovery sees the vault directly. This also gives the agent the vault and the code in one `@workspace`, which the design and code-review stages both want. Doing both is fine and is what I would do.
+**Alternative to all of the above:** keep the multi-root workspace you already documented in [[Copilot Workflow Optimization]] — vault + repos in one Cursor window. Note that this path *does* want a `.cursor/skills` at the workspace root for project-level discovery; if you go this way, make it a second junction pointing at `Skills/` and gitignore it, rather than moving the canonical tree into a hidden folder.
 
 ## AGENTS.md in every repo
 

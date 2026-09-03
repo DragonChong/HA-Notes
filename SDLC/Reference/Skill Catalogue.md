@@ -75,19 +75,23 @@ The pattern is the same every time: **the skill keeps the procedure, the dossier
 
 Skills currently live in three places: `skills/`, `LIS/skills/`, and `.claude/`. Cursor discovers `.cursor/skills/`, `.agents/skills/` and (legacy) `.claude/skills/`, recursively through subfolders.
 
-**Proposal — one canonical tree in the vault:**
+**Proposal — one canonical tree in the vault, in a visible folder:**
 
 ```
-<vault>/.cursor/skills/
+<vault>/Skills/
   sdlc/          ← L0 + L1  (orchestrator and the 12 stage skills)
   lis/           ← L2 domain (lis-*, cms-design-system, react-*)
   format/        ← L2 rendering (pptx, docx, xlsx, mermaid, obsidian-*)
   legacy-crs/    ← the CRS-Revamp skills until they are generalized
 ```
 
-`<vault>` is `D:\Github\HA-Notes` on the office workstation and `~/Application/Obsidian/HA-Notes` personally. Linking this tree into the global Cursor location — the pattern you already run for `LIS/skills` — is covered in [[Cursor Setup#The skills-location problem]]. Move the existing skills with `git mv` so their history survives.
+`<vault>` is `D:\Github\HA-Notes` on the office workstation and `~/Application/Obsidian/HA-Notes` personally.
 
-Subfolders are organisational only — a skill's identity comes from the folder holding its `SKILL.md`, so nesting costs nothing. Git-tracked in the vault gives you versioning and rollback of the skills themselves, which matters once a dozen people depend on them.
+Vault **root** rather than `LIS/skills` because the SDLC skills are application-agnostic — CRS, LIS and Patient work all run through the same orchestrator. Visible folder rather than `.cursor/skills` because Obsidian hides dotfolders, and skills you cannot read, search or wikilink from the vault defeat the point of the vault being the brain. Discovery comes from the per-machine link, not from the folder's name — see [[Cursor Setup#The skills-location problem]].
+
+Subfolders are organisational only: a skill's identity comes from the folder holding its `SKILL.md`, and discovery is recursive, so nesting costs nothing. Git-tracked in the vault gives you versioning and rollback of the skills themselves, which matters once a dozen people depend on them. Move with `git mv` so history survives.
+
+This is a tidy-up, not a prerequisite. `LIS/skills` keeps working as-is; nothing else in this blueprint depends on the move.
 
 ## Description hygiene
 
