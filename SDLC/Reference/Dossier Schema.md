@@ -149,7 +149,7 @@ An Obsidian Base over `tags: sdlc-dossier` gives you the whole portfolio in one 
 - **Awaiting gate** — `status == "active"` and `stage` not in `gates_passed`
 - **At risk** — `target_completion_date` within 14 days and `stage` before `promotion-prep`
 
-See [[Obsidian Bases]] usage in the existing skill set for the syntax.
+Syntax follows `LIS/JIRA/JIRA Log List.base`; the `obsidian-bases` skill covers the details.
 
 ## Related
 

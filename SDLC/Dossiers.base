@@ -1,0 +1,72 @@
+filters:
+  and:
+    - file.inFolder("SDLC/Projects")
+    - file.hasTag("sdlc-dossier")
+    - file.ext == "md"
+properties:
+  key:
+    displayName: Key
+  title:
+    displayName: Title
+  work_type:
+    displayName: Type
+  stage:
+    displayName: Stage
+  status:
+    displayName: Status
+  services:
+    displayName: Services
+  jira:
+    displayName: JIRA
+  target_completion_date:
+    displayName: Target
+  risk:
+    displayName: Risk
+  owner:
+    displayName: Owner
+  updated:
+    displayName: Updated
+views:
+  - type: table
+    name: Active
+    filters:
+      and:
+        - status == "active"
+    order:
+      - key
+      - title
+      - work_type
+      - stage
+      - services
+      - target_completion_date
+      - risk
+      - updated
+    sort:
+      - property: target_completion_date
+        direction: ASC
+  - type: table
+    name: By stage
+    order:
+      - stage
+      - key
+      - title
+      - status
+      - owner
+      - target_completion_date
+    sort:
+      - property: stage
+        direction: ASC
+  - type: table
+    name: All
+    order:
+      - key
+      - title
+      - work_type
+      - stage
+      - status
+      - jira
+      - target_completion_date
+      - updated
+    sort:
+      - property: updated
+        direction: DESC

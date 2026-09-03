@@ -16,33 +16,34 @@ status: blueprint
 
 ## Start here
 
-| Note | What it answers |
-|---|---|
-| [[Architecture]] | How the pieces fit — the four layers and the one rule that keeps them small |
-| [[Dossier Schema]] | The state machine: one folder + one frontmatter block per unit of work |
-| [[Skill Catalogue]] | What already exists, what must be built, what must be generalized |
-| [[Cursor Setup]] | Wiring: `.cursor/skills`, Custom Mode, AGENTS.md, MCP servers |
-| [[Rollout Plan]] | Six phases, what to prove at each, and the pilot candidate |
-| [[Open Questions]] | Blockers to resolve before Phase 3 and Phase 4 |
+| Note                        | What it answers                                                             |
+| --------------------------- | --------------------------------------------------------------------------- |
+| [[Architecture]]            | How the pieces fit — the four layers and the one rule that keeps them small |
+| [[Dossier Schema]]          | The state machine: one folder + one frontmatter block per unit of work      |
+| [[Orchestrator Skill Spec]] | The one skill to build first — a working draft you can paste                |
+| [[Skill Catalogue]]         | What already exists, what must be built, what must be generalized           |
+| [[Cursor Setup]]            | Wiring: `.cursor/skills`, Custom Mode, AGENTS.md, MCP servers               |
+| [[Rollout Plan]]            | Six phases, what to prove at each, and the pilot candidate                  |
+| [[Open Questions]]          | Blockers to resolve before Phase 3 and Phase 4                              |
 
 ## The stages
 
 Each stage note defines: **entry criteria → owning skill → inputs → outputs → exit gate → automation level**.
 
-| # | Stage | Owning skill | Level | Primary output |
-|---|---|---|---|---|
-| 01 | [[01 Requirement Confirmation]] | `requirement-confirmation` | C | Requirement note |
-| 02 | [[02 System Design]] | `system-design` | B | Design note (own file) |
-| 03 | [[03 Design Review Deck]] | `design-review-pptx` | A | CP3 `.pptx` |
-| 04 | [[04 JIRA Log Creation]] | `lis-jira-log-creator` | B | JIRA log note + JIRA issue |
-| 05 | [[05 Project Plan]] | `project-plan` | B | Gantt + schedule note |
-| 06 | [[06 Development]] | `implement-task` + `code-change-log` | B | Code + change-log note |
-| 07 | [[07 Code Review]] | `code-review` | A | Review note + findings |
-| 08 | [[08 System Integration Test]] | `sit-test-report` | B | Test Report `.docx` |
-| 09 | [[09 Load and Soak Test]] | `load-test-scenario` | B | Scenario note + result |
-| 10 | [[10 Promotion Preparation]] | `promotion-config`, `promotion-form`, `monitoring-plan` | B | SQL, ConfigMaps, Promotion Form `.docx` |
-| 11 | [[11 Promotion Submission]] | `promotion-checklist` | C | Checklist verdict + JIRA update |
-| 12 | [[12 Production Pilot]] | `pilot-monitor` | B | Pilot report + monitoring evidence |
+| #   | Stage                           | Owning skill                                            | Level | Primary output                          |
+| --- | ------------------------------- | ------------------------------------------------------- | ----- | --------------------------------------- |
+| 01  | [[01 Requirement Confirmation]] | `requirement-confirmation`                              | C     | Requirement note                        |
+| 02  | [[02 System Design]]            | `system-design`                                         | B     | Design note (own file)                  |
+| 03  | [[03 Design Review Deck]]       | `design-review-pptx`                                    | A     | CP3 `.pptx`                             |
+| 04  | [[04 JIRA Log Creation]]        | `lis-jira-log-creator`                                  | B     | JIRA log note + JIRA issue              |
+| 05  | [[05 Project Plan]]             | `project-plan`                                          | B     | Gantt + schedule note                   |
+| 06  | [[06 Development]]              | `implement-task` + `code-change-log`                    | B     | Code + change-log note                  |
+| 07  | [[07 Code Review]]              | `code-review`                                           | A     | Review note + findings                  |
+| 08  | [[08 System Integration Test]]  | `sit-test-report`                                       | B     | Test Report `.docx`                     |
+| 09  | [[09 Load and Soak Test]]       | `load-test-scenario`                                    | B     | Scenario note + result                  |
+| 10  | [[10 Promotion Preparation]]    | `promotion-config`, `promotion-form`, `monitoring-plan` | B     | SQL, ConfigMaps, Promotion Form `.docx` |
+| 11  | [[11 Promotion Submission]]     | `promotion-checklist`                                   | C     | Checklist verdict + JIRA update         |
+| 12  | [[12 Production Pilot]]         | `pilot-monitor`                                         | B     | Pilot report + monitoring evidence      |
 
 > [!info] Automation levels
 > **A — Agent-run.** Agent produces the artifact end to end; you spot-check.
