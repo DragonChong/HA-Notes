@@ -1,7 +1,5 @@
 ---
-title: >-
-  Enhance `lis-scheduler` to Normalize Table-driven Job Definitions into
-  `job_definition` and `job_request`
+title: Enhance `lis-scheduler` to Normalize Table-driven Job Definitions into `job_definition` and `job_request`
 tags:
   - jira-log
   - lis
@@ -9,10 +7,10 @@ request_type: Change Request
 priority: Medium
 services:
   - lis-scheduler
-target_completion_date: '2026-08-27'
+target_completion_date: 2026-08-27
 status: draft
-created: '2026-08-13'
-jira: ''
+created: 2026-08-13
+jira: LIS-10785
 reference_jira:
   - LIS-10748
 design_status: draft
