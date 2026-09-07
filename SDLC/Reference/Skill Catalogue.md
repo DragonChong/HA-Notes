@@ -17,7 +17,7 @@ Part of [[SDLC Agentic Workflow]]. Where every skill sits in the [[Architecture|
 
 | Skill | Status | Notes |
 |---|---|---|
-| `sdlc-orchestrator` | **build** | The whole system hinges on this one. Pin as a Cursor Custom Mode. |
+| `sdlc-orchestrator` | **exists** | `LIS/skills/sdlc/sdlc-orchestrator/` — pin as Custom Mode (Alt+Enter). |
 
 ## L1 — Stage skills
 

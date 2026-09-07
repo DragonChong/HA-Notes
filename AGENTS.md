@@ -10,10 +10,10 @@ All paths below are vault-relative.
 
 ## Before any non-trivial change
 
-1. Identify the dossier: `SDLC/Projects/<JIRA key> — <name>/_Dossier.md`
-2. Do not skip a stage gate. If work is requested out of order, say so
+1. Activate `/sdlc-orchestrator` as a Custom Mode (Alt+Enter / Option+Enter).
+2. Identify the dossier: `SDLC/Projects/<JIRA key> — <name>/_Dossier.md`
+3. Do not skip a stage gate. If work is requested out of order, say so
    and offer to close the current gate or record an exception.
-3. When the SDLC Custom Mode exists, start project sessions in it.
 
 See [[SDLC Agentic Workflow]] for the stage list and [[Dossier Schema]]
 for the frontmatter contract.

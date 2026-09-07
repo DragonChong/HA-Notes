@@ -5,7 +5,7 @@ tags:
 key: TMP-phase0-plumbing
 work_type: enhancement
 stage: requirement
-status: active
+status: on-hold
 services: []
 repos:
   - HA-Notes
@@ -27,8 +27,7 @@ Throwaway dossier to prove Cursor can resolve SDLC state from the vault. Not a r
 
 ## Status
 
-> [!info] Stage: **requirement** — gate `requirement` outstanding
-> Next action: invoke `/test-ping` to prove skill discovery, then start Phase 1 (`sdlc-orchestrator`).
+> [!info] Status: **on-hold** — Phase 0 discovery proven. Active work moved to [[TMP-orchestrator-loop]].
 
 ## Artifacts
 
