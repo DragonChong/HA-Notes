@@ -51,7 +51,7 @@ Throwaway dossier to prove Cursor can resolve SDLC state from the vault. Not a r
 
 - [x] `/test-ping` discovered and invoked from this vault window
 - [ ] `/test-ping` discovered and invoked from a **repo** window (e.g. a service clone)
-- [ ] Nested skill `/test-nested-ping` discovered
+- [x] Nested skill `/test-nested-ping` discovered
 - [ ] Custom Mode named **SDLC** created in Cursor (`Option+Enter`) and keeps a skill loaded across turns
 - [ ] JIRA MCP write scope confirmed on a test project (read already checked during Phase 0)
 - [ ] Copy `AGENTS.md` into each active service repo
