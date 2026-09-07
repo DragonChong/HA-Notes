@@ -5,15 +5,15 @@ tags:
   - sdlc-stage
 stage_key: requirement
 skill: requirement-confirmation
-skill_status: build
+skill_status: exists
 automation_level: C
-created: 2026-09-03
+created: 2026-09-03T00:00:00.000Z
 status: blueprint
 ---
 
 # 01 Requirement Confirmation
 
-Part of [[SDLC Agentic Workflow]]. Owning skill: **`requirement-confirmation`** — *to build*. Level **C** (human-led, agent-assisted).
+Part of [[SDLC Agentic Workflow]]. Owning skill: **`requirement-confirmation`** — *exists*. Level **C** (human-led, agent-assisted).
 
 ## Purpose
 

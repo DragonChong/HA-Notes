@@ -1,17 +1,22 @@
 ---
 name: generate-design
 description: >
-  Populates the ## Design section in LIS JIRA Obsidian notes (LIS/JIRA/) created by
-  lis-jira-log-creator, producing CP3-ready design content for design-review-pptx.
-  Use when the user asks to generate design, create design from JIRA log, prepare
-  design review content, or convert a JIRA note to slides. Runs after lis-jira-log-creator
-  and before design-review-pptx. Triggers on "generate design", "design section",
-  "JIRA to slides", or "/generate-design".
+  Legacy path: populates ## Design inside an existing LIS/JIRA note for
+  design-review-pptx. Use only when there is no SDLC dossier, or the user
+  explicitly wants the design kept in the JIRA note. For any new project
+  with a dossier, use system-design instead (own note at
+  SDLC/Projects/<key>/02 System Design.md). Triggers on "/generate-design"
+  or "write ## Design into the JIRA note".
 ---
 
-# Generate Design (JIRA → CP3 Design)
+# Generate Design (legacy: JIRA note → ## Design)
 
-Bridge skill between **lis-jira-log-creator** and **design-review-pptx**.
+**New work uses `system-design`.** This skill remains for notes that already
+live only under `LIS/JIRA/` with no dossier. If a dossier is in play, stop
+and invoke `system-design`.
+
+Bridge skill between **lis-jira-log-creator** and **design-review-pptx**
+for that legacy path.
 
 ```
 lis-jira-log-creator  →  LIS/JIRA/{note}.md      (change request sections)
@@ -231,6 +236,7 @@ Worked example: [examples.md](examples.md)
 
 ## Related skills
 
+- **system-design** — new path; own design note in the dossier
 - **lis-jira-log-creator** — creates the JIRA note (upstream)
-- **design-review-pptx** — CP3 decks from this note's `## Design` section
+- **design-review-pptx** — CP3 decks from `## Design` (this note, or the dossier note)
 - **generate-pptx** — any other .pptx from notes, markdown, or pasted content

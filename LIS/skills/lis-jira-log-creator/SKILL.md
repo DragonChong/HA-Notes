@@ -3,12 +3,13 @@ name: lis-jira-log-creator
 description: >
   Prepares LIS change-request JIRA log content (Request Type, Summary, Background,
   Change Description, Justification, Target Completion Date) from user descriptions
-  and technical context, then creates an Obsidian note in LIS/JIRA. The index
-  LIS/JIRA/JIRA Log List.base picks up new notes automatically from frontmatter.
-  Use when the user asks to create a JIRA log, prepare a change request, document
-  a LIS service change for JIRA submission, or says "request to create change".
-  Also use when the user provides a JIRA ticket number to set on an existing note
-  (`jira` property).
+  and technical context, then creates an Obsidian note in LIS/JIRA. When a
+  dossier exists, read services / dates / work_type from it, link the design
+  note both ways, and create the JIRA issue only after the user approves.
+  Use when the user asks to create a JIRA log, prepare a change request,
+  document a LIS service change for JIRA submission, or says "request to
+  create change". Also use when sdlc-orchestrator delegates the jira stage,
+  or when the user provides a JIRA ticket number to set on an existing note.
 ---
 
 # LIS JIRA Log Creator
@@ -24,17 +25,34 @@ correct frontmatter on the note is enough for the Base to show the row.
 
 ```
 Task Progress:
-- [ ] Step 1: Gather inputs
+- [ ] Step 1: Gather inputs (dossier first, then ask)
 - [ ] Step 2: Draft all six sections
 - [ ] Step 3: Confirm with user (if details are incomplete)
 - [ ] Step 4: Create Obsidian note via MCP
 - [ ] Step 5: Confirm note appears in JIRA Log List.base (frontmatter only)
-- [ ] Step 6: When JIRA key is assigned — set note `jira` property
+- [ ] Step 6: Link dossier ↔ JIRA note
+- [ ] Step 7: Create the JIRA issue only after the user approves
 ```
 
 ### Step 1: Gather inputs
 
-Collect from the user (or infer from code/wiki/conversation):
+**If a dossier is in play** (orchestrator passed a path, or a single
+`status: active` dossier exists), read it first and do not re-ask:
+
+| Dossier field | Maps to |
+|---|---|
+| `services` | Service name(s) |
+| `reference_jira` | Reference JIRA tickets |
+| `target_completion_date` | Target completion date |
+| `work_type` | Request type — `enhancement` / `project` → Change Request; `fix` → confirm Bug vs Change Request |
+| `design` / `02 System Design.md` | Change Description detail |
+| `01 Requirement Confirmation.md` | Background / scope |
+
+For `work_type: enhancement` or `project`, the `design` gate should already
+be passed (or an exception recorded). If it is not, hand back to
+`sdlc-orchestrator`. For `work_type: fix`, this stage may run before design.
+
+Then collect any remaining gaps from the user (or infer from code/wiki):
 
 | Input | Required | Notes |
 |---|---|---|
@@ -43,7 +61,7 @@ Collect from the user (or infer from code/wiki/conversation):
 | Technical details | Yes | Files, classes, APIs, DB tables, transaction types |
 | Problem / current state | For fixes & revamps | Legacy behaviour, trigger names, race conditions |
 | Reference JIRA tickets | No | Related history only (e.g. LIS-7291). Not the new CR key |
-| JIRA log number | No at create | When known (e.g. LIS-10723), store in `jira` — see Step 6 |
+| JIRA log number | No at create | When known (e.g. LIS-10723), store in `jira` — see Step 7 |
 | Target completion date | Yes | Ask if not provided |
 | Request type | Default | `Change Request` unless user specifies otherwise |
 | Priority | Default | `Medium` unless user specifies otherwise |
@@ -113,6 +131,8 @@ created: 2026-07-02
 jira:            # LIS-XXXXX when assigned; leave empty until then
 reference_jira: []  # related tickets only — not the CR key itself
 design_status: draft
+design: "[[02 System Design]]"   # when a dossier design note exists; else omit
+dossier: "[[_Dossier]]"          # when a dossier exists
 ---
 ```
 
@@ -215,13 +235,43 @@ views:
         direction: DESC
 ```
 
-### Step 6: Record JIRA log number (when assigned)
+### Step 6: Link dossier ↔ JIRA note
 
-When the user provides the JIRA ticket for an existing log (or it is known at create time):
+When a dossier exists:
+
+1. Set the JIRA note `design: "[[02 System Design]]"` if that file exists
+2. Set dossier `jira_log: "[[<Request Summary>]]"`
+3. Artifacts row: `04 JIRA` → that wikilink → `draft` (no key yet)
+4. One Decision Log line; set `updated`
+5. **Do not** append `jira` to `gates_passed` until the key is recorded
+6. **Do not** move the JIRA note into the dossier — `JIRA Log List.base`
+   depends on `LIS/JIRA/`
+
+### Step 7: Create the JIRA issue (human checkpoint)
+
+**Required before `jira_create_issue`.** Show the six sections again and
+wait for an explicit "create it". JIRA issues are hard to un-create.
+
+Then, with JIRA MCP:
+
+1. Ask for `project_key` if not already known (never assume; usually `LIS`)
+2. Call `jira_create_issue` with `summary` = Request Summary, `issue_type`
+   matching the request type, `description` = the six sections in Markdown
+3. Write the returned key to the note `jira` **and** the dossier `key` / `jira`
+4. If the dossier folder still uses a `TMP-` slug, `move_note` the folder
+   to `SDLC/Projects/<KEY> — <Short Name>/`
+5. Artifacts state → `<KEY> created`
+6. The Base **JIRA** column updates from the note — do not edit the Base
+
+If MCP write fails (corporate proxy, missing permission), leave `jira`
+empty, keep the Obsidian note, and tell the user to create the issue by
+hand. That is Open Question Q3 / Q5 — do not retry inventively.
+
+When the user later pastes a key (no MCP create):
 
 1. Set note frontmatter `jira: LIS-XXXXX` (do not put this key in `reference_jira`)
-2. The Base **JIRA** column updates automatically — do not edit `JIRA Log List.base` or any Markdown index table
-3. If the note was created in the same run with a known key, set `jira` in Step 4 — Step 6 is then a no-op
+2. Set the same key on the dossier
+3. Rename a `TMP-` folder if needed
 
 ## Obsidian MCP quick reference
 
@@ -252,9 +302,13 @@ required.
 - [ ] Obsidian note created under `LIS/JIRA/`
 - [ ] No Markdown table edit to the old index — Base picks up the note
 - [ ] If JIRA key known: note `jira` set
+- [ ] Dossier (when present): `jira_log` set, `design` set on the JIRA note
+- [ ] JIRA issue created only after the user approved, or key pasted by hand
 
 ## Additional resources
 
 - Section templates: [template.md](template.md)
 - Full examples from team emails: [examples.md](examples.md)
-- CP3 design (downstream): [generate-design](../generate-design/SKILL.md) → [design-review-pptx](../design-review-pptx/SKILL.md)
+- Canonical design (downstream): [system-design](../sdlc/system-design/SKILL.md)
+- Legacy design-in-JIRA: [generate-design](../generate-design/SKILL.md)
+- CP3 deck: [design-review-pptx](../design-review-pptx/SKILL.md)

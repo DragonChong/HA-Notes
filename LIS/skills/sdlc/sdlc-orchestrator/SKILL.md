@@ -45,7 +45,8 @@ Exception: when `work_type: fix`, `jira` may precede `design`.
 | pilot | `pilot-monitor` |
 
 If the routed skill is not on disk, say so in the Next line and stop. Do not
-invent the stage artifact.
+invent the stage artifact. Phase 1 spine is on disk: `requirement-confirmation`,
+`system-design`, `design-review-pptx`, `lis-jira-log-creator`.
 
 ## Every turn
 

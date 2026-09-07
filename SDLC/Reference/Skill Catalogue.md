@@ -23,10 +23,10 @@ Part of [[SDLC Agentic Workflow]]. Where every skill sits in the [[Architecture|
 
 | Stage | Skill | Status | Action |
 |---|---|---|---|
-| 01 | `requirement-confirmation` | build | New |
-| 02 | `system-design` | **refit** | From `LIS/skills/generate-design` — write to own note, not `## Design` |
-| 03 | `design-review-pptx` | exists | Add design-source precedence resolution |
-| 04 | `lis-jira-log-creator` | exists | Add dossier read/write + JIRA MCP issue creation |
+| 01 | `requirement-confirmation` | **exists** | `LIS/skills/sdlc/requirement-confirmation/` |
+| 02 | `system-design` | **exists** | Refit done — own note; `generate-design` is legacy-only |
+| 03 | `design-review-pptx` | exists | Source precedence: dossier → JIRA `design` → `## Design` |
+| 04 | `lis-jira-log-creator` | exists | Dossier read/write + JIRA create after human approve |
 | 05 | `project-plan` | build | New |
 | 06 | `implement-task` | **generalize** | De-hardcode CRS Revamp |
 | 06 | `code-change-log` | build | New — highest downstream leverage |
@@ -40,7 +40,7 @@ Part of [[SDLC Agentic Workflow]]. Where every skill sits in the [[Architecture|
 | 12 | `pilot-monitor` | build | New |
 | — | `uat-support` | later | Thin; schedule + scope + record outcome |
 
-**Count: 12 new, 1 refit, 1 generalize, 2 extend.** That is the honest scope of the work.
+**Remaining after Phase 1 spine:** 10 new, 1 generalize. Orchestrator, requirement, design refit, and the two extensions are done.
 
 ## L2 — Capability skills (existing, reusable)
 

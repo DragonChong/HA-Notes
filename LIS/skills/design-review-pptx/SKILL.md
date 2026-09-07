@@ -4,10 +4,12 @@ description: >
   Generates visual .pptx decks for LIS/HA CP3 design reviews from a declarative
   deck spec — cards, flowcharts, matrices and code panels rather than bullet
   lists. Use when the user asks to prepare CP3 design review slides, create a
-  design review deck, or build a presentation from a JIRA design note. Triggers
-  on "design review", "CP3", "JIRA design note to slides". For any other
-  PowerPoint, deck, or presentation from notes, markdown, meetings, or pasted
-  content, use generate-pptx.
+  design review deck, or build a presentation from a design note. Resolves
+  design from the dossier note first, then a JIRA `design` wikilink, then
+  legacy ## Design in the JIRA note. Triggers on "design review", "CP3",
+  "JIRA design note to slides". For any other PowerPoint, deck, or
+  presentation from notes, markdown, meetings, or pasted content, use
+  generate-pptx.
 ---
 
 # Design Review PowerPoint
@@ -30,7 +32,7 @@ names archetypes and fills slots; it does not set positions.
 
 ```
 Task Progress:
-- [ ] 1. Gather inputs (JIRA note, service, review type, date)
+- [ ] 1. Resolve design source + gather inputs
 - [ ] 2. Choose the slide sequence
 - [ ] 3. Write the deck spec JSON
 - [ ] 4. Generate the .pptx
@@ -50,25 +52,40 @@ cd <skill-dir> && npm install
 
 Node 18+. The only dependency is `pptxgenjs`.
 
-### Step 1 — Gather inputs
+### Step 1 — Resolve the design source, then gather inputs
+
+Resolve **one** design source, in this order. Stop at the first hit.
+
+```
+1. dossier.design wikilink            → 02 System Design.md (new path)
+2. JIRA note frontmatter `design`     → that wikilink (new path)
+3. `## Design` in the JIRA note       → legacy path
+4. none of the above                  → stop; the design gate is not passed
+```
+
+Do not generate a deck from an unreviewed design. If the resolved note has
+`agent_assisted: true` and empty `reviewed_by`, stop and say the design
+gate is still open.
 
 | Field | Example | Required |
 |-------|---------|----------|
-| JIRA key | LIS-10747 | Yes |
+| JIRA key | LIS-10747 | Yes — dossier `jira` / `key` |
 | Title | Setup-Driven Reminder for Ward-Assigned Request No. | Yes |
-| Service / repo | lis-ecpath5-app | Yes |
+| Service / repo | lis-ecpath5-app | Yes — dossier `services` |
 | Review forum | CP3 | Yes |
 | Target date | 31 Jul 2026 | Yes |
-| Review type | incremental / full | Yes |
-| JIRA design note | `LIS/JIRA/{Note}.md` | Yes |
+| Review type | incremental / full | Yes — design-note `review_type` |
+| Design source | `SDLC/Projects/<key>/02 System Design.md` or `LIS/JIRA/{Note}.md` | Yes |
 | Diagrams | architecture PNG/SVG | As needed |
 
-Preferred input is the `## Design` section of the JIRA note written by
-**lis-jira-log-creator** and populated by **generate-design**. If that section is
-empty, build from Background + Change Description + Justification and mark the
-design status as draft on the closing slide — do not invent design detail.
+Read the `## Design` slide section of the resolved note. This stage adds
+no new content — if a slide needs a fact the design note does not have,
+the design note is wrong, not the deck. If `## Design` is empty on a
+legacy JIRA note, build from Background + Change Description +
+Justification and mark the closing slide as draft — do not invent design
+detail.
 
-See [references/content-rules.md](references/content-rules.md) for the full
+See [references/content-rules.md](references/content-rules.md) for the
 section-to-archetype mapping.
 
 ### Step 2 — Choose the slide sequence
@@ -100,7 +117,11 @@ Pick per slide from the table at the end of
 
 ### Step 3 — Write the deck spec
 
-`docs/{Title}.deck.json` in the project repo, or beside the JIRA note.
+When a dossier is resolved:
+
+`SDLC/Projects/<key>/assets/<Title>.deck.json`
+
+Otherwise: `docs/{Title}.deck.json` in the project repo, or beside the JIRA note.
 
 ```json
 {
@@ -166,6 +187,17 @@ Writes `{Title}.preview.html` — a 1:1 render at 96px/inch from the same record
 draw calls the generator emits. Open it and check every slide. Fonts and text
 wrapping are the browser's approximation; all geometry is exact.
 
+### Step 7 — Dossier write-back (when a dossier exists)
+
+- Artifacts row: `03 Design Review` → `[[assets/<Title>.pptx]]` → `generated`
+- Keep `.deck.json` next to the `.pptx` so CP3 comments regenerate cheaply
+- One Decision Log line
+- Set `updated`
+- **Do not** append `design-review` to `gates_passed`. That gate closes
+  after presenting, when CP3 actions are written back to the design note.
+  "Pass with actions" is a distinct Gate Log verdict — never record it as
+  a clean `pass`.
+
 ---
 
 ## Files
@@ -209,7 +241,10 @@ If two decks need the same one-off, it is an archetype, not a `custom` slide.
 
 ## Related skills
 
+- **system-design** — canonical design note (upstream, new path)
 - **lis-jira-log-creator** — the change-request note (upstream)
-- **generate-design** — the `## Design` section in that note (upstream)
+- **generate-design** — legacy `## Design` in the JIRA note
 - **generate-pptx** — the same visual kit for any non-CP3 content
 - **mermaid-diagrams** — diagrams to embed via the `image` archetype
+- **sdlc-orchestrator** — write the deck wikilink back to the dossier; do
+  not mark `design-review` passed until CP3 actions are captured

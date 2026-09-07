@@ -44,7 +44,9 @@ Do not lead with parent JIRA keys; put them under Reference Logs.>
 
 ## Design
 
-<!-- Populated by generate-design skill before CP3 review. See design-template.md. -->
+<!-- New work: design lives at SDLC/Projects/<key>/02 System Design.md.
+     Set frontmatter `design: "[[02 System Design]]"`.
+     Legacy: generate-design still populates this section. -->
 
 ## Reference Logs
 

@@ -5,15 +5,15 @@ tags:
   - sdlc-stage
 stage_key: design
 skill: system-design
-skill_status: refit
+skill_status: exists
 automation_level: B
-created: 2026-09-03
+created: 2026-09-03T00:00:00.000Z
 status: blueprint
 ---
 
 # 02 System Design
 
-Part of [[SDLC Agentic Workflow]]. Owning skill: **`system-design`** — *refit of the existing `generate-design`*. Level **B** (agent-drafted, human-approved).
+Part of [[SDLC Agentic Workflow]]. Owning skill: **`system-design`** — *exists* (refit of `generate-design`). Level **B** (agent-drafted, human-approved).
 
 ## Purpose
 
