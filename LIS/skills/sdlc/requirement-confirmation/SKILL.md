@@ -43,7 +43,9 @@ or a note. Replace with synthetic examples.
 5. **Show the draft** (especially In scope, Out of scope, `Rn`, and Open
    questions) unless the user asked to skip review.
 6. **Write** the note and write back to `_Dossier.md`. Stop. Do not start
-   `system-design`.
+   `system-design` unless the user has already said **proceed on
+   assumptions** (or pasted confirmation) — then tell the orchestrator
+   the gate is ready; still do not close it yourself.
 
 ## Output
 
@@ -51,12 +53,13 @@ or a note. Replace with synthetic examples.
 
 - Background and trigger
 - In scope / **Out of scope** (out-of-scope list must be non-empty)
-- Functional requirements `R1…Rn`, each with acceptance criteria
+- Functional requirements `R1…Rn`, each with acceptance criteria and
+  Status `proposed` | `assumed` | `confirmed`
 - Non-functional: volume, latency, retention, audit
 - Impact: services, screens, tables, interfaces
-- Assumptions
-- Open questions with proposed defaults
-- Confirmation block left empty until the requester writes back
+- Assumptions (working defaults you are designing against)
+- Open questions with proposed defaults — this list is the SM send-back
+- Confirmation: empty, quoted, or "Proceed on assumptions, <date>"
 
 Frontmatter provenance:
 
@@ -74,24 +77,42 @@ agent_assisted: true
 - `services` from the impact table
 - Artifacts row: `01 Requirement` → `[[01 Requirement Confirmation]]` → `draft`
 - One Decision Log line
-- `## Status` next action: wait for requester confirmation, then
-  `/system-design`
+- `## Status` next action: wait for confirmation **or** "proceed on
+  assumptions", then `/system-design`
 - Set `updated`
 - **Do not** append `requirement` to `gates_passed`
 - **Do not** set `reviewed_by`
 
-## Exit gate (human)
+## Exit gate (human) — two verdicts
 
-The orchestrator closes `requirement` only when all of these are true:
+Shared checks, both verdicts:
 
-- Every open question is answered or deferred with an owner
 - Out-of-scope list is non-empty
 - Each `Rn` has at least one acceptance criterion
-- Confirmation section quotes or links the requester's written confirmation
+- Every open question has an answer **or** a proposed default
 
-If the user pastes that confirmation, fill the Confirmation section and
-`reviewed_by`, then stop and tell the orchestrator the gate is ready. Do
-not close the gate yourself.
+Then one of:
+
+1. **`pass`** — Confirmation quotes or links the requester's written
+   confirmation. Set `reviewed_by`. Flip each `Rn` to `confirmed`.
+2. **`pass with assumptions`** — the user says to proceed without that
+   confirmation. Every unanswered question keeps its proposed default;
+   set those `Rn` to `assumed`; write `A1…An` into dossier Open Items;
+   Confirmation says "Proceed on assumptions, <date>". Leave
+   `reviewed_by` empty.
+
+Tell the orchestrator which verdict is ready. Do not close the gate
+yourself.
+
+## When confirmation arrives later
+
+Update the requirement note in place: Answer column, `Rn` Status,
+Confirmation. Tick the matching Open Items.
+
+If a default was **wrong**: Decision Log the delta, list which design
+(and later JIRA) sections are affected, and hand back to the
+orchestrator — it may reopen `design`. Do not silently rewrite the
+design in this turn unless the user asked for that edit.
 
 ## Related
 

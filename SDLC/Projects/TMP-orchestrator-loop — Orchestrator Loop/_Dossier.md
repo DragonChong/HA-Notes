@@ -45,6 +45,7 @@ Throwaway dossier to prove `sdlc-orchestrator`: resolve → report → gate-chec
 
 - 2026-09-07 — First orchestrator turn. Resolved the single `status: active` dossier. Stage `requirement` is not in `gates_passed`. Routed skill `requirement-confirmation` is not on disk yet — stop, do not invent a requirement note.
 - 2026-09-07 — Phase 1 spine landed: `requirement-confirmation`, `system-design`, `design-review-pptx` source precedence, `lis-jira-log-creator` dossier + create-after-approve. This fixture still has no raw request — do not draft a fake requirement.
+- 2026-09-07 — House rule: requirement may close as `pass with assumptions` so design can start. Assumptions stay as Open Items; a later correction reopens design. Not a clean `pass`.
 
 ## Open Items
 

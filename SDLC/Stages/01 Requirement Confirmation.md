@@ -57,14 +57,22 @@ Turn an ambiguous request — an SM email, a user complaint, a defect report —
 
 ## Exit gate
 
-- [ ] Every open question is answered or explicitly deferred with an owner
+Shared:
+
 - [ ] Out-of-scope list is non-empty (if it is empty, scope has not been thought about)
 - [ ] Each requirement `Rn` has at least one acceptance criterion
-- [ ] Requester has confirmed in writing; the confirmation is quoted or linked in the note
+- [ ] Every open question is answered, deferred with an owner, or has a proposed default
+
+Then one verdict:
+
+- [ ] **`pass`** — requester confirmation is quoted or linked; each `Rn` is `confirmed`
+- [ ] **`pass with assumptions`** — you said to proceed; unanswered questions keep their proposed defaults as `A1…An` on the dossier; each affected `Rn` is `assumed`
+
+A later confirmation updates the note. A wrong default reopens the affected design sections — it is not a silent rewrite.
 
 ## Human checkpoint
 
-**Required.** The agent never marks this gate passed on its own. You paste or link the SM's confirmation, then say so.
+**Required.** The agent never marks this gate passed on its own. Either paste the SM's confirmation, or say **proceed on assumptions**.
 
 ## Notes and risks
 

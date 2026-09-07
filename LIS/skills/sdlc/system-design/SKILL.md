@@ -36,8 +36,9 @@ If the requirement gate is unmet, stop and hand back to
    `data-source-usage`, `lis-audit-logging` when those skills apply.
 2. Classify **incremental** (delta) vs **full** (new service / major rework).
 3. Draft the **canonical sections** (below). Cite `Rn` on every design
-   decision. Record rejected alternatives — a design without them cannot
-   survive CP3.
+   decision; if that `Rn` is `assumed`, write `R3 (assumed)` and add an
+   open design question to confirm it. Record rejected alternatives — a
+   design without them cannot survive CP3.
 4. Draft `## Design` slide blocks from
    `generate-design/design-template.md`. Derive slides from the canonical
    sections; do not invent facts that are not in the note above.

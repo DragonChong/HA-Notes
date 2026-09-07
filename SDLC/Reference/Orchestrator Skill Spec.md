@@ -133,7 +133,7 @@ Refuse, and say why in one sentence:
 - Marking a gate passed when the stage note requires a human checkpoint and the user
   has not confirmed
 - Writing a `stage` value outside the vocabulary
-- Treating a CP3 "pass with actions" as a clean pass
+- Treating a CP3 "pass with actions" or a requirement "pass with assumptions" as a clean pass
 - Advancing when an artifact has `agent_assisted: true` and no `reviewed_by`, at the
   `promotion-submit` gate
 

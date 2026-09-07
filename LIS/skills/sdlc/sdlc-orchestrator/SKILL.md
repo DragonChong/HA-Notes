@@ -87,6 +87,13 @@ not in `gates_passed`:
 Never advance silently. Never mark a gate passed when that stage's note says
 the human checkpoint is **Required** and the user has not confirmed.
 
+**Requirement — proceed on assumptions.** If the user says to proceed
+without requester confirmation, that *is* the checkpoint: close
+`requirement` with Gate Log verdict `pass with assumptions` (not `pass`).
+Every unanswered open question must already have a proposed default; copy
+each as an Open Item (`A1…An`). Later confirmation updates those items
+and may reopen `design`. Do not treat this verdict as a clean pass.
+
 ### 5. Delegate
 
 Invoke one skill. Pass a resolved input contract — dossier path, key,
@@ -118,7 +125,8 @@ Refuse, and say why in one sentence:
 - Marking a gate passed when the stage note requires a human checkpoint and
   the user has not confirmed
 - Writing a `stage` value outside the vocabulary
-- Treating a CP3 "pass with actions" as a clean pass
+- Treating a CP3 "pass with actions" or a requirement "pass with
+  assumptions" as a clean pass
 - Advancing when an artifact has `agent_assisted: true` and no `reviewed_by`,
   at the `promotion-submit` gate
 

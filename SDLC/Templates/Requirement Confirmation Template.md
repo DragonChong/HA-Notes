@@ -21,9 +21,11 @@ agent_assisted: true
 
 ## Functional requirements
 
-| ID | Requirement | Acceptance criteria |
-|---|---|---|
-| R1 | | |
+| ID | Requirement | Status | Acceptance criteria |
+|---|---|---|---|
+| R1 | | proposed | |
+
+Status: `proposed` (draft) · `assumed` (proceeding on the default) · `confirmed`
 
 ## Non-functional requirements
 
@@ -53,4 +55,10 @@ agent_assisted: true
 
 ## Confirmation
 
-> Quote or link the requester's written confirmation here. The gate does not close without it.
+Two ways the gate closes:
+
+1. **Confirmed** — quote or link the requester's written confirmation.
+2. **Proceed on assumptions** — you accept the proposed defaults. Each
+   unanswered question becomes a dossier Open Item (`A1…`). When the
+   real answer arrives, update this note; if a default was wrong, reopen
+   the affected design sections.
