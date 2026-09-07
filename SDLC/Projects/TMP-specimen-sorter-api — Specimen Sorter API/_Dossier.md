@@ -32,13 +32,13 @@ updated: '2026-09-07'
 ## Status
 
 > [!info] Stage: **requirement** — gate `requirement` outstanding
-> Next action: wait for requester confirmation of [[01 Requirement Confirmation]], then `/system-design`
+> Next action: requester answers remaining TBC items on [[01 Requirement Confirmation]] (Q2, Q5 DFT/STAR, Q9, Q12, Q17), then `/system-design`
 
 ## Artifacts
 
 | Stage | Artifact | State |
 |---|---|---|
-| 01 Requirement | [[01 Requirement Confirmation]] | draft |
+| 01 Requirement | [[01 Requirement Confirmation]] | draft — answers recorded 2026-09-07; 5 TBC |
 
 ## Gate Log
 
@@ -48,12 +48,16 @@ updated: '2026-09-07'
 ## Decision Log
 
 - 2026-09-07 — Opened this dossier for the Specimen Sorter API / USID auto-registration request. Did not reuse `TMP-orchestrator-loop` (throwaway fixture). Drafted [[01 Requirement Confirmation]] from the 28 Aug 2026 deck, the 14 Jul 2026 confirmation slides, the 16-row xlsx questionnaire, SEM20260612, and [[LIS/Project Plans/Specimen Sorter/Requirement Confirmation]]. Requirement gate left open. — agent
+- 2026-09-07 — Requester answered Q1–Q18. Agreed: optional HKID/name; USID-only retrieve; CPS/HMS only (APS/BBS/MBS out); Failure for not-found / already-used; one Failure + message code; reuse Specimen Audit Trail; return status on same call; request no. = USID or Relabel; datetime = server now; no partial register; no retry job; encounter/tube colour ignored for routing. Send-out = `LOE_SENDOUT_TEST` cluster code. Post-actions: worksheet yes, label no, PHLC yes. Hospital: TBC, fallback = sorter-id mapping table. Still TBC: Q2 hospital-on-call, Q5 DFT/STAR, Q9 soft-alert logging, Q12 unboxed, Q17 latency. Gate not closed. — agent
 
 ## Open Items
 
-- [ ] Requester answers Open questions Q1–Q18 (or defers with an owner)
-- [ ] Requester writes confirmation into [[01 Requirement Confirmation]]
-- [ ] After confirmation: `/system-design`
+- [ ] Q2 — does the sorter send performing hospital? Fallback mapping table agreed
+- [ ] Q5 — DFT / STAR in or out
+- [ ] Q9 — how to log soft Spec Ack alerts
+- [ ] Q12 — specimen not unboxed
+- [ ] Q17 — latency / volume pass mark
+- [ ] After TBCs: `/system-design`
 
 ## Links
 
