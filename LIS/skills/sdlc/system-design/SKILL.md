@@ -32,8 +32,16 @@ If the requirement gate is unmet, stop and hand back to
 
 1. Read the requirement note and dossier frontmatter only. Then pull
    architecture from `LIS/ECP/<service>/`, `SpringBoot/`,
-   `Knowledge Base/`, and the local clone. Follow `lis-architecture`,
-   `data-source-usage`, `lis-audit-logging` when those skills apply.
+   `Knowledge Base/`, and the **local clones named in dossier `repos`**.
+   Follow `lis-architecture`, `data-source-usage`, `lis-audit-logging`
+   when those skills apply.
+
+   The codebase is an input, not an attachment to paste. Open those
+   repos in the workspace (vault + clone, or `@folder`). Read the
+   files that the change will touch. Do not invent classes, endpoints,
+   tables, or ConfigMap keys. If a clone is missing, say so, design
+   only from vault notes, and mark every unverified claim as an open
+   design question (same shape as an assumed `Rn`).
 2. Classify **incremental** (delta) vs **full** (new service / major rework).
 3. Draft the **canonical sections** (below). Cite `Rn` on every design
    decision; if that `Rn` is `assumed`, write `R3 (assumed)` and add an

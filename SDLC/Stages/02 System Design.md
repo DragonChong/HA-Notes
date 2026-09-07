@@ -38,7 +38,7 @@ Produce the canonical technical design, in its own note, decoupled from the JIRA
 |---|---|
 | Requirement note | `01 Requirement Confirmation.md` |
 | Current architecture | `LIS/ECP/<service>/`, `SpringBoot/`, `Knowledge Base/00_Index/System_Overview.md` |
-| Source code | Local clones via Cursor `@workspace` |
+| Source code | Local clones named in dossier `repos`, opened in the workspace. Do not paste the tree into chat. If a clone is missing, mark invented structure as an open design question. |
 | Team standards | `lis-architecture`, `data-source-usage`, `lis-audit-logging`, `lis-als-logger`, `react-best-practices` |
 
 ## Procedure
