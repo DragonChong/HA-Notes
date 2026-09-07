@@ -32,13 +32,13 @@ updated: '2026-09-07'
 ## Status
 
 > [!info] Stage: **requirement** — gate `requirement` outstanding
-> Next action: requester answers remaining TBC items on [[01 Requirement Confirmation]] (Q2, Q5 DFT/STAR, Q9, Q12, Q17), then `/system-design`
+> Next action: orchestrator may close `requirement` with verdict **`pass`**, then `/system-design`
 
 ## Artifacts
 
 | Stage | Artifact | State |
 |---|---|---|
-| 01 Requirement | [[01 Requirement Confirmation]] | draft — answers recorded 2026-09-07; 5 TBC |
+| 01 Requirement | [[01 Requirement Confirmation]] | draft — requester confirmed 2026-09-07; verdict `pass` ready |
 
 ## Gate Log
 
@@ -47,17 +47,18 @@ updated: '2026-09-07'
 
 ## Decision Log
 
-- 2026-09-07 — Opened this dossier for the Specimen Sorter API / USID auto-registration request. Did not reuse `TMP-orchestrator-loop` (throwaway fixture). Drafted [[01 Requirement Confirmation]] from the 28 Aug 2026 deck, the 14 Jul 2026 confirmation slides, the 16-row xlsx questionnaire, SEM20260612, and [[LIS/Project Plans/Specimen Sorter/Requirement Confirmation]]. Requirement gate left open. — agent
-- 2026-09-07 — Requester answered Q1–Q18. Agreed: optional HKID/name; USID-only retrieve; CPS/HMS only (APS/BBS/MBS out); Failure for not-found / already-used; one Failure + message code; reuse Specimen Audit Trail; return status on same call; request no. = USID or Relabel; datetime = server now; no partial register; no retry job; encounter/tube colour ignored for routing. Send-out = `LOE_SENDOUT_TEST` cluster code. Post-actions: worksheet yes, label no, PHLC yes. Hospital: TBC, fallback = sorter-id mapping table. Still TBC: Q2 hospital-on-call, Q5 DFT/STAR, Q9 soft-alert logging, Q12 unboxed, Q17 latency. Gate not closed. — agent
+- 2026-09-07 — Opened this dossier. Drafted [[01 Requirement Confirmation]]. Gate left open. — agent
+- 2026-09-07 — First answer set recorded (Q1–Q18; five TBC). — agent
+- 2026-09-07 — Remaining TBCs answered: Q2 sorter sends hospital (mapping table still fallback); Q5 DFT/STAR in; Q9 ALS only; Q12 unbox as STAR-in; Q17 p95 < 4 s, ~20/min, sync. All `Rn` set to `confirmed`. Requirement skill verdict **`pass`**. Gate not closed by this skill. — agent
 
 ## Open Items
 
-- [ ] Q2 — does the sorter send performing hospital? Fallback mapping table agreed
-- [ ] Q5 — DFT / STAR in or out
-- [ ] Q9 — how to log soft Spec Ack alerts
-- [ ] Q12 — specimen not unboxed
-- [ ] Q17 — latency / volume pass mark
-- [ ] After TBCs: `/system-design`
+- [x] Q2 — sorter sends hospital; mapping table if omitted
+- [x] Q5 — DFT / STAR in (APS/BBS/MBS still out)
+- [x] Q9 — soft alerts ALS only
+- [x] Q12 — unbox follows STAR
+- [x] Q17 — p95 < 4 s; ~20/min; sync
+- [ ] Orchestrator closes `requirement` (`pass`), then `/system-design`
 
 ## Links
 
