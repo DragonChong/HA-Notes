@@ -198,7 +198,7 @@ Half a day here saves a fortnight later.
 
 ## Related
 
-- [[Skill Catalogue]] · [[Rollout Plan]] · [[Open Questions]] · [[Copilot Workflow Optimization]]
+- [[Skill Catalogue]] · [[Rollout Plan]] · [[Open Questions]] · [[Copilot Workflow Optimization]] · [[HA Cursor Network Stream Test]]
 
 ## Sources
 
