@@ -25,7 +25,7 @@ tags:
   - sdlc-dossier
 target_completion_date: ''
 title: Specimen Sorter API
-updated: '2026-09-07'
+updated: '2026-09-08'
 work_type: project
 ---
 # Specimen Sorter API
@@ -40,7 +40,7 @@ work_type: project
 | Stage | Artifact | State |
 |---|---|---|
 | 01 Requirement | [[01 Requirement Confirmation]] | confirmed 2026-09-07; not in gates_passed |
-| 02 Design | [[02 System Design]] | draft — D1–D7/D9 answered; convertor in scope |
+| 02 Design | [[02 System Design]] | draft — D1–D10 answered |
 
 ## Gate Log
 
@@ -51,7 +51,8 @@ work_type: project
 ## Decision Log
 
 - 2026-09-07 — Incremental design: new POST orchestrator on `lis-crs-spec-ack-svc`. — agent
-- 2026-09-07 — Packing convertor (`GcrSpecAckDataConvertor`) moves server-side. Sorter id maps to `workbench` + dedicated LIS user via `loe_sorter_map`. No app auth v1. Mixed local+send-out = Failure. STAR no location = Failure. Print all worksheets after HTTP return; late print OK. — agent
+- 2026-09-07 — Packing convertor moves server-side. Sorter id maps to workbench + dedicated user. No app auth. Mixed = Failure. STAR no location = Failure. Print all after return. — agent
+- 2026-09-08 — D6 agree (`SORT_*` plus existing writes; Audit Trail filter). D8 agree (DFT uses Spec Ack `register()`). D10: do not check workbench lab against test lab. — agent
 
 ## Open Items
 
@@ -60,11 +61,11 @@ work_type: project
 - [x] D3 — mixed → Failure
 - [x] D4 — late worksheet OK
 - [x] D5 — print all
-- [ ] D6 — `SORT_*` on Audit Trail dropdown
+- [x] D6 — `SORT_*` plus existing writes; add to Audit Trail filter
 - [x] D7 — `loe_sorter_map`
-- [ ] D8 — DFT via Spec Ack `register()`
+- [x] D8 — DFT via Spec Ack `register()`
 - [x] D9 — STAR no location → Failure
-- [ ] D10 — CPS vs HMS lab mismatch → proposed Failure
+- [x] D10 — no workbench-vs-test-lab check
 - [ ] Human `reviewed_by` on [[02 System Design]]
 
 ## Links

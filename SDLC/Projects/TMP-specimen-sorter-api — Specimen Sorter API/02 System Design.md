@@ -19,7 +19,7 @@ New endpoint and orchestrator on existing `lis-crs-spec-ack-svc`. Does not creat
 
 **Gate:** `requirement` was confirmed in writing but is not in `gates_passed`. Design proceeds under a recorded exception (requester invoked `/system-design`).
 
-Design answers recorded 2026-09-07 (second pass): D1–D7, D9. Packing convertor moved server-side.
+Design answers recorded 2026-09-07 (second pass) and 2026-09-08 (D6, D8, D10). Packing convertor moved server-side. All design questions D1–D10 have a written answer.
 
 ## Context and problem
 
@@ -130,9 +130,11 @@ Traces to: R1, R4, R5, R6, R11, R14
 
 Reuse: `retrieveGcrOrder`, `sendOutSpecimen`, `register`, print/PHLC app services, `GcrAuditService`.
 
-DFT: same `register()` packing if USID retrieve returns DFT specimens (D8 still the implementer check).
+DFT: use the same Spec Ack `register()` packing when USID retrieve returns DFT specimens. Do **not** call `/api/dftreg/register` (D8).
 
 APS/BBS/MBS → Failure unsupported. Do not run APS/BBS convertor branches.
+
+Do **not** compare the sorter workbench lab (`wkbh_labno` / `loesort_labno`) to the retrieved test’s lab. Workbench is only user, station, printer, and STAR location (D10).
 
 HKID/name: if supplied and mismatch GCRS patient → Failure.
 
@@ -194,7 +196,7 @@ CREATE UNIQUE INDEX uk_loe_sorter_map_id ON loe_sorter_map (loesort_sorter_id);
 - `loesort_workbench_id` + `loesort_labno` — `workbench` PK (`wkbh_id`, `wkbh_labno`). Audit workstation = `wkbh_station_name`. Print queue = `wkbh_default_printer` (and send-out queue keyed by workbench id, same as Spec Ack). STAR location = `wkbh_location` (null/0 → Failure `4422`).
 - `loesort_hosp` / `loesort_server_name` — needed to open `LAB_DB` before the workbench row can be read.
 
-`loesort_labno` is 1 or 3 in v1. If retrieved tests belong to the other v1 lab → Failure (D10, still proposed).
+`loesort_labno` with `loesort_workbench_id` is the `workbench` PK only. Do **not** fail when retrieved tests belong to the other v1 lab (D10).
 
 Rollback:
 
@@ -213,7 +215,7 @@ No DDL on `workbench`. Seed a workbench row per physical sorter (station name = 
 | `SORT_RELABEL` | Relabel |
 | `SORT_FAIL` | Failure; description = message code + text |
 
-Function `SPEC_ACK`. D6 (whether Audit Trail dropdown needs a setup row for `SORT_*`) remains for SM/implementer.
+Function `SPEC_ACK`. Add `SORT_*` to the Specimen Audit Trail action filter so staff can search auto-registration rows (D6).
 
 ## Interface / API contract
 
@@ -283,6 +285,7 @@ Print/PHLC still follow existing lab options (`CREATE_PHLC_LAB_ORDER_REG`, works
 | Sync print in the HTTP call | Breaks 4 s; late worksheet accepted (D4). |
 | Invent STAR location when workbench has none | Failure (D9). |
 | Mixed: send-out subset only | Failure (D3). |
+| Fail when workbench lab ≠ test lab | Requester: no check (D10). |
 
 ## Promotion impact and fallback
 
@@ -293,7 +296,7 @@ Print/PHLC still follow existing lab options (`CREATE_PHLC_LAB_ORDER_REG`, works
 3. `loe_sorter_map` row: sorter id, user, workbench id, lab, hosp, server name.
 4. Deploy `lis-crs-spec-ack-svc`.
 5. NetworkPolicy for middleware (no new auth).
-6. Pilot CPS/HMS. Relabel/Failure bins → staff Spec Ack.
+6. Pilot CPS/HMS. Relabel/Failure bins → staff Spec Ack. Confirm Specimen Audit Trail action filter includes `SORT_*` (D6).
 
 **Fallback**
 
@@ -310,11 +313,11 @@ Print/PHLC still follow existing lab options (`CREATE_PHLC_LAB_ORDER_REG`, works
 | D3 | Mixed local + send-out? | Requester | **Failure.** |
 | D4 | Print after HTTP return? | Requester | **OK** if worksheet is late; status already Registered/Send-out. |
 | D5 | Multiple worksheets? | Requester | **Print all.** |
-| D6 | `SORT_*` audit codes vs reuse `REG`/`SEND_OUT` only? Audit Trail dropdown setup? | Implementer / SM | Proposed: keep `SORT_*` plus existing writes. |
+| D6 | `SORT_*` audit codes vs reuse `REG`/`SEND_OUT` only? Audit Trail dropdown setup? | Requester | **Agree.** Keep `SORT_*` plus existing `REG`/`SEND_OUT` writes. Add `SORT_*` to the Audit Trail action filter. |
 | D7 | Map table vs `LOE_CONTROL`? | Requester | **Sorter map table** `loe_sorter_map`. |
-| D8 | DFT via Spec Ack `register()` vs `/api/dftreg`? | Implementer | Proposed: same `register()` if USID retrieve returns DFT specimens. |
+| D8 | DFT via Spec Ack `register()` vs `/api/dftreg`? | Requester | **Agree.** Same Spec Ack `register()` packing. |
 | D9 | STAR with no workbench location? | Requester | **Failure** (`4422`). |
-| D10 | Map lab vs order’s other v1 lab? | Requester | Proposed **Failure** (unchanged). |
+| D10 | Map / workbench lab vs order test lab? | Requester | **No check.** Do not compare workbench lab to the retrieved test lab. |
 
 ## Design
 
@@ -380,8 +383,6 @@ Drop the map table. Leave or disable the workbench/user.
 
 ### Slide: Open Questions
 **Archetype:** asks
-1. Confirm Audit Trail should list new sorter actions (`SORT_REG` / `SORT_FAIL` / …) in the action filter.
-2. If retrieved tests are HMS while the sorter workbench is CPS, confirm Failure.
-3. Confirm DFT uses the same register packing as ordinary Spec Ack.
+1. None remaining from D1–D10. Confirm `reviewed_by` so the CP3 deck can be generated.
 
 ### Slide: Q&A
