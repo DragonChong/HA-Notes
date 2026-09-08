@@ -19,7 +19,8 @@ is the deliverable. Template:
    samples. If the paste still has PHI, redact it in the note — do not
    refuse the draft, and do not keep real identifiers "as evidence".
 2. Resolve the existing dossier (orchestrator path, or the single
-   `status: active` one). Create one only if none exists.
+   `status: active` one). Create one only if none exists. Do not invent
+   a second folder name.
 3. Summarise current behaviour from the vault **before** scope. If Ka
    says skip search, write one open question: "context not retrieved —
    confirm current behaviour" with a proposed default. Still no design.
