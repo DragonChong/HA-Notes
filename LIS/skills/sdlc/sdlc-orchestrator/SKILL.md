@@ -34,7 +34,8 @@ gate offer or one-skill handoff.
 Order: explicit key → open dossier → open JIRA note (follow `dossier`
 backlink) → the single `status: active` dossier → **ask**.
 
-Two `status: active` dossiers and no explicit key → ask. Stop.
+Two `status: active` dossiers and no explicit key → ask on the Next
+line. Stop. No Slack essay.
 
 ## Gate
 
