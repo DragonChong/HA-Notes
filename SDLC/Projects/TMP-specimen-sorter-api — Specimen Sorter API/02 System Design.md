@@ -19,7 +19,7 @@ New endpoint and orchestrator on existing `lis-crs-spec-ack-svc`. Does not creat
 
 **Gate:** `requirement` was confirmed in writing but is not in `gates_passed`. Design proceeds under a recorded exception (requester invoked `/system-design`).
 
-Design answers recorded 2026-09-07 (second pass) and 2026-09-08 (D6, D8, D10). Packing convertor moved server-side. All design questions D1–D10 have a written answer.
+Design answers recorded 2026-09-07 (second pass) and 2026-09-08 (D6, D8, D10, D11). Packing convertor moved server-side. All design questions D1–D11 have a written answer.
 
 ## Context and problem
 
@@ -52,7 +52,7 @@ Staff workbench is `LAB_DB.dbo.workbench` (PK `wkbh_id` + `wkbh_labno`). Columns
 | Relabel | Same convertor, Assign USID | Multi-group; DFT same time-flag; multi-specimen; suffix ≠ `0`; force relabel; **user checkbox** (API will not have it). |
 | Send-out write | `sendOutSpecimen` | Ack if Printed/Collected; tracking; action `SEND_OUT`. |
 | Register write | `register` | Assumes packing already converted. |
-| Worksheets / PHLC | Flex `printWorksheet` + `/workSheet` / `/createPhlcLabOrder` | Staff picker when more than one worksheet. |
+| Worksheets / PHLC | Flex `printWorksheet` + `/workSheet` / `/createPhlcLabOrder` | **Registration only** (`constructSaveActions` → `processPrintWorksheet` then `createPhlcLabOrder`). Prints only when a request no. was assigned. Ack prints only if `isAutoPrintWorksheetAfterAckEnabled`. Send-out (`sendOutActions`) does not print. Staff picker when more than one worksheet. |
 
 Send-out **detection**: join `loe_request_test.loereqtst_test_code` to `loe_sendout_test.loesend_cluster_code` + hosp, filter lab no.
 
@@ -69,7 +69,7 @@ One new POST. Orchestrator, in-process:
 3. Port Flex convertor **and** validator **and** alerts on the server; build packing (no screen).
 4. Mixed local + send-out → **Failure** (D3).
 5. Relabel / send-out / register using existing app services.
-6. Return status; **then** print **all** worksheets and PHLC. Late print does not change status (D4, D5).
+6. Return status. **Then**, and only after **Registered**, print **all** worksheets and PHLC (R13, D11). Send-out, Relabel, and Failure print nothing. Late print does not change status (D4, D5).
 7. STAR with no workbench location → **Failure** `4422` (D9).
 
 No Hub JWT. No API key in v1 (D1). Staff APIs unchanged.
@@ -104,11 +104,11 @@ sequenceDiagram
         else send-out only
             API->>SO: existing send-out
             API-->>MW: SEND_OUT
-            API--)Prn: all worksheets and PHLC after return
+            Note over Prn: no worksheet, no PHLC
         else in-house
             API->>Reg: converted packing
             API-->>MW: REGISTERED
-            API--)Prn: all worksheets after return
+            API--)Prn: all worksheets and PHLC after return
         end
     end
 ```
@@ -126,7 +126,7 @@ Traces to: R1, R4, R5, R6, R11, R14
 | `SpecimenSorterValidationService` | Port of `promptAlert` (ALS only) and `GcrSpecAckDataValidator`. Mixed local + send-out → **Failure** (not ALS). STAR: no `wkbh_location` on mapped workbench → Failure `4422`. |
 | `SpecimenSorterRelabelService` | Assign-USID rules from the convertor **without** `userCheckedRelabel`. |
 | `SpecimenSorterSendOutResolver` | `LOE_SENDOUT_TEST` cluster join. If **both** send-out and in-house tests on the USID → Failure (D3). |
-| `SpecimenSorterPostProcessService` | After HTTP return: print **every** worksheet Ro the convertor produced (no picker); PHLC when send-out form Ro exists and lab option is on. Failure to print → ALS warn only (D4). |
+| `SpecimenSorterPostProcessService` | After HTTP return, **and only when outcome is Registered** (D11): print **every** worksheet Ro the convertor produced (no picker); PHLC when send-out form Ro exists and lab option is on. Send-out / Relabel / Failure skip this service. Failure to print → ALS warn only (D4). Spec Ack can auto-print after ack when `isAutoPrintWorksheetAfterAckEnabled`; sorter does **not**. |
 
 Reuse: `retrieveGcrOrder`, `sendOutSpecimen`, `register`, print/PHLC app services, `GcrAuditService`.
 
@@ -161,8 +161,8 @@ flowchart TD
     relabel -->|no| so{All tests in LOE_SENDOUT_TEST?}
     so -->|yes| send[sendOutSpecimen]
     so -->|no| reg[register packing]
-    send --> post[Return status then print all]
-    reg --> post
+    send --> doneSo[Return SEND_OUT no print]
+    reg --> post[Return REGISTERED then print all]
 ```
 
 ## Data model
@@ -260,7 +260,7 @@ Print/PHLC still follow existing lab options (`CREATE_PHLC_LAB_ORDER_REG`, works
 
 - Soft alerts: `warn("SPEC_ACK", …)` only.
 - Mixed send-out, STAR no location, hard validator, convertor cannot map ward/doctor: `SORT_FAIL` + message code (`0001162` … `4422`).
-- Print/PHLC after success: ALS warn; status already returned stays (D4).
+- Print/PHLC after **Registered** only (D11): ALS warn; status already returned stays (D4). Send-out does not print.
 - Mask HKID in logs as register already does.
 - Audit user = map `loesort_usercode`; workstation = `wkbh_station_name`.
 
@@ -268,7 +268,7 @@ Print/PHLC still follow existing lab options (`CREATE_PHLC_LAB_ORDER_REG`, works
 
 - Sync one call; p95 < 4 s through audit commit.
 - ~20/min per lab v1.
-- Worksheets + PHLC after return; print all (D4, D5).
+- Worksheets + PHLC after return, **Registered only** (D11); print all (D4, D5).
 
 ## Rejected alternatives
 
@@ -282,7 +282,8 @@ Print/PHLC still follow existing lab options (`CREATE_PHLC_LAB_ORDER_REG`, works
 | Duplicate hosp/printer on the map only | Workbench already holds them; map points at workbench (D2). |
 | API key / Hub JWT in v1 | No authentication currently (D1). |
 | Staff worksheet picker | Print all (D5). |
-| Sync print in the HTTP call | Breaks 4 s; late worksheet accepted (D4). |
+| Sync print in the HTTP call | Breaks 4 s; late worksheet accepted on Registered (D4). |
+| Print worksheet after send-out / ack | Spec Ack `sendOutActions` never prints. Ack print is dictionary-gated (`isAutoPrintWorksheetAfterAckEnabled`). Requester: worksheet is only printed during registration (D11). |
 | Invent STAR location when workbench has none | Failure (D9). |
 | Mixed: send-out subset only | Failure (D3). |
 | Fail when workbench lab ≠ test lab | Requester: no check (D10). |
@@ -311,8 +312,9 @@ Print/PHLC still follow existing lab options (`CREATE_PHLC_LAB_ORDER_REG`, works
 | D1 | Middleware auth? | Requester | **No authentication currently.** NetworkPolicy only. No API key / JWT in v1. |
 | D2 | LIS user and workstation? | Requester | **Dedicated sorter User.** Sorter identifier maps to **workbench** (`wkbh_id` + lab). Station name / printer / location from that row. |
 | D3 | Mixed local + send-out? | Requester | **Failure.** |
-| D4 | Print after HTTP return? | Requester | **OK** if worksheet is late; status already Registered/Send-out. |
-| D5 | Multiple worksheets? | Requester | **Print all.** |
+| D4 | Print after HTTP return? | Requester | **OK** if worksheet is late; status already Registered. Does not apply to Send-out (no print). |
+| D5 | Multiple worksheets? | Requester | **Print all** (registration path only). |
+| D11 | When does the sorter print a worksheet? | Requester | **Registration only.** Same as Spec Ack `constructSaveActions` (`processPrintWorksheet` after a request no. is assigned). No print on Send-out, Relabel, Failure, or ack-only. Flex ack auto-print flag is not used. |
 | D6 | `SORT_*` audit codes vs reuse `REG`/`SEND_OUT` only? Audit Trail dropdown setup? | Requester | **Agree.** Keep `SORT_*` plus existing `REG`/`SEND_OUT` writes. Add `SORT_*` to the Audit Trail action filter. |
 | D7 | Map table vs `LOE_CONTROL`? | Requester | **Sorter map table** `loe_sorter_map`. |
 | D8 | DFT via Spec Ack `register()` vs `/api/dftreg`? | Requester | **Agree.** Same Spec Ack `register()` packing. |
@@ -354,7 +356,7 @@ Workbench in the lab database already has hospital, lab, station name, location,
 1. New POST. Sorter id → map table → dedicated user + workbench row.
 2. Server-side convertor ports the Flex packing methods, with screen checkboxes replaced by defaults.
 3. Mixed local and send-out is Failure. STAR with no workbench location is Failure.
-4. Print every worksheet after the status is returned. Late print is allowed.
+4. After **Registered** only: print every worksheet after the status is returned. Late print is allowed. Send-out does not print.
 5. No new authentication in v1.
 
 ### Slide: Proposed Change - packing convertor
@@ -383,6 +385,6 @@ Drop the map table. Leave or disable the workbench/user.
 
 ### Slide: Open Questions
 **Archetype:** asks
-1. None remaining from D1–D10. Confirm `reviewed_by` so the CP3 deck can be generated.
+1. None remaining from D1–D11. Confirm `reviewed_by` so the CP3 deck can be generated.
 
 ### Slide: Q&A
