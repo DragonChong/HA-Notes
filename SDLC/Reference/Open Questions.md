@@ -4,8 +4,8 @@ tags:
   - sdlc
   - reference
   - blockers
-created: 2026-09-03
-updated: 2026-09-03
+created: 2026-09-03T00:00:00.000Z
+updated: '2026-09-08'
 status: blueprint
 ---
 
@@ -19,13 +19,18 @@ Part of [[SDLC Agentic Workflow]]. Resolve these before the phase named in each 
 | --- | ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | --------------- | -------------------------------------------- |
 | Q1  | Can Cursor / an MCP server reach the **application database** (Sybase / PostgreSQL) read-only from the corporate network?          | Phase 4 — `monitoring-plan`, `promotion-config` verification                  | Ka              | Open                                         |
 | Q2  | The **logging database** is a separate instance. Same question: read-only access, and by what client?                              | Phase 4 — `monitoring-plan`                                                   | Ka              | Open                                         |
-| Q3  | JIRA MCP **write scope** — can it create issues, add comments, and transition workflow states? Which of those does the org permit? | Phase 1 — `lis-jira-log-creator` auto-create; Phase 4 — `promotion-checklist` | Ka              | Open                                         |
+| Q3  | JIRA MCP **write scope** — can it create issues, add comments, and transition workflow states? Which of those does the org permit? | Phase 1 — `lis-jira-log-creator` auto-create; Phase 4 — `promotion-checklist` | Ka              | Blocked by Q5 — 2026-09-08: MCP tools exist; every call 504 to `hatool.home`. Org permit untested |
 | Q4  | Is SonarQube reachable via API, or does the report have to be exported manually?                                                   | Phase 3 — `sit-test-report` embedding                                         | Ka              | Open                                         |
 | Q5  | Does the corporate proxy / SSL inspection break MCP servers that make outbound HTTPS calls?                                        | Phase 1 onward                                                                | Ka              | Likely — see [[Corporate Network Diagnosis]] |
 | Q6  | Is Cursor formally approved for the team, and under what data-handling terms (what may be sent to the model)?                      | Everything                                                                    | Ka + management | Open                                         |
 
 > [!info] Designing around Q1/Q2
 > The promotion and monitoring skills are specified as **generate-and-hand-over**: they emit runnable SQL with the target connection named, you execute it, and paste the output back for interpretation. If access is later granted, the same plan becomes directly executable with no rewrite. Do not block Phase 4 on this.
+
+> [!warning] Q3 probe 2026-09-08
+> JIRA MCP namespace is **ready**. Tools include `jira_create_issue`, `jira_add_comment`, `jira_transition_issue`, and `jira_delete_issue`.
+> Read (`jira_search`, `jira_get_issue`) and write (`jira_create_issue` on a fake project, `jira_add_comment` on LIS-10723) all failed with proxy **504 Unknown Host** to `https://hatool.home:443`. `jira_get_all_projects` returned `[]` (empty, not an error).
+> **Org permit is untested.** Re-run this probe after Q5; do not treat tool presence as permission. `lis-jira-log-creator` stays draft-in-vault until the user approves create **and** the host is reachable.
 
 ## Process and governance
 
