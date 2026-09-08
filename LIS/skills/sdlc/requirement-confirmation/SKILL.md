@@ -1,121 +1,75 @@
 ---
 name: requirement-confirmation
 description: >
-  Turns an ambiguous request (SM email, defect, verbal) into a numbered
-  requirement note in the project dossier. Use when the user asks to confirm
-  requirements, start a dossier, scope a change, or run stage 01. Also use
-  when sdlc-orchestrator delegates the requirement stage. Do not use to write
-  a technical design (that is system-design) or a JIRA log
-  (lis-jira-log-creator). Do not mark the requirement gate passed.
+  Use when scoping a change, confirming requirements, starting a dossier,
+  turning an SM email / defect / verbal request into stage 01, or when
+  sdlc-orchestrator delegates the requirement stage. Do not use for a
+  technical design or a JIRA change-request log.
 ---
 
 # Requirement confirmation
 
-Level **C** — you ask and draft; the requester confirms. The clarification
-list is the deliverable. Vault template:
+You ask and draft. The requester confirms. The **open-question list**
+is the deliverable. Template:
 `SDLC/Templates/Requirement Confirmation Template.md`.
-Stage contract: `SDLC/Stages/01 Requirement Confirmation.md`.
 
-## Inputs
+## Reply shape
 
-| Input | Required |
+1. Strip PHI from the request (HKID, name, episode). Use synthetic
+   samples. If the paste still has PHI, redact it in the note — do not
+   refuse the draft, and do not keep real identifiers "as evidence".
+2. Resolve the existing dossier (orchestrator path, or the single
+   `status: active` one). Create one only if none exists.
+3. Summarise current behaviour from the vault **before** scope. If Ka
+   says skip search, write one open question: "context not retrieved —
+   confirm current behaviour" with a proposed default. Still no design.
+4. Fill every template section. Then stop.
+
+Show In scope, Out of scope, `Rn`, and Open questions unless Ka asked
+to skip review. Then write the note and dossier write-back.
+
+## Required slots
+
+| Slot | Rule |
 |---|---|
-| Raw request text | Yes |
-| `work_type` (`project` / `enhancement` / `fix`) | Yes |
-| Affected service(s) | Yes — infer if obvious, then confirm |
+| Out of scope | At least one explicit exclusion. "Obvious" / blank is not a list. |
+| `Rn` | Numbered. Each has acceptance criteria. Status starts `proposed`. |
+| Open questions | At least one row, each with a **proposed default**. Every assumption is a row. |
+| Confirmation | Empty on first draft. |
+| `reviewed_by` | Empty on first draft. |
+| `gates_passed` | Do not append `requirement`. |
 
-Strip HKID, name, episode number and any PHI before text enters a prompt
-or a note. Replace with synthetic examples.
+Verbal "SM already told me" is not confirmation. Closing the gate is
+the orchestrator's job after Ka pastes written confirmation **or**
+says **proceed on assumptions**.
 
-## Procedure
+## Write-back
 
-1. **Resolve or create the dossier** under `SDLC/Projects/<key> — <Short Name>/`.
-   Provisional key `TMP-<slug>` if no JIRA key yet. Use
-   `SDLC/Templates/Dossier.md`. If `sdlc-orchestrator` already resolved a
-   dossier, use that path — do not create a second one.
-2. **Retrieve context first.** Search the vault (`Knowledge Base/`,
-   `LIS/ECP/<service>/`, `Study/`, `LIS/JIRA/`, past `SDLC/Projects/`) and
-   summarise current behaviour *before* proposing scope.
-3. **Impact scan.** Search repos and the vault for other callers of the
-   changed behaviour. Surface anything the requester probably missed.
-4. **Draft** `01 Requirement Confirmation.md` from the template. Every
-   assumption becomes an open question with a proposed default.
-5. **Show the draft** (especially In scope, Out of scope, `Rn`, and Open
-   questions) unless the user asked to skip review.
-6. **Write** the note and write back to `_Dossier.md`. Stop. Do not start
-   `system-design` unless the user has already said **proceed on
-   assumptions** (or pasted confirmation) — then tell the orchestrator
-   the gate is ready; still do not close it yourself.
+`requirement: "[[01 Requirement Confirmation]]"`, `services`, Artifacts
+`draft`, one Decision Log line, Status next action = wait for
+confirmation or proceed-on-assumptions. Set `updated`.
 
-## Output
+## Later confirmation
 
-`SDLC/Projects/<key>/01 Requirement Confirmation.md`
+Update Answer / `Rn` status / Confirmation in place. Tick Open Items.
+Wrong default → Decision Log + which design sections change; hand back
+to `sdlc-orchestrator`. Do not edit the design unless asked.
 
-- Background and trigger
-- In scope / **Out of scope** (out-of-scope list must be non-empty)
-- Functional requirements `R1…Rn`, each with acceptance criteria and
-  Status `proposed` | `assumed` | `confirmed`
-- Non-functional: volume, latency, retention, audit
-- Impact: services, screens, tables, interfaces
-- Assumptions (working defaults you are designing against)
-- Open questions with proposed defaults — this list is the SM send-back
-- Confirmation: empty, quoted, or "Proceed on assumptions, <date>"
+## Rationalizations
 
-Frontmatter provenance:
+| Excuse | Reality |
+|---|---|
+| "Ka said close the gate / mark confirmed" | Draft only. Orchestrator closes. Verbal is not Confirmation. |
+| "SM email is the request so Rn is confirmed" | Email is the trigger. Status stays `proposed`. |
+| "No time for open questions" | Questions *are* the artifact. Guess → row + default. |
+| "Out of scope is obvious — leave blank" | Blank means scope was not thought about. Write one exclusion. |
+| "Also write the design, CP3 is tomorrow" | Second stage. Stop. Tell the orchestrator. |
+| "Skip vault search" | One open question that context was skipped. Still no design. |
 
-```yaml
-generated_by: requirement-confirmation
-generated_on: '<today>'
-reviewed_by: ''
-review_date: ''
-agent_assisted: true
-```
+## Red flags
 
-## Dossier write-back
-
-- `requirement: "[[01 Requirement Confirmation]]"`
-- `services` from the impact table
-- Artifacts row: `01 Requirement` → `[[01 Requirement Confirmation]]` → `draft`
-- One Decision Log line
-- `## Status` next action: wait for confirmation **or** "proceed on
-  assumptions", then `/system-design`
-- Set `updated`
-- **Do not** append `requirement` to `gates_passed`
-- **Do not** set `reviewed_by`
-
-## Exit gate (human) — two verdicts
-
-Shared checks, both verdicts:
-
-- Out-of-scope list is non-empty
-- Each `Rn` has at least one acceptance criterion
-- Every open question has an answer **or** a proposed default
-
-Then one of:
-
-1. **`pass`** — Confirmation quotes or links the requester's written
-   confirmation. Set `reviewed_by`. Flip each `Rn` to `confirmed`.
-2. **`pass with assumptions`** — the user says to proceed without that
-   confirmation. Every unanswered question keeps its proposed default;
-   set those `Rn` to `assumed`; write `A1…An` into dossier Open Items;
-   Confirmation says "Proceed on assumptions, <date>". Leave
-   `reviewed_by` empty.
-
-Tell the orchestrator which verdict is ready. Do not close the gate
-yourself.
-
-## When confirmation arrives later
-
-Update the requirement note in place: Answer column, `Rn` Status,
-Confirmation. Tick the matching Open Items.
-
-If a default was **wrong**: Decision Log the delta, list which design
-(and later JIRA) sections are affected, and hand back to the
-orchestrator — it may reopen `design`. Do not silently rewrite the
-design in this turn unless the user asked for that edit.
-
-## Related
-
-- Orchestrator: `sdlc-orchestrator`
-- Next: `system-design` — not this skill
-- JIRA log: `lis-jira-log-creator` — later, after design (except `work_type: fix`)
+- HKID, patient name, or episode number in the note
+- Empty Out of scope
+- Zero open questions
+- `reviewed_by` or `gates_passed` set on first draft
+- `02 System Design.md` written in this turn
