@@ -56,10 +56,10 @@ Part of [[SDLC Agentic Workflow]]. Resolve these before the phase named in each 
 | Q8  | Does HA change control require a statement that an artifact was **AI-assisted**? If so, the `agent_assisted` provenance field must appear on the promotion form, not just in the vault. | Phase 4 | Ka    | Open |
 | Q9  | Who else on the team will use these skills, and does the vault need to become shared/multi-writer?                                                                                      | Phase 2 | Ka    | Confirmed 2026-09-09 — Ka only. Vault stays single-writer; do not design multi-writer until that changes |
 | Q10 | Where does **UAT** sit — who runs it, and does it need its own gate rather than only a plan entry?                                                                                      | Phase 5 | Ka    | Open |
-| Q11 | Are there **freeze periods** or fixed promotion windows the `project-plan` skill must schedule around?                                                                                  | Phase 2 | Ka    | Confirmed 2026-09-09 — fixed promotion windows exist. Verbatim calendar still needed before `project-plan` can schedule |
+| Q11 | Are there **freeze periods** or fixed promotion windows the `project-plan` skill must schedule around?                                                                                  | Phase 2 | Ka    | Confirmed 2026-09-09 — calendar in [[Promotion Windows]]. Next open submission: 2026-17 on 17 Sep 2026 |
 
 > [!info] Q9 / Q11 confirmed 2026-09-09
-> Ka only for now — no shared-vault work in Phase 2. Promotion windows are real; paste the window list (and any freeze) when `project-plan` is built.
+> Ka only for now — no shared-vault work in Phase 2. Promotion windows are in [[Promotion Windows]].
 
 ## Data protection
 
@@ -85,4 +85,4 @@ These are stages your current SDLC list does not name. Not necessarily missing �
 
 ## Related
 
-- [[SDLC Agentic Workflow]] · [[Rollout Plan]] · [[Cursor Setup]]
+- [[SDLC Agentic Workflow]] · [[Rollout Plan]] · [[Cursor Setup]] · [[Promotion Windows]]
