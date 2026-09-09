@@ -5,7 +5,7 @@ tags:
   - reference
   - blockers
 created: 2026-09-03T00:00:00.000Z
-updated: '2026-09-08'
+updated: '2026-09-09'
 status: blueprint
 ---
 
@@ -22,7 +22,7 @@ Part of [[SDLC Agentic Workflow]]. Resolve these before the phase named in each 
 | Q3  | JIRA MCP **write scope** — can it create issues, add comments, and transition workflow states? Which of those does the org permit? | Phase 1 — `lis-jira-log-creator` auto-create; Phase 4 — `promotion-checklist` | Ka              | Confirmed 2026-09-08 — API writes reach Jira; LIS create-meta OK. Org permit for this account: create CR, comment, see transitions. No real issue mutated. Policy still: vault draft until you approve create; never auto-transition approval gates |
 | Q4  | Is SonarQube reachable via API, or does the report have to be exported manually?                                                   | Phase 3 — `sit-test-report` embedding                                         | Ka              | Reachable 2026-09-08 — `system_ping` pong, instance UP (`26.2.0`). Embedding into a SIT report still unproven |
 | Q5  | Does the corporate proxy / SSL inspection break MCP servers that make outbound HTTPS calls?                                        | Phase 1 onward                                                                | Ka              | Mostly no — Jira, Sonar, DHP AI OK. Postman reached (401 key). GitHub MCP `Unknown Host` on `hagithub.home`. Not a blanket SSL break |
-| Q6  | Is Cursor formally approved for the team, and under what data-handling terms (what may be sent to the model)?                      | Everything                                                                    | Ka + management | Open                                                                                              |
+| Q6  | Is Cursor formally approved for the team, and under what data-handling terms (what may be sent to the model)?                      | Everything                                                                    | Ka + management | Confirmed 2026-09-09 — Yes. Data-handling is Q12: no patient-identifiable data enters a prompt |
 
 > [!info] Designing around Q1/Q2
 > The promotion and monitoring skills are specified as **generate-and-hand-over**: they emit runnable SQL with the target connection named, you execute it, and paste the output back for interpretation. If access is later granted, the same plan becomes directly executable with no rewrite. Do not block Phase 4 on this.
@@ -60,10 +60,13 @@ Part of [[SDLC Agentic Workflow]]. Resolve these before the phase named in each 
 
 ## Data protection
 
-| #   | Question                                                                                                                                                                | Blocks     |
-| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| Q12 | Confirm the rule for **patient-identifiable data**: nothing enters a prompt, a note, a commit or a log example. Who signs off that the guardrail wording is sufficient? | Everything |
-| Q13 | Are screenshots in requirement notes already redacted today, or does redaction become a new step?                                                                       | Phase 1    |
+| #   | Question                                                                                                                                                                | Blocks     | Owner | Status |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ----- | ------ |
+| Q12 | Confirm the rule for **patient-identifiable data**: nothing enters a prompt, a note, a commit or a log example. Who signs off that the guardrail wording is sufficient? | Everything | Ka    | Confirmed 2026-09-09 by Ka — no PHI in prompts. [[AGENTS]] still also covers notes, commits, logs, and redacted screenshots |
+| Q13 | Are screenshots in requirement notes already redacted today, or does redaction become a new step?                                                                       | Phase 1    | Ka    | Confirmed 2026-09-09 — already redacted today; not a new vault step |
+
+> [!info] Q6 / Q12 / Q13 confirmed 2026-09-09
+> Ka: Cursor is approved. No patient-identifiable data enters a prompt. Requirement screenshots are already redacted; do not add a new redaction ritual. `requirement-confirmation` still strips HKID / name / episode if they appear in a paste.
 
 ## Gaps in the stage list worth deciding on
 
