@@ -50,13 +50,16 @@ Part of [[SDLC Agentic Workflow]]. Resolve these before the phase named in each 
 
 ## Process and governance
 
-| #   | Question                                                                                                                                                                                | Blocks  |
-| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| Q7  | What exactly is on the corporate **promotion checklist**? It needs to be captured verbatim in the `promotion-checklist` skill's reference file.                                         | Phase 4 |
-| Q8  | Does HA change control require a statement that an artifact was **AI-assisted**? If so, the `agent_assisted` provenance field must appear on the promotion form, not just in the vault. | Phase 4 |
-| Q9  | Who else on the team will use these skills, and does the vault need to become shared/multi-writer?                                                                                      | Phase 2 |
-| Q10 | Where does **UAT** sit — who runs it, and does it need its own gate rather than only a plan entry?                                                                                      | Phase 5 |
-| Q11 | Are there **freeze periods** or fixed promotion windows the `project-plan` skill must schedule around?                                                                                  | Phase 2 |
+| #   | Question                                                                                                                                                                                | Blocks  | Owner | Status |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- | ----- | ------ |
+| Q7  | What exactly is on the corporate **promotion checklist**? It needs to be captured verbatim in the `promotion-checklist` skill's reference file.                                         | Phase 4 | Ka    | Open |
+| Q8  | Does HA change control require a statement that an artifact was **AI-assisted**? If so, the `agent_assisted` provenance field must appear on the promotion form, not just in the vault. | Phase 4 | Ka    | Open |
+| Q9  | Who else on the team will use these skills, and does the vault need to become shared/multi-writer?                                                                                      | Phase 2 | Ka    | Confirmed 2026-09-09 — Ka only. Vault stays single-writer; do not design multi-writer until that changes |
+| Q10 | Where does **UAT** sit — who runs it, and does it need its own gate rather than only a plan entry?                                                                                      | Phase 5 | Ka    | Open |
+| Q11 | Are there **freeze periods** or fixed promotion windows the `project-plan` skill must schedule around?                                                                                  | Phase 2 | Ka    | Confirmed 2026-09-09 — fixed promotion windows exist. Verbatim calendar still needed before `project-plan` can schedule |
+
+> [!info] Q9 / Q11 confirmed 2026-09-09
+> Ka only for now — no shared-vault work in Phase 2. Promotion windows are real; paste the window list (and any freeze) when `project-plan` is built.
 
 ## Data protection
 
