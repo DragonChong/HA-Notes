@@ -33,7 +33,7 @@
           "tone": "neutral",
           "tag": "Spec Ack",
           "title": "Staff scan and click",
-          "body": "Staff scan a USID on Specimen Acknowledgement, then click Send-out or Register."
+          "body": "Staff scan a USID, then click Send-out or Register."
         },
         {
           "badge": 2,
@@ -47,14 +47,14 @@
           "tone": "accent",
           "tag": "this CR",
           "title": "One call, then a bin",
-          "body": "The sorter must bin the tube from one LIS response in under four seconds."
+          "body": "The sorter bins the tube from one LIS response in under four seconds."
         }
       ],
       "callout": {
         "lead": "Do not use the staff GET:",
         "text": "GET /retrieveGcrOrder hard-codes user ltc611. Do not call it."
       },
-      "notes": "Writes are not the gap. Middleware cannot call /gcrSpecAckRegister without the packing object the screen builds today."
+      "notes": "Writes are not the gap. Middleware cannot call /gcrSpecAckRegister without the packing the screen builds today."
     },
     {
       "archetype": "compare",
