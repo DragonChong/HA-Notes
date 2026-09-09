@@ -60,10 +60,10 @@ Part of [[SDLC Agentic Workflow]]. Resolve these before the phase named in each 
 
 ## Data protection
 
-| # | Question | Blocks |
-|---|---|---|
+| #   | Question                                                                                                                                                                | Blocks     |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
 | Q12 | Confirm the rule for **patient-identifiable data**: nothing enters a prompt, a note, a commit or a log example. Who signs off that the guardrail wording is sufficient? | Everything |
-| Q13 | Are screenshots in requirement notes already redacted today, or does redaction become a new step? | Phase 1 |
+| Q13 | Are screenshots in requirement notes already redacted today, or does redaction become a new step?                                                                       | Phase 1    |
 
 ## Gaps in the stage list worth deciding on
 
