@@ -1,0 +1,360 @@
+{
+  "meta": {
+    "title": "Specimen Sorter API",
+    "subject": "lis-crs-spec-ack-svc — one POST to auto-register or send out from a USID",
+    "author": "LIS Team",
+    "company": "Hospital Authority"
+  },
+  "slides": [
+    {
+      "archetype": "title-hero",
+      "eyebrow": "TMP-000   ·   CHANGE REQUEST   ·   CP3",
+      "headline": "One POST on Specimen Acknowledgement\nregisters or sends out a USID",
+      "lede": "Sorter middleware calls lis-crs-spec-ack-svc. Flex packing, alerts, and hard checks move behind that call. Staff Spec Ack stays as the fallback.",
+      "stats": [
+        { "label": "Service", "value": "lis-crs-spec-ack-svc" },
+        { "label": "Date", "value": "09 Sep 2026" },
+        { "label": "JIRA", "value": "TMP-000" },
+        { "label": "Forum", "value": "CP3" }
+      ],
+      "fullWidth": true,
+      "presenters": "Ka",
+      "reviewers": "Tony Chong, CP3 panel",
+      "footer": "Design reviewed by Tony Chong  ·  reference SEM20260612  ·  production JIRA not assigned",
+      "notes": "Cover is identity only. Production JIRA is not assigned; TMP-000 is the dossier stand-in. Reference SEM20260612. Tony Chong reviewed the design note."
+    },
+    {
+      "archetype": "evolution",
+      "eyebrow": "Background",
+      "title": "The sorter needs the staff click path in one call",
+      "steps": [
+        {
+          "badge": 1,
+          "tone": "neutral",
+          "tag": "Spec Ack",
+          "title": "Staff scan and click",
+          "body": "A USID is scanned on Specimen Acknowledgement. Staff then click Send-out or Register."
+        },
+        {
+          "badge": 2,
+          "tone": "warn",
+          "tag": "three owners",
+          "title": "Writes are already in the service",
+          "body": "Lookup and writes live in lis-crs-spec-ack-svc. Packing still sits in Flex GcrSpecAckDataConvertor."
+        },
+        {
+          "badge": 3,
+          "tone": "accent",
+          "tag": "this CR",
+          "title": "One call, then a bin",
+          "body": "The sorter must bin the tube from one LIS response in under four seconds."
+        }
+      ],
+      "callout": {
+        "lead": "Do not use the staff GET:",
+        "text": "GET /retrieveGcrOrder hard-codes user ltc611. The sorter must not call it."
+      },
+      "notes": "Writes are not the gap. Middleware cannot call /gcrSpecAckRegister without the packing object the screen builds today."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "Existing Design",
+      "title": "Packing still lives on the screen",
+      "left": {
+        "label": "Today",
+        "tone": "danger",
+        "title": "Screen owns the contract",
+        "code": [
+          "promptAlert",
+          "GcrSpecAckDataValidator",
+          "GcrSpecAckDataConvertor"
+        ],
+        "points": [
+          "Staff click send-out or register with that packing",
+          "Workbench comes from the PC login",
+          "GET retrieve hard-codes ltc611"
+        ]
+      },
+      "right": {
+        "label": "Proposed",
+        "tone": "accent",
+        "title": "One new POST",
+        "code": [
+          "POST /api/specack/sorter/auto-register"
+        ],
+        "points": [
+          "Convertor, validator, and ALS alerts run on the server",
+          "Reuse retrieve, sendOutSpecimen, register, worksheet, PHLC",
+          "Staff APIs stay as they are"
+        ]
+      },
+      "callout": {
+        "text": "Do not overload /gcrSpecAckRegister or the ECPath5 register. Both keep the wrong caller contract."
+      },
+      "notes": "Overloading /gcrSpecAckRegister would keep the staff packing contract. Overloading ECPath5 register would keep a hard-coded user. The convertor has to move or the caller invents a second packing shape."
+    },
+    {
+      "archetype": "decision-flow",
+      "eyebrow": "Proposed Change",
+      "title": "A new POST orchestrates retrieve, convert, then write",
+      "start": {
+        "text": "POST auto-register\nUSID + sorterId",
+        "w": 2.45
+      },
+      "decisions": [
+        {
+          "text": "Map, retrieve,\nCPS/HMS, not mixed?",
+          "w": 3.15,
+          "inLabel": "Yes",
+          "fallthrough": {
+            "label": "No",
+            "title": "FAILURE",
+            "body": "Unknown sorter, APS/BBS/MBS, mixed tests, STAR 4422"
+          }
+        },
+        {
+          "text": "Relabel rules?",
+          "w": 2.85,
+          "inLabel": "No",
+          "fallthrough": {
+            "label": "Yes",
+            "title": "RELABEL",
+            "body": "No lab-request write"
+          }
+        }
+      ],
+      "terminal": {
+        "label": "No",
+        "text": "SEND_OUT if all tests\nin LOE_SENDOUT_TEST\nelse REGISTERED"
+      },
+      "condition": {
+        "label": "Also on this path",
+        "code": "DFT -> Spec Ack register(), not /api/dftreg",
+        "note": "Do not compare workbench lab to the retrieved test lab. Print only after REGISTERED."
+      },
+      "notes": "STAR with no wkbh_location is Failure 4422. Mixed local and send-out is Failure, not ALS. DFT uses the same Spec Ack register() packing."
+    },
+    {
+      "archetype": "code-findings",
+      "eyebrow": "Proposed Change",
+      "title": "The Flex convertor moves behind the API",
+      "code": {
+        "filename": "GcrSpecAckDataConvertor.as",
+        "lines": [
+          [
+            { "text": "convertRequestTestGroupDataFromGcrTest", "color": "warn" }
+          ],
+          [
+            { "text": "convertRequestTestGroupDataToParam", "color": "warn" }
+          ],
+          "convertRequestNoDataToParam",
+          "convertWardDataToParam",
+          "convertDoctorDataToParam",
+          [
+            { "text": "convertUserInputDataToParam", "color": "comment" },
+            { "text": "  // defaults, not screen", "color": "comment" }
+          ]
+        ],
+        "caption": "Grouping, USID as request no., and ward/doctor mapping must exist before register()."
+      },
+      "findings": [
+        {
+          "mark": "!",
+          "title": "Defaults replace checkboxes",
+          "body": "Ack time is server now. AAR off. Urgent workstation off. Labels off. No relabel checkbox."
+        },
+        {
+          "mark": "!",
+          "title": "register() already expects this",
+          "body": "Porting only the validator still leaves an empty test-group list."
+        },
+        {
+          "mark": "!",
+          "title": "Ro builders stay with print",
+          "body": "Worksheet, send-out form, and SH Ro are built here, printed only after Registered."
+        }
+      ],
+      "findingTone": "accent",
+      "notes": "register() already assumes this packing. Skipping the convertor and porting only the validator still leaves an empty test-group list."
+    },
+    {
+      "archetype": "matrix",
+      "eyebrow": "Proposed Change",
+      "title": "Print only after Registered",
+      "table": {
+        "colWidths": [2.4, 5.5, 4.23],
+        "headers": [
+          "Outcome",
+          "Write",
+          "Print / PHLC"
+        ],
+        "rows": [
+          [
+            { "text": "REGISTERED", "mono": true, "bold": true },
+            "Converted packing via register()",
+            { "text": "All worksheets + PHLC after return", "tone": "accent", "color": "accent", "bold": true }
+          ],
+          [
+            { "text": "SEND_OUT", "mono": true, "bold": true },
+            "sendOutSpecimen",
+            { "text": "None", "tone": "warn", "color": "warnInk", "bold": true }
+          ],
+          [
+            { "text": "RELABEL", "mono": true, "bold": true },
+            "No lab request",
+            { "text": "None", "color": "body" }
+          ],
+          [
+            { "text": "FAILURE", "mono": true, "bold": true },
+            "SORT_FAIL audit only",
+            { "text": "None", "color": "body" }
+          ]
+        ]
+      },
+      "takeaways": [
+        {
+          "tone": "warn",
+          "title": "Late print is allowed",
+          "body": "A late worksheet does not change a REGISTERED status already returned."
+        },
+        {
+          "tone": "accent",
+          "title": "Print all, no picker",
+          "body": "Staff worksheet picker is gone. Every Ro from the convertor prints."
+        }
+      ],
+      "notes": "Spec Ack sendOutActions never prints. The ack auto-print flag is not used. Staff picker goes away: print all on the registration path."
+    },
+    {
+      "archetype": "cards",
+      "eyebrow": "Promotion",
+      "title": "Seed user, workbench, and map, then deploy",
+      "perRow": 2,
+      "cards": [
+        {
+          "badge": 1,
+          "tone": "accent",
+          "tag": "LIS user",
+          "title": "Create the sorter user",
+          "body": "Dedicated LIS user. It appears on LOE_AUDIT_TRAIL.loeaud_usercode. Not ltc611."
+        },
+        {
+          "badge": 2,
+          "tone": "neutral",
+          "tag": "workbench",
+          "title": "Seed a workbench row",
+          "body": "One row per physical sorter: hosp, lab, station name, location, default printer."
+        },
+        {
+          "badge": 3,
+          "tone": "neutral",
+          "tag": "loe_sorter_map",
+          "title": "Insert the map row",
+          "body": "Sorter id, user, workbench id, lab, hosp, server name. Printer stays on workbench."
+        },
+        {
+          "badge": 4,
+          "tone": "ink",
+          "tag": "deploy",
+          "title": "Deploy and open the path",
+          "body": "Deploy lis-crs-spec-ack-svc. NetworkPolicy for middleware. No API key in v1."
+        }
+      ],
+      "callout": {
+        "text": "Add SORT_REG, SORT_SO, SORT_RELABEL, SORT_FAIL to the Audit Trail action filter. Still write REG and SEND_OUT."
+      },
+      "notes": "Printer and STAR location come from workbench, not copied onto the map. Audit workstation is wkbh_station_name. Pilot CPS and HMS; Relabel and Failure bins go back to staff Spec Ack."
+    },
+    {
+      "archetype": "cards",
+      "eyebrow": "Fallback",
+      "title": "Stop middleware. Staff Spec Ack is unchanged",
+      "perRow": 3,
+      "cards": [
+        {
+          "badge": 1,
+          "tone": "danger",
+          "title": "Stop middleware",
+          "body": "Staff clicks still retrieve, send-out, and register. The staff APIs are untouched."
+        },
+        {
+          "badge": 2,
+          "tone": "warn",
+          "title": "Drop the map table",
+          "body": "DROP TABLE loe_sorter_map on full rollback. Leave or disable the workbench and user."
+        },
+        {
+          "badge": 3,
+          "tone": "ink",
+          "title": "No history rewrite",
+          "body": "Do not convert historical requests. Fallback is operational, not a data rewrite."
+        }
+      ],
+      "notes": "The staff path is the fallback. Drop only the map table. Workbench and user can stay inactive."
+    },
+    {
+      "archetype": "asks",
+      "eyebrow": "Open Questions",
+      "title": "Four decisions to ratify before build",
+      "asks": [
+        {
+          "q": "Leave v1 with NetworkPolicy only, no API key or Hub JWT?",
+          "why": "Same isolation as Spec Ack today (D1)."
+        },
+        {
+          "q": "Fail the tube when the USID has both local and send-out tests?",
+          "why": "Staff Spec Ack only warns. Sorter has no click (D3)."
+        },
+        {
+          "q": "Print worksheets and PHLC only after Registered, after the HTTP return?",
+          "why": "Matches constructSaveActions. Send-out prints nothing (D11, D4, D5)."
+        },
+        {
+          "q": "Show SORT_REG, SORT_SO, SORT_RELABEL, SORT_FAIL on the Audit Trail filter?",
+          "why": "Still write REG and SEND_OUT as well (D6)."
+        }
+      ],
+      "callout": {
+        "text": "Requester already answered D1-D11 on the design note. This room is the ratification."
+      },
+      "notes": "Requester already answered D1-D11. This room is the ratification, not a new design pass."
+    },
+    {
+      "archetype": "statement",
+      "align": "center",
+      "eyebrow": "Discussion",
+      "headline": "Q&A",
+      "fontSize": 40,
+      "notes": "Likely questions: why not overload /gcrSpecAckRegister; why DFT skips /api/dftreg; why workbench lab is not checked against the test lab."
+    },
+    {
+      "archetype": "closing",
+      "eyebrow": "Next",
+      "headline": "Target latency",
+      "stat": "P95 < 4 S",
+      "note": "About 20 specimens a minute per lab in v1. Worksheet and PHLC sit after the sorter wait path.",
+      "nextSteps": [
+        {
+          "badge": 1,
+          "title": "Assign a production JIRA",
+          "body": "Replace TMP-000. Reference remains SEM20260612."
+        },
+        {
+          "badge": 2,
+          "title": "Implement the POST",
+          "body": "New orchestrator on lis-crs-spec-ack-svc, including the packing convertor."
+        },
+        {
+          "badge": 3,
+          "title": "Seed SIT",
+          "body": "Sorter user, workbench row, and loe_sorter_map before middleware is pointed at SIT."
+        }
+      ],
+      "identity": {
+        "key": "TMP-000",
+        "meta": "lis-crs-spec-ack-svc  ·  Change Request"
+      },
+      "notes": "Volume pass mark is about 20 specimens a minute per lab. Worksheet and PHLC sit after the sorter wait path."
+    }
+  ]
+}
