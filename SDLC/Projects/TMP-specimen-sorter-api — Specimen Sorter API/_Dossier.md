@@ -32,8 +32,8 @@ work_type: project
 
 ## Status
 
-> [!info] Stage: **design** — `reviewed_by` Tony Chong on [[02 System Design]]; gate `design` not yet in `gates_passed` (`requirement` exception stands)
-> Next action: `/design-review-pptx`
+> [!info] Stage: **design** — CP3 deck generated; gate `design` not in `gates_passed` (`requirement` exception stands)
+> Next action: present at CP3, write actions back to [[02 System Design]], then close `design-review`
 
 ## Artifacts
 
@@ -41,6 +41,8 @@ work_type: project
 |---|---|---|
 | 01 Requirement | [[01 Requirement Confirmation]] | confirmed 2026-09-07; not in gates_passed |
 | 02 Design | [[02 System Design]] | reviewed by Tony Chong; D1–D11 answered |
+| 03 Slide Brief | [[03 Slide Brief]] | draft |
+| 03 Design Review | [[assets/Specimen Sorter API.pptx]] | generated |
 
 ## Gate Log
 
@@ -55,6 +57,7 @@ work_type: project
 - 2026-09-08 — D6 agree (`SORT_*` plus existing writes; Audit Trail filter). D8 agree (DFT uses Spec Ack `register()`). D10: do not check workbench lab against test lab. — agent
 - 2026-09-08 — Rejected: print worksheet after send-out or ack. Worksheet (and PHLC) only after Registered, matching Spec Ack `constructSaveActions` (D11). Late print still OK on that path (D4). — agent
 - 2026-09-09 — `reviewed_by` set to Tony Chong on [[02 System Design]]. Design gate not closed; next is CP3 deck. — agent
+- 2026-09-09 — CP3 deck generated from [[03 Slide Brief]] (`assets/Specimen Sorter API.pptx`). `design-review` not closed until CP3 actions are written back. — agent
 
 ## Open Items
 

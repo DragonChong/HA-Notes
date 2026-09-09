@@ -20,7 +20,7 @@
       "fullWidth": true,
       "presenters": "Ka",
       "reviewers": "Tony Chong, CP3 panel",
-      "footer": "Design reviewed by Tony Chong  ·  reference SEM20260612  ·  production JIRA not assigned",
+      "footer": "Reviewed by Tony Chong  ·  SEM20260612  ·  JIRA not assigned",
       "notes": "Cover is identity only. Production JIRA is not assigned; TMP-000 is the dossier stand-in. Reference SEM20260612. Tony Chong reviewed the design note."
     },
     {
@@ -151,8 +151,10 @@
           "convertWardDataToParam",
           "convertDoctorDataToParam",
           [
-            { "text": "convertUserInputDataToParam", "color": "comment" },
-            { "text": "  // defaults, not screen", "color": "comment" }
+            { "text": "convertUserInputDataToParam", "color": "comment" }
+          ],
+          [
+            { "text": "// defaults, not screen", "color": "comment" }
           ]
         ],
         "caption": "Grouping, USID as request no., and ward/doctor mapping must exist before register()."
@@ -234,36 +236,29 @@
         {
           "badge": 1,
           "tone": "accent",
-          "tag": "LIS user",
           "title": "Create the sorter user",
           "body": "Dedicated LIS user on LOE_AUDIT_TRAIL. Not ltc611."
         },
         {
           "badge": 2,
           "tone": "neutral",
-          "tag": "workbench",
           "title": "Seed a workbench row",
           "body": "One row per sorter: hosp, lab, station name, location, printer."
         },
         {
           "badge": 3,
           "tone": "neutral",
-          "tag": "loe_sorter_map",
           "title": "Insert the map row",
-          "body": "Sorter id, user, workbench id, lab, hosp, server name."
+          "body": "Sorter id, user, workbench id, lab, hosp, server name on loe_sorter_map."
         },
         {
           "badge": 4,
           "tone": "warn",
-          "tag": "deploy",
           "title": "Deploy and open the path",
-          "body": "Deploy lis-crs-spec-ack-svc. NetworkPolicy only. No API key in v1."
+          "body": "Deploy lis-crs-spec-ack-svc. NetworkPolicy only. Add SORT_* to the Audit Trail filter."
         }
       ],
-      "callout": {
-        "text": "Add SORT_* to the Audit Trail filter. Still write REG and SEND_OUT."
-      },
-      "notes": "Printer and STAR location come from workbench, not copied onto the map. Audit workstation is wkbh_station_name. Pilot CPS and HMS; Relabel and Failure bins go back to staff Spec Ack."
+      "notes": "Printer and STAR location come from workbench, not copied onto the map. Audit workstation is wkbh_station_name. Still write REG and SEND_OUT. Pilot CPS and HMS; Relabel and Failure bins go back to staff Spec Ack."
     },
     {
       "archetype": "cards",

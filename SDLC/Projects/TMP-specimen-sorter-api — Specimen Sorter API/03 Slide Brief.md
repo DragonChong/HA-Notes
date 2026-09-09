@@ -30,7 +30,7 @@ Voice: scheduler CP3 sample. Identifiers left as in `02`.
 **Archetype:** title-hero
 **Headline:** One POST on Specimen Acknowledgement registers or sends out a USID
 **Lede:** Sorter middleware calls `lis-crs-spec-ack-svc`. Flex packing, alerts, and hard checks move behind that call. Staff Spec Ack stays as the fallback.
-**Notes:** Cover is identity only. Production JIRA is not assigned; TMP-000 is the dossier stand-in so the cover carries a ticket shape. Reference SEM20260612. Tony Chong reviewed [[02 System Design]].
+**Notes:** Cover is identity only. Production JIRA is not assigned; TMP-000 is the dossier stand-in so the cover carries a ticket shape. Reference SEM20260612. Tony Chong reviewed [[02 System Design]]. Footer: Reviewed by Tony Chong.
 
 ### Slide: Background
 **Eyebrow:** Background
@@ -78,11 +78,11 @@ Proposed: New POST. Same retrieve, send-out, register, worksheet, and PHLC app s
 **Title:** Seed user, workbench, and map, then deploy
 **Archetype:** cards
 **Body:**
-1. Create a dedicated sorter LIS user for `LOE_AUDIT_TRAIL.loeaud_usercode`.
+1. Create a dedicated sorter LIS user for `LOE_AUDIT_TRAIL`. Not `ltc611`.
 2. Seed a `workbench` row per physical sorter: hosp, lab, station name, location, printer.
 3. Insert `loe_sorter_map`: sorter id, user, workbench id, lab, hosp, server name.
-4. Deploy `lis-crs-spec-ack-svc`. Open NetworkPolicy for middleware. No API key in v1. Add `SORT_*` to the Audit Trail action filter.
-**Notes:** Printer and STAR location come from `workbench`, not copied onto the map. Audit workstation is `wkbh_station_name`. Pilot CPS and HMS; Relabel and Failure bins go back to staff Spec Ack.
+4. Deploy `lis-crs-spec-ack-svc`. NetworkPolicy only. Add `SORT_*` to the Audit Trail filter.
+**Notes:** Printer and STAR location come from `workbench`, not copied onto the map. Still write `REG` and `SEND_OUT`. Pilot CPS and HMS; Relabel and Failure bins go back to staff Spec Ack.
 
 ### Slide: Fallback
 **Eyebrow:** Fallback
@@ -100,8 +100,8 @@ Proposed: New POST. Same retrieve, send-out, register, worksheet, and PHLC app s
 **Archetype:** asks
 1. Leave v1 with NetworkPolicy only, no API key or Hub JWT? (D1)
 2. Fail the tube when the USID has both local and send-out tests? (D3)
-3. Print worksheets and PHLC only after Registered, after the HTTP return? (D11, D4, D5)
-4. Show `SORT_REG`, `SORT_SO`, `SORT_RELABEL`, `SORT_FAIL` on the Audit Trail filter, still writing `REG` / `SEND_OUT`? (D6)
+3. Print worksheets and PHLC only after Registered, after HTTP return? (D11, D4, D5)
+4. Show `SORT_*` actions on the Audit Trail filter? (D6)
 **Notes:** Requester already answered D1-D11 on [[02 System Design]]. This room is the ratification, not a new design pass.
 
 ### Slide: Q&A
