@@ -33,14 +33,14 @@
           "tone": "neutral",
           "tag": "Spec Ack",
           "title": "Staff scan and click",
-          "body": "A USID is scanned on Specimen Acknowledgement. Staff then click Send-out or Register."
+          "body": "Staff scan a USID on Specimen Acknowledgement, then click Send-out or Register."
         },
         {
           "badge": 2,
           "tone": "warn",
           "tag": "three owners",
           "title": "Writes are already in the service",
-          "body": "Lookup and writes live in lis-crs-spec-ack-svc. Packing still sits in Flex GcrSpecAckDataConvertor."
+          "body": "Lookup and writes live in the Spec Ack service. Packing still sits in Flex."
         },
         {
           "badge": 3,
@@ -52,7 +52,7 @@
       ],
       "callout": {
         "lead": "Do not use the staff GET:",
-        "text": "GET /retrieveGcrOrder hard-codes user ltc611. The sorter must not call it."
+        "text": "GET /retrieveGcrOrder hard-codes user ltc611. Do not call it."
       },
       "notes": "Writes are not the gap. Middleware cannot call /gcrSpecAckRegister without the packing object the screen builds today."
     },
@@ -236,32 +236,32 @@
           "tone": "accent",
           "tag": "LIS user",
           "title": "Create the sorter user",
-          "body": "Dedicated LIS user. It appears on LOE_AUDIT_TRAIL.loeaud_usercode. Not ltc611."
+          "body": "Dedicated LIS user on LOE_AUDIT_TRAIL. Not ltc611."
         },
         {
           "badge": 2,
           "tone": "neutral",
           "tag": "workbench",
           "title": "Seed a workbench row",
-          "body": "One row per physical sorter: hosp, lab, station name, location, default printer."
+          "body": "One row per sorter: hosp, lab, station name, location, printer."
         },
         {
           "badge": 3,
           "tone": "neutral",
           "tag": "loe_sorter_map",
           "title": "Insert the map row",
-          "body": "Sorter id, user, workbench id, lab, hosp, server name. Printer stays on workbench."
+          "body": "Sorter id, user, workbench id, lab, hosp, server name."
         },
         {
           "badge": 4,
-          "tone": "ink",
+          "tone": "warn",
           "tag": "deploy",
           "title": "Deploy and open the path",
-          "body": "Deploy lis-crs-spec-ack-svc. NetworkPolicy for middleware. No API key in v1."
+          "body": "Deploy lis-crs-spec-ack-svc. NetworkPolicy only. No API key in v1."
         }
       ],
       "callout": {
-        "text": "Add SORT_REG, SORT_SO, SORT_RELABEL, SORT_FAIL to the Audit Trail action filter. Still write REG and SEND_OUT."
+        "text": "Add SORT_* to the Audit Trail filter. Still write REG and SEND_OUT."
       },
       "notes": "Printer and STAR location come from workbench, not copied onto the map. Audit workstation is wkbh_station_name. Pilot CPS and HMS; Relabel and Failure bins go back to staff Spec Ack."
     },
@@ -303,19 +303,19 @@
         },
         {
           "q": "Fail the tube when the USID has both local and send-out tests?",
-          "why": "Staff Spec Ack only warns. Sorter has no click (D3)."
+          "why": "Staff Spec Ack only warns (D3)."
         },
         {
-          "q": "Print worksheets and PHLC only after Registered, after the HTTP return?",
-          "why": "Matches constructSaveActions. Send-out prints nothing (D11, D4, D5)."
+          "q": "Print worksheets and PHLC only after Registered, after HTTP return?",
+          "why": "Send-out prints nothing (D11, D4, D5)."
         },
         {
-          "q": "Show SORT_REG, SORT_SO, SORT_RELABEL, SORT_FAIL on the Audit Trail filter?",
-          "why": "Still write REG and SEND_OUT as well (D6)."
+          "q": "Show SORT_* actions on the Audit Trail filter?",
+          "why": "Still write REG and SEND_OUT (D6)."
         }
       ],
       "callout": {
-        "text": "Requester already answered D1-D11 on the design note. This room is the ratification."
+        "text": "Requester already answered D1-D11. This room ratifies."
       },
       "notes": "Requester already answered D1-D11. This room is the ratification, not a new design pass."
     },
