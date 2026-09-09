@@ -10,7 +10,7 @@
       "archetype": "title-hero",
       "eyebrow": "TMP-000   ·   CHANGE REQUEST   ·   CP3",
       "headline": "One POST on Specimen Acknowledgement\nregisters or sends out a USID",
-      "lede": "Sorter middleware calls lis-crs-spec-ack-svc. Flex packing, alerts, and hard checks move behind that call. Staff Spec Ack stays as the fallback.",
+      "lede": "Sorter middleware calls the Specimen Acknowledgement service. Soft alerts, hard checks, and packing move behind that call. Staff Spec Ack stays as the fallback.",
       "stats": [
         { "label": "Service", "value": "lis-crs-spec-ack-svc" },
         { "label": "Date", "value": "09 Sep 2026" },
@@ -40,7 +40,7 @@
           "tone": "warn",
           "tag": "three owners",
           "title": "Writes are already in the service",
-          "body": "Lookup and writes live in the Spec Ack service. Packing still sits in Flex."
+          "body": "Lookup and writes live in Spec Ack. The screen still builds the register payload."
         },
         {
           "badge": 3,
@@ -51,10 +51,10 @@
         }
       ],
       "callout": {
-        "lead": "Do not use the staff GET:",
-        "text": "GET /retrieveGcrOrder hard-codes user ltc611. Do not call it."
+        "lead": "Do not reuse staff retrieve:",
+        "text": "That call is tied to a fixed user."
       },
-      "notes": "Writes are not the gap. Middleware cannot call /gcrSpecAckRegister without the packing the screen builds today."
+      "notes": "Writes are not the gap. Middleware cannot call staff register without the payload the screen builds today."
     },
     {
       "archetype": "compare",
@@ -65,14 +65,14 @@
         "tone": "danger",
         "title": "Screen owns the contract",
         "code": [
-          "promptAlert",
-          "GcrSpecAckDataValidator",
-          "GcrSpecAckDataConvertor"
+          "soft alerts",
+          "hard checks",
+          "register packing"
         ],
         "points": [
-          "Staff click send-out or register with that packing",
+          "Staff click after the screen packs the payload",
           "Workbench comes from the PC login",
-          "GET retrieve hard-codes ltc611"
+          "Staff retrieve is tied to a fixed user"
         ]
       },
       "right": {
@@ -83,20 +83,20 @@
           "POST /api/specack/sorter/auto-register"
         ],
         "points": [
-          "Convertor, validator, and ALS alerts run on the server",
-          "Reuse retrieve, sendOutSpecimen, register, worksheet, PHLC",
-          "Staff APIs stay as they are"
+          "Alerts, hard checks, and packing run on the server",
+          "Reuse retrieve, send-out, register, worksheet, and PHLC",
+          "Staff screen stays as it is"
         ]
       },
       "callout": {
-        "text": "Do not overload /gcrSpecAckRegister or the ECPath5 register. Both keep the wrong caller contract."
+        "text": "Do not reuse staff register or ECPath5 register. Both expect a different caller."
       },
-      "notes": "Overloading /gcrSpecAckRegister would keep the staff packing contract. Overloading ECPath5 register would keep a hard-coded user. The convertor has to move or the caller invents a second packing shape."
+      "notes": "Staff register keeps screen packing. ECPath5 register keeps a hard-coded user."
     },
     {
       "archetype": "decision-flow",
       "eyebrow": "Proposed Change",
-      "title": "A new POST orchestrates retrieve, convert, then write",
+      "title": "A new POST looks up, packs, then writes",
       "start": {
         "text": "POST auto-register\nUSID + sorterId",
         "w": 2.45
@@ -109,7 +109,7 @@
           "fallthrough": {
             "label": "No",
             "title": "FAILURE",
-            "body": "Unknown sorter, APS/BBS/MBS, mixed tests, STAR 4422"
+            "body": "Unknown sorter, APS/BBS/MBS, mixed tests, STAR with no location"
           }
         },
         {
@@ -125,59 +125,45 @@
       ],
       "terminal": {
         "label": "No",
-        "text": "SEND_OUT if all tests\nin LOE_SENDOUT_TEST\nelse REGISTERED"
+        "text": "SEND_OUT if every test\nis a send-out test\nelse REGISTERED"
       },
       "condition": {
         "label": "Also on this path",
-        "code": "DFT -> Spec Ack register(), not /api/dftreg",
+        "code": "DFT uses ordinary Spec Ack register",
         "note": "Do not compare workbench lab to the retrieved test lab. Print only after REGISTERED."
       },
-      "notes": "STAR with no wkbh_location is Failure 4422. Mixed local and send-out is Failure, not ALS. DFT uses the same Spec Ack register() packing."
+      "notes": "STAR with no workbench location is Failure. Mixed local and send-out is Failure, not a warning. DFT uses the same Spec Ack register packing as an ordinary specimen."
     },
     {
-      "archetype": "code-findings",
+      "archetype": "steps-sidebar",
       "eyebrow": "Proposed Change",
-      "title": "The Flex convertor moves behind the API",
-      "code": {
-        "filename": "GcrSpecAckDataConvertor.as",
-        "lines": [
-          [
-            { "text": "convertRequestTestGroupDataFromGcrTest", "color": "warn" }
-          ],
-          [
-            { "text": "convertRequestTestGroupDataToParam", "color": "warn" }
-          ],
-          "convertRequestNoDataToParam",
-          "convertWardDataToParam",
-          "convertDoctorDataToParam",
-          [
-            { "text": "convertUserInputDataToParam", "color": "comment" }
-          ],
-          [
-            { "text": "// defaults, not screen", "color": "comment" }
-          ]
-        ],
-        "caption": "Grouping, USID as request no., and ward/doctor mapping must exist before register()."
-      },
-      "findings": [
+      "title": "What the screen packs today moves behind the API",
+      "steps": [
         {
-          "mark": "!",
-          "title": "Defaults replace checkboxes",
-          "body": "Ack time is server now. AAR off. Urgent workstation off. Labels off. No relabel checkbox."
+          "badge": 1,
+          "title": "Group tests and assign the request number",
+          "body": "Tests for this specimen are grouped. The USID is the request number when eligible."
         },
         {
-          "mark": "!",
-          "title": "register() already expects this",
-          "body": "Porting only the validator still leaves an empty test-group list."
+          "badge": 2,
+          "title": "Map ward and doctor",
+          "body": "Office dictionary mapping the screen does today is done on the server."
         },
         {
-          "mark": "!",
-          "title": "Ro builders stay with print",
-          "body": "Worksheet, send-out form, and SH Ro are built here, printed only after Registered."
+          "badge": 3,
+          "title": "Replace ticks with defaults",
+          "body": "Ack time is now. AAR off. Urgent workstation off. Labels off. No relabel tick."
         }
       ],
-      "findingTone": "accent",
-      "notes": "register() already assumes this packing. Skipping the convertor and porting only the validator still leaves an empty test-group list."
+      "sidebar": {
+        "eyebrow": "Why it has to move",
+        "headline": "Pack first",
+        "body": "If we only move the hard checks, the write has no test groups.",
+        "points": [
+          "Soft alerts go to ALS only"
+        ]
+      },
+      "notes": "Moving only the hard checks still leaves an empty test-group list."
     },
     {
       "archetype": "matrix",
@@ -193,12 +179,12 @@
         "rows": [
           [
             { "text": "REGISTERED", "mono": true, "bold": true },
-            "Converted packing via register()",
+            "Creates the lab request",
             { "text": "All worksheets + PHLC after return", "tone": "accent", "color": "accent", "bold": true }
           ],
           [
             { "text": "SEND_OUT", "mono": true, "bold": true },
-            "sendOutSpecimen",
+            "Send-out write",
             { "text": "None", "tone": "warn", "color": "warnInk", "bold": true }
           ],
           [
@@ -208,7 +194,7 @@
           ],
           [
             { "text": "FAILURE", "mono": true, "bold": true },
-            "SORT_FAIL audit only",
+            "Failure audit only",
             { "text": "None", "color": "body" }
           ]
         ]
@@ -222,10 +208,10 @@
         {
           "tone": "accent",
           "title": "Print all, no picker",
-          "body": "Staff worksheet picker is gone. Every Ro from the convertor prints."
+          "body": "Staff worksheet picker is gone. Every worksheet the packing produced is printed."
         }
       ],
-      "notes": "Spec Ack sendOutActions never prints. The ack auto-print flag is not used. Staff picker goes away: print all on the registration path."
+      "notes": "Send-out never prints. The ack auto-print flag is not used. Staff picker goes away: print all on the registration path."
     },
     {
       "archetype": "cards",
@@ -237,7 +223,7 @@
           "badge": 1,
           "tone": "accent",
           "title": "Create the sorter user",
-          "body": "Dedicated LIS user on LOE_AUDIT_TRAIL. Not ltc611."
+          "body": "A dedicated LIS user on the audit trail. Not a shared staff login."
         },
         {
           "badge": 2,
@@ -258,7 +244,7 @@
           "body": "Deploy lis-crs-spec-ack-svc. NetworkPolicy only. Add SORT_* to the Audit Trail filter."
         }
       ],
-      "notes": "Printer and STAR location come from workbench, not copied onto the map. Audit workstation is wkbh_station_name. Still write REG and SEND_OUT. Pilot CPS and HMS; Relabel and Failure bins go back to staff Spec Ack."
+      "notes": "Printer and STAR location come from workbench, not copied onto the map. Audit workstation is the workbench station name. Still write REG and SEND_OUT. Pilot CPS and HMS; Relabel and Failure bins go back to staff Spec Ack."
     },
     {
       "archetype": "cards",
@@ -270,7 +256,7 @@
           "badge": 1,
           "tone": "danger",
           "title": "Stop middleware",
-          "body": "Staff clicks still retrieve, send-out, and register. The staff APIs are untouched."
+          "body": "Staff clicks still retrieve, send-out, and register. The staff screen is untouched."
         },
         {
           "badge": 2,
@@ -320,7 +306,7 @@
       "eyebrow": "Discussion",
       "headline": "Q&A",
       "fontSize": 40,
-      "notes": "Likely questions: why not overload /gcrSpecAckRegister; why DFT skips /api/dftreg; why workbench lab is not checked against the test lab."
+      "notes": "Likely questions: why not reuse the staff register API; why DFT does not use a separate DFT API; why workbench lab is not checked against the test lab."
     },
     {
       "archetype": "closing",
@@ -337,7 +323,7 @@
         {
           "badge": 2,
           "title": "Implement the POST",
-          "body": "New orchestrator on lis-crs-spec-ack-svc, including the packing convertor."
+          "body": "New orchestrator on lis-crs-spec-ack-svc, including the packing the screen does today."
         },
         {
           "badge": 3,
