@@ -138,13 +138,41 @@ In Settings search `http`:
 - **Disable HTTP/2** = on
 - **Disable HTTP/1 SSE** = off
 
-If PAC/system proxy is ignored (common since Cursor 3.9), set explicitly:
+If PAC/system proxy is ignored (common since Cursor 3.9), set these in the **user** file `%APPDATA%\Cursor\User\settings.json` (not a workspace `.vscode/settings.json`):
 
 ```json
 "http.proxy": "http://proxy.ha.org.hk:8080",
 "http.proxySupport": "override",
-"cursor.general.disableHttp2": true
+"cursor.general.disableHttp2": true,
+"http.proxyStrictSSL": false
 ```
+
+HA proxy auth is Basic. If Chat/Agent still fail after the above, Cursor is connecting to the proxy with no login (curl needed `-U`). Set the URL **locally** as `http://USERNAME:PASSWORD@proxy.ha.org.hk:8080` — do not put the password in this vault or in chat.
+
+Then set **both** of these:
+
+1. Settings → Network → HTTP Compatibility Mode → **HTTP/1.1** (HTTP/2 still does a local `getaddrinfo` and fails `ENOTFOUND` before the proxy).
+2. **Fully kill** every `Cursor.exe` in Task Manager, then reopen. Reload Window is not enough.
+
+`http.proxy` is only honored from **Cursor 3.11.13+**. On 3.9 / 3.10 the AI process (`always-local-singleton`) ignores it. Check Help → About.
+
+User env vars are a second path. After setting them, log off and on, or start Cursor from that same PowerShell (a Start Menu shortcut often will not see new env vars):
+
+```powershell
+[System.Environment]::SetEnvironmentVariable("HTTP_PROXY", "http://proxy.ha.org.hk:8080", "User")
+[System.Environment]::SetEnvironmentVariable("HTTPS_PROXY", "http://proxy.ha.org.hk:8080", "User")
+```
+
+### settings.json updated but diagnostics still fail
+
+1. Read the **new** diagnostic, not the old screenshot.
+   - Chat / Agent / API / SSL **pass** — settings worked. Remaining `ENOTFOUND` on DNS / Auth UI / Tab / Agent Endpoint is cosmetic.
+   - Those four still fail **and** Chat/Agent still fail — settings were not applied or Cursor is too old.
+2. Confirm the file is `%APPDATA%\Cursor\User\settings.json` and JSON is valid (comma after the previous last property).
+3. Confirm HTTP Compatibility Mode is HTTP/1.1 in the Network UI, not only in JSON.
+4. Confirm version ≥ 3.11.13; if not, update, then kill all `Cursor.exe` again.
+5. Add proxy credentials to `http.proxy` locally if curl needed a password.
+6. Add `HTTP_PROXY` / `HTTPS_PROXY` as user env vars, log off/on, start Cursor.
 
 Until IT changes the proxy, **Agents Window** is a reasonable workaround. IDE chat paints every token, so the same buffered path looks worse there.
 
