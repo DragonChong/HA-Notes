@@ -9,7 +9,7 @@ tags:
   - ha
   - proxy
 created: '2026-09-07'
-updated: '2026-09-07'
+updated: '2026-09-09'
 status: runbook
 ---
 # HA Cursor Network Stream Test
@@ -29,9 +29,16 @@ Related: [[Cursor Setup]]
 | **IDE chat** | Jerky streaming after it starts |
 | Network diagnostics | Chat/Agent/API pass; DNS / Auth UI / Tab / Agent Endpoint `ENOTFOUND`; ping ~1s |
 
-`ENOTFOUND` on those four checks is often **cosmetic** on a proxy-only PC: the diagnostic does a local `getaddrinfo`, while real traffic uses the proxy. Cursor does not use the system `curl.exe`.
+## Two Cursor diagnostic patterns
 
-Jerky streaming is almost always **WCG response buffering** (or a stale CONNECT), not a slow model.
+| Pattern | What it means |
+|---|---|
+| Chat/Agent/API **pass**; only DNS / Auth UI / Tab / Agent Endpoint `ENOTFOUND` | Cosmetic. Cursor is using the proxy. Judging streaming, not reachability. |
+| Chat/Agent/API/SSL/Ping **fail** `ENOTFOUND api2.cursor.sh`; Marketplace + Authentication **pass** | Cursor is **not sending AI traffic through the proxy**. Marketplace/Auth use the main process (system proxy). AI uses a separate transport that ignores PAC/WinINET unless `http.proxy` is set. Seen on Cursor 3.9+. |
+
+`ENOTFOUND` is local DNS. HA PCs often cannot resolve `*.cursor.sh` except via the proxy. curl can still work because it uses `HTTP_PROXY` / `-U`.
+
+If curl through the proxy reaches Cursor but IDE diagnostics fail Chat/Agent, set `http.proxy` explicitly and fully quit Cursor. That is the fix for this pattern.
 
 ## PowerShell paste
 
@@ -53,6 +60,16 @@ Creates the payload file, authenticates to the HA proxy, and times HTTP/1.1 SSE 
 
 ```powershell
 $bin = Join-Path $env:TEMP "cursor-sse.bin"; [IO.File]::WriteAllBytes($bin, ([byte[]](0,0,0,0,0x11) + [Text.Encoding]::ASCII.GetBytes('{"payload":"foo"}'))); curl.exe -k -U $env:USERNAME --proxy-basic --http1.1 -N -o - -XPOST -H "Content-Type: application/connect+json" --data-binary "@$bin" --write-out "\ntime_starttransfer=%{time_starttransfer}\ntime_total=%{time_total}\n" https://api2.cursor.sh/aiserver.v1.HealthService/StreamSSE
+```
+
+If you must avoid one-line paste, run **two separate lines** (create file first, then curl):
+
+```powershell
+$bin = Join-Path $env:TEMP "cursor-sse.bin"; [IO.File]::WriteAllBytes($bin, ([byte[]](0,0,0,0,0x11) + [Text.Encoding]::ASCII.GetBytes('{"payload":"foo"}')))
+```
+
+```powershell
+curl.exe -k -U $env:USERNAME --proxy-basic --http1.1 -N -o - -XPOST -H "Content-Type: application/connect+json" --data-binary "@$bin" --write-out "\ntime_starttransfer=%{time_starttransfer}\ntime_total=%{time_total}\n" https://api2.cursor.sh/aiserver.v1.HealthService/StreamSSE
 ```
 
 If 407 persists, retry with `--proxy-ntlm` instead of `--proxy-basic`.
@@ -97,6 +114,7 @@ These are setup failures, not streaming results. Another PC can show the same cu
 | Error | Cause | What to do |
 |---|---|---|
 | `Couldn't read data from file … cursor-sse.bin` / empty POST | Payload file not created | Run the one-liner that writes `$bin` first |
+| `Couldn't read data from file ""` + `Empty path name is not legal` + `unimplemented` / `missing input message` | Reverse-paste: curl ran before `$bin = ...` so the POST was empty. Origin replied because the **proxy path works**. | Press `Ctrl+C`, then run create-file and curl as **two separate lines** |
 | `curl: (60) SSL certificate problem` | Old curl CA bundle; Cursor uses Windows certs | Use `-k` for this test only |
 | `curl: (56) … HTTP code 407 … after CONNECT` | curl sent no proxy login | `-U $env:USERNAME --proxy-basic` (or `--proxy-ntlm`) |
 
