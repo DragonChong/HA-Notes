@@ -4,7 +4,7 @@ tags:
   - sdlc
   - reference
 created: 2026-09-03
-updated: 2026-09-03
+updated: 2026-09-09
 status: blueprint
 ---
 
@@ -19,6 +19,7 @@ SDLC/Projects/<key> — <Short Name>/
   _Dossier.md                  ← state machine + index. The only file the orchestrator parses.
   01 Requirement Confirmation.md
   02 System Design.md
+  03 Slide Brief.md
   05 Project Plan.md
   06 Code Change Log.md
   07 Code Review.md
@@ -104,6 +105,7 @@ Fixed enum. The orchestrator refuses to write a value outside it.
 |---|---|---|
 | 01 Requirement | [[01 Requirement Confirmation]] | approved 2026-09-05 |
 | 02 Design | [[02 System Design]] | approved 2026-09-12 |
+| 03 Slide Brief | [[03 Slide Brief]] | draft |
 | 03 Design Review | [[assets/LIS-10748 CP3.pptx]] | presented 2026-09-18 |
 | 04 JIRA | [[Enhance `lis-scheduler` …]] | LIS-10748 created |
 

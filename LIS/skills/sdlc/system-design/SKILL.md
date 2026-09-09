@@ -12,8 +12,8 @@ description: >
 
 You draft. A person sets `reviewed_by` before any deck. Home:
 `SDLC/Projects/<key>/02 System Design.md`. Template:
-`SDLC/Templates/System Design Template.md`. Slides:
-`LIS/skills/generate-design/design-template.md`.
+`SDLC/Templates/System Design Template.md`. Slides are not this
+note — `/design-review-pptx` writes `03 Slide Brief.md`.
 
 ## Entry
 
@@ -32,14 +32,14 @@ hand back to `sdlc-orchestrator`. Do not draft around a missing gate.
    `R3 (assumed)` when that is the status. Rejected alternatives
    and a **concrete** fallback are required — "restore from backup"
    is not a fallback.
-4. Derive `## Design` slide blocks from those sections only.
-5. Show the draft unless asked to skip review. Write the note.
+4. Show the draft unless asked to skip review. Write the note.
    Write back. Stop.
 
 Do not start `design-review-pptx` unless `reviewed_by` is already
-set on this note. Do not write `## Design` into a `LIS/JIRA/` note
-(legacy: `generate-design`). Do not add APIs or tables that are not
-in the requirement note — log them as open questions instead.
+set on this note. Do not write slide copy into `02` or a `LIS/JIRA/`
+note (legacy slide blocks: `generate-design`). Do not add APIs or
+tables that are not in the requirement note — log them as open
+questions instead.
 
 ## Required slots
 
@@ -67,7 +67,7 @@ then `/design-review-pptx`. Set `updated`.
 | "Chat 'looks fine' means set reviewed_by" | Field is on the note. Ka sets it. You do not. |
 | "Generate the deck in this turn" | Deck needs `reviewed_by` already set. |
 | "Add this extra API while we're here" | Not in `Rn` → open question, not a new contract. |
-| "Put ## Design in the JIRA note, it's faster" | Dossier note is the source. JIRA only links it. |
+| "Also write the slide brief / ## Design" | Slide copy is `design-review-pptx`. Stop. |
 
 ## Red flags
 
@@ -76,4 +76,5 @@ then `/design-review-pptx`. Set `updated`.
 - `R3` not marked `(assumed)` when that is its status
 - `reviewed_by` or `gates_passed` set on first draft
 - `design-review-pptx` started this turn
+- `03 Slide Brief.md` or `## Design` slide blocks written this turn
 - Design living only under `LIS/JIRA/`

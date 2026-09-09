@@ -97,19 +97,20 @@ Code answers *what the system does now*. It does not hold intent, rejected alter
 
 ## Separating design from the JIRA log
 
-You flagged this and it is the right call. Today `generate-design` writes a `## Design` section *into* the JIRA note and `design-review-pptx` reads it from there. That couples three things that change at different rates: the change request, the technical design, and the review deck.
+The change request, the technical design, and the review deck change at different rates. They are three files.
 
 **Target:**
 
 ```
-SDLC/Projects/<key>/02 System Design.md      ← canonical design, owns its own history
+SDLC/Projects/<key>/02 System Design.md      ← technical contract
+SDLC/Projects/<key>/03 Slide Brief.md        ← presentational copy after reviewed_by
 LIS/JIRA/<Summary>.md                        ← change request; frontmatter: design: "[[02 System Design]]"
-<Title>.deck.json → .pptx                    ← rendered from the design note
+assets/<Title>.deck.json → .pptx             ← rendered from the slide brief
 ```
 
-**Migration without breaking anything** — teach `design-review-pptx` to resolve its design source by precedence:
+**Migration without breaking anything** — `design-review-pptx` resolves by precedence:
 
-1. `design` wikilink in the JIRA note frontmatter → read that note (new path)
+1. `03 Slide Brief.md` in the dossier (create from `02` if missing, after `reviewed_by`)
 2. `## Design` section in the JIRA note (legacy path, still works)
 
 Old notes keep rendering; new notes get the clean split. No bulk migration needed.

@@ -23,9 +23,9 @@ Produce the canonical technical design, in its own note, decoupled from the JIRA
 
 `generate-design` currently writes a `## Design` section *inside* the JIRA note in `LIS/JIRA/`, and `design-review-pptx` reads it from there. That couples the change request, the design and the deck.
 
-**Target:** design is its own note at `SDLC/Projects/<key>/02 System Design.md`. The JIRA note gains `design: "[[02 System Design]]"` in frontmatter.
+**Target:** design is its own note at `SDLC/Projects/<key>/02 System Design.md`. The JIRA note gains `design: "[[02 System Design]]"` in frontmatter. Slide copy is `03 Slide Brief.md`, written later by `design-review-pptx`.
 
-**Migration:** teach `design-review-pptx` to resolve its source by precedence — (1) the `design` frontmatter wikilink, (2) the legacy `## Design` section. Nothing existing breaks; new work uses the clean split. See [[Architecture#Separating design from the JIRA log]].
+**Migration:** `design-review-pptx` reads [[03 Slide Brief]] (create if missing) after `reviewed_by` on `02`. Legacy: `## Design` in a JIRA note when there is no dossier. See [[Architecture#Separating design from the JIRA log]].
 
 ## Entry criteria
 

@@ -46,6 +46,7 @@ Do not lead with parent JIRA keys; put them under Reference Logs.>
 
 <!-- New work: design lives at SDLC/Projects/<key>/02 System Design.md.
      Set frontmatter `design: "[[02 System Design]]"`.
+     Slides: 03 Slide Brief.md via design-review-pptx after reviewed_by.
      Legacy: generate-design still populates this section. -->
 
 ## Reference Logs

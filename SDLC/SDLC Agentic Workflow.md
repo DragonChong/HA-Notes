@@ -5,7 +5,7 @@ tags:
   - index
   - agentic
 created: 2026-09-03
-updated: 2026-09-03
+updated: 2026-09-09
 status: blueprint
 ---
 
@@ -34,7 +34,7 @@ Each stage note defines: **entry criteria → owning skill → inputs → output
 | --- | ------------------------------- | ------------------------------------------------------- | ----- | --------------------------------------- |
 | 01  | [[01 Requirement Confirmation]] | `requirement-confirmation`                              | C     | Requirement note                        |
 | 02  | [[02 System Design]]            | `system-design`                                         | B     | Design note (own file)                  |
-| 03  | [[03 Design Review Deck]]       | `design-review-pptx`                                    | A     | CP3 `.pptx`                             |
+| 03  | [[03 Design Review Deck]]       | `design-review-pptx`                                    | A     | Slide brief + CP3 `.pptx`               |
 | 04  | [[04 JIRA Log Creation]]        | `lis-jira-log-creator`                                  | B     | JIRA log note + JIRA issue              |
 | 05  | [[05 Project Plan]]             | `project-plan`                                          | B     | Gantt + schedule note                   |
 | 06  | [[06 Development]]              | `implement-task` + `code-change-log`                    | B     | Code + change-log note                  |

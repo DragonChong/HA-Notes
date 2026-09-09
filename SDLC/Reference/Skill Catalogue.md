@@ -5,7 +5,7 @@ tags:
   - reference
   - agent-skills
 created: 2026-09-03
-updated: 2026-09-03
+updated: 2026-09-09
 status: blueprint
 ---
 
@@ -25,7 +25,7 @@ Part of [[SDLC Agentic Workflow]]. Where every skill sits in the [[Architecture|
 |---|---|---|---|
 | 01 | `requirement-confirmation` | **exists** | `LIS/skills/sdlc/requirement-confirmation/` |
 | 02 | `system-design` | **exists** | Refit done — own note; `generate-design` is legacy-only |
-| 03 | `design-review-pptx` | exists | Source precedence: dossier → JIRA `design` → `## Design` |
+| 03 | `design-review-pptx` | exists | After `reviewed_by`: write `03 Slide Brief.md`, humanize prose, then `deck.json`. Legacy: JIRA `## Design` |
 | 04 | `lis-jira-log-creator` | exists | Dossier read/write + JIRA create after human approve |
 | 05 | `project-plan` | build | New |
 | 06 | `implement-task` | **generalize** | De-hardcode CRS Revamp |

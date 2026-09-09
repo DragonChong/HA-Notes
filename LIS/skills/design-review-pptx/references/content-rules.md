@@ -1,7 +1,8 @@
 # Content rules
 
-How to turn a JIRA design note into slide content. The archetypes handle how it
-looks; this is about what goes in them.
+How to turn a **slide brief** into slide content. The archetypes handle how it
+looks; this is about what goes in them. Voice and humanizer rules:
+[voice.md](voice.md).
 
 Craft sources (structure / asks / visual-first — **not** palette): HA
 `D:\ECP\LIS\References\General PPTX Preparation Best Practices.md` and
@@ -9,49 +10,57 @@ Awesome-PPT-Design-Skills. Keep the approved LIS-10747 teal kit.
 
 ---
 
-## Mapping a JIRA note to slides
+## Source order
 
-The source is `LIS/JIRA/{Note}.md` — the change-request note from
-**lis-jira-log-creator**, with its `## Design` section filled in by
-**generate-design**.
+```
+1. SDLC/Projects/<key>/03 Slide Brief.md     → new path (create if missing)
+2. ## Design in LIS/JIRA/{Note}.md           → legacy, no dossier
+```
 
-| Note section / Design heading | Archetype |
-|-------------------------------|-----------|
-| frontmatter (`jira`, `services`, `priority`, `target_completion_date`) | `title-hero` eyebrow + stats (+ optional `presenters` / `reviewers`) |
-| `## Request Summary` / meeting goal | `title-hero` lede; full reviews also get early `thesis` |
-| `### Agenda` | `agenda` |
-| `### Slide: Executive Summary` / meeting goal | `thesis` |
-| `## Background` / `### Slide: Background` | `evolution` (history) or `cards` |
+Facts still come from `02 System Design.md`. The brief is presentational.
+If a slide needs a fact that is not in `02`, the design note is wrong, not
+the deck. Do not invent design detail. Do not read leftover `## Design`
+blocks at the bottom of `02` for new work.
+
+**Legacy only:** when `## Design` is empty on a JIRA note, build from
+Background + Change Description + Justification, and say so on the closing
+slide (`"Design status: draft — to be populated before CP3 review."`).
+
+---
+
+## Mapping the brief to slides
+
+| Brief heading / 02 section | Archetype |
+|----------------------------|-----------|
+| Cover metadata | `title-hero` eyebrow + stats (+ optional `presenters` / `reviewers`) |
+| Meeting goal / exec summary | `title-hero` lede; full reviews also get early `thesis` |
+| Agenda | `agenda` |
+| Background | `evolution` (history) or `cards` |
 | Existing Design | `image`, `compare`, or `code-findings` — visual-first |
-| Proposed Change overview / before-after | `compare` or `decision-flow` |
+| Proposed Change overview | `compare` or `decision-flow` |
 | Proposed Change detail / schema | `steps-sidebar`, `matrix`, or `code-findings` |
 | Trade-offs / Alternatives | `cards` |
 | Impact (deps + risks) | `cards` |
-| Promotion / Implementation Plan | `cards` or `steps-sidebar` (docs may say “Implementation Plan”; archetype stays these) |
+| Promotion | `cards` or `steps-sidebar` |
 | Fallback | `cards` |
-| Open Questions / Confirmation | `asks` (required before Q&A) |
+| Open Questions | `asks` (required before Q&A) |
 | Q&A | `statement` |
-| `## Target Completion Date` / next steps | `closing` |
-| `## Justification` | `sidebar` on `steps-sidebar`, or a `callout` |
-
-**When `## Design` is empty** — as it was for LIS-10747 — build from Background,
-Change Description and Justification, and say so on the closing slide
-(`"Design status: draft — to be populated before CP3 review."`). Do not invent
-design detail to fill slides.
+| Close / next steps | `closing` |
 
 **Visual-first for existing / proposed.** Prefer `image`, `decision-flow`, or
 `compare` over a grid of prose cards.
 
-**Asks must be concrete.** “Is send-out determined by destination lab only?”
-not “Any feedback?”. Full reviews and `--profile cp3` QA warn if there is no
-`asks` / Open Questions slide before the closing Q&A `statement`.
+**Asks must be concrete.** "Is send-out determined by destination lab only?"
+not "Any feedback?" or "confirm reviewed_by". Full reviews and `--profile cp3`
+QA warn if there is no `asks` slide before the closing Q&A `statement`.
 
 ### Deck length
 
-| Review type | Slides |
-|-------------|--------|
+| Profile | Slides |
+|---------|--------|
 | Incremental — bug fix, targeted change | 6–10 |
 | Full — new service, migration, first review | 14–22 |
+| Walkthrough — only when Ka asks | long; not the CP3 slot default |
 
 **Incremental sequence:**
 
@@ -73,6 +82,9 @@ A full review adds `agenda`, `thesis`, `image` (architecture), `compare`, and
 `cards` for Trade-offs / Impact / Promotion / Fallback. Incremental reviews may
 skip the agenda and thesis but still need Open Questions (`asks`).
 
+**Walkthrough sequence** (USID sample): per stage `image` → as-is/to-be
+`evolution` → `asks`. Do not use this profile unless Ka asked for it.
+
 ---
 
 ## Writing for the slide
@@ -82,7 +94,7 @@ supports it. If you cannot write the H1 as a short declarative sentence, the
 slide is doing two jobs.
 
 **Roughly 40 body words.** `qa-deck.js` warns past 90 for the whole slide. Card
-bodies want 20–28 words — two lines at 13pt in a 3.12″ column.
+bodies want 20–28 words — two lines at 13pt in a 3.12" column.
 
 **Density.** Prefer ≤3 cards per row; leave quiet margin. One dominant block.
 
@@ -143,6 +155,7 @@ name or date.
 
 ## Before you generate
 
+- [ ] `03 Slide Brief.md` written (dossier) and prose humanized
 - [ ] One idea per slide, H1 written as a statement
 - [ ] Every slide has an eyebrow (except bookends) and speaker notes
 - [ ] Open Questions (`asks`) present before Q&A for full / CP3 decks

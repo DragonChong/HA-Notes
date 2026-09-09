@@ -4,12 +4,11 @@ description: >
   Generates visual .pptx decks for LIS/HA CP3 design reviews from a declarative
   deck spec — cards, flowcharts, matrices and code panels rather than bullet
   lists. Use when the user asks to prepare CP3 design review slides, create a
-  design review deck, or build a presentation from a design note. Resolves
-  design from the dossier note first, then a JIRA `design` wikilink, then
-  legacy ## Design in the JIRA note. Triggers on "design review", "CP3",
-  "JIRA design note to slides". For any other PowerPoint, deck, or
-  presentation from notes, markdown, meetings, or pasted content, use
-  generate-pptx.
+  design review deck, or build a presentation from a design note. After
+  reviewed_by on 02 System Design, writes 03 Slide Brief.md, humanizes prose,
+  then renders deck.json. Legacy: ## Design in a JIRA note with no dossier.
+  Triggers on "design review", "CP3", "JIRA design note to slides". For any
+  other PowerPoint, use generate-pptx. Do not use system-design to write slides.
 ---
 
 # Design Review PowerPoint
@@ -32,12 +31,13 @@ names archetypes and fills slots; it does not set positions.
 
 ```
 Task Progress:
-- [ ] 1. Resolve design source + gather inputs
-- [ ] 2. Choose the slide sequence
-- [ ] 3. Write the deck spec JSON
-- [ ] 4. Generate the .pptx
-- [ ] 5. QA — must exit 0
-- [ ] 6. Preview and actually look at it
+- [ ] 1. Confirm reviewed_by on 02; gather facts from 02 only
+- [ ] 2. Write or refresh 03 Slide Brief.md
+- [ ] 3. Humanize prose (titles, bodies, notes)
+- [ ] 4. Write the deck spec JSON from the brief
+- [ ] 5. Generate the .pptx
+- [ ] 6. QA — must exit 0
+- [ ] 7. Preview and actually look at it
 ```
 
 ### Step 0 — Resolve the skill directory and install
@@ -52,20 +52,27 @@ cd <skill-dir> && npm install
 
 Node 18+. The only dependency is `pptxgenjs`.
 
-### Step 1 — Resolve the design source, then gather inputs
+### Step 1 — Gate, facts, profile
 
-Resolve **one** design source, in this order. Stop at the first hit.
-
-```
-1. dossier.design wikilink            → 02 System Design.md (new path)
-2. JIRA note frontmatter `design`     → that wikilink (new path)
-3. `## Design` in the JIRA note       → legacy path
-4. none of the above                  → stop; the design gate is not passed
-```
-
-Do not generate a deck from an unreviewed design. If the resolved note has
-`agent_assisted: true` and empty `reviewed_by`, stop and say the design
+Do not generate a deck from an unreviewed design. If `02 System Design.md`
+has `agent_assisted: true` and empty `reviewed_by`, stop and say the design
 gate is still open.
+
+Facts come from `02`. This stage **adds no new design facts**. If a slide
+needs a class, table, API, or ConfigMap key that is not in `02`, stop and
+hand back to `system-design`. Rephrasing for the room is allowed.
+
+Resolve **slide copy**, in this order. Stop at the first hit that can be used:
+
+```
+1. SDLC/Projects/<key>/03 Slide Brief.md   → write or refresh, then use it
+2. ## Design in the JIRA note              → legacy path (no dossier)
+3. none of the above and no 02             → stop; the design gate is not passed
+```
+
+If a dossier exists and `03 Slide Brief.md` is missing, **create it** from
+`SDLC/Templates/Slide Brief Template.md` using `02` as the fact source.
+Do not read leftover `## Design` blocks at the bottom of `02` for new work.
 
 | Field | Example | Required |
 |-------|---------|----------|
@@ -74,32 +81,32 @@ gate is still open.
 | Service / repo | lis-ecpath5-app | Yes — dossier `services` |
 | Review forum | CP3 | Yes |
 | Target date | 31 Jul 2026 | Yes |
-| Review type | incremental / full | Yes — design-note `review_type` |
-| Design source | `SDLC/Projects/<key>/02 System Design.md` or `LIS/JIRA/{Note}.md` | Yes |
+| Profile | incremental / full / walkthrough | Yes |
+| Design source (facts) | `SDLC/Projects/<key>/02 System Design.md` | Yes when a dossier exists |
+| Slide source | `03 Slide Brief.md` | Yes when a dossier exists |
 | Diagrams | architecture PNG/SVG | As needed |
 
-Read the `## Design` slide section of the resolved note. This stage adds
-no new content — if a slide needs a fact the design note does not have,
-the design note is wrong, not the deck. If `## Design` is empty on a
-legacy JIRA note, build from Background + Change Description +
-Justification and mark the closing slide as draft — do not invent design
-detail.
+Pick **profile**:
+
+| Profile | When | Length |
+|---------|------|--------|
+| `incremental` (default) | Bug fix, targeted change | 6–10 plus cover/close |
+| `full` | New service, migration, first review | 14–22 |
+| `walkthrough` | Only when Ka asks | Long; image + as-is/to-be + per-stage asks |
 
 See [references/content-rules.md](references/content-rules.md) for the
 section-to-archetype mapping.
 
 ### Step 2 — Choose the slide sequence
 
-**Incremental** (bug fix, targeted change) — 6–10 slides:
+**Incremental** (default, scheduler voice):
 
 ```
 title-hero → evolution → code-findings|compare|image → decision-flow|steps-sidebar
            → cards (Promotion) → cards (Fallback) → asks → statement (Q&A) → closing
 ```
 
-Start from `examples/LIS-10747.deck.json` and add an `asks` slide before Q&A.
-
-**Full** (new service, migration) — 14–22 slides:
+**Full:**
 
 ```
 title-hero → agenda → thesis (Executive Summary)
@@ -108,20 +115,54 @@ title-hero → agenda → thesis (Executive Summary)
            → Promotion → Fallback → asks → Q&A → closing
 ```
 
-Full reviews require Open Questions (`asks`) before the closing Q&A `statement`.
-Promotion maps Best Practices “Implementation Plan” in narrative only — keep
-`cards` / `steps-sidebar`. Run QA with `--profile cp3`.
+**Walkthrough** (USID pattern, only when asked):
+
+```
+title-hero → agenda → (per stage: image → evolution as-is/to-be → asks) → statement
+```
+
+Full and incremental CP3 decks require Open Questions (`asks`) before the
+closing Q&A `statement`. Promotion maps Best Practices "Implementation Plan"
+in narrative only — keep `cards` / `steps-sidebar`. Run QA with `--profile cp3`.
 
 Pick per slide from the table at the end of
 [references/slide-archetypes.md](references/slide-archetypes.md).
 
-### Step 3 — Write the deck spec
+### Step 3 — Write the slide brief
+
+Path: `SDLC/Projects/<key>/03 Slide Brief.md`
+
+One `### Slide:` per slide: eyebrow, statement H1, archetype, body, speaker
+notes. Frontmatter `reviewed_by` stays empty on first draft (spot-check, not
+a second design gate).
+
+Then **humanize** (embedded `/humanizer`): rewrite titles, card bodies,
+agenda item notes, and speaker notes so they read like the scheduler sample,
+not a chatbot. **Do not** rewrite identifiers, SQL, ConfigMap keys, JIRA
+keys, table names, column names, or status enums.
+
+Watch list:
+
+- Title-case labels (`User requirement - check…`). Titles are statements.
+- Notes that read the slide back (`This slide shows the background.`).
+- `Additionally`, `enhance`, `key`, `crucial`, `highlight`.
+- Fake asks (`Any feedback?`, `confirm reviewed_by`).
+- Em dashes in titles. Hyphens only.
+
+Speaker-note bar (scheduler): "The rename is not cosmetic: config keys change
+with it." Copy the same wording into `deck.json` after the brief is humanized.
+
+### Step 4 — Write the deck spec
 
 When a dossier is resolved:
 
 `SDLC/Projects/<key>/assets/<Title>.deck.json`
 
-Otherwise: `docs/{Title}.deck.json` in the project repo, or beside the JIRA note.
+Build the spec from **03 Slide Brief**, not from `02` and not from leftover
+`## Design` on `02`.
+
+Otherwise (legacy, no dossier): `docs/{Title}.deck.json` in the project repo,
+or beside the JIRA note, from `## Design`.
 
 ```json
 {
@@ -152,7 +193,7 @@ Rules:
   ```
   `--list` prints every slide with its archetype.
 
-### Step 4 — Generate
+### Step 5 — Generate
 
 ```bash
 node <skill-dir>/generate-deck.js "docs/{Title}.deck.json" "docs/{Title}.pptx"
@@ -160,7 +201,7 @@ node <skill-dir>/generate-deck.js "docs/{Title}.deck.json" "docs/{Title}.pptx"
 
 Omit the output path to write `{Title}.pptx` beside the spec.
 
-### Step 5 — QA
+### Step 6 — QA
 
 ```bash
 node <skill-dir>/qa-deck.js "docs/{Title}.deck.json"
@@ -172,9 +213,10 @@ collisions, text overflow, palette and font drift, missing notes, placeholder
 text, agenda coverage.
 
 Add `--strict` for WCAG AA (4.5:1) if the deck will be read on screen rather
-than projected; the default 4.0 floor is tuned for projection.
+than projected; the default 4.0 floor is tuned for projection. For CP3, add
+`--profile cp3`.
 
-### Step 6 — Preview
+### Step 7 — Preview
 
 There is no headless pptx renderer on the LIS boxes, so this is how you look at
 a deck before PowerPoint:
@@ -187,8 +229,9 @@ Writes `{Title}.preview.html` — a 1:1 render at 96px/inch from the same record
 draw calls the generator emits. Open it and check every slide. Fonts and text
 wrapping are the browser's approximation; all geometry is exact.
 
-### Step 7 — Dossier write-back (when a dossier exists)
+### Step 8 — Dossier write-back (when a dossier exists)
 
+- Artifacts row: `03 Slide Brief` → `[[03 Slide Brief]]` → `draft`
 - Artifacts row: `03 Design Review` → `[[assets/<Title>.pptx]]` → `generated`
 - Keep `.deck.json` next to the `.pptx` so CP3 comments regenerate cheaply
 - One Decision Log line
@@ -197,6 +240,27 @@ wrapping are the browser's approximation; all geometry is exact.
   after presenting, when CP3 actions are written back to the design note.
   "Pass with actions" is a distinct Gate Log verdict — never record it as
   a clean `pass`.
+
+---
+
+## Voice
+
+Two samples. Do not mix them.
+
+| Profile | Sample (cite in place; do not copy into the vault) |
+|---------|-----------------------------------------------------|
+| `incremental` / `full` (CP3) | `D:\ECP\LIS\lis-scheduler-lib\docs\job-normalization\Normalize Table-driven Job Definitions.deck.json` |
+| `walkthrough` only | `G:\Request\BackEnd\Specimen Sorter\USID Auto-Registration Flow.deck.json` |
+
+Scheduler is the bar: statement titles, short bodies, notes that add
+reasoning. Gaps not to copy: cover typo `lis-scheudler`, missing `asks`,
+missing closing.
+
+USID is a workshop walkthrough (many `image` slides, asks per stage). It is
+not the incremental 6–10 CP3 sequence.
+
+Apply `/humanizer` to slide prose only. Keep the writer's technical terms.
+Do not invent facts to make a sentence smoother.
 
 ---
 
@@ -210,11 +274,14 @@ wrapping are the browser's approximation; all geometry is exact.
 | `qa-deck.js` | Mechanical checks (`--strict`, `--warn-only`) |
 | `preview-deck.js` | Deck spec → 1:1 HTML preview |
 | `record.js` | Shared draw-call recorder behind QA and preview |
-| `examples/LIS-10747.deck.json` | The approved reference deck |
+| `examples/LIS-10747.deck.json` | The approved visual reference deck |
 | [references/design-system.md](references/design-system.md) | Palette, type, grid, craft rules |
 | [references/slide-archetypes.md](references/slide-archetypes.md) | All 12 with slot schemas |
-| [references/content-rules.md](references/content-rules.md) | JIRA-note mapping, writing rules |
+| [references/content-rules.md](references/content-rules.md) | Brief-to-archetype mapping, writing rules |
+| [references/voice.md](references/voice.md) | Humanizer watch list and sample decks |
 | `legacy/` | Retired HA-template generator |
+
+Template: `SDLC/Templates/Slide Brief Template.md`.
 
 ---
 
@@ -241,7 +308,8 @@ If two decks need the same one-off, it is an archetype, not a `custom` slide.
 
 ## Related skills
 
-- **system-design** — canonical design note (upstream, new path)
+- **system-design** — canonical design note (upstream). Does not write slides.
+- **humanizer** — embedded on brief prose before `deck.json`
 - **lis-jira-log-creator** — the change-request note (upstream)
 - **generate-design** — legacy `## Design` in the JIRA note
 - **generate-pptx** — the same visual kit for any non-CP3 content

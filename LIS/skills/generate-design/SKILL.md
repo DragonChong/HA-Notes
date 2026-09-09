@@ -20,16 +20,18 @@ for that legacy path.
 
 ```
 lis-jira-log-creator  →  LIS/JIRA/{note}.md      (change request sections)
-generate-design       →  ## Design in same note   (CP3 design content)  ← ends here
-design-review-pptx    →  {Title}.deck.json → .pptx   (CP3 only)
+generate-design       →  ## Design in same note   (legacy slide blocks)
+design-review-pptx    →  03 Slide Brief.md (dossier) or ## Design (legacy)
+                      →  {Title}.deck.json → .pptx
 ```
+
+Dossier path: `system-design` writes `02`; `design-review-pptx` writes
+`03 Slide Brief.md` then the deck. This skill must not run when a dossier
+exists.
 
 For any other PowerPoint (meeting notes, training, runbooks, wiki pages), skip
 this skill and use **generate-pptx**.
 
-**design-review-pptx reads the `## Design` section directly.** There is no
-intermediate slide-markdown file — choosing how a design block becomes a slide
-is a judgment call that skill makes against its archetype catalogue.
 
 ---
 
@@ -154,12 +156,9 @@ Update frontmatter `design_status: draft` if frontmatter is editable.
 
 ### Step 7 — Hand off to design-review-pptx
 
-Only when the user actually asked for a deck. The `## Design` section is a
-finished artifact on its own — most of the time this skill stops at step 6.
-
-Read the **design-review-pptx** skill and follow its workflow. It takes the
-`## Design` section from this note as its input, writes a `{Title}.deck.json`
-spec, and renders it:
+Only when the user actually asked for a deck **and there is no dossier**.
+Read **design-review-pptx** and follow its legacy path (`## Design` in this
+note). With a dossier, stop: that skill writes `03 Slide Brief.md` from `02`.
 
 ```bash
 node <design-review-skill-dir>/generate-deck.js "docs/{Title}.deck.json"
@@ -238,5 +237,5 @@ Worked example: [examples.md](examples.md)
 
 - **system-design** — new path; own design note in the dossier
 - **lis-jira-log-creator** — creates the JIRA note (upstream)
-- **design-review-pptx** — CP3 decks from `## Design` (this note, or the dossier note)
+- **design-review-pptx** — CP3 decks from `03 Slide Brief.md` (dossier) or `## Design` (legacy, this note)
 - **generate-pptx** — any other .pptx from notes, markdown, or pasted content

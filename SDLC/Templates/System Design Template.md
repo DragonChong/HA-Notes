@@ -47,38 +47,4 @@ Forward DDL, indexes, migration, and rollback. Empty if untouched.
 | # | Question | Owner | Answer |
 |---|---|---|---|
 
-## Design
-
-<!-- Slide blocks for design-review-pptx. Outline: LIS/skills/generate-design/design-template.md -->
-
-**Review type:** incremental
-**JIRA key:**
-**Service:**
-**Review forum:** CP3
-**Review date:**
-**Prior review:** none
-
-### Agenda
-Background
-Existing Design
-Proposed Change
-Promotion
-Fallback
-Open Questions
-Q&A
-
-### Slide: Background
-
-### Slide: Existing Design
-
-### Slide: Proposed Change - Overview
-
-### Slide: Promotion
-
-### Slide: Fallback
-
-### Slide: Open Questions
-**Archetype:** asks
-1.
-
-### Slide: Q&A
+Slides are not this note. After `reviewed_by` is set, `/design-review-pptx` writes [[03 Slide Brief]].

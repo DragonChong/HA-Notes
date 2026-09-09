@@ -1,8 +1,17 @@
-# Design Section Template
+# Design Section Template (legacy)
+
+**New work:** `/design-review-pptx` writes `SDLC/Projects/<key>/03 Slide Brief.md`
+from `SDLC/Templates/Slide Brief Template.md`. Do not put slide blocks in
+`02 System Design.md`.
+
+This file remains for notes that live only under `LIS/JIRA/` with **no
+dossier**. `generate-design` still appends `## Design` here; `design-review-pptx`
+reads that section on the legacy path.
 
 Append or replace the `## Design` section in a JIRA Obsidian note (`LIS/JIRA/<note>.md`).
-The **design-review-pptx** skill reads this section directly and turns each block
-into a slide.
+The **design-review-pptx** skill reads this section on the legacy path and turns
+each block into a slide.
+
 
 Narrative outline follows HA [General PPTX Preparation Best Practices](file:///D:/ECP/LIS/References/General%20PPTX%20Preparation%20Best%20Practices.md)
 (Agenda → Exec Summary → Existing → Proposed → Trade-offs → Impact → Implementation → Asks).
