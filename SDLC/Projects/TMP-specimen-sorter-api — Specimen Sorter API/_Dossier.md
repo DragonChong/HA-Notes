@@ -25,22 +25,22 @@ tags:
   - sdlc-dossier
 target_completion_date: ''
 title: Specimen Sorter API
-updated: '2026-09-08'
+updated: '2026-09-09'
 work_type: project
 ---
 # Specimen Sorter API
 
 ## Status
 
-> [!info] Stage: **design** — gate `design` outstanding (`requirement` proceeded under exception)
-> Next action: human sets `reviewed_by` on [[02 System Design]], then `/design-review-pptx`
+> [!info] Stage: **design** — `reviewed_by` Tony Chong on [[02 System Design]]; gate `design` not yet in `gates_passed` (`requirement` exception stands)
+> Next action: `/design-review-pptx`
 
 ## Artifacts
 
 | Stage | Artifact | State |
 |---|---|---|
 | 01 Requirement | [[01 Requirement Confirmation]] | confirmed 2026-09-07; not in gates_passed |
-| 02 Design | [[02 System Design]] | draft — D1–D11 answered |
+| 02 Design | [[02 System Design]] | reviewed by Tony Chong; D1–D11 answered |
 
 ## Gate Log
 
@@ -54,6 +54,7 @@ work_type: project
 - 2026-09-07 — Packing convertor moves server-side. Sorter id maps to workbench + dedicated user. No app auth. Mixed = Failure. STAR no location = Failure. Print all after return. — agent
 - 2026-09-08 — D6 agree (`SORT_*` plus existing writes; Audit Trail filter). D8 agree (DFT uses Spec Ack `register()`). D10: do not check workbench lab against test lab. — agent
 - 2026-09-08 — Rejected: print worksheet after send-out or ack. Worksheet (and PHLC) only after Registered, matching Spec Ack `constructSaveActions` (D11). Late print still OK on that path (D4). — agent
+- 2026-09-09 — `reviewed_by` set to Tony Chong on [[02 System Design]]. Design gate not closed; next is CP3 deck. — agent
 
 ## Open Items
 
@@ -68,7 +69,7 @@ work_type: project
 - [x] D9 — STAR no location → Failure
 - [x] D10 — no workbench-vs-test-lab check
 - [x] D11 — worksheet printed during registration only
-- [ ] Human `reviewed_by` on [[02 System Design]]
+- [x] Human `reviewed_by` on [[02 System Design]] (Tony Chong)
 
 ## Links
 
