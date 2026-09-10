@@ -38,9 +38,9 @@ On Specimen Acknowledgement in `lis-crs-spec-ack-svc`, staff scan a USID (GCRS S
 ## Change Description
 
 1. **New API on `lis-crs-spec-ack-svc`:**
-   - Add `POST /api/specack/sorter/auto-register` (`SpecimenSorterController`). Do not overload `/gcrSpecAckRegister` or `/v1/ecpath5-register`.
+   - Add `POST /api/specack/sorter/auto-register` (`SpecimenSorterController`).
    - Request: `usid` and `sorterId` required; `hospital`, `hkid`, `patientName` optional.
-   - Response HTTP 200 with status `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE` on the same call. Soft alerts stay on ALS only, not in the body. No auth header in v1 (NetworkPolicy).
+   - Response HTTP 200 with status `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE` on the same call.
 
 2. **Move Specimen Acknowledgement front-end logics onto that API:**
    - Retrieve as the mapped sorter user (do not call GET `/retrieveGcrOrder`, which hard-codes `ltc611`).
