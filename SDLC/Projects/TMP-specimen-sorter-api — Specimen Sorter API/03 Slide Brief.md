@@ -11,7 +11,7 @@ title: 03 Slide Brief — Specimen Sorter API
 ---
 # 03 Slide Brief — Specimen Sorter API
 
-Facts come from [[02 System Design]]. Presentational only. Table name on slides is `loe_sorter_map` (D7), not a new name.
+Facts come from [[02 System Design]]. Presentational only. Table name on slides is `loe_specimen_sorter_map`. Do not name Flex classes.
 
 **Profile:** incremental
 **JIRA key:** TMP-000 (dossier `TMP-specimen-sorter-api`; production JIRA not assigned; reference SEM20260612)
@@ -38,20 +38,20 @@ Facts come from [[02 System Design]]. Presentational only. Table name on slides 
 1. Staff scan the specimen label on Specimen Acknowledgement and press Send-out or Register.
 2. Labs will load tubes onto a sorter for scan, sort, and transport.
 3. Middleware calls one LIS API so the sorter can bin from send-out or registration status.
-**Notes:** The staff screen stays as fallback. The gap is that validation and packing still sit on the screen.
+**Notes:** The staff screen stays as fallback. Validation and packing still sit on the screen, so middleware cannot reuse the staff register call.
 
 ### Slide: Existing Design - Spec Ack screen
 **Eyebrow:** Existing Design
 **Title:** The Spec Ack screen still owns validation and packing
 **Archetype:** matrix
 **Body:**
-| Action | On the screen | Backend |
+| Action | Front-end | Back-end |
 | Retrieve GCRS | Looks up the order | Calls backend |
 | Send-out | Presses Send-out | Calls backend |
-| Registration | Validates and converts | Writes |
-| Worksheet | Groups tests, request no., ward and doctor | Prints |
+| Registration | Validates. Groups tests, request no., maps ward and doctor | Calls backend |
+| Worksheet | Converts worksheet data | Calls backend to print |
 | PHLC order | None | Calls backend |
-**Notes:** Amber rows are the gap. Retrieve, send-out, and PHLC already hit the service. Register and worksheet cannot leave the screen until packing moves.
+**Notes:** Amber is what moves. Group tests, request no., and ward/doctor mapping sit on registration, not on worksheet. Worksheet has its own convert, then print. PHLC is already a backend call.
 
 ### Slide: Proposed Change - New API
 **Eyebrow:** Proposed Change
@@ -65,32 +65,32 @@ Facts come from [[02 System Design]]. Presentational only. Table name on slides 
 **Title:** Screen logic moves behind that POST
 **Archetype:** compare
 **Body:**
-Today: validation, test grouping, request-no assignment, and ward/doctor mapping run on the screen before register or print.
+Today: validation, test grouping, request-no assignment, and ward/doctor mapping run on the screen before register. Worksheet convert also runs on the screen before print.
 Proposed: the new API does that work, then calls the same backend register, print, and PHLC paths. Print and PHLC only after Registered.
 **Notes:** Send-out, Relabel, and Failure print nothing. Late worksheet does not change a status already returned.
 
 ### Slide: Proposed Change - map and audit
 **Eyebrow:** Proposed Change
-**Title:** A map table supplies user and workbench. Audit stays on LOE_AUDIT_TRAIL
+**Title:** The map supplies hospital, workstation, and user
 **Archetype:** cards
 **Body:**
-1. New table `loe_sorter_map`: sorter id to dedicated LIS user and workbench.
-2. If hospital is omitted, take it from the map. Workstation, printer, and STAR location come from `workbench`.
-3. Write `SORT_REG` / `SORT_SO` / `SORT_RELABEL` / `SORT_FAIL`, plus existing `REG` / `SEND_OUT`. Add `SORT_*` to the Audit Trail filter.
-**Notes:** Unknown sorter id is Failure. Do not copy printer onto the map. Do not compare workbench lab to the test lab.
+1. New table `loe_specimen_sorter_map`: sorter id to dedicated LIS user and workbench.
+2. Derive hospital if the request omits it. Derive workstation. Derive user.
+3. Insert `LOE_AUDIT_TRAIL`: `SORT_REG` / `SORT_SO` / `SORT_RELABEL` / `SORT_FAIL`, plus existing `REG` / `SEND_OUT`.
+**Notes:** Unknown sorter id is Failure. Printer and STAR location stay on the workbench row, not as a second source of truth on the map.
 
 ### Slide: Promotion
 **Eyebrow:** Promotion
 **Title:** Seed user, workbench, and map, then deploy
 **Archetype:** cards
-**Body:** Create sorter user. Seed workbench. Insert map row. Deploy lis-crs-spec-ack-svc. NetworkPolicy only.
+**Body:** Create sorter user. Seed workbench. Insert map row on `loe_specimen_sorter_map`. Deploy lis-crs-spec-ack-svc. NetworkPolicy only.
 **Notes:** Pilot CPS and HMS. Relabel and Failure bins go back to staff Spec Ack.
 
 ### Slide: Fallback
 **Eyebrow:** Fallback
 **Title:** Stop middleware. Staff Spec Ack is unchanged
 **Archetype:** cards
-**Body:** Stop middleware. Drop `loe_sorter_map` on full rollback. No history rewrite.
+**Body:** Stop middleware. Drop `loe_specimen_sorter_map` on full rollback. No history rewrite.
 **Notes:** Staff clicks still retrieve, send-out, and register.
 
 ### Slide: Open Questions

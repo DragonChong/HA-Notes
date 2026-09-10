@@ -61,11 +61,11 @@
       "eyebrow": "Existing Design",
       "title": "The Spec Ack screen still owns validation and packing",
       "table": {
-        "colWidths": [2.7, 5.6, 3.83],
+        "colWidths": [2.7, 6.0, 3.43],
         "headers": [
           "Action",
-          "On the screen",
-          "Backend"
+          "Front-end",
+          "Back-end"
         ],
         "rows": [
           [
@@ -80,13 +80,13 @@
           ],
           [
             { "text": "Registration", "bold": true },
-            { "text": "Validates and converts", "tone": "warn", "color": "warnInk", "bold": true },
-            "Writes"
+            { "text": "Validates. Groups tests, request no., maps ward and doctor", "tone": "warn", "color": "warnInk", "bold": true },
+            "Calls backend"
           ],
           [
             { "text": "Worksheet", "bold": true },
-            { "text": "Groups tests, request no., ward, doctor", "tone": "warn", "color": "warnInk", "bold": true },
-            "Prints"
+            { "text": "Converts worksheet data", "tone": "warn", "color": "warnInk", "bold": true },
+            "Calls backend to print"
           ],
           [
             { "text": "PHLC order", "bold": true },
@@ -95,7 +95,7 @@
           ]
         ]
       },
-      "notes": "Amber rows are the gap. Retrieve, send-out, and PHLC already hit the service. Register and worksheet cannot leave the screen until packing moves."
+      "notes": "Amber is what moves. Group tests, request no., and ward/doctor mapping sit on registration, not on worksheet. Worksheet has its own convert, then print."
     },
     {
       "archetype": "code-findings",
@@ -147,13 +147,13 @@
         "tone": "danger",
         "title": "On the screen",
         "code": [
-          "validation",
+          "validate, then convert",
           "group tests, request no.",
           "map ward and doctor"
         ],
         "points": [
-          "Then the screen calls register or print",
-          "PHLC is already backend"
+          "Worksheet convert also runs here",
+          "Then the screen calls register or print"
         ]
       },
       "right": {
@@ -177,32 +177,32 @@
     {
       "archetype": "cards",
       "eyebrow": "Proposed Change",
-      "title": "A map table supplies user and workbench",
+      "title": "The map supplies hospital, workstation, and user",
       "perRow": 3,
       "cards": [
         {
           "badge": 1,
           "tone": "accent",
-          "title": "New table loe_sorter_map",
-          "body": "Sorter id maps to a dedicated LIS user and a workbench row."
+          "title": "New map table",
+          "body": "loe_specimen_sorter_map. Sorter id maps to a dedicated LIS user and a workbench."
         },
         {
           "badge": 2,
           "tone": "neutral",
-          "title": "Derive context",
-          "body": "Hospital if omitted. Workstation, printer, and STAR location from workbench."
+          "title": "Derive from the map",
+          "body": "Hospital if the request omits it. Workstation and user from the same row."
         },
         {
           "badge": 3,
           "tone": "warn",
           "title": "LOE_AUDIT_TRAIL",
-          "body": "Write SORT_REG, SORT_SO, SORT_RELABEL, SORT_FAIL, plus REG and SEND_OUT."
+          "body": "Insert SORT_REG, SORT_SO, SORT_RELABEL, SORT_FAIL, plus REG and SEND_OUT."
         }
       ],
       "callout": {
         "text": "Add SORT_* to the Audit Trail action filter. Unknown sorter id is Failure. Printer stays on workbench."
       },
-      "notes": "Do not copy printer onto the map. Do not compare workbench lab to the retrieved test lab. Audit workstation is the workbench station name."
+      "notes": "Do not copy printer onto the map as a second source of truth. Do not compare workbench lab to the retrieved test lab."
     },
     {
       "archetype": "cards",
@@ -226,7 +226,7 @@
           "badge": 3,
           "tone": "neutral",
           "title": "Insert the map row",
-          "body": "Sorter id, user, workbench id, lab, hosp, server name on loe_sorter_map."
+          "body": "Sorter id, user, and workbench id on loe_specimen_sorter_map."
         },
         {
           "badge": 4,
@@ -253,7 +253,7 @@
           "badge": 2,
           "tone": "warn",
           "title": "Drop the map table",
-          "body": "DROP TABLE loe_sorter_map on full rollback. Leave or disable the workbench and user."
+          "body": "DROP TABLE loe_specimen_sorter_map on full rollback. Leave or disable the workbench and user."
         },
         {
           "badge": 3,
@@ -319,7 +319,7 @@
         {
           "badge": 3,
           "title": "Seed SIT",
-          "body": "Sorter user, workbench row, and loe_sorter_map before middleware is pointed at SIT."
+          "body": "Sorter user, workbench row, and loe_specimen_sorter_map before middleware is pointed at SIT."
         }
       ],
       "identity": {

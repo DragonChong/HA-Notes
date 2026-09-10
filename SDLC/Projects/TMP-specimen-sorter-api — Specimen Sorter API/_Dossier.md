@@ -32,8 +32,8 @@ work_type: project
 
 ## Status
 
-> [!info] Stage: **design** — 02 restated 2026-09-10 (screen vs new API; table `loe_specimen_sorter_map`). [[03 Slide Brief]] and the pptx still say `loe_sorter_map`.
-> Next action: `/design-review-pptx` to refresh the brief and deck
+> [!info] Stage: **design** — CP3 deck refreshed 2026-09-10 to match 02 (`loe_specimen_sorter_map`; register convert vs worksheet). Gate `design` not in `gates_passed`
+> Next action: present at CP3, then write actions back to [[02 System Design]]
 
 ## Artifacts
 
@@ -41,8 +41,8 @@ work_type: project
 |---|---|---|
 | 01 Requirement | [[01 Requirement Confirmation]] | confirmed 2026-09-07; not in gates_passed |
 | 02 Design | [[02 System Design]] | updated 2026-09-10 — screen vs API; `loe_specimen_sorter_map` |
-| 03 Slide Brief | [[03 Slide Brief]] | stale — still `loe_sorter_map` |
-| 03 Design Review | [[assets/Specimen Sorter API.pptx]] | stale |
+| 03 Slide Brief | [[03 Slide Brief]] | draft |
+| 03 Design Review | [[assets/Specimen Sorter API.pptx]] | generated |
 
 ## Gate Log
 
@@ -60,6 +60,7 @@ work_type: project
 - 2026-09-09 — CP3 deck generated from [[03 Slide Brief]] (`assets/Specimen Sorter API.pptx`). `design-review` not closed until CP3 actions are written back. — agent
 - 2026-09-10 — Print/PHLC reuse locked from clone: worksheets via `gcrWorksheetPrinting` / `gcrShWorksheetPrinting` / `gcrSendOutWorksheetPrinting`; PHLC via `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder`. In-process after Registered, no HTTP loopback. — agent
 - 2026-09-10 — Existing design restated as the Specimen Acknowledgement screen (retrieve, send-out, register validation/convert, worksheet, PHLC). Proposed: one POST, move those logics, `LOE_AUDIT_TRAIL` `SORT_*`, table `loe_specimen_sorter_map` (derive hospital if omitted, plus user and workstation). Rejected keeping `loe_sorter_map`. — agent
+- 2026-09-10 — CP3 deck refreshed from [[03 Slide Brief]]: Spec Ack action matrix (register convert vs worksheet), new POST, `loe_specimen_sorter_map` derive hospital / workstation / user, `LOE_AUDIT_TRAIL` insert. `design-review` not closed until CP3 actions are written back. — agent
 
 ## Open Items
 
@@ -70,7 +71,7 @@ work_type: project
 - [x] D5 — print all (registration path)
 - [x] D6 — `SORT_*` plus existing writes; add to Audit Trail filter
 - [x] D7 — `loe_specimen_sorter_map` (was `loe_sorter_map`)
-- [ ] Refresh [[03 Slide Brief]] and pptx after this 02 rewrite
+- [x] Refresh [[03 Slide Brief]] and pptx after this 02 rewrite
 - [x] D8 — DFT via Spec Ack `register()`
 - [x] D9 — STAR no location → Failure
 - [x] D10 — no workbench-vs-test-lab check
