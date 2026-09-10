@@ -28,6 +28,7 @@ status: active
 tags:
   - sdlc-dossier
 target_completion_date: '2027-05-30'
+tasks: '[[Tasks]]'
 title: Specimen Sorter API
 updated: '2026-09-10'
 work_type: project
@@ -37,7 +38,7 @@ work_type: project
 ## Status
 
 > [!info] Stage: **development** — gates `design`, `plan` in `gates_passed`. `jira` still empty (exception). [[05 Project Plan]] accepted 2026-09-10.
-> Next action: implement WP1 (POST orchestrator) — `/implement-task`
+> Next action: write the implementation plan for TASK-001 — `/task-plan`
 
 ## Artifacts
 
@@ -79,6 +80,7 @@ work_type: project
 - 2026-09-10 — JIRA log drafted: [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]]. Target 30th May, 2027. No JIRA key yet. — agent
 - 2026-09-10 — [[05 Project Plan]] drafted from the programme 12-row schedule, backwards from Jun 2027 submission. 2027 window is not in [[Promotion Windows]]. Estimates await acceptance. `plan` not in `gates_passed`. — agent
 - 2026-09-10 — Estimates on [[05 Project Plan]] accepted. `plan` written to `gates_passed`. Stage → development. JIRA key still missing. — Ka
+- 2026-09-10 — Created [[Tasks]]. Registered WP1 as TASK-001 (`lis-crs-spec-ack-svc`). Not on CRS Revamp Central Task List. — agent
 
 ## Open Items
 
@@ -106,3 +108,4 @@ work_type: project
 - Design: [[02 System Design]]
 - JIRA log: [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]]
 - Plan: [[05 Project Plan]]
+- Tasks: [[Tasks]]
