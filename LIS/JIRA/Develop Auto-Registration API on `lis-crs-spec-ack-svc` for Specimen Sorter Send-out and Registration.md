@@ -45,7 +45,7 @@ On Specimen Acknowledgement in `lis-crs-spec-ack-svc`, staff scan a USID (GCRS S
 2. **Move Specimen Acknowledgement front-end logics onto that API:**
    - Retrieve as the mapped sorter user (do not call GET `/retrieveGcrOrder`, which hard-codes `ltc611`).
    - Port validation and packing (`SpecimenSorterValidationService`, `SpecimenSorterPackingService`): group tests, request no. assignment, ward/doctor mapping, then existing `sendOutSpecimen` / `register()`.
-   - After `REGISTERED` and after HTTP return: same in-process worksheet print and PHLC as Spec Ack. Send-out / Relabel / Failure print nothing. DFT uses Spec Ack `register()`, not `/api/dftreg`.
+   - After `REGISTERED` and after HTTP return: same in-process worksheet print and PHLC as Spec Ack. Send-out / Relabel / Failure print nothing.
 
 3. **New mapping table `loe_specimen_sorter_map`:**
    - Sorter id → dedicated LIS user and workbench. Derive hospital if omitted; derive workstation and user from the same row. Printer / STAR location stay on `workbench`.
