@@ -35,8 +35,8 @@ work_type: project
 
 ## Status
 
-> [!info] Stage: **jira** — gate `design` in `gates_passed`. `design-review` exception: CP3 not presented; JIRA key needed to close Phase 1.
-> Next action: `/lis-jira-log-creator` Step 7 — create the issue after the six sections are approved
+> [!info] Stage: **jira** — gate `design` in `gates_passed`. `design-review` exception recorded. JIRA log drafted; MCP create failed (proxy 504).
+> Next action: create the LIS Change Request by hand, or paste the key — `/lis-jira-log-creator`
 
 ## Artifacts
 
@@ -67,6 +67,7 @@ work_type: project
 - 2026-09-10 — Print/PHLC reuse locked from clone: worksheets via `gcrWorksheetPrinting` / `gcrShWorksheetPrinting` / `gcrSendOutWorksheetPrinting`; PHLC via `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder`. In-process after Registered, no HTTP loopback. — agent
 - 2026-09-10 — Existing design restated as the Specimen Acknowledgement screen (retrieve, send-out, register validation/convert, worksheet, PHLC). Proposed: one POST, move those logics, `LOE_AUDIT_TRAIL` `SORT_*`, table `loe_specimen_sorter_map` (derive hospital if omitted, plus user and workstation). Rejected keeping `loe_sorter_map`. — agent
 - 2026-09-10 — CP3 deck refreshed from [[03 Slide Brief]]: Spec Ack action matrix (register convert vs worksheet), new POST, `loe_specimen_sorter_map` derive hospital / workstation / user, `LOE_AUDIT_TRAIL` insert. `design-review` not closed until CP3 actions are written back. — agent
+- 2026-09-10 — `/lis-jira-log-creator` Step 7: `jira_search` to `hatool.home` failed (proxy 504 Unknown Host). No issue created. Vault draft kept; `jira` left empty. Create by hand or paste the key. — agent
 - 2026-09-10 — `design-review` exception: CP3 not held; skip to JIRA create to close Phase 1. Deck stays generated; gate not in `gates_passed`. — Ka
 - 2026-09-10 — Design gate closed. 02 still meets the exit checklist after the rewrite (`reviewed_by` Tony Chong). `design` written to `gates_passed`. — Ka
 - 2026-09-10 — JIRA log drafted: [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]]. Target 30th May, 2027. No JIRA key yet. — agent
