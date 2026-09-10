@@ -209,12 +209,12 @@ No DDL on `workbench`. Seed a workbench row per physical sorter (station name = 
 
 ### `LOE_AUDIT_TRAIL` — no DDL
 
-| Action | When |
-|---|---|
-| `SORT_REG` | Registered from sorter (plus existing `REG`) |
-| `SORT_SO` | Send-out from sorter (plus `SEND_OUT`) |
-| `SORT_RELABEL` | Relabel |
-| `SORT_FAIL` | Failure; description = message code + text |
+| Action         | When                                         |
+| -------------- | -------------------------------------------- |
+| `SORT_REG`     | Registered from sorter (plus existing `REG`) |
+| `SORT_SO`      | Send-out from sorter (plus `SEND_OUT`)       |
+| `SORT_RELABEL` | Relabel                                      |
+| `SORT_FAIL`    | Failure; description = message code + text   |
 
 Function `SPEC_ACK`. Add `SORT_*` to the Specimen Audit Trail action filter so staff can search auto-registration rows (D6).
 
