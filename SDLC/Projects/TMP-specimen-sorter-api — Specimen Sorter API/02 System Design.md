@@ -19,7 +19,7 @@ New endpoint and orchestrator on existing `lis-crs-spec-ack-svc`. Does not creat
 
 **Gate:** `requirement` was confirmed in writing but is not in `gates_passed`. Design proceeds under a recorded exception (requester invoked `/system-design`).
 
-Design answers recorded 2026-09-07 (second pass) and 2026-09-08 (D6, D8, D10, D11). Packing convertor moved server-side. All design questions D1–D11 have a written answer.
+Design answers recorded 2026-09-07 (second pass), 2026-09-08 (D6, D8, D10, D11), and 2026-09-10 (print/PHLC owners from clone). Packing convertor moved server-side. All design questions D1–D11 have a written answer.
 
 ## Context and problem
 
@@ -52,7 +52,8 @@ Staff workbench is `LAB_DB.dbo.workbench` (PK `wkbh_id` + `wkbh_labno`). Columns
 | Relabel | Same convertor, Assign USID | Multi-group; DFT same time-flag; multi-specimen; suffix ≠ `0`; force relabel; **user checkbox** (API will not have it). |
 | Send-out write | `sendOutSpecimen` | Ack if Printed/Collected; tracking; action `SEND_OUT`. |
 | Register write | `register` | Assumes packing already converted. |
-| Worksheets / PHLC | Flex `printWorksheet` + `/workSheet` / `/createPhlcLabOrder` | **Registration only** (`constructSaveActions` → `processPrintWorksheet` then `createPhlcLabOrder`). Prints only when a request no. was assigned. Ack prints only if `isAutoPrintWorksheetAfterAckEnabled`. Send-out (`sendOutActions`) does not print. Staff picker when more than one worksheet. |
+| Worksheets | `CrsSpecAckController.gcrWorksheetPrinting` (`POST /api/specack/workSheet`) → `GcrPrintReportAppService.convertDatas` then `WorksheetPrintService.worksheetPrintRequest`. `gcrShWorksheetPrinting` (`POST /api/specack/gcrShWorkSheet`) → `GcrShWorksheetPrintingAppService.convertDatas` then the same print service. `gcrSendOutWorksheetPrinting` (`POST /api/specack/gcrSendOutWorkSheet`) → `GcrSendOutTestFormAppService.convertDatas` then the same print service. **Registration only** (D11). Prints only when a request no. was assigned. Ack prints only if `isAutoPrintWorksheetAfterAckEnabled`. Send-out outcome does not print. Staff picker when more than one worksheet. |
+| PHLC | `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder` (staff `POST /api/specack/createPhlcLabOrder`). For each request id, loads lab result, `isSendToPHLC` on destination, then writes PO1 / CS1 / CC1 outbound message. **Registration only** (D11). |
 
 Send-out **detection**: join `loe_request_test.loereqtst_test_code` to `loe_sendout_test.loesend_cluster_code` + hosp, filter lab no.
 
@@ -126,7 +127,7 @@ Traces to: R1, R4, R5, R6, R11, R14
 | `SpecimenSorterValidationService` | Port of `promptAlert` (ALS only) and `GcrSpecAckDataValidator`. Mixed local + send-out → **Failure** (not ALS). STAR: no `wkbh_location` on mapped workbench → Failure `4422`. |
 | `SpecimenSorterRelabelService` | Assign-USID rules from the convertor **without** `userCheckedRelabel`. |
 | `SpecimenSorterSendOutResolver` | `LOE_SENDOUT_TEST` cluster join. If **both** send-out and in-house tests on the USID → Failure (D3). |
-| `SpecimenSorterPostProcessService` | After HTTP return, **and only when outcome is Registered** (D11): print **every** worksheet Ro the convertor produced (no picker); PHLC when send-out form Ro exists and lab option is on. Send-out / Relabel / Failure skip this service. Failure to print → ALS warn only (D4). Spec Ack can auto-print after ack when `isAutoPrintWorksheetAfterAckEnabled`; sorter does **not**. |
+| `SpecimenSorterPostProcessService` | After HTTP return, **and only when outcome is Registered** (D11): call the same in-process path as the three staff print methods, for **every** worksheet Ro the convertor produced (no picker). GCRS worksheet → `GcrPrintReportAppService` + `WorksheetPrintService` (`gcrWorksheetPrinting`). SH worksheet → `GcrShWorksheetPrintingAppService` + `WorksheetPrintService` (`gcrShWorksheetPrinting`). Send-out form Ro → `GcrSendOutTestFormAppService` + `WorksheetPrintService` (`gcrSendOutWorksheetPrinting`). Then PHLC via `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder` when `isSendToPHLC` is true. Do **not** HTTP-loopback to those staff endpoints. Send-out / Relabel / Failure skip this service. Failure to print → ALS warn only (D4). Spec Ack can auto-print after ack when `isAutoPrintWorksheetAfterAckEnabled`; sorter does **not**. |
 
 Reuse: `retrieveGcrOrder`, `sendOutSpecimen`, `register`, print/PHLC app services, `GcrAuditService`.
 
@@ -254,7 +255,7 @@ Response status: `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE` (HTTP 200 for
 | NetworkPolicy middleware → 8118 | DEV | SIT | PROD | OpenShift |
 | API key | **not used v1** | — | — | D1 |
 
-Print/PHLC still follow existing lab options (`CREATE_PHLC_LAB_ORDER_REG`, worksheet setup). `httpClient.readTimeOut` 5 s; sorter p95 4 s excluding print.
+Print/PHLC still follow the staff print methods and `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder` (`isSendToPHLC` on destination). `httpClient.readTimeOut` 5 s; sorter p95 4 s excluding print.
 
 ## Error handling, logging, audit
 
@@ -385,6 +386,9 @@ Drop the map table. Leave or disable the workbench/user.
 
 ### Slide: Open Questions
 **Archetype:** asks
+1. None remaining from D1–D11. Confirm `reviewed_by` so the CP3 deck can be generated.
+
+### Slide: Q&A
 1. None remaining from D1–D11. Confirm `reviewed_by` so the CP3 deck can be generated.
 
 ### Slide: Q&A
