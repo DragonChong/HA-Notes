@@ -38,7 +38,7 @@ work_type: project
 ## Status
 
 > [!info] Stage: **development** — gates `design`, `plan` in `gates_passed`. `jira` still empty (exception). [[05 Project Plan]] accepted 2026-09-10.
-> Next action: write the implementation plan for TASK-001 — `/task-plan`
+> Next action: start TASK-001 — `/task-update TASK-001 start` then `/implement-task`
 
 ## Artifacts
 
@@ -81,6 +81,7 @@ work_type: project
 - 2026-09-10 — [[05 Project Plan]] drafted from the programme 12-row schedule, backwards from Jun 2027 submission. 2027 window is not in [[Promotion Windows]]. Estimates await acceptance. `plan` not in `gates_passed`. — agent
 - 2026-09-10 — Estimates on [[05 Project Plan]] accepted. `plan` written to `gates_passed`. Stage → development. JIRA key still missing. — Ka
 - 2026-09-10 — Created [[Tasks]]. Registered WP1 as TASK-001 (`lis-crs-spec-ack-svc`). Not on CRS Revamp Central Task List. — agent
+- 2026-09-10 — [[WP1 — Auto-register POST and orchestrator]] written for TASK-001. Convertor / DDL / print / audit stay later WPs. — agent
 
 ## Open Items
 

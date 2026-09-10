@@ -23,10 +23,11 @@ Work packages: [[05 Project Plan]]. Design: [[02 System Design]].
 
 | WP | Task ID | Repository | Task | Status | Notes |
 |---|---|---|---|---|---|
-| WP1 | TASK-001 | `lis-crs-spec-ack-svc` | **Auto-register POST and orchestrator** — `POST /api/specack/sorter/auto-register` | `[ ]` | XL · 10d · [[05 Project Plan]] · [[02 System Design]] · `TASK-001` |
+| WP1 | TASK-001 | `lis-crs-spec-ack-svc` | **Auto-register POST and orchestrator** — `POST /api/specack/sorter/auto-register` | `[ ]` | [[WP1 — Auto-register POST and orchestrator]] · XL · 10d · `TASK-001` |
 
 ## Changelog
 
 | Date | Change |
 |---|---|
 | 2026-09-10 | Added TASK-001: Auto-register POST and orchestrator (`lis-crs-spec-ack-svc`) |
+| 2026-09-10 | Linked TASK-001 to [[WP1 — Auto-register POST and orchestrator]] |
