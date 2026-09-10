@@ -75,7 +75,7 @@
           ],
           [
             { "text": "Registration", "bold": true },
-            { "text": "Validates. Groups tests, request no., maps ward and doctor", "tone": "warn", "color": "warnInk", "bold": true },
+            { "text": "Presses Register Request. Validates. Groups tests, request no., maps ward and doctor", "tone": "warn", "color": "warnInk", "bold": true },
             "Calls backend"
           ],
           [
