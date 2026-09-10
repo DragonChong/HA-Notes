@@ -35,8 +35,8 @@ work_type: project
 
 ## Status
 
-> [!info] Stage: **jira** — gate `design` in `gates_passed`. `design-review` exception recorded. JIRA log drafted; MCP create failed (proxy 504).
-> Next action: create the LIS Change Request by hand, or paste the key — `/lis-jira-log-creator`
+> [!info] Stage: **jira** — gate `design` in `gates_passed`. `design-review` and `plan` exceptions recorded. JIRA log drafted; no key. [[05 Project Plan]] is a draft.
+> Next action: wait for estimate acceptance on [[05 Project Plan]]
 
 ## Artifacts
 
@@ -47,6 +47,7 @@ work_type: project
 | 03 Slide Brief | [[03 Slide Brief]] | draft |
 | 03 Design Review | [[assets/Specimen Sorter API.pptx]] | generated |
 | 04 JIRA | [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]] | draft |
+| 05 Project Plan | [[05 Project Plan]] | draft |
 
 ## Gate Log
 
@@ -55,6 +56,7 @@ work_type: project
 | 2026-09-07 | requirement | exception | Requester | Invoked `/system-design` while `requirement` not in `gates_passed`. Confirmation already quoted in 01. |
 | 2026-09-10 | design | pass | Ka | 02 exit checklist after 2026-09-10 rewrite: Rn mapped, DDL+rollback, env config, fallback, D1–D11 closed, `reviewed_by` Tony Chong. |
 | 2026-09-10 | design-review | exception | Ka | Deck generated 2026-09-10. CP3 not presented. Skip to JIRA create so Phase 1 can close. Do not treat as `pass`. |
+| 2026-09-10 | plan | exception | Ka | `/project-plan` run while `jira` is not in `gates_passed`. Programme 12-row schedule attached. `plan` not written to `gates_passed`. |
 
 ## Decision Log
 
@@ -73,6 +75,7 @@ work_type: project
 - 2026-09-10 — `design-review` exception: CP3 not held; skip to JIRA create to close Phase 1. Deck stays generated; gate not in `gates_passed`. — Ka
 - 2026-09-10 — Design gate closed. 02 still meets the exit checklist after the rewrite (`reviewed_by` Tony Chong). `design` written to `gates_passed`. — Ka
 - 2026-09-10 — JIRA log drafted: [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]]. Target 30th May, 2027. No JIRA key yet. — agent
+- 2026-09-10 — [[05 Project Plan]] drafted from the programme 12-row schedule, backwards from Jun 2027 submission. 2027 window is not in [[Promotion Windows]]. Estimates await acceptance. `plan` not in `gates_passed`. — agent
 
 ## Open Items
 
@@ -90,7 +93,8 @@ work_type: project
 - [x] D11 — worksheet printed during registration only
 - [x] Human `reviewed_by` on [[02 System Design]] (Tony Chong)
 - [ ] Paste JIRA key when the Change Request is created by hand
-- [ ] Run `/project-plan` after `jira` is in `gates_passed`
+- [x] Run `/project-plan` (exception: `jira` not in `gates_passed`)
+- [ ] Accept estimates on [[05 Project Plan]]
 
 ## Links
 
@@ -98,3 +102,4 @@ work_type: project
 - Requirement: [[01 Requirement Confirmation]]
 - Design: [[02 System Design]]
 - JIRA log: [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]]
+- Plan: [[05 Project Plan]]

@@ -103,3 +103,9 @@
 56. Prefer existing `LisErrorConstants` / message codes where mapped, or new auto-register-specific codes for multi-specimen / unsupported-lab?
 57. On hard fail before `register()`, should API return `ResultDataResponse.fail(code, message)` without calling register?
 58. On soft-skip success, is ALS warn enough for audit, or must an audit table row be written?
+
+---
+
+## LIS API schedule
+
+Draft dates live on [[Specimen Sorter]] and [[05 Project Plan]]. Estimates not accepted.
