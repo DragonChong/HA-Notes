@@ -284,21 +284,21 @@ sequenceDiagram
 
 ## Data Sources
 
-| Data | Source | Table | Column | Notes |
-|---|---|---|---|---|
-| Sending Hospital | Specimen record | `loe_specimen_detail` | `loespec_send_hosp` | Part of the specimen's composite identity |
-| Base Specimen Number | Specimen record | `loe_specimen_detail` | `loespec_specno` | Shared by sibling suffixes |
-| Specimen Suffix | Specimen record | `loe_specimen_detail` | `loespec_specno_suffix` | `0` means no displayed suffix; non-zero values identify split specimens |
-| Specimen Status | Specimen record | `loe_specimen_detail` | `loespec_spec_status` | Displayed with the selected specimen |
-| Specimen Description | Specimen record | `loe_specimen_detail` | `loespec_spec_desc` | Displayed in specimen selection and the test panel |
-| Request Sequence | Test-to-specimen mapping | `loe_request_test_spec` | `loereqtsp_req_seqno` | Connects the test mapping to its request context |
-| Test Sequence | Test-to-specimen mapping | `loe_request_test_spec` | `loereqtsp_test_seqno` | Links a requested test to a specimen mapping |
-| Mapped Base Specimen Number | Test-to-specimen mapping | `loe_request_test_spec` | `loereqtsp_specno` | Current schema mapping contains the base number but no suffix column |
-| Request No. | Test-to-specimen mapping | `loe_request_test_spec` | `loereqtsp_reqno` | Supports request-based specimen selection |
-| Test Code | Ordered test | `loe_request_test` | `loereqtst_test_code` | Identifies the requested test |
-| Test Status | Ordered test | `loe_request_test` | `loereqtst_test_status` | Displayed in the **Test** panel |
-| Test Urgency | Ordered test | `loe_request_test` | `loereqtst_test_urgency` | Controls urgency display for retained tests |
-| Test Request No. | Ordered test | `loe_request_test` | `loereqtst_reqno` | Associates the displayed test with its LIS request where available |
+| Data                        | Source                   | Table                   | Column                   | Notes                                                                   |
+| --------------------------- | ------------------------ | ----------------------- | ------------------------ | ----------------------------------------------------------------------- |
+| Sending Hospital            | Specimen record          | `loe_specimen_detail`   | `loespec_send_hosp`      | Part of the specimen's composite identity                               |
+| Base Specimen Number        | Specimen record          | `loe_specimen_detail`   | `loespec_specno`         | Shared by sibling suffixes                                              |
+| Specimen Suffix             | Specimen record          | `loe_specimen_detail`   | `loespec_specno_suffix`  | `0` means no displayed suffix; non-zero values identify split specimens |
+| Specimen Status             | Specimen record          | `loe_specimen_detail`   | `loespec_spec_status`    | Displayed with the selected specimen                                    |
+| Specimen Description        | Specimen record          | `loe_specimen_detail`   | `loespec_spec_desc`      | Displayed in specimen selection and the test panel                      |
+| Request Sequence            | Test-to-specimen mapping | `loe_request_test_spec` | `loereqtsp_req_seqno`    | Connects the test mapping to its request context                        |
+| Test Sequence               | Test-to-specimen mapping | `loe_request_test_spec` | `loereqtsp_test_seqno`   | Links a requested test to a specimen mapping                            |
+| Mapped Base Specimen Number | Test-to-specimen mapping | `loe_request_test_spec` | `loereqtsp_specno`       | Current schema mapping contains the base number but no suffix column    |
+| Request No.                 | Test-to-specimen mapping | `loe_request_test_spec` | `loereqtsp_reqno`        | Supports request-based specimen selection                               |
+| Test Code                   | Ordered test             | `loe_request_test`      | `loereqtst_test_code`    | Identifies the requested test                                           |
+| Test Status                 | Ordered test             | `loe_request_test`      | `loereqtst_test_status`  | Displayed in the **Test** panel                                         |
+| Test Urgency                | Ordered test             | `loe_request_test`      | `loereqtst_test_urgency` | Controls urgency display for retained tests                             |
+| Test Request No.            | Ordered test             | `loe_request_test`      | `loereqtst_reqno`        | Associates the displayed test with its LIS request where available      |
 
 ### Data Written
 
