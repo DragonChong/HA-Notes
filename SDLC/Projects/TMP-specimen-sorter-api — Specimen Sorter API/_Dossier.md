@@ -32,8 +32,8 @@ work_type: project
 
 ## Status
 
-> [!info] Stage: **design** — print/PHLC owners locked from clone 2026-09-10; CP3 deck predates this; gate `design` not in `gates_passed`
-> Next action: present at CP3, or refresh `/design-review-pptx` if the room needs the named print/PHLC services
+> [!info] Stage: **design** — CP3 deck refreshed 2026-09-10 (existing Spec Ack actions vs new POST); gate `design` not in `gates_passed`
+> Next action: present at CP3, then write actions back to [[02 System Design]]
 
 ## Artifacts
 
@@ -59,6 +59,7 @@ work_type: project
 - 2026-09-09 — `reviewed_by` set to Tony Chong on [[02 System Design]]. Design gate not closed; next is CP3 deck. — agent
 - 2026-09-09 — CP3 deck generated from [[03 Slide Brief]] (`assets/Specimen Sorter API.pptx`). `design-review` not closed until CP3 actions are written back. — agent
 - 2026-09-10 — Print/PHLC reuse locked from clone: worksheets via `gcrWorksheetPrinting` / `gcrShWorksheetPrinting` / `gcrSendOutWorksheetPrinting`; PHLC via `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder`. In-process after Registered, no HTTP loopback. — agent
+- 2026-09-10 — CP3 deck refreshed from [[03 Slide Brief]]: Spec Ack action matrix, new POST contract, packing move, `loe_sorter_map` + `LOE_AUDIT_TRAIL`. `design-review` not closed until CP3 actions are written back. — agent
 
 ## Open Items
 

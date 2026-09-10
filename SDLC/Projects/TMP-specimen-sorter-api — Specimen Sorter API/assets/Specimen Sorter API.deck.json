@@ -57,40 +57,45 @@
       "notes": "The gap is not the writes. Validation and packing still sit on the screen, so middleware cannot reuse the staff register call."
     },
     {
-      "archetype": "steps-sidebar",
+      "archetype": "matrix",
       "eyebrow": "Existing Design",
       "title": "The Spec Ack screen still owns validation and packing",
-      "steps": [
-        {
-          "badge": 1,
-          "title": "Retrieve GCRS order",
-          "body": "The screen looks up the order, then calls backend."
-        },
-        {
-          "badge": 2,
-          "title": "Send-out",
-          "body": "The screen calls backend. No packing on the screen."
-        },
-        {
-          "badge": 3,
-          "title": "Registration",
-          "body": "Validation and data conversion run on the screen, then backend writes."
-        },
-        {
-          "badge": 4,
-          "title": "Worksheet printing",
-          "body": "The screen groups tests, assigns request no., and maps ward and doctor, then backend prints."
-        }
-      ],
-      "sidebar": {
-        "eyebrow": "PHLC",
-        "headline": "Backend only",
-        "body": "PHLC electronic order is a backend call after register. The screen does not convert it.",
-        "points": [
-          "Same path after Registered on the sorter"
+      "table": {
+        "colWidths": [2.7, 5.6, 3.83],
+        "headers": [
+          "Action",
+          "On the screen",
+          "Backend"
+        ],
+        "rows": [
+          [
+            { "text": "Retrieve GCRS", "bold": true },
+            "Looks up the order",
+            "Calls backend"
+          ],
+          [
+            { "text": "Send-out", "bold": true },
+            "Presses Send-out",
+            "Calls backend"
+          ],
+          [
+            { "text": "Registration", "bold": true },
+            { "text": "Validates and converts", "tone": "warn", "color": "warnInk", "bold": true },
+            "Writes"
+          ],
+          [
+            { "text": "Worksheet", "bold": true },
+            { "text": "Groups tests, request no., ward, doctor", "tone": "warn", "color": "warnInk", "bold": true },
+            "Prints"
+          ],
+          [
+            { "text": "PHLC order", "bold": true },
+            "None",
+            "Calls backend"
+          ]
         ]
       },
-      "notes": "Retrieve and send-out already hit the service. Register and worksheet cannot, until packing moves behind the new API."
+      "notes": "Amber rows are the gap. Retrieve, send-out, and PHLC already hit the service. Register and worksheet cannot leave the screen until packing moves."
     },
     {
       "archetype": "code-findings",
@@ -117,17 +122,17 @@
         {
           "mark": "!",
           "title": "Same-call status",
-          "body": "REGISTERED, SEND_OUT, RELABEL, or FAILURE. HTTP 200 for those. Soft alerts stay off the body."
+          "body": "REGISTERED, SEND_OUT, RELABEL, or FAILURE. Soft alerts stay off the body."
         },
         {
           "mark": "!",
           "title": "Optional identity",
-          "body": "hkid and patientName are optional. If sent and they mismatch the GCRS patient, Failure."
+          "body": "hkid and patientName. If sent and they mismatch, Failure."
         },
         {
           "mark": "!",
           "title": "New path, not an overload",
-          "body": "Do not reuse the staff register endpoint. No auth header in v1."
+          "body": "Do not reuse the staff register call. No auth header in v1."
         }
       ],
       "findingTone": "accent",
@@ -148,7 +153,7 @@
         ],
         "points": [
           "Then the screen calls register or print",
-          "PHLC is already a backend call"
+          "PHLC is already backend"
         ]
       },
       "right": {
@@ -252,7 +257,7 @@
         },
         {
           "badge": 3,
-          "tone": "ink",
+          "tone": "neutral",
           "title": "No history rewrite",
           "body": "Do not convert historical requests. Fallback is operational."
         }

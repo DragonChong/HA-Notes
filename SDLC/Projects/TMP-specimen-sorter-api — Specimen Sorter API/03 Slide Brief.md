@@ -43,14 +43,15 @@ Facts come from [[02 System Design]]. Presentational only. Table name on slides 
 ### Slide: Existing Design - Spec Ack screen
 **Eyebrow:** Existing Design
 **Title:** The Spec Ack screen still owns validation and packing
-**Archetype:** steps-sidebar
+**Archetype:** matrix
 **Body:**
-1. Retrieve: screen looks up the GCRS order, then calls backend.
-2. Send-out: screen calls backend.
-3. Registration: validation and data conversion on the screen, then backend.
-4. Worksheet: screen converts (group tests, request no., ward and doctor), then backend prints.
-**Sidebar:** PHLC electronic order is a backend call. No conversion on the screen.
-**Notes:** Retrieve and send-out already hit the service. Register and worksheet cannot, until packing moves.
+| Action | On the screen | Backend |
+| Retrieve GCRS | Looks up the order | Calls backend |
+| Send-out | Presses Send-out | Calls backend |
+| Registration | Validates and converts | Writes |
+| Worksheet | Groups tests, request no., ward and doctor | Prints |
+| PHLC order | None | Calls backend |
+**Notes:** Amber rows are the gap. Retrieve, send-out, and PHLC already hit the service. Register and worksheet cannot leave the screen until packing moves.
 
 ### Slide: Proposed Change - New API
 **Eyebrow:** Proposed Change
