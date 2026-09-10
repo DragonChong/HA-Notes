@@ -40,11 +40,11 @@ On Specimen Acknowledgement in `lis-crs-spec-ack-svc`, staff scan the specimen l
 1. **New API on `lis-crs-spec-ack-svc`:**
    - Add `POST /api/specack/sorter/auto-register`.
    - Request carries USID and sorter id; hospital, HKID, and patient name are optional.
-   - Same call returns Registered, Send-out, Relabel, or Failure. Soft alerts are logged only, not shown on the response.
+   - Same call returns Registered, Send-out, Relabel, or Failure.
 
 2. **Move Specimen Acknowledgement screen logic onto that API:**
    - Run the same retrieve, checks, and data conversion the screen does today, then the existing send-out or register write.
-   - After Registered, print worksheets and create the PHLC order the same way Spec Ack does today. Send-out, Relabel, and Failure print nothing.
+   - After Registered, print worksheets and create the PHLC order the same way Spec Ack does today.
 
 3. **New mapping table `loe_specimen_sorter_map`:**
    - Map sorter id to a dedicated LIS user and workstation.
@@ -52,7 +52,6 @@ On Specimen Acknowledgement in `lis-crs-spec-ack-svc`, staff scan the specimen l
 
 4. **`LOE_AUDIT_TRAIL` insert:**
    - Record sorter send-out, register, relabel, and failure, as well as the existing register and send-out actions.
-   - Add the new sorter actions to the Specimen Audit Trail filter in `lab-crs-app`.
 
 ## Justification
 
