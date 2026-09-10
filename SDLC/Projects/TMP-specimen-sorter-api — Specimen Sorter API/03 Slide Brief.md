@@ -1,7 +1,7 @@
 ---
 agent_assisted: true
 generated_by: design-review-pptx
-generated_on: '2026-09-09'
+generated_on: '2026-09-10'
 profile: incremental
 reviewed_by: ''
 tags:
@@ -11,92 +11,86 @@ title: 03 Slide Brief — Specimen Sorter API
 ---
 # 03 Slide Brief — Specimen Sorter API
 
-Facts come from [[02 System Design]]. This note is presentational only. Do not invent a class, table, API, or ConfigMap key that is not in `02`.
+Facts come from [[02 System Design]]. Presentational only. Table name on slides is `loe_sorter_map` (D7), not a new name.
 
 **Profile:** incremental
 **JIRA key:** TMP-000 (dossier `TMP-specimen-sorter-api`; production JIRA not assigned; reference SEM20260612)
 **Service:** lis-crs-spec-ack-svc
 **Review forum:** CP3
-**Review date:** 09 Sep 2026
+**Review date:** 10 Sep 2026
 **Prior review:** none
 **Presenters:** Ka
 **Reviewers:** Tony Chong, CP3 panel
-
-Voice: scheduler CP3 sample. Slide copy uses plain English for screen behaviour. Keep service, table, endpoint, and outcome names that the room must ratify.
 
 ---
 
 ### Cover
 **Archetype:** title-hero
 **Headline:** One POST on Specimen Acknowledgement registers or sends out a USID
-**Lede:** Sorter middleware calls the Specimen Acknowledgement service. Soft alerts, hard checks, and packing move behind that call. Staff Spec Ack stays as the fallback.
-**Notes:** Cover is identity only. Production JIRA is not assigned; TMP-000 is the dossier stand-in. Reference SEM20260612. Tony Chong reviewed [[02 System Design]].
+**Lede:** Today staff scan a label and click Send-out or Register. The sorter will scan the tube and call LIS for those same actions.
+**Notes:** Cover is identity only. TMP-000 is the dossier stand-in. Tony Chong reviewed [[02 System Design]].
 
 ### Slide: Background
 **Eyebrow:** Background
-**Title:** The sorter needs the staff click path in one call
+**Title:** Staff click today. The sorter will call LIS
 **Archetype:** evolution
 **Body:**
-1. Staff scan a USID, then click Send-out or Register.
-2. Lookup and writes already live in the Spec Ack service. The screen still builds the register payload.
-3. The sorter bins the tube from one LIS response in under four seconds.
-**Callout:** Do not reuse the staff retrieve. That call is tied to a fixed user.
-**Notes:** Writes are not the gap. Middleware cannot call the staff register API without the payload the screen builds today.
+1. Staff scan the specimen label on Specimen Acknowledgement and press Send-out or Register.
+2. Labs will load tubes onto a sorter for scan, sort, and transport.
+3. Middleware calls one LIS API so the sorter can bin from send-out or registration status.
+**Notes:** The staff screen stays as fallback. The gap is that validation and packing still sit on the screen.
 
-### Slide: Existing Design - packing still lives on the screen
+### Slide: Existing Design - Spec Ack screen
 **Eyebrow:** Existing Design
-**Title:** Packing still lives on the screen
-**Archetype:** compare
-**Body:**
-Today: the screen owns soft alerts, hard checks, and register packing. Staff click send-out or register after that payload is built. Workbench comes from the PC login. Staff retrieve is tied to a fixed user.
-Proposed: one new POST. Alerts, hard checks, and packing run on the server. Reuse existing retrieve, send-out, register, worksheet, and PHLC. Staff screen stays as it is.
-**Notes:** Reusing the staff register API would keep the screen packing contract. Reusing ECPath5 register would keep a hard-coded user.
-
-### Slide: Proposed Change - Overview
-**Eyebrow:** Proposed Change
-**Title:** A new POST looks up, packs, then writes
-**Archetype:** decision-flow
-**Body:** POST auto-register with USID and sorter id. Mixed local and send-out is Failure. Relabel writes nothing. Print only after Registered. DFT uses ordinary Spec Ack register, not a separate DFT API.
-**Notes:** STAR with no workbench location is Failure. Do not compare workbench lab to the retrieved test lab.
-
-### Slide: Proposed Change - packing
-**Eyebrow:** Proposed Change
-**Title:** What the screen packs today moves behind the API
+**Title:** The Spec Ack screen still owns validation and packing
 **Archetype:** steps-sidebar
 **Body:**
-1. Group tests and assign the request number. The USID is used when it is eligible.
-2. Map ward and doctor on the server.
-3. Screen ticks become defaults: ack time is now, AAR off, urgent workstation off, labels off, no relabel tick.
-**Sidebar:** Pack first. If we only move the hard checks, the write has no test groups. Soft alerts go to ALS only.
-**Notes:** Moving only the hard checks still leaves an empty test-group list.
+1. Retrieve: screen looks up the GCRS order, then calls backend.
+2. Send-out: screen calls backend.
+3. Registration: validation and data conversion on the screen, then backend.
+4. Worksheet: screen converts (group tests, request no., ward and doctor), then backend prints.
+**Sidebar:** PHLC electronic order is a backend call. No conversion on the screen.
+**Notes:** Retrieve and send-out already hit the service. Register and worksheet cannot, until packing moves.
 
-### Slide: Proposed Change - outcomes
+### Slide: Proposed Change - New API
 **Eyebrow:** Proposed Change
-**Title:** Print only after Registered
-**Archetype:** matrix
-**Body:** REGISTERED creates the lab request, then prints every worksheet and PHLC after the HTTP return. SEND_OUT writes send-out and prints nothing. RELABEL and FAILURE write no lab request. Late print does not change a status already returned.
-**Notes:** Send-out never prints. The ack auto-print flag is not used. Print all on the registration path.
+**Title:** One new POST on the Spec Ack service
+**Archetype:** code-findings
+**Body:** Path `POST /api/specack/sorter/auto-register`. Body: `usid`, `sorterId`, optional `hospital`, `hkid`, `patientName`. Response status `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE` on the same call.
+**Notes:** Do not reuse the staff register endpoint. No auth header in v1. Soft alerts stay off the body.
+
+### Slide: Proposed Change - what moves
+**Eyebrow:** Proposed Change
+**Title:** Screen logic moves behind that POST
+**Archetype:** compare
+**Body:**
+Today: validation, test grouping, request-no assignment, and ward/doctor mapping run on the screen before register or print.
+Proposed: the new API does that work, then calls the same backend register, print, and PHLC paths. Print and PHLC only after Registered.
+**Notes:** Send-out, Relabel, and Failure print nothing. Late worksheet does not change a status already returned.
+
+### Slide: Proposed Change - map and audit
+**Eyebrow:** Proposed Change
+**Title:** A map table supplies user and workbench. Audit stays on LOE_AUDIT_TRAIL
+**Archetype:** cards
+**Body:**
+1. New table `loe_sorter_map`: sorter id to dedicated LIS user and workbench.
+2. If hospital is omitted, take it from the map. Workstation, printer, and STAR location come from `workbench`.
+3. Write `SORT_REG` / `SORT_SO` / `SORT_RELABEL` / `SORT_FAIL`, plus existing `REG` / `SEND_OUT`. Add `SORT_*` to the Audit Trail filter.
+**Notes:** Unknown sorter id is Failure. Do not copy printer onto the map. Do not compare workbench lab to the test lab.
 
 ### Slide: Promotion
 **Eyebrow:** Promotion
 **Title:** Seed user, workbench, and map, then deploy
 **Archetype:** cards
-**Body:**
-1. Create a dedicated sorter LIS user on the audit trail. Not a shared staff login.
-2. Seed a workbench row per physical sorter: hosp, lab, station name, location, printer.
-3. Insert the sorter map row: sorter id, user, workbench id, lab, hosp, server name.
-4. Deploy lis-crs-spec-ack-svc. NetworkPolicy only. Add SORT_* to the Audit Trail filter.
-**Notes:** Printer and STAR location come from workbench, not copied onto the map. Still write REG and SEND_OUT. Pilot CPS and HMS.
+**Body:** Create sorter user. Seed workbench. Insert map row. Deploy lis-crs-spec-ack-svc. NetworkPolicy only.
+**Notes:** Pilot CPS and HMS. Relabel and Failure bins go back to staff Spec Ack.
 
 ### Slide: Fallback
 **Eyebrow:** Fallback
 **Title:** Stop middleware. Staff Spec Ack is unchanged
 **Archetype:** cards
-**Body:**
-1. Stop middleware. Staff clicks still retrieve, send-out, and register.
-2. Drop the map table on full rollback. Leave or disable the workbench and user.
-3. No conversion of historical requests.
-**Notes:** The staff path is the fallback. Drop only the map table.
+**Body:** Stop middleware. Drop `loe_sorter_map` on full rollback. No history rewrite.
+**Notes:** Staff clicks still retrieve, send-out, and register.
 
 ### Slide: Open Questions
 **Eyebrow:** Open Questions
@@ -106,16 +100,16 @@ Proposed: one new POST. Alerts, hard checks, and packing run on the server. Reus
 2. Fail the tube when the USID has both local and send-out tests? (D3)
 3. Print worksheets and PHLC only after Registered, after HTTP return? (D11, D4, D5)
 4. Show SORT_* actions on the Audit Trail filter? (D6)
-**Notes:** Requester already answered D1-D11 on [[02 System Design]]. This room is the ratification, not a new design pass.
+**Notes:** Requester already answered D1-D11. This room ratifies.
 
 ### Slide: Q&A
 **Archetype:** statement
 **Headline:** Q&A
-**Notes:** Likely questions: why not reuse the staff register API; why DFT does not use a separate DFT API; why workbench lab is not checked against the test lab.
+**Notes:** Likely questions: why a new POST; why hospital can be omitted; why DFT uses the same register path.
 
 ### Close
 **Archetype:** closing
 **Headline:** Target latency
 **Stat:** P95 < 4 S
-**Next steps:** Assign a production JIRA. Implement the POST, including the packing the screen does today. Seed map and workbench in SIT.
-**Notes:** Volume pass mark is about 20 specimens a minute per lab. Worksheet and PHLC sit after the sorter wait path.
+**Next steps:** Assign a production JIRA. Implement the POST. Seed map and workbench in SIT.
+**Notes:** About 20 specimens a minute per lab. Print sits after the sorter wait path.
