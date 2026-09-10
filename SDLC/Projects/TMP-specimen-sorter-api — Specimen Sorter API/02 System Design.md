@@ -52,8 +52,8 @@ Staff workbench is `LAB_DB.dbo.workbench` (PK `wkbh_id` + `wkbh_labno`). Columns
 | Relabel | Same convertor, Assign USID | Multi-group; DFT same time-flag; multi-specimen; suffix ≠ `0`; force relabel; **user checkbox** (API will not have it). |
 | Send-out write | `sendOutSpecimen` | Ack if Printed/Collected; tracking; action `SEND_OUT`. |
 | Register write | `register` | Assumes packing already converted. |
-| Worksheets | `CrsSpecAckController.gcrWorksheetPrinting` (`POST /api/specack/workSheet`) → `GcrPrintReportAppService.convertDatas` then `WorksheetPrintService.worksheetPrintRequest`. `gcrShWorksheetPrinting` (`POST /api/specack/gcrShWorkSheet`) → `GcrShWorksheetPrintingAppService.convertDatas` then the same print service. `gcrSendOutWorksheetPrinting` (`POST /api/specack/gcrSendOutWorkSheet`) → `GcrSendOutTestFormAppService.convertDatas` then the same print service. **Registration only** (D11). Prints only when a request no. was assigned. Ack prints only if `isAutoPrintWorksheetAfterAckEnabled`. Send-out outcome does not print. Staff picker when more than one worksheet. |
-| PHLC | `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder` (staff `POST /api/specack/createPhlcLabOrder`). For each request id, loads lab result, `isSendToPHLC` on destination, then writes PO1 / CS1 / CC1 outbound message. **Registration only** (D11). |
+| Worksheets | `CrsSpecAckController.gcrWorksheetPrinting`, `gcrShWorksheetPrinting`, `gcrSendOutWorksheetPrinting` | Convert then `WorksheetPrintService.worksheetPrintRequest`. Staff paths `/workSheet`, `/gcrShWorkSheet`, `/gcrSendOutWorkSheet`. **Registration only** (D11). Prints only when a request no. was assigned. Send-out outcome does not print. Staff picker when more than one worksheet. |
+| PHLC | `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder` | Staff `POST /createPhlcLabOrder`. For each request id: lab result, `isSendToPHLC`, then PO1 / CS1 / CC1 outbound message. **Registration only** (D11). |
 
 Send-out **detection**: join `loe_request_test.loereqtst_test_code` to `loe_sendout_test.loesend_cluster_code` + hosp, filter lab no.
 
@@ -129,7 +129,7 @@ Traces to: R1, R4, R5, R6, R11, R14
 | `SpecimenSorterSendOutResolver` | `LOE_SENDOUT_TEST` cluster join. If **both** send-out and in-house tests on the USID → Failure (D3). |
 | `SpecimenSorterPostProcessService` | After HTTP return, **and only when outcome is Registered** (D11): call the same in-process path as the three staff print methods, for **every** worksheet Ro the convertor produced (no picker). GCRS worksheet → `GcrPrintReportAppService` + `WorksheetPrintService` (`gcrWorksheetPrinting`). SH worksheet → `GcrShWorksheetPrintingAppService` + `WorksheetPrintService` (`gcrShWorksheetPrinting`). Send-out form Ro → `GcrSendOutTestFormAppService` + `WorksheetPrintService` (`gcrSendOutWorksheetPrinting`). Then PHLC via `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder` when `isSendToPHLC` is true. Do **not** HTTP-loopback to those staff endpoints. Send-out / Relabel / Failure skip this service. Failure to print → ALS warn only (D4). Spec Ack can auto-print after ack when `isAutoPrintWorksheetAfterAckEnabled`; sorter does **not**. |
 
-Reuse: `retrieveGcrOrder`, `sendOutSpecimen`, `register`, print/PHLC app services, `GcrAuditService`.
+Reuse: `retrieveGcrOrder`, `sendOutSpecimen`, `register`, `GcrPrintReportAppService`, `GcrShWorksheetPrintingAppService`, `GcrSendOutTestFormAppService`, `WorksheetPrintService`, `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder`, `GcrAuditService`.
 
 DFT: use the same Spec Ack `register()` packing when USID retrieve returns DFT specimens. Do **not** call `/api/dftreg/register` (D8).
 

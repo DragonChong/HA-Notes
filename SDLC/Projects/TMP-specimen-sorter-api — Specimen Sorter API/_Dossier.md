@@ -25,22 +25,22 @@ tags:
   - sdlc-dossier
 target_completion_date: ''
 title: Specimen Sorter API
-updated: '2026-09-09'
+updated: '2026-09-10'
 work_type: project
 ---
 # Specimen Sorter API
 
 ## Status
 
-> [!info] Stage: **design** — CP3 deck generated; gate `design` not in `gates_passed` (`requirement` exception stands)
-> Next action: present at CP3, write actions back to [[02 System Design]], then close `design-review`
+> [!info] Stage: **design** — print/PHLC owners locked from clone 2026-09-10; CP3 deck predates this; gate `design` not in `gates_passed`
+> Next action: present at CP3, or refresh `/design-review-pptx` if the room needs the named print/PHLC services
 
 ## Artifacts
 
 | Stage | Artifact | State |
 |---|---|---|
 | 01 Requirement | [[01 Requirement Confirmation]] | confirmed 2026-09-07; not in gates_passed |
-| 02 Design | [[02 System Design]] | reviewed by Tony Chong; D1–D11 answered |
+| 02 Design | [[02 System Design]] | reviewed by Tony Chong; print/PHLC owners locked 2026-09-10 |
 | 03 Slide Brief | [[03 Slide Brief]] | draft |
 | 03 Design Review | [[assets/Specimen Sorter API.pptx]] | generated |
 
@@ -58,6 +58,7 @@ work_type: project
 - 2026-09-08 — Rejected: print worksheet after send-out or ack. Worksheet (and PHLC) only after Registered, matching Spec Ack `constructSaveActions` (D11). Late print still OK on that path (D4). — agent
 - 2026-09-09 — `reviewed_by` set to Tony Chong on [[02 System Design]]. Design gate not closed; next is CP3 deck. — agent
 - 2026-09-09 — CP3 deck generated from [[03 Slide Brief]] (`assets/Specimen Sorter API.pptx`). `design-review` not closed until CP3 actions are written back. — agent
+- 2026-09-10 — Print/PHLC reuse locked from clone: worksheets via `gcrWorksheetPrinting` / `gcrShWorksheetPrinting` / `gcrSendOutWorksheetPrinting`; PHLC via `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder`. In-process after Registered, no HTTP loopback. — agent
 
 ## Open Items
 
