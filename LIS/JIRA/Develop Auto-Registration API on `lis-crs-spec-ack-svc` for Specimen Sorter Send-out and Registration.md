@@ -1,24 +1,24 @@
 ---
-title: >-
-  Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter
-  Send-out and Registration
-tags:
-  - jira-log
-  - lis
-request_type: Change Request
+created: '2026-09-10'
+design: '[[02 System Design]]'
+design_status: draft
+dossier: '[[_Dossier]]'
+jira: ''
 priority: Medium
+reference_jira:
+  - SEM20260612
+request_type: Change Request
 services:
   - lis-crs-spec-ack-svc
   - lab-crs-app
-target_completion_date: '2027-05-30'
 status: draft
-created: '2026-09-10'
-jira: ''
-reference_jira:
-  - SEM20260612
-design_status: draft
-design: '[[02 System Design]]'
-dossier: '[[_Dossier]]'
+tags:
+  - jira-log
+  - lis
+target_completion_date: '2027-05-30'
+title: >-
+  Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter
+  Send-out and Registration
 ---
 # Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration
 
@@ -33,29 +33,30 @@ Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send
 
 ## Background
 
-On Specimen Acknowledgement in `lis-crs-spec-ack-svc`, staff scan a USID (GCRS Specimen Number) and click Send-out or Register. Retrieve, validation, and packing (test groups, request no., ward/doctor mapping) still run in the front-end; the service only writes through `/sendOutSpecimen` and `/gcrSpecAckRegister`, then worksheet print and PHLC. Labs will load tubes onto a specimen sorter, and middleware needs those same actions in one call so the sorter can bin from `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE`. A new POST has to be added so that front-end logic can move behind the API and `LOE_AUDIT_TRAIL` records the sorter attempt.
+On Specimen Acknowledgement in `lis-crs-spec-ack-svc`, staff scan the specimen label (USID) and press Send-out or Register. Order retrieve, checks, and data conversion (group tests, request no., ward and doctor) still run on the screen; the service only does the write, then worksheet printing and PHLC. Labs will load tubes onto a specimen sorter for scan, sort, and transport, and LIS has to be called for those same send-out and registration actions. A new API has to be added so the sorter can get the outcome in one call and the attempt is recorded on Specimen Audit Trail (`LOE_AUDIT_TRAIL`).
 
 ## Change Description
 
 1. **New API on `lis-crs-spec-ack-svc`:**
-   - Add `POST /api/specack/sorter/auto-register` (`SpecimenSorterController`).
-   - Request: `usid` and `sorterId` required; `hospital`, `hkid`, `patientName` optional.
-   - Response HTTP 200 with status `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE` on the same call.
+   - Add `POST /api/specack/sorter/auto-register`.
+   - Request carries USID and sorter id; hospital, HKID, and patient name are optional.
+   - Same call returns Registered, Send-out, Relabel, or Failure. Soft alerts are logged only, not shown on the response.
 
-2. **Move Specimen Acknowledgement front-end logics onto that API:**
-   - Retrieve as the mapped sorter user
-   - Port validation and packing (`SpecimenSorterValidationService`, `SpecimenSorterPackingService`): group tests, request no. assignment, ward/doctor mapping, then existing `sendOutSpecimen` / `register()`.
-   - After `REGISTERED` and after HTTP return: same in-process worksheet print and PHLC as Spec Ack. Send-out / Relabel / Failure print nothing.
+2. **Move Specimen Acknowledgement screen logic onto that API:**
+   - Run the same retrieve, checks, and data conversion the screen does today, then the existing send-out or register write.
+   - After Registered, print worksheets and create the PHLC order the same way Spec Ack does today. Send-out, Relabel, and Failure print nothing.
 
 3. **New mapping table `loe_specimen_sorter_map`:**
-   - Sorter id → dedicated LIS user and workbench. Derive hospital if omitted; derive workstation and user from the same row. Printer / STAR location stay on `workbench`.
+   - Map sorter id to a dedicated LIS user and workstation.
+   - If hospital is not sent, take it from the map. Also derive workstation and user from that row.
 
 4. **`LOE_AUDIT_TRAIL` insert:**
-   - Write `SORT_REG` / `SORT_SO` / `SORT_RELABEL` / `SORT_FAIL`, plus existing `REG` / `SEND_OUT`. Add `SORT_*` to the Specimen Audit Trail action filter in `lab-crs-app`.
+   - Record sorter send-out, register, relabel, and failure, as well as the existing register and send-out actions.
+   - Add the new sorter actions to the Specimen Audit Trail filter in `lab-crs-app`.
 
 ## Justification
 
-Sorter middleware can scan a USID and bin the tube from one sync call (p95 under 4 s) without staff clicking Send-out or Register. Staff Specimen Acknowledgement stays the fallback for Relabel and Failure, and each attempt is searchable on Specimen Audit Trail.
+The sorter can scan a USID and bin the tube from the LIS result without staff clicking Send-out or Register. Staff Specimen Acknowledgement stays the fallback for Relabel and Failure, and each attempt can be found on Specimen Audit Trail.
 
 ## Target Completion Date
 
