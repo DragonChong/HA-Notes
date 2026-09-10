@@ -124,10 +124,10 @@ If your setup ever disallows both junctions and symlinks, fall back to a `sync-s
 
 ### Migration from today's layout
 
-Skills are currently spread across `LIS/skills/`, `skills/` at the root, and `.claude/`. To consolidate:
+Skills are currently spread across `LIS/skills/` and `.claude/`. Vault-root `skills/` was moved into `LIS/skills/` on 2026-09-10 (`implement-task` under `sdlc/`). To consolidate further into `Skills/`:
 
 1. Create `Skills/` at the vault root with the four category subfolders.
-2. `git mv` the existing skills into place — preserves history, which matters when a skill starts misbehaving and you need to see what changed. Root `skills/*` (the CRS-Revamp set) goes to `Skills/legacy-crs/`.
+2. `git mv` the existing skills into place — preserves history, which matters when a skill starts misbehaving and you need to see what changed. The former root `skills/*` set is already under `LIS/skills/` (and `LIS/skills/sdlc/implement-task`).
 3. Repoint the link: `rmdir "%USERPROFILE%\.cursor\skills"`, then re-run `mklink /J` against `D:\Github\HA-Notes\Skills`.
 4. Confirm discovery still works — a skill that was previously found should still respond to `/name`.
 

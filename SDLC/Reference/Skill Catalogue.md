@@ -28,7 +28,7 @@ Part of [[SDLC Agentic Workflow]]. Where every skill sits in the [[Architecture|
 | 03 | `design-review-pptx` | exists | After `reviewed_by`: write `03 Slide Brief.md`, humanize prose, then `deck.json`. Legacy: JIRA `## Design` |
 | 04 | `lis-jira-log-creator` | exists | Dossier read/write + JIRA create after human approve |
 | 05 | `project-plan` | **exists** | `LIS/skills/sdlc/project-plan/` — Gantt + milestones; human accepts estimates |
-| 06 | `implement-task` | **exists** | Dossier `repos` / Open Items first; CRS Central Task List still works |
+| 06 | `implement-task` | **exists** | `LIS/skills/sdlc/implement-task/` — dossier `repos` / Open Items first |
 | 06 | `code-change-log` | **exists** | `LIS/skills/sdlc/code-change-log/` — log markers, DB, config |
 | 07 | `code-review` | build | Absorbs `phase-review`, calls `sonar-scan-fix` |
 | 08 | `sit-test-report` | build | New |
@@ -58,7 +58,7 @@ Meta
 
 ## Generalize
 
-These live in `skills/` at the vault root. **2026-09-10:** dossier-first, CRS paths remain the fallback so CRS Revamp still works.
+These live in `LIS/skills/` (stage skill `implement-task` under `sdlc/`). **2026-09-10:** moved off vault-root `skills/`; dossier-first, CRS paths remain the fallback so CRS Revamp still works.
 
 | Skill | Was hardcoded | Now reads |
 |---|---|---|
@@ -73,7 +73,7 @@ The pattern is the same every time: **the skill keeps the procedure, the dossier
 
 ## Consolidation
 
-Skills currently live in three places: `skills/`, `LIS/skills/`, and `.claude/`. Cursor discovers `.cursor/skills/`, `.agents/skills/` and (legacy) `.claude/skills/`, recursively through subfolders.
+Skills currently live in two places: `LIS/skills/` and `.claude/`. Vault-root `skills/` is empty after the 2026-09-10 move. Cursor discovers `.cursor/skills/`, `.agents/skills/` and (legacy) `.claude/skills/`, recursively through subfolders.
 
 **Proposal — one canonical tree in the vault, in a visible folder:**
 
