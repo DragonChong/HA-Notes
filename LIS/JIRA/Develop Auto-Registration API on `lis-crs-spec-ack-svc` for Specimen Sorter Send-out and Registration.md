@@ -43,7 +43,7 @@ On Specimen Acknowledgement in `lis-crs-spec-ack-svc`, staff scan a USID (GCRS S
    - Response HTTP 200 with status `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE` on the same call.
 
 2. **Move Specimen Acknowledgement front-end logics onto that API:**
-   - Retrieve as the mapped sorter user (do not call GET `/retrieveGcrOrder`, which hard-codes `ltc611`).
+   - Retrieve as the mapped sorter user
    - Port validation and packing (`SpecimenSorterValidationService`, `SpecimenSorterPackingService`): group tests, request no. assignment, ward/doctor mapping, then existing `sendOutSpecimen` / `register()`.
    - After `REGISTERED` and after HTTP return: same in-process worksheet print and PHLC as Spec Ack. Send-out / Relabel / Failure print nothing.
 
