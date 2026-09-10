@@ -234,12 +234,13 @@ Traces to: R1, R8, R10
 }
 ```
 
-| Field | Required | Rule |
-|---|---|---|
-| `usid` | Yes | Else Failure, no write. |
-| `sorterId` | Yes | Lookup map + workbench. Unknown → Failure. |
-| `hospital` | No if map has hosp | If sent, must match `loesort_hosp` / `wkbh_hosp` or Failure. |
-| `hkid`, `patientName` | No | Present + mismatch → Failure. |
+| Field                 | Required           | Rule                                                         |
+| --------------------- | ------------------ | ------------------------------------------------------------ |
+| `usid`                | Yes                | Else Failure, no write.                                      |
+| `sorterId`            | Yes                | Lookup map + workbench. Unknown → Failure.                   |
+| `hospital`            | No if map has hosp | If sent, must match `loesort_hosp` / `wkbh_hosp` or Failure. |
+| `hkid`, `patientName` | No                 | Present + mismatch → Failure.                                |
+|                       |                    |                                                              |
 
 No auth header in v1 (D1).
 
