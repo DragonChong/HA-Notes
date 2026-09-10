@@ -5,7 +5,7 @@ tags:
   - sdlc-stage
 stage_key: development
 skill: implement-task
-skill_status: generalize
+skill_status: exists
 automation_level: B
 created: 2026-09-03
 status: blueprint
@@ -13,7 +13,7 @@ status: blueprint
 
 # 06 Development
 
-Part of [[SDLC Agentic Workflow]]. Owning skills: **`implement-task`** (*generalize*) and **`code-change-log`** (*to build*). Level **B**.
+Part of [[SDLC Agentic Workflow]]. Owning skills: **`implement-task`** (*exists*) and **`code-change-log`** (*exists*). Level **B**.
 
 ## Purpose
 
@@ -27,18 +27,10 @@ Implement the design in the repos, and leave behind a change-log note that every
 
 ## The generalization problem
 
-`skills/implement-task`, `task-plan`, `task-add`, `task-update`, `blocker-check`, `phase-review` and `load-context` are excellent but hardcoded to CRS Revamp — the repo table, the D.1–D.6 blocker registry, the `CRS/Revamp/Central Task List.md` path and the architecture rules all live inside the `SKILL.md` bodies.
-
-**Fix:** move project specifics out of the skill and into the dossier.
-
-| Today, hardcoded in SKILL.md | Move to |
-|---|---|
-| Repo → tech stack table | `repos` in dossier + `LIS/ECP/<service>/` notes |
-| Blocker registry D.1–D.6 | `## Open Items` in the dossier |
-| Central Task List path | `tasks:` wikilink in dossier frontmatter |
-| Architecture rules V1–V*n* | `lis-architecture` capability skill (already exists) |
-
-The skill then reads "load the architecture rules for this repo" instead of embedding one project's rules. One skill, many projects.
+`implement-task`, `task-plan`, `task-add`, `task-update`, `blocker-check`
+and `load-context` keep the procedure. Dossier `repos`, `## Open Items`,
+and optional `tasks:` supply the particulars. CRS Revamp still works when
+there is no dossier: Central Task List and D.1–D.6 remain the fallback.
 
 ## Procedure
 

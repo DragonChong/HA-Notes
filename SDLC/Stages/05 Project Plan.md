@@ -5,7 +5,7 @@ tags:
   - sdlc-stage
 stage_key: plan
 skill: project-plan
-skill_status: build
+skill_status: exists
 automation_level: B
 created: 2026-09-03
 status: blueprint
@@ -13,7 +13,7 @@ status: blueprint
 
 # 05 Project Plan
 
-Part of [[SDLC Agentic Workflow]]. Owning skill: **`project-plan`** — *to build*. Level **B**.
+Part of [[SDLC Agentic Workflow]]. Owning skill: **`project-plan`** — *exists*. Level **B**.
 
 ## Purpose
 

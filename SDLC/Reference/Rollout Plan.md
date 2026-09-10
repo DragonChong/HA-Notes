@@ -5,7 +5,7 @@ tags:
   - reference
   - plan
 created: 2026-09-03
-updated: 2026-09-03
+updated: 2026-09-10
 status: blueprint
 ---
 
@@ -47,6 +47,8 @@ Build `sdlc-orchestrator`, `requirement-confirmation`, and refit `generate-desig
 ## Phase 2 — Plan and build (≈2 weeks)
 
 Build `project-plan` and `code-change-log`. Generalize `implement-task`, `task-plan`, `task-add`, `task-update`, `blocker-check`, `load-context` off CRS Revamp.
+
+**Skills on disk 2026-09-10.** Proof (Gantt + change log on [[TMP-specimen-sorter-api]]) waits until `jira` is in `gates_passed`.
 
 **Done when:** the same pilot dossier carries a Gantt and a complete change log, and the CRS Revamp skills still work on CRS Revamp after generalization.
 

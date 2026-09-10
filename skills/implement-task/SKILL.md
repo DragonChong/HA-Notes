@@ -1,29 +1,52 @@
 ---
 name: implement-task
-description: Implement a CRS Revamp task for any repository — frontend (lis-request-app, lis-crs-common-app) or backend (lis-request-svc, lis-patient-svc, lis-hub-svc). Use when asked to implement, build, scaffold, or code any phase task. Enforces architecture rules and runs type-check (frontend) or compilation check (backend) after generation.
-argument-hint: "[TASK-ID or phase.task] [task name] [optional: repo e.g. lis-request-svc]"
+description: >
+  Implement a dossier work package or CRS Revamp task in an open clone.
+  Use when asked to implement, build, scaffold, or code. Do not use to
+  write the change log (code-change-log) or the schedule (project-plan).
+argument-hint: "[TASK-ID or phase.task] [task name] [optional: repo]"
 ---
 
-# Implement CRS Revamp Task
+# Implement a task
 
-You are implementing a task for the CRS Revamp project. The task may target a **frontend** or **backend** repository.
+You implement in the clones named on the dossier. Stack and architecture
+come from those repos and `LIS/ECP/<service>/` notes, plus
+`lis-architecture`. After compile/type-check, stop — `/code-change-log`
+writes the record.
+
+---
+
+## Step 0 — Resolve scope
+
+1. Read the active dossier (`repos`, `services`, `## Open Items`,
+   optional `tasks:` wikilink).
+2. Target repo = user argument, else the dossier `repos` row for this
+   package, else (CRS only) Central Task List `repo`.
+3. Stack: `LIS/ECP/<service>/` if it exists. Else the lookup below when
+   that repo name matches. Else ask — do not invent a stack.
+4. Architecture rules: load `lis-architecture`. The frontend/backend
+   tables below still apply when the repo is one of those names.
+5. Blockers: dossier `## Open Items`. CRS Registration may also use
+   D.1–D.6 from `/blocker-check`.
+6. Then `/blocker-check`. Verdict **blocked** → stop.
+
+If no dossier and the work is CRS Revamp, keep using
+`CRS/Revamp/Central Task List.md` as today.
 
 ---
 
 ## Step 1 — Identify the repository
-
-If not already known, determine the target repository:
 
 | Repository | Type | Tech stack |
 |---|---|---|
 | `lis-request-app` | Frontend | React, TypeScript, Emotion, Webpack MFE |
 | `lis-crs-common-app` | Frontend | React, TypeScript, Webpack MFE (Level-1 consumer) |
 | `lis-hub-app` | Frontend | React, TypeScript, Webpack Shell |
+| `lab-crs-app` | Frontend | React, TypeScript, Webpack MFE |
 | `lis-request-svc` | Backend | Spring Boot, Java, multi-module (app + client-lib) |
 | `lis-patient-svc` | Backend | Spring Boot, Java, multi-module |
 | `lis-hub-svc` | Backend | Spring Boot, Java |
-
-If the user provides a Task ID (`TASK-NNN`), read the `repo` field from the corresponding implementation plan note or look it up in the Central Task List (`CRS/Revamp/Central Task List.md`).
+| `lis-crs-spec-ack-svc` | Backend | Spring Boot, Java |
 
 **Proceed to the section matching the repository type:**
 - Frontend → [Frontend Pre-flight + Architecture](#frontend-implementation)
@@ -33,7 +56,8 @@ If the user provides a Task ID (`TASK-NNN`), read the `repo` field from the corr
 
 ## Frontend Implementation
 
-*Applies to: `lis-request-app`, `lis-crs-common-app`, `lis-hub-app`*
+*Applies to: React MFE apps in dossier `repos`, including
+`lis-request-app`, `lis-crs-common-app`, `lis-hub-app`, `lab-crs-app`.*
 
 ### Pre-flight F1 — Shared library check
 
@@ -65,18 +89,10 @@ Confirm the phase and respect its scope:
 
 ### Pre-flight F3 — Blocker check
 
-Check for blockers affecting this task:
-
-| ID | Affects |
-|---|---|
-| D.1 | Phase 9 — CrsRegController DTOs |
-| D.2 | Phases 2–3 — keyword group codes (AGE_UNIT, RACE, BILL, CONFIDENTIAL, LAB_ONLY) |
-| D.3 | Phase 8A — HKID lookup PAS vs local |
-| D.4 | Phase 4 — OBJECT_ATTRIBUTE table access route |
-| D.5 | Phase 8D — worksheet printing API |
-| D.6 | Phase 8D — label printing API |
-
-If blocked, state the assumption and add `// TODO [BLOCKER D.x]: <assumption>` in generated code.
+Run `/blocker-check`. Use dossier Open Items (and CRS D.1–D.6 when
+those apply). If blocked, stop. If proceeding with an assumption, add
+`// TODO [OPEN-n]: <assumption>` (CRS Registration may still use
+`TODO [BLOCKER D.x]`).
 
 ### Frontend Architecture Rules (enforce in every file)
 
@@ -133,12 +149,15 @@ export const {ComponentName}: React.FC<{ComponentName}Props> = ({ ... }) => {
 1. Run `npm run type-check` — report and fix all TypeScript errors before finishing
 2. Update `src/features/registration/index.ts` with the new barrel export
 3. State which tasks this implementation unlocks next
+4. Stop. `/code-change-log` writes `06 Code Change Log.md`.
 
 ---
 
 ## Backend Implementation
 
-*Applies to: `lis-request-svc`, `lis-patient-svc`, `lis-hub-svc`*
+*Applies to: Spring Boot services in dossier `repos`, including
+`lis-request-svc`, `lis-patient-svc`, `lis-hub-svc`,
+`lis-crs-spec-ack-svc`.*
 
 ### Pre-flight B1 — Module placement
 
@@ -156,7 +175,7 @@ For `lis-request-svc` specifically:
 
 ### Pre-flight B2 — Blocker check
 
-Check for blockers affecting this task (same registry as frontend — D.1–D.6 above).
+Same blocker rule as frontend — dossier Open Items, then `/blocker-check`.
 
 ### Backend Architecture Rules (enforce in every file)
 
@@ -242,3 +261,4 @@ public class {Name}Service extends AbstractService {
 2. Check that `@Transactional` is applied at the correct service method boundary
 3. Verify `DataSourceContextHolder.setCurrentDb(...)` is called at the controller entry point (not in service layer)
 4. State which tasks this implementation unlocks next
+5. Stop. `/code-change-log` writes `06 Code Change Log.md`.

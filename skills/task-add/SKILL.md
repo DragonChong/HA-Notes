@@ -1,14 +1,22 @@
 ---
 name: task-add
-description: Add a new task to the CRS Revamp project — registers it in the Central Task List (CRS/Revamp/Central Task List.md) with a global Task ID, and also adds a row to the correct per-screen migration plan. Use when planning a new task, discovering a missing task, or splitting an existing task. Updates Progress Summary and Changelog in both files.
-argument-hint: "[repo e.g. lis-request-app] [migration plan e.g. Registration] [phase e.g. 2] [task name] [optional: notes]"
+description: >
+  Add a task to the active dossier task list, or to CRS Revamp
+  Central Task List plus the per-screen migration plan. Use when
+  planning a new task, discovering a missing task, or splitting one.
+  Do not use project-plan (stage 05 schedule).
+argument-hint: "[repo] [migration plan or dossier] [phase] [task name] [optional: notes]"
 ---
 
-# Add Task to Migration Plan + Central Task List
+# Add a task
 
-You are adding a new task to the CRS Revamp project. The task is registered in **two places**:
-1. The per-screen migration plan (e.g. `CRS/Revamp/Migration Plan/Frontend/Registration Migration Plan.md`)
-2. The Central Task List at `CRS/Revamp/Central Task List.md`
+Resolve the task list first:
+
+1. Dossier with `tasks:` → append a row there (and create the note
+   if the wikilink is empty: `SDLC/Projects/<key>/Tasks.md`).
+2. Else CRS Revamp → register in **two places**:
+   - per-screen migration plan (e.g. `CRS/Revamp/Migration Plan/Frontend/Registration Migration Plan.md`)
+   - `CRS/Revamp/Central Task List.md`
 
 ---
 

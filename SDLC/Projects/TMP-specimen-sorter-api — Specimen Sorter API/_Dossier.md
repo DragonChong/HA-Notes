@@ -67,6 +67,7 @@ work_type: project
 - 2026-09-10 — Print/PHLC reuse locked from clone: worksheets via `gcrWorksheetPrinting` / `gcrShWorksheetPrinting` / `gcrSendOutWorksheetPrinting`; PHLC via `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder`. In-process after Registered, no HTTP loopback. — agent
 - 2026-09-10 — Existing design restated as the Specimen Acknowledgement screen (retrieve, send-out, register validation/convert, worksheet, PHLC). Proposed: one POST, move those logics, `LOE_AUDIT_TRAIL` `SORT_*`, table `loe_specimen_sorter_map` (derive hospital if omitted, plus user and workstation). Rejected keeping `loe_sorter_map`. — agent
 - 2026-09-10 — CP3 deck refreshed from [[03 Slide Brief]]: Spec Ack action matrix (register convert vs worksheet), new POST, `loe_specimen_sorter_map` derive hospital / workstation / user, `LOE_AUDIT_TRAIL` insert. `design-review` not closed until CP3 actions are written back. — agent
+- 2026-09-10 — Phase 2 skills started on this dossier: `project-plan`, `code-change-log` on disk; CRS task skills generalized. Do not run `/project-plan` until `jira` is in `gates_passed` (or a new exception). — agent
 - 2026-09-10 — `/lis-jira-log-creator` Step 7: `jira_search` to `hatool.home` failed (proxy 504 Unknown Host). No issue created. Vault draft kept; `jira` left empty. Create by hand or paste the key. — agent
 - 2026-09-10 — `design-review` exception: CP3 not held; skip to JIRA create to close Phase 1. Deck stays generated; gate not in `gates_passed`. — Ka
 - 2026-09-10 — Design gate closed. 02 still meets the exit checklist after the rewrite (`reviewed_by` Tony Chong). `design` written to `gates_passed`. — Ka
@@ -87,6 +88,8 @@ work_type: project
 - [x] D10 — no workbench-vs-test-lab check
 - [x] D11 — worksheet printed during registration only
 - [x] Human `reviewed_by` on [[02 System Design]] (Tony Chong)
+- [ ] Paste JIRA key when the Change Request is created by hand
+- [ ] Run `/project-plan` after `jira` is in `gates_passed`
 
 ## Links
 

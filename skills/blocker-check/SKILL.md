@@ -1,16 +1,27 @@
 ---
 name: blocker-check
-description: Check which CRS Revamp open blockers affect a given Registration task before implementation starts. Use this before starting any task to surface unknowns, decide whether to proceed with assumptions, and insert the correct TODO comments. Prevents wasted implementation effort on blocked tasks.
+description: >
+  Check which open items affect a work package before implement-task.
+  Reads dossier ## Open Items first. CRS Registration may still use
+  D.1–D.6 below. Use before coding; do not use to write the schedule
+  (project-plan).
 argument-hint: "[phase.task number or task description]"
 ---
 
 # Blocker Pre-Check
 
-Before implementing a Registration task, identify which open blockers apply and decide the safest path forward.
+Before implementing, identify which open items apply and decide the
+safest path.
+
+1. Read the active dossier `## Open Items`. Those rows are the
+   registry for this unit of work.
+2. If the work is CRS Registration (or no dossier), also use the
+   D.1–D.6 table below.
+3. Then run the analysis steps.
 
 ---
 
-## Open Blockers Registry
+## CRS Registration blockers (fallback)
 
 | ID | Description | Affects | Status |
 |---|---|---|---|
@@ -27,7 +38,7 @@ Before implementing a Registration task, identify which open blockers apply and 
 
 Given the task provided by the user:
 
-1. **Identify affected blockers** — which of D.1–D.6 (if any) affect this task?
+1. **Identify affected blockers** — which dossier Open Items (and CRS D.1–D.6, if that fallback applies) affect this task?
 
 2. **For each affected blocker, state:**
    - Exactly what is unknown
@@ -47,12 +58,10 @@ Given the task provided by the user:
 Insert a `TODO` comment at every point in the generated code where the assumption is applied:
 
 ```typescript
-// TODO [BLOCKER D.2]: Assuming keyword group code for AGE_UNIT is 'AGE_UNIT' —
-// confirm with team before release
-<KeywordDropdown group="AGE_UNIT" labNo={null} ... />
+// TODO [OPEN-n]: <assumption> — confirm before release
 ```
 
-This makes all assumption points searchable across the codebase via `grep "BLOCKER D."`.
+CRS Registration may still use `TODO [BLOCKER D.x]`. Grep `TODO [OPEN-` or `BLOCKER D.`.
 
 ---
 

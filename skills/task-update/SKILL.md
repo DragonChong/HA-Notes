@@ -1,14 +1,21 @@
 ---
 name: task-update
-description: Update the status of one or more tasks in both the per-screen migration plan and the Central Task List (CRS/Revamp/Central Task List.md). Accepts a global Task ID (TASK-001) or a local task number (2.1). Recalculates Progress Summary in both files and appends Changelog entries in both files.
-argument-hint: "[TASK-ID or local task number(s) e.g. TASK-007 or 2.1] [start|done|skip|block] [optional: which plan if ambiguous]"
+description: >
+  Update task status on the active dossier task list, or on CRS
+  Revamp Central Task List plus the per-screen migration plan.
+  Accepts a global Task ID (TASK-001) or a local number (2.1).
+  Do not use to implement the task (implement-task).
+argument-hint: "[TASK-ID or local task number(s)] [start|done|skip|block] [optional: which list]"
 ---
 
-# Update Task Status in Migration Plan + Central Task List
+# Update task status
 
-You are updating task status in **two places simultaneously**:
-1. The per-screen migration plan (e.g. `CRS/Revamp/Migration Plan/Frontend/Registration Migration Plan.md`)
-2. The Central Task List at `CRS/Revamp/Central Task List.md`
+Resolve the task list first:
+
+1. Dossier with `tasks:` → update that note only.
+2. Else CRS Revamp → update **two places simultaneously**:
+   - per-screen migration plan (e.g. `CRS/Revamp/Migration Plan/Frontend/Registration Migration Plan.md`)
+   - `CRS/Revamp/Central Task List.md`
 
 ---
 

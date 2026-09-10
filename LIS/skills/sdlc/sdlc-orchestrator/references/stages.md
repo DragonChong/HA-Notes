@@ -28,7 +28,9 @@ Exception: `work_type: fix` may run `jira` before `design`.
 | pilot | `pilot-monitor` |
 
 Phase 1 on disk: `requirement-confirmation`, `system-design`,
-`design-review-pptx`, `lis-jira-log-creator`. If the routed skill is
+`design-review-pptx`, `lis-jira-log-creator`.
+Phase 2 on disk: `project-plan`, `code-change-log`; `implement-task`
+and CRS task skills generalized. If the routed skill is
 missing, say so on the Next line and stop.
 
 ## Refusals (one sentence)

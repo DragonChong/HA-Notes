@@ -1,13 +1,22 @@
 ---
 name: task-plan
-description: Generate a detailed implementation plan for a CRS Revamp task, saved as an Obsidian note in the vault. Updates the Central Task List Reference column to point directly to the new plan note. Use this before starting a task to capture business rules, technical approach, acceptance criteria, and effort estimate.
+description: >
+  Generate a detailed implementation plan for a work package. Use
+  before implement-task. Writes under the dossier `tasks:` note when
+  a dossier exists; CRS Revamp still uses Central Task List and
+  Migration Plan paths. Do not use project-plan (stage 05 Gantt).
 argument-hint: "[TASK-ID or phase.task e.g. TASK-007 or 2.3] [task name] [optional: repo]"
 ---
 
 # Generate Task Implementation Plan
 
-You are generating an Obsidian implementation plan note for a CRS Revamp task. The note is saved at:
-`CRS/Revamp/Migration Plan/Frontend/Implementation Plans/{phase.task} — {Task Name}.md`
+Resolve the task list first:
+
+1. Dossier with `tasks:` wikilink → write the plan next to that note
+   (or as a child of the dossier folder) and link it from `tasks:`.
+2. Else CRS Revamp →
+   `CRS/Revamp/Migration Plan/Frontend/Implementation Plans/{phase.task} — {Task Name}.md`
+   and update Central Task List as below.
 
 ---
 

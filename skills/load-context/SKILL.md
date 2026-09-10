@@ -1,22 +1,24 @@
 ---
 name: load-context
-description: Load relevant CRS Revamp knowledge base documents before starting a Registration task. Use this at the start of any complex implementation session to surface business rules, legacy behaviour, and open questions from the Obsidian knowledge base. Run before implement-task for unfamiliar or complex tasks.
-argument-hint: "[task name, panel name, or topic e.g. 'Patient Demographics Panel']"
+description: >
+  Load vault context before implement-task: dossier services, LIS/ECP
+  notes, and Knowledge Base. CRS Registration still uses the Flex
+  mapping table below. Do not use to write code.
+argument-hint: "[task name, panel name, or topic]"
 ---
 
-# Load Knowledge Base Context
+# Load vault context
 
-Before starting implementation, surface the relevant knowledge base documents for the specified task or topic.
+Before starting implementation, surface the notes for this package.
 
 ---
 
-## Step 1 — Search the knowledge base
+## Step 1 — Search
 
-Search `@workspace` across the `lis-knowledge-base` folder for:
-
-1. The panel, component, or workflow name provided by the user
-2. Related enablement, interaction, or validation notes
-3. The corresponding legacy Flex component name (common mappings below)
+1. Read the active dossier `services` / `repos`. Search
+   `LIS/ECP/<service>/` for each.
+2. Search Knowledge Base for the panel, component, or workflow.
+3. CRS Registration only: also use the Flex mapping table below.
 
 ### Common legacy component name mappings
 
@@ -39,7 +41,7 @@ Search `@workspace` across the `lis-knowledge-base` folder for:
 
 For each document found, produce:
 
-**Document:** `Knowledge Base/01_Screens/Registration/{path}`
+**Document:** vault-relative path (`LIS/ECP/<service>/…` or `Knowledge Base/…`)
 
 **Business rules relevant to this task:**
 - Bullet list of rules that must be implemented
@@ -79,3 +81,6 @@ End with:
 
 If significant unknowns were found:
 > "Recommend running `/blocker-check {task name}` before implementing."
+
+If a dossier exists, also say:
+> "Package notes are on the dossier. `/implement-task` then `/code-change-log`."

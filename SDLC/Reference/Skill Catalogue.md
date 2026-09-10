@@ -5,7 +5,7 @@ tags:
   - reference
   - agent-skills
 created: 2026-09-03
-updated: 2026-09-09
+updated: 2026-09-10
 status: blueprint
 ---
 
@@ -27,9 +27,9 @@ Part of [[SDLC Agentic Workflow]]. Where every skill sits in the [[Architecture|
 | 02 | `system-design` | **exists** | Refit done — own note; `generate-design` is legacy-only |
 | 03 | `design-review-pptx` | exists | After `reviewed_by`: write `03 Slide Brief.md`, humanize prose, then `deck.json`. Legacy: JIRA `## Design` |
 | 04 | `lis-jira-log-creator` | exists | Dossier read/write + JIRA create after human approve |
-| 05 | `project-plan` | build | New |
-| 06 | `implement-task` | **generalize** | De-hardcode CRS Revamp |
-| 06 | `code-change-log` | build | New — highest downstream leverage |
+| 05 | `project-plan` | **exists** | `LIS/skills/sdlc/project-plan/` — Gantt + milestones; human accepts estimates |
+| 06 | `implement-task` | **exists** | Dossier `repos` / Open Items first; CRS Central Task List still works |
+| 06 | `code-change-log` | **exists** | `LIS/skills/sdlc/code-change-log/` — log markers, DB, config |
 | 07 | `code-review` | build | Absorbs `phase-review`, calls `sonar-scan-fix` |
 | 08 | `sit-test-report` | build | New |
 | 09 | `load-test-scenario` | build | New |
@@ -40,7 +40,7 @@ Part of [[SDLC Agentic Workflow]]. Where every skill sits in the [[Architecture|
 | 12 | `pilot-monitor` | build | New |
 | — | `uat-support` | later | Thin; schedule + scope + record outcome |
 
-**Remaining after Phase 1 spine:** 10 new, 1 generalize. Orchestrator, requirement, design refit, and the two extensions are done.
+**Remaining after Phase 2 start:** 8 new. Spine plus plan, change log, and CRS generalization are on disk. Prove Gantt + change log on a dossier after `jira` is in `gates_passed`.
 
 ## L2 — Capability skills (existing, reusable)
 
@@ -58,16 +58,16 @@ Meta
 
 ## Generalize
 
-These live in `skills/` at the vault root and are CRS-Revamp-specific. They are the right shape but the wrong scope.
+These live in `skills/` at the vault root. **2026-09-10:** dossier-first, CRS paths remain the fallback so CRS Revamp still works.
 
-| Skill | Hardcoded today | Move to |
+| Skill | Was hardcoded | Now reads |
 |---|---|---|
-| `load-context` | CRS knowledge-base paths, Flex component mapping table | Dossier `services`/`repos` + a per-service context map |
-| `task-plan` | `CRS/Revamp/Migration Plan/…` output path | Dossier folder |
-| `task-add` / `task-update` | `CRS/Revamp/Central Task List.md` | `tasks:` wikilink in dossier frontmatter |
-| `blocker-check` | Blocker registry D.1–D.6 inline | Dossier `## Open Items` |
-| `phase-review` | Architecture rules V1–V*n* inline, `src/features/registration/` | `lis-architecture` capability + dossier `repos` |
-| `implement-task` | Repo → stack table inline | Dossier `repos` + `LIS/ECP/<service>/` notes |
+| `load-context` | CRS knowledge-base paths, Flex mapping only | Dossier `services`/`repos` + `LIS/ECP/<service>/`; Flex table still for Registration |
+| `task-plan` | `CRS/Revamp/Migration Plan/…` only | Dossier `tasks:` if set; else Central Task List |
+| `task-add` / `task-update` | `CRS/Revamp/Central Task List.md` only | Dossier `tasks:` if set; else both CRS files |
+| `blocker-check` | D.1–D.6 inline only | Dossier `## Open Items` first; D.1–D.6 fallback |
+| `phase-review` | Architecture rules V1–V*n* inline | Still CRS — absorbed by Phase 3 `code-review` |
+| `implement-task` | CRS repo table only | Dossier `repos` + `LIS/ECP/<service>/` + `lis-architecture` |
 
 The pattern is the same every time: **the skill keeps the procedure, the dossier supplies the particulars.** A skill that names one project cannot orchestrate the next one.
 
