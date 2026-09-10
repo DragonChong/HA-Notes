@@ -65,7 +65,7 @@
         "rows": [
           [
             { "text": "Retrieve GCRS", "bold": true },
-            "Looks up the order",
+            "Scan Specimen Label",
             "Calls backend"
           ],
           [
