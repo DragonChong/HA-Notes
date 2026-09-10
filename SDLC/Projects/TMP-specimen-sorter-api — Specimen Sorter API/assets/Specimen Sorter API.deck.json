@@ -19,37 +19,39 @@
       "notes": "Cover is identity only. TMP-000 is the dossier stand-in. Tony Chong reviewed the design note."
     },
     {
-      "archetype": "evolution",
+      "archetype": "compare",
       "eyebrow": "Background",
       "title": "Staff click today. The sorter will call LIS",
-      "steps": [
-        {
-          "badge": 1,
-          "tone": "neutral",
-          "tag": "today",
-          "title": "Scan and click",
-          "body": "Staff scan the specimen label on Specimen Acknowledgement and press Send-out or Register."
-        },
-        {
-          "badge": 2,
-          "tone": "warn",
-          "tag": "sorter",
-          "title": "Tubes go on a sorter",
-          "body": "Labs will load tubes onto a sorter for scan, sort, and transport."
-        },
-        {
-          "badge": 3,
-          "tone": "accent",
-          "tag": "this CR",
-          "title": "One LIS call, then a bin",
-          "body": "Middleware calls LIS so the sorter can bin from send-out or registration status."
-        }
-      ],
+      "left": {
+        "label": "As-is",
+        "tone": "danger",
+        "title": "Staff scan and click",
+        "code": [
+          "scan the specimen label",
+          "press Send-out or Register"
+        ],
+        "points": [
+          "On Specimen Acknowledgement",
+          "One tube, one staff action"
+        ]
+      },
+      "right": {
+        "label": "To-be",
+        "tone": "accent",
+        "title": "Sorter scans, LIS answers",
+        "code": [
+          "sorter scans for sort and transport",
+          "LIS API for send-out or register"
+        ],
+        "points": [
+          "One call, then a bin",
+          "Staff screen stays as fallback"
+        ]
+      },
       "callout": {
-        "lead": "Staff screen stays:",
         "text": "Specimen Acknowledgement remains the fallback when the sorter returns Relabel or Failure."
       },
-      "notes": "The gap is not the writes. Validation and packing still sit on the screen, so middleware cannot reuse the staff register call."
+      "notes": "As-is is the staff click path. To-be is the sorter calling LIS for the same send-out and registration actions. Checks and packing still sit on the screen today."
     },
     {
       "archetype": "matrix",

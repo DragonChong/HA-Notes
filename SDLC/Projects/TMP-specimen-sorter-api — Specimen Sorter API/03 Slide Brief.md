@@ -33,12 +33,11 @@ Facts come from [[02 System Design]]. Presentational only. Table name on slides 
 ### Slide: Background
 **Eyebrow:** Background
 **Title:** Staff click today. The sorter will call LIS
-**Archetype:** evolution
+**Archetype:** compare
 **Body:**
-1. Staff scan the specimen label on Specimen Acknowledgement and press Send-out or Register.
-2. Labs will load tubes onto a sorter for scan, sort, and transport.
-3. Middleware calls one LIS API so the sorter can bin from send-out or registration status.
-**Notes:** The staff screen stays as fallback. Validation and packing still sit on the screen, so middleware cannot reuse the staff register call.
+As-is: staff scan the specimen label on Specimen Acknowledgement and press Send-out or Register.
+To-be: the sorter scans the tube for sort and transport; LIS is called for send-out or registration so the sorter can bin.
+**Notes:** Specimen Acknowledgement stays the fallback for Relabel or Failure. Checks and packing still sit on the screen today.
 
 ### Slide: Existing Design - Spec Ack screen
 **Eyebrow:** Existing Design
