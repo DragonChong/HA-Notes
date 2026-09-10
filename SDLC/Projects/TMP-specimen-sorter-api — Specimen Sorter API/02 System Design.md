@@ -19,67 +19,56 @@ New endpoint and orchestrator on existing `lis-crs-spec-ack-svc`. Does not creat
 
 **Gate:** `requirement` was confirmed in writing but is not in `gates_passed`. Design proceeds under a recorded exception (requester invoked `/system-design`).
 
-Design answers recorded 2026-09-07 (second pass), 2026-09-08 (D6, D8, D10, D11), and 2026-09-10 (print/PHLC owners from clone). Packing convertor moved server-side. All design questions D1–D11 have a written answer.
+Design answers D1–D11 stand. 2026-09-10: Existing / Proposed restated as the Specimen Acknowledgement screen vs one new API. Map table name is `loe_specimen_sorter_map` (was `loe_sorter_map` on D7). Hospital is derived from that map when the request omits it.
+
+Slides are not this note. After you confirm this delta, `/design-review-pptx` refreshes [[03 Slide Brief]].
 
 ## Context and problem
 
-Traces to: R1, R8, Q17 volume/latency
+Traces to: R1, R8
 
-Staff on Specimen Acknowledgement scan a USID and click Send-out or Register. The sorter must do that in one LIS call and bin the tube within about four seconds.
+Staff currently scan the specimen label and press buttons to perform send-out and registration on Specimen Acknowledgement. Labs will use a specimen sorter to scan the tube, sort it, and move it. Middleware calls a LIS API for the send-out and registration actions so the sorter can bin from the result.
 
-Today the click path is split three ways, not two:
-
-- Order lookup and register/send-out **writes** are in `lis-crs-spec-ack-svc`.
-- Soft alerts and hard validations sit in the Flex (and revamp) **screen**.
-- **Packing convertor** in Flex `GcrSpecAckDataConvertor` builds the `GcrSpecAckPackingVo` Java `register()` expects: test groups, USID as request no., ward/doctor mapping, user-input defaults, worksheet/send-out form Ro.
-
-Middleware cannot call `/gcrSpecAckRegister` without that packing. The orchestrator must port convertor + validator + alerts, not only the write APIs.
+Today those actions are a staff click path. Retrieve, validation, packing (test groups, request no., ward/doctor), worksheet conversion, and PHLC sit in the Flex / revamp **screen**. The service only runs the writes. Middleware cannot call `/gcrSpecAckRegister` without that packing.
 
 ## Existing design
 
 Traces to: R2, R5, R6, R7, R11, R13, R14
 
-`lis-crs-spec-ack-svc` port 8118, root `/api/specack`. Security starter commented out; isolation is NetworkPolicy. **v1 sorter API stays the same: no application authentication (D1).** Dynamic DB routing uses `ServiceParameterVo`.
+`lis-crs-spec-ack-svc` port 8118, root `/api/specack`. Security starter commented out; isolation is NetworkPolicy. Dynamic DB routing uses `ServiceParameterVo`. Staff workbench is `LAB_DB.dbo.workbench` (PK `wkbh_id` + `wkbh_labno`). Login today: `WorkbenchEvent.selectWorkbench` by PC name / IP.
 
-Staff workbench is `LAB_DB.dbo.workbench` (PK `wkbh_id` + `wkbh_labno`). Columns used here: `wkbh_hosp`, `wkbh_location`, `wkbh_station_name`, `wkbh_default_printer`, `wkbh_wf1`–`wf12`. Login today: `WorkbenchEvent.selectWorkbench` by PC name / IP. Print queue for send-out form is keyed by **workbench id**.
+### Specimen Acknowledgement screen
 
-| Step           | Who owns it today                                                                                    | What it does                                                                                                                                                                                                                                                                                                                                                                                         |
-| -------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Retrieve       | `GcrUIAppServiceImpl.retrieveGcrOrder`                                                               | USID → specimen → order. Duplicate USID writes audit. GET `/retrieveGcrOrder` hard-codes user `ltc611` — sorter must not use that GET.                                                                                                                                                                                                                                                               |
-| Soft alerts    | Flex `promptAlert`                                                                                   | Collection date, overnight, valid period, validity, patient tag, duplicate, ward-printed request-no, DFT, USID, private patient, not unboxed, **mixed local + send-out**.                                                                                                                                                                                                                            |
-| Hard checks    | Flex `GcrSpecAckDataValidator`                                                                       | Unmapped doctor/location/specialty/report dest/copy; datetime; missing test-dict.                                                                                                                                                                                                                                                                                                                    |
-| Packing        | Flex `GcrSpecAckDataConvertor`                                                                       | `convertRequestTestGroupDataFromGcrTest` / `convertRequestTestGroupDataToParam` group tests for the current specimen and assign USID; `convertWardDataToParam` / `convertDoctorDataToParam` map office dictionary; `convertRequestNoDataToParam`; `convertUserInputDataToParam` reads screen checkboxes; `convertToWorksheetRo` / `convertToSendOutTestFormRo` / `convertToShWorksheetRo` for print. |
-| Relabel        | Same convertor, Assign USID                                                                          | Multi-group; DFT same time-flag; multi-specimen; suffix ≠ `0`; force relabel; **user checkbox** (API will not have it).                                                                                                                                                                                                                                                                              |
-| Send-out write | `sendOutSpecimen`                                                                                    | Ack if Printed/Collected; tracking; action `SEND_OUT`.                                                                                                                                                                                                                                                                                                                                               |
-| Register write | `register`                                                                                           | Assumes packing already converted.                                                                                                                                                                                                                                                                                                                                                                   |
-| Worksheets     | `CrsSpecAckController.gcrWorksheetPrinting`, `gcrShWorksheetPrinting`, `gcrSendOutWorksheetPrinting` | Convert then `WorksheetPrintService.worksheetPrintRequest`. Staff paths `/workSheet`, `/gcrShWorkSheet`, `/gcrSendOutWorkSheet`. **Registration only** (D11). Prints only when a request no. was assigned. Send-out outcome does not print. Staff picker when more than one worksheet.                                                                                                               |
-| PHLC           | `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder`                                                   | Staff `POST /createPhlcLabOrder`. For each request id: lab result, `isSendToPHLC`, then PO1 / CS1 / CC1 outbound message. **Registration only** (D11).                                                                                                                                                                                                                                               |
+| Action | Front-end | Back-end |
+|---|---|---|
+| **Retrieve GCRS order** | Screen scans / enters USID and calls retrieve | `GcrUIAppServiceImpl.retrieveGcrOrder`. GET `/retrieveGcrOrder` hard-codes user `ltc611` — sorter must not use that GET. Duplicate USID writes audit. |
+| **Send-out** | Staff click; screen calls send-out | `sendOutSpecimen`: ack if Printed/Collected; tracking; action `SEND_OUT`. Send-out detection: join `loe_request_test.loereqtst_test_code` to `loe_sendout_test.loesend_cluster_code` + hosp, filter lab no. |
+| **Registration — validation** | Flex `promptAlert` (soft) and `GcrSpecAckDataValidator` (hard) | Writes assume validation already passed. Soft: collection date, overnight, valid period, patient tag, duplicate, mixed local + send-out, and the rest of today's list. Hard: unmapped doctor/location/specialty/report dest/copy; datetime; missing test-dict. |
+| **Registration — data conversion** | Flex `GcrSpecAckDataConvertor` | `register()` expects already-built `GcrSpecAckPackingVo`. Convertor: group tests and assign request no. (`convertRequestTestGroupDataFromGcrTest` / `ToParam`, `convertRequestNoDataToParam`); map ward and doctor setups (`convertWardDataToParam` / `convertDoctorDataToParam`); checkbox defaults (`convertUserInputDataToParam`). |
+| **Registration — write** | Screen calls register | `register`. Relabel stays on the convertor / Assign USID path (multi-group, DFT time-flag, multi-specimen, suffix ≠ `0`, force relabel, user checkbox). |
+| **Worksheet printing** | Convertor builds worksheet / send-out / SH Ro; staff pick when more than one | `CrsSpecAckController.gcrWorksheetPrinting`, `gcrShWorksheetPrinting`, `gcrSendOutWorksheetPrinting` → `WorksheetPrintService`. **Registration only** (D11). |
+| **PHLC electronic order** | Screen calls PHLC after register | `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder`. **Registration only** (D11). |
 
-Send-out **detection**: join `loe_request_test.loereqtst_test_code` to `loe_sendout_test.loesend_cluster_code` + hosp, filter lab no.
-
-Labs: CPS = 1, HMS = 3, APS = 5, BBS = 6, MBS = 7, VRS = 8.
+Labs: CPS = 1, HMS = 3, APS = 5, BBS = 6, MBS = 7, VRS = 8. v1 sorter path is CPS / HMS only.
 
 ## Proposed change — overview
 
 Traces to: R1–R14
 
-One new POST. Orchestrator, in-process:
+One new POST on Spec Ack. Move the screen logics above onto that API. Staff click path stays.
 
-1. Resolve **sorter user** and **workbench** from `loe_sorter_map` (sorter id → LIS user + `workbench` row). Hospital/lab/printer/location come from that workbench (D2, D7).
-2. Retrieve by USID only.
-3. Port Flex convertor **and** validator **and** alerts on the server; build packing (no screen).
-4. Mixed local + send-out → **Failure** (D3).
-5. Relabel / send-out / register using existing app services.
-6. Return status. **Then**, and only after **Registered**, print **all** worksheets and PHLC (R13, D11). Send-out, Relabel, and Failure print nothing. Late print does not change status (D4, D5).
-7. STAR with no workbench location → **Failure** `4422` (D9).
+1. **New API** — path, body, and response below.
+2. **Move front-end logics to the API** — retrieve (as the mapped user), validation, packing convertor, then existing send-out / register / print / PHLC in-process.
+3. **`LOE_AUDIT_TRAIL` insert** — `SORT_*` plus today's `REG` / `SEND_OUT` (D6).
+4. **New table `loe_specimen_sorter_map`** — sorter id → LIS user + workbench. If the request has no hospital, take hospital from the map / workbench. Workstation and user come from the same row.
 
-No Hub JWT. No API key in v1 (D1). Staff APIs unchanged.
+No Hub JWT. No API key in v1 (D1).
 
 ```mermaid
 sequenceDiagram
     participant MW as Sorter middleware
     participant API as Auto-register API
-    participant Map as loe_sorter_map
+    participant Map as loe_specimen_sorter_map
     participant WB as workbench LAB_DB
     participant Ret as retrieveGcrOrder
     participant Cvt as Server-side convertor
@@ -92,6 +81,7 @@ sequenceDiagram
     MW->>API: POST USID + sorterId + optional hospital HKID name
     API->>Map: sorter id to user and workbench id
     API->>WB: load hosp lab location printer station
+    Note over API: hospital omitted → use map / workbench hosp
     API->>Ret: USID only as that user
     alt not found or unsupported or mixed send-out
         API->>Aud: SORT_FAIL
@@ -121,30 +111,35 @@ Traces to: R1, R4, R5, R6, R11, R14
 | Piece | Role |
 |---|---|
 | `SpecimenSorterController` | `POST /api/specack/sorter/auto-register`. Extends `AbstractService`. Does not call GET `/retrieveGcrOrder`. |
-| `SpecimenSorterAutoRegisterService` | Orchestrator. Sets `ServiceParameterVo` from map user + workbench hospital/lab/`serverName`. |
-| `SpecimenSorterMapService` | `loe_sorter_map` → user + workbench id/lab. Then `workbench` for hosp, location, station name, default printer. Missing map or workbench → Failure. |
-| `SpecimenSorterPackingService` | **Java port of `GcrSpecAckDataConvertor`.** Must include: `convertRequestTestGroupDataFromGcrTest`, `convertRequestTestGroupDataToParam`, `convertRequestNoDataToParam`, `convertWardDataToParam`, `convertDoctorDataToParam`, worksheet/send-out/SH Ro builders. `convertUserInputDataToParam` becomes **defaults**, not screen: ack/register datetime = server now (R12); collection date from specimen (do not invent); AAR off; urgent workstation off; label flags off; no user relabel checkbox. |
-| `SpecimenSorterValidationService` | Port of `promptAlert` (ALS only) and `GcrSpecAckDataValidator`. Mixed local + send-out → **Failure** (not ALS). STAR: no `wkbh_location` on mapped workbench → Failure `4422`. |
-| `SpecimenSorterRelabelService` | Assign-USID rules from the convertor **without** `userCheckedRelabel`. |
-| `SpecimenSorterSendOutResolver` | `LOE_SENDOUT_TEST` cluster join. If **both** send-out and in-house tests on the USID → Failure (D3). |
-| `SpecimenSorterPostProcessService` | After HTTP return, **and only when outcome is Registered** (D11): call the same in-process path as the three staff print methods, for **every** worksheet Ro the convertor produced (no picker). GCRS worksheet → `GcrPrintReportAppService` + `WorksheetPrintService` (`gcrWorksheetPrinting`). SH worksheet → `GcrShWorksheetPrintingAppService` + `WorksheetPrintService` (`gcrShWorksheetPrinting`). Send-out form Ro → `GcrSendOutTestFormAppService` + `WorksheetPrintService` (`gcrSendOutWorksheetPrinting`). Then PHLC via `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder` when `isSendToPHLC` is true. Do **not** HTTP-loopback to those staff endpoints. Send-out / Relabel / Failure skip this service. Failure to print → ALS warn only (D4). Spec Ack can auto-print after ack when `isAutoPrintWorksheetAfterAckEnabled`; sorter does **not**. |
+| `SpecimenSorterAutoRegisterService` | Orchestrator. Sets `ServiceParameterVo` from map user + workbench hospital/lab/`serverName`. If request `hospital` is empty, use `loesort_hosp` / `wkbh_hosp`. |
+| `SpecimenSorterMapService` | `loe_specimen_sorter_map` → user + workbench id/lab. Then `workbench` for hosp, location, station name, default printer. Missing map or workbench → Failure. |
+| `SpecimenSorterPackingService` | Java port of `GcrSpecAckDataConvertor` (group tests, request no., ward/doctor, worksheet Ro). `convertUserInputDataToParam` becomes defaults: ack/register datetime = server now (R12); collection date from specimen; AAR off; urgent workstation off; label flags off; no user relabel checkbox. |
+| `SpecimenSorterValidationService` | Port of `promptAlert` (ALS only) and `GcrSpecAckDataValidator`. Mixed local + send-out → **Failure**. STAR: no `wkbh_location` → Failure `4422`. |
+| `SpecimenSorterRelabelService` | Assign-USID rules **without** `userCheckedRelabel`. |
+| `SpecimenSorterSendOutResolver` | `LOE_SENDOUT_TEST` cluster join. Both send-out and in-house on the USID → Failure (D3). |
+| `SpecimenSorterPostProcessService` | After HTTP return, **Registered only** (D11): same in-process path as the three staff print methods, every worksheet Ro (no picker), then PHLC via `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder` when `isSendToPHLC`. No HTTP loopback. Send-out / Relabel / Failure skip this. Print fail → ALS warn only (D4). |
 
 Reuse: `retrieveGcrOrder`, `sendOutSpecimen`, `register`, `GcrPrintReportAppService`, `GcrShWorksheetPrintingAppService`, `GcrSendOutTestFormAppService`, `WorksheetPrintService`, `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder`, `GcrAuditService`.
 
-DFT: use the same Spec Ack `register()` packing when USID retrieve returns DFT specimens. Do **not** call `/api/dftreg/register` (D8).
+DFT: Spec Ack `register()` packing. Do **not** call `/api/dftreg/register` (D8).
 
-APS/BBS/MBS → Failure unsupported. Do not run APS/BBS convertor branches.
+APS/BBS/MBS → Failure unsupported.
 
-Do **not** compare the sorter workbench lab (`wkbh_labno` / `loesort_labno`) to the retrieved test’s lab. Workbench is only user, station, printer, and STAR location (D10).
+Do **not** compare workbench lab to the retrieved test lab (D10).
 
 HKID/name: if supplied and mismatch GCRS patient → Failure.
 
 ```mermaid
 flowchart TD
-    start[POST auto-register] --> map{sorterId on loe_sorter_map?}
+    start[POST auto-register] --> map{sorterId on loe_specimen_sorter_map?}
     map -->|no| fail[Failure]
     map -->|yes| wb[Load workbench]
-    wb --> usid{USID present?}
+    wb --> hosp{hospital in request?}
+    hosp -->|no| useMap[Use map / workbench hosp]
+    hosp -->|yes| match{Matches map / workbench?}
+    match -->|no| fail
+    match -->|yes| usid
+    useMap --> usid{USID present?}
     usid -->|no| fail
     usid -->|yes| ret[retrieveGcrOrder]
     ret --> found{Order found CPS or HMS?}
@@ -170,14 +165,20 @@ flowchart TD
 
 Traces to: R9, R10, D2, D7
 
-### New table — `loe_sorter_map` (Oracle / LOE)
+### New table — `loe_specimen_sorter_map` (Oracle / LOE)
 
-Maps **sorter identifier → LIS user + workbench**. Hospital, lab, location, station name, and printer are **not** copied here; they are read from existing `workbench` (`LAB_DB`) after the map hit.
+Maps **sorter identifier → LIS user + workbench**. From that row the API derives:
+
+- **User** — `loesort_usercode` (dedicated sorter LIS user, not `ltc611`)
+- **Workstation** — `workbench.wkbh_station_name` (print queue / STAR location still on that workbench row)
+- **Hospital** — if the request omits `hospital`, use `loesort_hosp` / `wkbh_hosp`
+
+Hospital, lab, location, station name, and printer are **not** duplicated as the source of truth on the map; they are read from `workbench` after the map hit. The map still stores hosp / lab / server name so `LAB_DB` can be opened.
 
 Forward:
 
 ```sql
-CREATE TABLE loe_sorter_map (
+CREATE TABLE loe_specimen_sorter_map (
   loesort_key           NUMBER        NOT NULL,
   loesort_sorter_id     VARCHAR2(64)  NOT NULL,
   loesort_usercode      VARCHAR2(32)  NOT NULL,
@@ -187,42 +188,42 @@ CREATE TABLE loe_sorter_map (
   loesort_workbench_id  VARCHAR2(16)  NOT NULL,
   created_at            TIMESTAMP,
   updated_at            TIMESTAMP,
-  CONSTRAINT pk_loe_sorter_map PRIMARY KEY (loesort_key)
+  CONSTRAINT pk_loe_specimen_sorter_map PRIMARY KEY (loesort_key)
 );
 
-CREATE UNIQUE INDEX uk_loe_sorter_map_id ON loe_sorter_map (loesort_sorter_id);
+CREATE UNIQUE INDEX uk_loe_specimen_sorter_map_id ON loe_specimen_sorter_map (loesort_sorter_id);
 ```
-
-- `loesort_usercode` — dedicated specimen-sorter LIS user (not `ltc611`). Appears on `LOE_AUDIT_TRAIL.loeaud_usercode` (D2).
-- `loesort_workbench_id` + `loesort_labno` — `workbench` PK (`wkbh_id`, `wkbh_labno`). Audit workstation = `wkbh_station_name`. Print queue = `wkbh_default_printer` (and send-out queue keyed by workbench id, same as Spec Ack). STAR location = `wkbh_location` (null/0 → Failure `4422`).
-- `loesort_hosp` / `loesort_server_name` — needed to open `LAB_DB` before the workbench row can be read.
-
-`loesort_labno` with `loesort_workbench_id` is the `workbench` PK only. Do **not** fail when retrieved tests belong to the other v1 lab (D10).
 
 Rollback:
 
 ```sql
-DROP TABLE loe_sorter_map;
+DROP TABLE loe_specimen_sorter_map;
 ```
 
-No DDL on `workbench`. Seed a workbench row per physical sorter (station name = sorter identity as used on the floor) plus one LIS user account.
+No DDL on `workbench`. Seed a workbench row per physical sorter plus one LIS user account.
 
 ### `LOE_AUDIT_TRAIL` — no DDL
 
-| Action         | When                                         |
-| -------------- | -------------------------------------------- |
-| `SORT_REG`     | Registered from sorter (plus existing `REG`) |
-| `SORT_SO`      | Send-out from sorter (plus `SEND_OUT`)       |
-| `SORT_RELABEL` | Relabel                                      |
-| `SORT_FAIL`    | Failure; description = message code + text   |
+| Action | When |
+|---|---|
+| `SORT_REG` | Registered from sorter (plus existing `REG`) |
+| `SORT_SO` | Send-out from sorter (plus `SEND_OUT`) |
+| `SORT_RELABEL` | Relabel |
+| `SORT_FAIL` | Failure; description = message code + text |
 
-Function `SPEC_ACK`. Add `SORT_*` to the Specimen Audit Trail action filter so staff can search auto-registration rows (D6).
+Function `SPEC_ACK`. Add `SORT_*` to the Specimen Audit Trail action filter (D6).
 
 ## Interface / API contract
 
 Traces to: R1, R8, R10
 
+### Path
+
 `POST /api/specack/sorter/auto-register`
+
+No auth header in v1 (D1).
+
+### Request body
 
 ```json
 {
@@ -234,35 +235,34 @@ Traces to: R1, R8, R10
 }
 ```
 
-| Field                 | Required           | Rule                                                         |
-| --------------------- | ------------------ | ------------------------------------------------------------ |
-| `usid`                | Yes                | Else Failure, no write.                                      |
-| `sorterId`            | Yes                | Lookup map + workbench. Unknown → Failure.                   |
-| `hospital`            | No if map has hosp | If sent, must match `loesort_hosp` / `wkbh_hosp` or Failure. |
-| `hkid`, `patientName` | No                 | Present + mismatch → Failure.                                |
-|                       |                    |                                                              |
+| Field | Required | Rule |
+|---|---|---|
+| `usid` | Yes | Else Failure, no write. |
+| `sorterId` | Yes | Lookup `loe_specimen_sorter_map` + workbench. Unknown → Failure. Derives user and workstation. |
+| `hospital` | No | If omitted, derive from map / workbench. If sent, must match `loesort_hosp` / `wkbh_hosp` or Failure. |
+| `hkid`, `patientName` | No | Present + mismatch → Failure. |
 
-No auth header in v1 (D1).
+### Response
 
-Response status: `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE` (HTTP 200 for those). Transport errors 500. Soft alerts never in the body.
+HTTP 200 with status `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE`. Transport errors 500. Soft alerts never in the body.
 
 ## Configuration
 
 | Key | DEVQA | SIT | PROD | Type |
 |---|---|---|---|
-| `loe_sorter_map` rows | test sorter ids | SIT ids | real sorter ids | Oracle data |
+| `loe_specimen_sorter_map` rows | test sorter ids | SIT ids | real sorter ids | Oracle data |
 | `workbench` row per sorter (`wkbh_id`, lab, hosp, station_name, location, default_printer) | seed | seed | real | `LAB_DB` data |
 | LIS user account for sorter | non-prod user | SIT user | prod user | LIS user admin, not ConfigMap |
 | NetworkPolicy middleware → 8118 | DEV | SIT | PROD | OpenShift |
 | API key | **not used v1** | — | — | D1 |
 
-Print/PHLC still follow the staff print methods and `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder` (`isSendToPHLC` on destination). `httpClient.readTimeOut` 5 s; sorter p95 4 s excluding print.
+Print/PHLC still follow the staff print methods and `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder`. `httpClient.readTimeOut` 5 s; sorter p95 4 s excluding print.
 
 ## Error handling, logging, audit
 
 - Soft alerts: `warn("SPEC_ACK", …)` only.
 - Mixed send-out, STAR no location, hard validator, convertor cannot map ward/doctor: `SORT_FAIL` + message code (`0001162` … `4422`).
-- Print/PHLC after **Registered** only (D11): ALS warn; status already returned stays (D4). Send-out does not print.
+- Print/PHLC after **Registered** only (D11): ALS warn; status already returned stays (D4).
 - Mask HKID in logs as register already does.
 - Audit user = map `loesort_usercode`; workstation = `wkbh_station_name`.
 
@@ -280,12 +280,14 @@ Print/PHLC still follow the staff print methods and `LisPhlcLabOrderAppServiceIm
 | Overload `/gcrSpecAckRegister` | Staff packing contract. |
 | Overload ECPath5 register | Different caller; hard-coded user. |
 | Skip convertor, only validator | `register()` will not get test groups / USID request no. / mapped locations. |
-| `LOE_CONTROL` instead of map table | Requester chose sorter map table (D7). |
+| `LOE_CONTROL` instead of map table | Requester chose a sorter map table (D7). |
+| Keep table name `loe_sorter_map` | Requester 2026-09-10: `loe_specimen_sorter_map`. |
 | Duplicate hosp/printer on the map only | Workbench already holds them; map points at workbench (D2). |
+| Require hospital on every request | Requirement: derive from sorter id when omitted. |
 | API key / Hub JWT in v1 | No authentication currently (D1). |
 | Staff worksheet picker | Print all (D5). |
 | Sync print in the HTTP call | Breaks 4 s; late worksheet accepted on Registered (D4). |
-| Print worksheet after send-out / ack | Spec Ack `sendOutActions` never prints. Ack print is dictionary-gated (`isAutoPrintWorksheetAfterAckEnabled`). Requester: worksheet is only printed during registration (D11). |
+| Print worksheet after send-out / ack | Registration only (D11). |
 | Invent STAR location when workbench has none | Failure (D9). |
 | Mixed: send-out subset only | Failure (D3). |
 | Fail when workbench lab ≠ test lab | Requester: no check (D10). |
@@ -296,7 +298,7 @@ Print/PHLC still follow the staff print methods and `LisPhlcLabOrderAppServiceIm
 
 1. Create sorter LIS user.
 2. Seed `workbench` for the physical sorter (lab, hosp, station name, location, printer).
-3. `loe_sorter_map` row: sorter id, user, workbench id, lab, hosp, server name.
+3. `loe_specimen_sorter_map` row: sorter id, user, workbench id, lab, hosp, server name.
 4. Deploy `lis-crs-spec-ack-svc`.
 5. NetworkPolicy for middleware (no new auth).
 6. Pilot CPS/HMS. Relabel/Failure bins → staff Spec Ack. Confirm Specimen Audit Trail action filter includes `SORT_*` (D6).
@@ -304,7 +306,7 @@ Print/PHLC still follow the staff print methods and `LisPhlcLabOrderAppServiceIm
 **Fallback**
 
 1. Stop middleware. Staff Spec Ack unchanged.
-2. `DROP TABLE loe_sorter_map` if full rollback; leave workbench/user or inactivate.
+2. `DROP TABLE loe_specimen_sorter_map` if full rollback; leave workbench/user or inactivate.
 3. No conversion of historical requests.
 
 ## Open design questions
@@ -312,84 +314,13 @@ Print/PHLC still follow the staff print methods and `LisPhlcLabOrderAppServiceIm
 | # | Question | Owner | Answer |
 |---|---|---|---|
 | D1 | Middleware auth? | Requester | **No authentication currently.** NetworkPolicy only. No API key / JWT in v1. |
-| D2 | LIS user and workstation? | Requester | **Dedicated sorter User.** Sorter identifier maps to **workbench** (`wkbh_id` + lab). Station name / printer / location from that row. |
+| D2 | LIS user and workstation? | Requester | **Dedicated sorter User.** Sorter identifier maps to **workbench**. Station name / printer / location from that row. |
 | D3 | Mixed local + send-out? | Requester | **Failure.** |
 | D4 | Print after HTTP return? | Requester | **OK** if worksheet is late; status already Registered. Does not apply to Send-out (no print). |
 | D5 | Multiple worksheets? | Requester | **Print all** (registration path only). |
-| D11 | When does the sorter print a worksheet? | Requester | **Registration only.** Same as Spec Ack `constructSaveActions` (`processPrintWorksheet` after a request no. is assigned). No print on Send-out, Relabel, Failure, or ack-only. Flex ack auto-print flag is not used. |
-| D6 | `SORT_*` audit codes vs reuse `REG`/`SEND_OUT` only? Audit Trail dropdown setup? | Requester | **Agree.** Keep `SORT_*` plus existing `REG`/`SEND_OUT` writes. Add `SORT_*` to the Audit Trail action filter. |
-| D7 | Map table vs `LOE_CONTROL`? | Requester | **Sorter map table** `loe_sorter_map`. |
+| D11 | When does the sorter print a worksheet? | Requester | **Registration only.** |
+| D6 | `SORT_*` audit codes vs reuse `REG`/`SEND_OUT` only? | Requester | **Agree.** Keep `SORT_*` plus existing writes. Add `SORT_*` to the Audit Trail action filter. |
+| D7 | Map table name and vs `LOE_CONTROL`? | Requester | **Sorter map table** `loe_specimen_sorter_map` (2026-09-10; was `loe_sorter_map`). |
 | D8 | DFT via Spec Ack `register()` vs `/api/dftreg`? | Requester | **Agree.** Same Spec Ack `register()` packing. |
 | D9 | STAR with no workbench location? | Requester | **Failure** (`4422`). |
-| D10 | Map / workbench lab vs order test lab? | Requester | **No check.** Do not compare workbench lab to the retrieved test lab. |
-
-## Design
-
-**Review type:** incremental
-**JIRA key:** (not assigned)
-**Service:** lis-crs-spec-ack-svc
-**Review forum:** CP3
-**Review date:**
-**Prior review:** none
-
-### Agenda
-Background
-Existing Design
-Proposed Change
-Promotion
-Fallback
-Open Questions
-Q&A
-
-### Slide: Background
-Staff scan a USID and click Send-out or Register. The sorter needs one LIS call, then a bin.
-Writes already exist in the Specimen Acknowledgement service.
-The screen still owns alerts, hard checks, **and the packing convertor** that builds test groups, request number, and ward mapping.
-Without that convertor on the server, the staff register API cannot be reused.
-
-### Slide: Existing Design - three layers
-**Archetype:** compare
-Screen: alerts, validator, `GcrSpecAckDataConvertor` (test groups, USID as request no., ward/doctor, worksheet Ro).
-Service: retrieve, send-out, register, print, PHLC.
-Workbench in the lab database already has hospital, lab, station name, location, and printer. Login today binds a PC to that row.
-
-### Slide: Proposed Change - Overview
-**Archetype:** decision-flow
-1. New POST. Sorter id → map table → dedicated user + workbench row.
-2. Server-side convertor ports the Flex packing methods, with screen checkboxes replaced by defaults.
-3. Mixed local and send-out is Failure. STAR with no workbench location is Failure.
-4. After **Registered** only: print every worksheet after the status is returned. Late print is allowed. Send-out does not print.
-5. No new authentication in v1.
-
-### Slide: Proposed Change - packing convertor
-**Archetype:** code-findings
-Port grouping from GCRS tests, request-no assignment, ward and doctor mapping, and worksheet/send-out form builders.
-Do not port checkbox reading. Ack time is server now. Labels stay off. Relabel checkbox is ignored.
-
-### Slide: Proposed Change - outcomes
-**Archetype:** matrix
-Registered — converted packing, request no. = USID when eligible.
-Send-out — only when every test on the USID is a send-out cluster code.
-Relabel — multi-group, multi-specimen, suffix, DFT time-flag, force relabel.
-Failure — not found, mixed tests, hard check, APS/BBS/MBS, STAR with no location, unknown sorter id.
-
-### Slide: Promotion
-**Archetype:** cards
-Create sorter LIS user and workbench row.
-Insert sorter map row.
-Deploy Specimen Acknowledgement service.
-NetworkPolicy only.
-
-### Slide: Fallback
-**Archetype:** cards
-Stop middleware. Staff screen unchanged.
-Drop the map table. Leave or disable the workbench/user.
-
-### Slide: Open Questions
-**Archetype:** asks
-1. None remaining from D1–D11. Confirm `reviewed_by` so the CP3 deck can be generated.
-
-### Slide: Q&A
-1. None remaining from D1–D11. Confirm `reviewed_by` so the CP3 deck can be generated.
-
-### Slide: Q&A
+| D10 | Map / workbench lab vs order test lab? | Requester | **No check.** |
