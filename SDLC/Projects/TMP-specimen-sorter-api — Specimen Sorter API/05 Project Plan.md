@@ -5,7 +5,7 @@ tags:
   - project-plan
 generated_by: project-plan
 generated_on: '2026-09-10'
-reviewed_by: ''
+reviewed_by: Ka
 agent_assisted: true
 promotion_window: ''
 ---
@@ -13,7 +13,7 @@ promotion_window: ''
 
 Schedules backwards from **Promotion submission** (Jun 2027). Programme dates are the attached 12-row schedule. Re-run when a gate slips.
 
-Estimates are a draft. A person must accept them before the `plan` gate can close.
+Estimates accepted 2026-09-10 (`reviewed_by` Ka). `plan` gate closed.
 
 ## Constraints
 

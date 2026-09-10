@@ -108,4 +108,4 @@
 
 ## LIS API schedule
 
-Draft dates live on [[Specimen Sorter]] and [[05 Project Plan]]. Estimates not accepted.
+Dates live on [[Specimen Sorter]] and [[05 Project Plan]]. Estimates accepted 2026-09-10.

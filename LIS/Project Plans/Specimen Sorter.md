@@ -11,7 +11,7 @@ Programme home. LIS API dossier: [[TMP-specimen-sorter-api — Specimen Sorter A
 
 ## LIS API schedule
 
-Draft: [[05 Project Plan]]. Estimates not accepted. `plan` gate not closed.
+[[05 Project Plan]] accepted 2026-09-10. `plan` gate closed.
 
 Schedules backwards from **Promotion submission** (01–30 Jun 2027). The 2027 window is **not** on [[Promotion Windows]] (last named: 2026-24). Dossier target **30 May 2027** is Promotion Preparation end, not submission.
 
