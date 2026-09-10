@@ -8,19 +8,14 @@
   "slides": [
     {
       "archetype": "title-hero",
-      "eyebrow": "TMP-000   ·   CHANGE REQUEST   ·   CP3",
-      "headline": "One POST on Specimen Acknowledgement\nregisters or sends out a USID",
-      "lede": "Today staff scan a label and click Send-out or Register. The sorter will scan the tube and call LIS for those same actions.",
+      "headline": "Specimen Sorter API",
       "stats": [
         { "label": "Service", "value": "lis-crs-spec-ack-svc" },
         { "label": "Date", "value": "10 Sep 2026" },
         { "label": "JIRA", "value": "TMP-000" },
-        { "label": "Forum", "value": "CP3" }
+        { "label": "Presenter", "value": "CP3" }
       ],
       "fullWidth": true,
-      "presenters": "Ka",
-      "reviewers": "Tony Chong, CP3 panel",
-      "footer": "Reviewed by Tony Chong  ·  SEM20260612  ·  JIRA not assigned",
       "notes": "Cover is identity only. TMP-000 is the dossier stand-in. Tony Chong reviewed the design note."
     },
     {
