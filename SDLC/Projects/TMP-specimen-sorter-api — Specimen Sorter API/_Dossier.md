@@ -3,7 +3,7 @@ created: '2026-09-07'
 design: '[[02 System Design]]'
 gates_passed: []
 jira: ''
-jira_log: ''
+jira_log: '[[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]]'
 key: TMP-specimen-sorter-api
 owner: Ka
 reference_jira:
@@ -23,7 +23,7 @@ stage: design
 status: active
 tags:
   - sdlc-dossier
-target_completion_date: ''
+target_completion_date: '2027-05-30'
 title: Specimen Sorter API
 updated: '2026-09-10'
 work_type: project
@@ -32,8 +32,8 @@ work_type: project
 
 ## Status
 
-> [!info] Stage: **design** — CP3 deck refreshed 2026-09-10 to match 02 (`loe_specimen_sorter_map`; register convert vs worksheet). Gate `design` not in `gates_passed`
-> Next action: present at CP3, then write actions back to [[02 System Design]]
+> [!info] Stage: **design** — JIRA log drafted (no key yet). Gate `design` not in `gates_passed`; `jira` not in `gates_passed`
+> Next action: present at CP3, or say to create the JIRA issue
 
 ## Artifacts
 
@@ -43,6 +43,7 @@ work_type: project
 | 02 Design | [[02 System Design]] | updated 2026-09-10 — screen vs API; `loe_specimen_sorter_map` |
 | 03 Slide Brief | [[03 Slide Brief]] | draft |
 | 03 Design Review | [[assets/Specimen Sorter API.pptx]] | generated |
+| 04 JIRA | [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]] | draft |
 
 ## Gate Log
 
@@ -61,6 +62,7 @@ work_type: project
 - 2026-09-10 — Print/PHLC reuse locked from clone: worksheets via `gcrWorksheetPrinting` / `gcrShWorksheetPrinting` / `gcrSendOutWorksheetPrinting`; PHLC via `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder`. In-process after Registered, no HTTP loopback. — agent
 - 2026-09-10 — Existing design restated as the Specimen Acknowledgement screen (retrieve, send-out, register validation/convert, worksheet, PHLC). Proposed: one POST, move those logics, `LOE_AUDIT_TRAIL` `SORT_*`, table `loe_specimen_sorter_map` (derive hospital if omitted, plus user and workstation). Rejected keeping `loe_sorter_map`. — agent
 - 2026-09-10 — CP3 deck refreshed from [[03 Slide Brief]]: Spec Ack action matrix (register convert vs worksheet), new POST, `loe_specimen_sorter_map` derive hospital / workstation / user, `LOE_AUDIT_TRAIL` insert. `design-review` not closed until CP3 actions are written back. — agent
+- 2026-09-10 — JIRA log drafted: [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]]. Target 30th May, 2027. No JIRA key yet. — agent
 
 ## Open Items
 
@@ -83,3 +85,4 @@ work_type: project
 - Services: `lis-crs-spec-ack-svc`, `lab-crs-app`, `lis-hub-svc`
 - Requirement: [[01 Requirement Confirmation]]
 - Design: [[02 System Design]]
+- JIRA log: [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]]
