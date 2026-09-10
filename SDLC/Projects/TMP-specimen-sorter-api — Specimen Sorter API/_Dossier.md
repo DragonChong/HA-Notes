@@ -1,9 +1,12 @@
 ---
 created: '2026-09-07'
 design: '[[02 System Design]]'
-gates_passed: []
+gates_passed:
+  - design
 jira: ''
-jira_log: '[[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]]'
+jira_log: >-
+  [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter
+  Send-out and Registration]]
 key: TMP-specimen-sorter-api
 owner: Ka
 reference_jira:
@@ -19,7 +22,7 @@ services:
   - lis-crs-spec-ack-svc
   - lab-crs-app
   - lis-hub-svc
-stage: design
+stage: jira
 status: active
 tags:
   - sdlc-dossier
@@ -32,15 +35,15 @@ work_type: project
 
 ## Status
 
-> [!info] Stage: **design** — JIRA log drafted (no key yet). Gate `design` not in `gates_passed`; `jira` not in `gates_passed`
-> Next action: present at CP3, or say to create the JIRA issue
+> [!info] Stage: **jira** — gate `design` in `gates_passed`. `design-review` exception: CP3 not presented; JIRA key needed to close Phase 1.
+> Next action: `/lis-jira-log-creator` Step 7 — create the issue after the six sections are approved
 
 ## Artifacts
 
 | Stage | Artifact | State |
 |---|---|---|
 | 01 Requirement | [[01 Requirement Confirmation]] | confirmed 2026-09-07; not in gates_passed |
-| 02 Design | [[02 System Design]] | updated 2026-09-10 — screen vs API; `loe_specimen_sorter_map` |
+| 02 Design | [[02 System Design]] | approved 2026-09-10 — screen vs API; `loe_specimen_sorter_map` |
 | 03 Slide Brief | [[03 Slide Brief]] | draft |
 | 03 Design Review | [[assets/Specimen Sorter API.pptx]] | generated |
 | 04 JIRA | [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]] | draft |
@@ -50,6 +53,8 @@ work_type: project
 | Date | Gate | Verdict | By | Note |
 |---|---|---|---|---|
 | 2026-09-07 | requirement | exception | Requester | Invoked `/system-design` while `requirement` not in `gates_passed`. Confirmation already quoted in 01. |
+| 2026-09-10 | design | pass | Ka | 02 exit checklist after 2026-09-10 rewrite: Rn mapped, DDL+rollback, env config, fallback, D1–D11 closed, `reviewed_by` Tony Chong. |
+| 2026-09-10 | design-review | exception | Ka | Deck generated 2026-09-10. CP3 not presented. Skip to JIRA create so Phase 1 can close. Do not treat as `pass`. |
 
 ## Decision Log
 
@@ -62,6 +67,8 @@ work_type: project
 - 2026-09-10 — Print/PHLC reuse locked from clone: worksheets via `gcrWorksheetPrinting` / `gcrShWorksheetPrinting` / `gcrSendOutWorksheetPrinting`; PHLC via `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder`. In-process after Registered, no HTTP loopback. — agent
 - 2026-09-10 — Existing design restated as the Specimen Acknowledgement screen (retrieve, send-out, register validation/convert, worksheet, PHLC). Proposed: one POST, move those logics, `LOE_AUDIT_TRAIL` `SORT_*`, table `loe_specimen_sorter_map` (derive hospital if omitted, plus user and workstation). Rejected keeping `loe_sorter_map`. — agent
 - 2026-09-10 — CP3 deck refreshed from [[03 Slide Brief]]: Spec Ack action matrix (register convert vs worksheet), new POST, `loe_specimen_sorter_map` derive hospital / workstation / user, `LOE_AUDIT_TRAIL` insert. `design-review` not closed until CP3 actions are written back. — agent
+- 2026-09-10 — `design-review` exception: CP3 not held; skip to JIRA create to close Phase 1. Deck stays generated; gate not in `gates_passed`. — Ka
+- 2026-09-10 — Design gate closed. 02 still meets the exit checklist after the rewrite (`reviewed_by` Tony Chong). `design` written to `gates_passed`. — Ka
 - 2026-09-10 — JIRA log drafted: [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]]. Target 30th May, 2027. No JIRA key yet. — agent
 
 ## Open Items

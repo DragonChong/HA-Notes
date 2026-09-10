@@ -5,7 +5,7 @@ tags:
 key: TMP-orchestrator-loop
 work_type: enhancement
 stage: requirement
-status: active
+status: on-hold
 services: []
 repos:
   - HA-Notes
@@ -19,7 +19,7 @@ target_completion_date: '2026-09-07'
 owner: Ka
 risk: low
 created: '2026-09-07'
-updated: '2026-09-07'
+updated: '2026-09-10'
 ---
 # Orchestrator loop proof
 
@@ -27,8 +27,8 @@ Throwaway dossier to prove `sdlc-orchestrator`: resolve → report → gate-chec
 
 ## Status
 
-> [!info] Stage: **requirement** — gate `requirement` outstanding
-> Next action: `/requirement-confirmation` — skill exists; needs a real request to draft
+> [!info] Status: **on-hold** — Phase 1 proof moved to [[TMP-specimen-sorter-api]]. No raw request; do not draft a fake requirement.
+> Next action: none until this fixture is deleted or reactivated
 
 ## Artifacts
 
@@ -46,6 +46,7 @@ Throwaway dossier to prove `sdlc-orchestrator`: resolve → report → gate-chec
 - 2026-09-07 — First orchestrator turn. Resolved the single `status: active` dossier. Stage `requirement` is not in `gates_passed`. Routed skill `requirement-confirmation` is not on disk yet — stop, do not invent a requirement note.
 - 2026-09-07 — Phase 1 spine landed: `requirement-confirmation`, `system-design`, `design-review-pptx` source precedence, `lis-jira-log-creator` dossier + create-after-approve. This fixture still has no raw request — do not draft a fake requirement.
 - 2026-09-07 — House rule: requirement may close as `pass with assumptions` so design can start. Assumptions stay as Open Items; a later correction reopens design. Not a clean `pass`.
+- 2026-09-10 — Held. Requester switched Phase 1 proof to [[TMP-specimen-sorter-api]] (design-review + JIRA log). This fixture still has no raw request.
 - 2026-09-07 — House rule: system-design reads the clones in dossier `repos` (open in the workspace). Do not paste the tree. Missing clone → unverified claims become open design questions.
 
 ## Open Items
@@ -59,3 +60,4 @@ Throwaway dossier to prove `sdlc-orchestrator`: resolve → report → gate-chec
 - Skill: `LIS/skills/sdlc/sdlc-orchestrator/SKILL.md`
 - Spec: [[Orchestrator Skill Spec]]
 - Fixture sibling (on-hold): [[TMP-phase0-plumbing]]
+- Phase 1 proof (active): [[TMP-specimen-sorter-api]]
