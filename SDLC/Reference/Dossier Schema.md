@@ -37,13 +37,13 @@ SDLC/Projects/<key> — <Short Name>/
 
 Not everything moves into the dossier. Some artifacts have an existing home with existing tooling; the dossier links to them.
 
-| Artifact | Lives at | Why |
-|---|---|---|
-| JIRA log note | `LIS/JIRA/<Summary>.md` | `JIRA Log List.base` depends on the folder + tag |
-| Business workflow docs | `Knowledge Base/01_Screens/…` | Owned by `create-user-story`, outlives the project |
-| Service architecture notes | `LIS/ECP/<service>/` | Per-service, not per-project |
-| Multi-project schedules | `LIS/Project Plans/` | Programme level; dossier plan is project level |
-| Everything else | The dossier folder | Project-scoped, dies with the project |
+| Artifact                   | Lives at                      | Why                                                |
+| -------------------------- | ----------------------------- | -------------------------------------------------- |
+| JIRA log note              | `LIS/JIRA/<Summary>.md`       | `JIRA Log List.base` depends on the folder + tag   |
+| Business workflow docs     | `Knowledge Base/01_Screens/…` | Owned by `create-user-story`, outlives the project |
+| Service architecture notes | `LIS/ECP/<service>/`          | Per-service, not per-project                       |
+| Multi-project schedules    | `LIS/Project Plans/`          | Programme level; dossier plan is project level     |
+| Everything else            | The dossier folder            | Project-scoped, dies with the project              |
 
 > [!tip]
 > The rule of thumb: **does this note stay useful after the project ships?** Yes → its own home. No → the dossier.
