@@ -13,6 +13,7 @@ tags:
   - backend
   - wp1
 created: 2026-09-10
+updated: 2026-09-11
 ---
 # WP1 — Auto-register POST and orchestrator
 
@@ -48,7 +49,7 @@ Open dossier item **Paste JIRA key** is not a code blocker for WP1.
 
 **Files to create:**
 - `src/main/java/hk/org/ha/lis/crs/specack/controller/SpecimenSorterController.java` — `POST /sorter/auto-register` on root `/api/specack`. Extends `AbstractService`. Does **not** call GET `/retrieveGcrOrder`.
-- `src/main/java/hk/org/ha/lis/crs/hub/biz/sorter/SpecimenSorterAutoRegisterService.java` — orchestrator. Sets `ServiceParameterVo` + `CrsContext` from map user + workbench hospital / lab / `serverName`.
+- `src/main/java/hk/org/ha/lis/crs/hub/biz/sorter/SpecimenSorterAutoRegisterService.java` — orchestrator. Sets `ServiceParameterVo` via `ServiceParameterContextHolder.set` from map user + workbench hospital / lab / `serverName`. Do **not** use `CrsContext` (obsolete).
 - `src/main/java/hk/org/ha/lis/crs/hub/biz/sorter/SpecimenSorterMapService.java` — interface (+ stub impl for WP1). WP2 fills Oracle lookup.
 - `src/main/java/hk/org/ha/lis/crs/hub/biz/sorter/SpecimenSorterPackingService.java` — interface only (WP3).
 - `src/main/java/hk/org/ha/lis/crs/hub/biz/sorter/SpecimenSorterValidationService.java` — interface only (WP4).
@@ -68,7 +69,7 @@ Open dossier item **Paste JIRA key** is not a code blocker for WP1.
 1. **usid / sorterId missing → FAILURE**, no retrieve.
 2. Map `sorterId` → user + workbench (stub until WP2). Miss → FAILURE.
 3. Hospital omitted → use map / workbench hosp. Hospital sent and mismatch → FAILURE.
-4. Build `ServiceParameterVo` (user = `loesort_usercode`, hosp/lab/serverName from map + workbench). `CrsContext.setCurrentServiceParameter`. Never set user `ltc611`.
+4. Build `ServiceParameterVo` (user = `loesort_usercode`, hosp/lab/serverName from map + workbench). Call `ServiceParameterContextHolder.set(serviceParameter)`. Never set user `ltc611`. Do **not** call `CrsContext.setCurrentServiceParameter` — `CrsContext` is obsolete. If the holder does not route the datasource by itself, also call `DataSourceContextHolder.setCurrentDb(serverName, serverLab, LAB_DB)` the same way `lis-request-svc` `RegistrationController` does. Confirm on the classpath at implement time; do not copy the obsolete `CrsContext` ThreadLocal.
 5. **In-process** `GcrUIAppServiceInterface.retrieveGcrOrder(GcrUIPackingVo)` with USID only as that user. Do not HTTP-loop to GET `/retrieveGcrOrder`.
 6. Not found / retrieve error → FAILURE.
 7. Lab not CPS (`CommonConstants.LAB_NO_CPS`) or HMS (`LAB_NO_HMS`) → FAILURE (APS/BBS/MBS/VRS).
@@ -94,7 +95,7 @@ Open dossier item **Paste JIRA key** is not a code blocker for WP1.
 - [ ] New POST on `lis-crs-spec-ack-svc`; do not overload `/gcrSpecAckRegister` or `/v1/ecpath5-register`
 - [ ] Do not call GET `/retrieveGcrOrder` (hard-coded `ltc611`)
 - [ ] In-process retrieve with mapped sorter user via `GcrUIAppServiceInterface`
-- [ ] `ServiceParameterVo` + `CrsContext.setCurrentServiceParameter` before retrieve
+- [ ] `ServiceParameterVo` + `ServiceParameterContextHolder.set` before retrieve; no `CrsContext` import on the sorter path
 - [ ] No auth header / JWT / API key (D1)
 - [ ] HTTP 200 for `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE`; 500 only for transport
 - [ ] Soft alerts ALS `warn("SPEC_ACK", …)` only — not in body
@@ -109,6 +110,7 @@ Open dossier item **Paste JIRA key** is not a code blocker for WP1.
 - [ ] `POST /api/specack/sorter/auto-register` exists and is documented on Swagger (`@Operation`)
 - [ ] Missing `usid` or `sorterId` returns HTTP 200 + `FAILURE` without calling retrieve
 - [ ] Retrieve uses mapped user, not `ltc611`
+- [ ] New sorter classes do not import or call `CrsContext`
 - [ ] APS / BBS / MBS (and other non CPS/HMS) → `FAILURE`
 - [ ] Optional HKID / name mismatch → `FAILURE`
 - [ ] Staff GET retrieve and `/gcrSpecAckRegister` unchanged
@@ -119,6 +121,7 @@ Open dossier item **Paste JIRA key** is not a code blocker for WP1.
 
 ## Notes
 
+- **Service parameter:** `ServiceParameterContextHolder.set(...)`. `CrsContext` is obsolete — ignore it, even though `CrsSpecAckController` still calls `CrsContext.setCurrentServiceParameter`. Do not add more `CrsContext` usage on the sorter path. Staff endpoints are out of this task.
 - Design class names in [[02 System Design]] Component table are the target. Keep `SpecimenSorterController` separate from `CrsSpecAckController`.
 - Map stub: if a test needs a hit, inject a fake that returns a dedicated user + workbench id. Do not hard-code `ltc611` in that fake.
 - Hospital derive-when-omitted is orchestrator logic (R10 / D7) — implement in WP1 even though the table is WP2.
