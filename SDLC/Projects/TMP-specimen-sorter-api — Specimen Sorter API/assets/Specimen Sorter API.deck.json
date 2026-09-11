@@ -21,11 +21,11 @@
     {
       "archetype": "compare",
       "eyebrow": "Background",
-      "title": "Staff click today. The sorter will call LIS",
+      "title": "Staff scans and presses today. The sorter will call LIS",
       "left": {
         "label": "As-is",
         "tone": "danger",
-        "title": "Staff scan and click",
+        "title": "Staff scans and presses",
         "code": [
           "scan the specimen label",
           "press Send-out or Register"
