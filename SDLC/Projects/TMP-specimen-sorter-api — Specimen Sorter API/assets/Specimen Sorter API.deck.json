@@ -8,13 +8,18 @@
   "slides": [
     {
       "archetype": "title-hero",
+      "eyebrow": "CP3   ·   11 SEP 2026   ·   CHANGE REQUEST",
       "headline": "Specimen Sorter API",
+      "lede": "Today staff scan a label and click Send-out or Register. The sorter will scan the tube and call LIS for those same actions.",
       "stats": [
         { "label": "Service", "value": "lis-crs-spec-ack-svc" },
-        { "label": "Date", "value": "10 Sep 2026" },
+        { "label": "Date", "value": "11 Sep 2026" },
         { "label": "JIRA", "value": "TMP-000" },
-        { "label": "Presenter", "value": "CP3" }
+        { "label": "Presenter", "value": "Ka" }
       ],
+      "presenters": "Ka",
+      "reviewers": "Tony Chong, CP3 panel",
+      "footer": "Design status: draft  ·  for briefing",
       "fullWidth": true,
       "notes": "Cover is identity only. TMP-000 is the dossier stand-in. Tony Chong reviewed the design note."
     },
@@ -169,37 +174,362 @@
       "callout": {
         "text": "Send-out, Relabel, and Failure print nothing. A late worksheet does not change a status already returned."
       },
-      "notes": "The API calls the same print and PHLC services Spec Ack uses today, in-process, not by looping back over HTTP."
+      "notes": "The next slides walk each Spec Ack action. The API calls the same print and PHLC services Spec Ack uses today, in-process, not by looping back over HTTP."
     },
     {
       "archetype": "cards",
       "eyebrow": "Proposed Change",
-      "title": "The map supplies hospital, workstation, and user",
+      "title": "Sorter id maps to a dedicated user and a workbench",
       "perRow": 3,
       "cards": [
         {
           "badge": 1,
           "tone": "accent",
-          "title": "New map table",
-          "body": "loe_specimen_sorter_map. Sorter id maps to a dedicated LIS user and a workbench."
+          "tag": "loe_specimen_sorter_map",
+          "title": "The map row",
+          "body": "Sorter id to LIS user and workbench id. Also hosp, lab, and server name so LAB_DB can open."
         },
         {
           "badge": 2,
           "tone": "neutral",
-          "title": "Derive from the map",
-          "body": "Hospital if the request omits it. Workstation and user from the same row."
+          "tag": "workbench",
+          "title": "The workbench row",
+          "body": "Hospital, lab, station name, STAR location, and default printer. Not copied as a second source of truth on the map."
         },
         {
           "badge": 3,
           "tone": "warn",
-          "title": "LOE_AUDIT_TRAIL",
-          "body": "Insert SORT_REG, SORT_SO, SORT_RELABEL, SORT_FAIL, plus REG and SEND_OUT."
+          "tag": "LOE_AUDIT_TRAIL",
+          "title": "Audit user and station",
+          "body": "Audit user is the map user. Workstation is the workbench station name. Write SORT_* plus REG and SEND_OUT."
         }
       ],
       "callout": {
-        "text": "Add SORT_* to the Audit Trail action filter. Unknown sorter id is Failure. Printer stays on workbench."
+        "text": "Unknown sorter id is Failure. Do not compare workbench lab to the retrieved test lab."
       },
-      "notes": "Do not copy printer onto the map as a second source of truth. Do not compare workbench lab to the retrieved test lab."
+      "notes": "Staff today pick a workbench by PC name or IP. The sorter has no PC login, so the map is the lookup. Printer stays on workbench."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "Proposed Change",
+      "title": "User and workbench come from the sorter id",
+      "left": {
+        "label": "Today",
+        "tone": "neutral",
+        "title": "Staff login, then a PC workbench",
+        "points": [
+          "User is the staff LIS login.",
+          "Workbench is selected by PC name or IP.",
+          "Staff retrieve GET uses a hard-coded demo user."
+        ]
+      },
+      "right": {
+        "label": "Sorter POST",
+        "tone": "accent",
+        "title": "sorterId looks up the map",
+        "points": [
+          "Dedicated sorter LIS user from the map. Never the demo retrieve user.",
+          "Workbench id from the same map row, then hosp, lab, station, location, printer.",
+          "Hospital omitted: use map / workbench hosp. Hospital sent must match."
+        ]
+      },
+      "callout": {
+        "text": "One map row per physical sorter. Seed the user, the workbench, and the map before SIT."
+      },
+      "notes": "If the workbench has no STAR location, that is Failure 4422 later in the checks. The map does not invent a location."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "Proposed Change",
+      "title": "Retrieve GCRS - sorter lookup is USID only",
+      "left": {
+        "label": "Manual",
+        "tone": "neutral",
+        "title": "Scan or type, then retrieve",
+        "points": [
+          "Staff enter specimen no., lab no., or order no.",
+          "Format, allowed hospital, and check digit run first.",
+          "Not found stops the screen (1336 / 1337 / 1338 / 1377)."
+        ]
+      },
+      "right": {
+        "label": "Sorter POST",
+        "tone": "accent",
+        "title": "USID, as the mapped user",
+        "points": [
+          "Body needs usid and sorterId. No order-no lookup.",
+          "Same format rules. Miss is Failure. Wrong HKID or name is Failure.",
+          "In-process retrieve as the sorter user. APS / BBS / MBS is Failure."
+        ]
+      },
+      "callout": {
+        "text": "Hospital omitted on the POST comes from the sorter map and workbench."
+      },
+      "notes": "The staff retrieve GET stays. The sorter must not call it. CPS and HMS only. DFT and STAR on those labs still retrieve."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "Proposed Change",
+      "title": "Send-out - the list decides, not a click",
+      "left": {
+        "label": "Manual",
+        "tone": "neutral",
+        "title": "Staff press Send-out",
+        "points": [
+          "Staff choose Send-out after the order is on screen.",
+          "Backend acks Printed or Collected, writes tracking, writes SEND_OUT.",
+          "A test is send-out when its cluster code is on the list for that lab and hospital."
+        ]
+      },
+      "right": {
+        "label": "Sorter POST",
+        "tone": "accent",
+        "title": "Same list. No flag from the sorter.",
+        "points": [
+          "Join the test to the send-out list for lab and hospital.",
+          "All on the list: existing send-out write, status SEND_OUT.",
+          "Local plus send-out on one USID: Failure. No worksheet. No PHLC."
+        ]
+      },
+      "callout": {
+        "text": "The sorter does not send a send-out flag."
+      },
+      "notes": "Call the list the send-out test table if asked. Mixed is Failure so the sorter does not split one tube."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "Proposed Change",
+      "title": "Registration checks - soft logs, hard fails",
+      "left": {
+        "label": "Manual",
+        "tone": "neutral",
+        "title": "Popups on the screen",
+        "points": [
+          "Soft alerts after retrieve. Staff can continue.",
+          "Hard checks before Register: mapping, datetime, test, specimen state.",
+          "Mixed local and send-out is a soft alert today."
+        ]
+      },
+      "right": {
+        "label": "Sorter POST",
+        "tone": "accent",
+        "title": "No dialogue",
+        "points": [
+          "Soft: ALS only. Not on the body. Not Relabel.",
+          "Hard: HTTP 200 and FAILURE, code on the audit remark.",
+          "Mixed is Failure. No Relabel checkbox. STAR with no location is 4422."
+        ]
+      },
+      "callout": {
+        "text": "Ack time is server now. Missing collection date is soft. Do not invent a date."
+      },
+      "notes": "Say the mixed change out loud. Staff can still click through that popup. The sorter cannot split the tube."
+    },
+    {
+      "archetype": "cards",
+      "eyebrow": "Proposed Change",
+      "title": "Soft alerts - logged, then continue",
+      "perRow": 3,
+      "cards": [
+        {
+          "badge": 1,
+          "tone": "neutral",
+          "title": "Missing collection date",
+          "body": "Proceed. Do not invent a date."
+        },
+        {
+          "badge": 2,
+          "tone": "neutral",
+          "title": "Overnight specimen",
+          "body": "Same overnight window as Spec Ack. ALS only."
+        },
+        {
+          "badge": 3,
+          "tone": "neutral",
+          "title": "Valid period / sex-age",
+          "body": "Test validity and valid-period warnings. ALS only."
+        }
+      ],
+      "notes": "First half of the soft set from the confirmed requirement. Next slide has the rest."
+    },
+    {
+      "archetype": "cards",
+      "eyebrow": "Proposed Change",
+      "title": "Soft alerts - the rest of the set",
+      "perRow": 3,
+      "cards": [
+        {
+          "badge": 4,
+          "tone": "neutral",
+          "title": "Duplicate / A-A-R",
+          "body": "Duplicate-reason and A-A-R-not-ready. ALS only. AAR stays off."
+        },
+        {
+          "badge": 5,
+          "tone": "neutral",
+          "title": "Patient tag / private",
+          "body": "Private patient and patient-tag alerts. ALS only."
+        },
+        {
+          "badge": 6,
+          "tone": "warn",
+          "title": "STAR unbox alert",
+          "body": "Boxed warning is ALS. No workbench location is Failure 4422, not this card."
+        }
+      ],
+      "callout": {
+        "text": "BBS blood / category / T&S alerts stay on staff Spec Ack. BBS is out of v1."
+      },
+      "notes": "Mixed is not here. The locked design made mixed a hard Failure."
+    },
+    {
+      "archetype": "cards",
+      "eyebrow": "Proposed Change",
+      "title": "Hard checks that return Failure",
+      "perRow": 3,
+      "cards": [
+        {
+          "badge": 1,
+          "tone": "danger",
+          "tag": "1162-1170, 1090",
+          "title": "Unmapped ward / doctor",
+          "body": "Doctor, location, specialty, report dest, or report copy has no LIS id."
+        },
+        {
+          "badge": 2,
+          "tone": "danger",
+          "tag": "R12",
+          "title": "Datetime",
+          "body": "Collection before DOB. Ack before collection or request. Ack in the future."
+        },
+        {
+          "badge": 3,
+          "tone": "danger",
+          "tag": "4422",
+          "title": "STAR / mixed / empty",
+          "body": "No workbench location. Local plus send-out. Already used, all registered, all deleted, rejected."
+        }
+      ],
+      "callout": {
+        "text": "Also Failure: missing test dictionary, HKID or name mismatch, APS / BBS / MBS, unknown sorter id."
+      },
+      "notes": "Do not auto-create an unmapped doctor or location. Soft set on the previous two slides is not Failure."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "Proposed Change",
+      "title": "Request test grouping and request no.",
+      "left": {
+        "label": "Manual",
+        "tone": "neutral",
+        "title": "Screen groups, then assigns",
+        "points": [
+          "Tests are grouped before Register. Each group needs a request no.",
+          "USID can be the request no. when the screen says it is eligible.",
+          "Staff can tick Relabel. Multi-group, multi-specimen, suffix not 0, or force: no USID."
+        ]
+      },
+      "right": {
+        "label": "Sorter POST",
+        "tone": "accent",
+        "title": "Same grouping. No checkbox.",
+        "points": [
+          "Same Relabel rules, without a user tick.",
+          "One group, one specimen, suffix 0, not force: request no. = USID.",
+          "Else Relabel. No lab request. No invented number. No caller-assigned request no."
+        ]
+      },
+      "callout": {
+        "text": "Relabel is its own status. Not Failure. Not Registered."
+      },
+      "notes": "Partial DFT remainder is Relabel. DFT still uses Spec Ack register, not the DFT register API."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "Proposed Change",
+      "title": "Ward and doctor mapping",
+      "left": {
+        "label": "Manual",
+        "tone": "neutral",
+        "title": "Map, then popup",
+        "points": [
+          "Doctor, location, specialty, report dest, and report copy come from dictionary.",
+          "Unmapped codes block Register.",
+          "Staff can create a doctor when dictionary allows it."
+        ]
+      },
+      "right": {
+        "label": "Sorter POST",
+        "tone": "accent",
+        "title": "Same map. No create.",
+        "points": [
+          "Same five mappings go onto the packed register call.",
+          "Any miss is Failure, same message codes as Spec Ack.",
+          "Do not auto-create a doctor or location. Send the tube to staff."
+        ]
+      },
+      "callout": {
+        "text": "Do not compare workbench lab to the order test lab."
+      },
+      "notes": "Report destination can follow request location when that Spec Ack option is on. Port the existing rule. Do not invent a new one."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "Proposed Change",
+      "title": "Worksheet printing - all after Registered",
+      "left": {
+        "label": "Manual",
+        "tone": "neutral",
+        "title": "Staff print after Register",
+        "points": [
+          "Staff can print GCRS, send-out, and SH worksheets after register.",
+          "If more than one worksheet, staff pick.",
+          "Labels can also print on the staff path."
+        ]
+      },
+      "right": {
+        "label": "Sorter POST",
+        "tone": "accent",
+        "title": "Print all, after the HTTP return",
+        "points": [
+          "Return REGISTERED first. Then print every worksheet Spec Ack would. No picker.",
+          "Send-out, Relabel, and Failure print nothing. No labels.",
+          "Late worksheet is allowed. Print fail is ALS. Status stays Registered."
+        ]
+      },
+      "callout": {
+        "text": "p95 under 4 seconds is retrieve plus send-out or register. Print is off that clock."
+      },
+      "notes": "Same three staff print services, in-process, no HTTP loopback. Registration only."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "Proposed Change",
+      "title": "PHLC electronic order - after Registered",
+      "left": {
+        "label": "Manual",
+        "tone": "neutral",
+        "title": "Screen calls PHLC after register",
+        "points": [
+          "Spec Ack creates a PHLC order when the lab option is on.",
+          "Destination must match the existing PHLC rule.",
+          "Staff wait on the screen for that call."
+        ]
+      },
+      "right": {
+        "label": "Sorter POST",
+        "tone": "accent",
+        "title": "Same create. Sorter does not wait.",
+        "points": [
+          "Same PHLC create, in-process, after REGISTERED is already back.",
+          "Only when Spec Ack would send. Send-out, Relabel, and Failure skip it.",
+          "PHLC fail is ALS. Sorter status stays Registered."
+        ]
+      },
+      "callout": {
+        "text": "No labels on the sorter path. Worksheet and PHLC never run on Send-out."
+      },
+      "notes": "PHLC is already backend. The change is when it runs. Do not invent a new PHLC contract."
     },
     {
       "archetype": "cards",

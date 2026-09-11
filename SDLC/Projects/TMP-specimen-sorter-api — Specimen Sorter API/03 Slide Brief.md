@@ -17,7 +17,7 @@ Facts come from [[02 System Design]]. Presentational only. Table name on slides 
 **JIRA key:** TMP-000 (dossier `TMP-specimen-sorter-api`; production JIRA not assigned; reference SEM20260612)
 **Service:** lis-crs-spec-ack-svc
 **Review forum:** CP3
-**Review date:** 10 Sep 2026
+**Review date:** 11 Sep 2026
 **Prior review:** none
 **Presenters:** Ka
 **Reviewers:** Tony Chong, CP3 panel
@@ -68,15 +68,31 @@ Today: validation, test grouping, request-no assignment, and ward/doctor mapping
 Proposed: the new API does that work, then calls the same backend register, print, and PHLC paths. Print and PHLC only after Registered.
 **Notes:** Send-out, Relabel, and Failure print nothing. Late worksheet does not change a status already returned.
 
-### Slide: Proposed Change - map and audit
+### Slide: Proposed Change - map and workbench
 **Eyebrow:** Proposed Change
-**Title:** The map supplies hospital, workstation, and user
+**Title:** Sorter id maps to a dedicated user and a workbench
 **Archetype:** cards
 **Body:**
-1. New table `loe_specimen_sorter_map`: sorter id to dedicated LIS user and workbench.
-2. Derive hospital if the request omits it. Derive workstation. Derive user.
-3. Insert `LOE_AUDIT_TRAIL`: `SORT_REG` / `SORT_SO` / `SORT_RELABEL` / `SORT_FAIL`, plus existing `REG` / `SEND_OUT`.
-**Notes:** Unknown sorter id is Failure. Printer and STAR location stay on the workbench row, not as a second source of truth on the map.
+1. `loe_specimen_sorter_map`: sorter id to LIS user and workbench id (plus hosp / lab / server so LAB_DB can open).
+2. `workbench`: hospital, lab, station name, STAR location, printer. Not copied onto the map.
+3. Audit user = map user. Workstation = workbench station name. `SORT_*` plus `REG` / `SEND_OUT`.
+**Notes:** Unknown sorter id is Failure. Do not compare workbench lab to the test lab.
+
+### Slide: Proposed Change - user and workbench vs staff login
+**Eyebrow:** Proposed Change
+**Title:** User and workbench come from the sorter id
+**Archetype:** compare
+**Body:**
+Today: staff LIS login; workbench by PC name or IP; retrieve GET uses a demo user.
+POST: `sorterId` looks up the map. Dedicated user. Workbench from the same row. Hospital omitted → map / workbench.
+**Notes:** Seed user, workbench, and map before SIT.
+
+### Slide: Proposed Change - Spec Ack actions
+**Eyebrow:** Proposed Change
+**Title:** Each Spec Ack action, manual vs POST
+**Archetype:** compare / cards
+**Body:** Retrieve (USID only). Send-out (list; mixed = Failure). Soft ALS vs hard Failure. Grouping and request no. Ward and doctor. Worksheet all after Registered. PHLC after Registered.
+**Notes:** Inserted under Proposed Change. Staff path unchanged.
 
 ### Slide: Promotion
 **Eyebrow:** Promotion
