@@ -1,0 +1,410 @@
+{
+  "meta": {
+    "title": "Specimen Sorter API - Screen vs API",
+    "subject": "Manual Spec Ack actions versus the sorter POST",
+    "author": "LIS Team",
+    "company": "Hospital Authority"
+  },
+  "slides": [
+    {
+      "archetype": "title-hero",
+      "eyebrow": "LIS TEAM   ·   11 SEP 2026   ·   WALKTHROUGH",
+      "headline": "Specimen Sorter API\nScreen vs the POST",
+      "lede": "Each Spec Ack action today is a staff click. The sorter POST must do the same work, then return Registered, Send-out, Relabel, or Failure.",
+      "stats": [
+        { "label": "Service", "value": "lis-crs-spec-ack-svc" },
+        { "label": "Date", "value": "11 Sep 2026" },
+        { "label": "Owner", "value": "Ka" }
+      ],
+      "presenters": "Ka",
+      "reviewers": "Tony Chong",
+      "footer": "From 01 Requirement and 02 System Design  ·  staff path unchanged",
+      "notes": "This is a walkthrough of what moves off the screen, not a CP3 recap. Staff Specimen Acknowledgement stays as the fallback for Relabel and Failure."
+    },
+    {
+      "archetype": "agenda",
+      "eyebrow": "Agenda",
+      "title": "One slide per Spec Ack action",
+      "items": [
+        { "title": "Retrieve GCRS order", "note": "USID only, as the sorter user" },
+        { "title": "Send-out", "note": "cluster list; mixed is Failure" },
+        { "title": "Registration checks", "note": "soft ALS; hard Failure" },
+        { "title": "Test grouping and request no.", "note": "USID when eligible" },
+        { "title": "Ward and doctor mapping", "note": "unmapped stops the API" },
+        { "title": "Worksheet printing", "note": "Registered only, after return" }
+      ],
+      "notes": "Walk left to right as the POST does: retrieve, then send-out or register packing, then print and PHLC only if Registered."
+    },
+    {
+      "archetype": "thesis",
+      "eyebrow": "What changes",
+      "title": "The screen still owns the click path. The POST owns the sorter path.",
+      "lede": "Middleware sends a USID and sorter id. LIS decides the bin. Staff Spec Ack does not change.",
+      "proofs": [
+        {
+          "title": "Today",
+          "body": "Staff scan, see alerts, press Send-out or Register. Packing and checks run on the screen first."
+        },
+        {
+          "title": "The POST",
+          "body": "One call on the Spec Ack service. Same retrieve, send-out, register, print, and PHLC writes. Soft text stays off the body."
+        },
+        {
+          "title": "Fallback",
+          "body": "Relabel and Failure bins go back to staff Spec Ack. No new screen."
+        }
+      ],
+      "goal": "Confirm each action below matches today's Spec Ack rule, except mixed send-out and the staff checkbox.",
+      "notes": "Do not reuse the staff register endpoint. The sorter never calls the retrieve GET that hard-codes a demo user."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "Retrieve GCRS order",
+      "title": "Staff can search several keys. The sorter sends a USID only.",
+      "left": {
+        "label": "Manual",
+        "tone": "neutral",
+        "title": "Scan or type, then retrieve",
+        "points": [
+          "Staff enter specimen no., lab no., or order no.",
+          "Format, allowed sending hospital, and check digit run first.",
+          "Not found stops the screen (1336 / 1337 / 1338 / 1377).",
+          "Retrieve GET on the service uses a hard-coded demo user."
+        ]
+      },
+      "right": {
+        "label": "Sorter POST",
+        "tone": "accent",
+        "title": "USID, as the mapped user",
+        "points": [
+          "Body needs usid and sorterId. No order-no or request-no lookup.",
+          "Same format, allowed hospital, and check digit. Miss is Failure.",
+          "Retrieve runs in-process as the sorter LIS user, not the demo user.",
+          "Optional HKID or name, if sent and wrong, is Failure. APS / BBS / MBS is Failure."
+        ]
+      },
+      "callout": {
+        "text": "Hospital omitted on the POST is taken from the sorter map and workbench."
+      },
+      "notes": "Say that the GET retrieve stays for staff. The sorter must not call it. CPS and HMS only in v1. DFT and STAR on those labs still retrieve."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "Send-out",
+      "title": "Staff press Send-out. The POST looks up the cluster list.",
+      "left": {
+        "label": "Manual",
+        "tone": "neutral",
+        "title": "Click after the order is on screen",
+        "points": [
+          "Staff decide Send-out from what they see.",
+          "Backend acks a Printed or Collected specimen, writes tracking, and writes SEND_OUT.",
+          "A GCRS test is send-out when its cluster code is on the send-out list for that lab and hospital."
+        ]
+      },
+      "right": {
+        "label": "Sorter POST",
+        "tone": "accent",
+        "title": "Same list, no staff click",
+        "points": [
+          "Join the test code to the send-out list for lab and hospital.",
+          "All tests on the list: existing send-out write, status SEND_OUT.",
+          "Local and send-out on the same USID: Failure. Do not send out a subset.",
+          "No worksheet and no PHLC on this path."
+        ]
+      },
+      "callout": {
+        "text": "The sorter does not send a send-out flag. The list decides."
+      },
+      "notes": "Name the list as the send-out test table if asked, not as a Flex routine. Audit will add SORT_SO beside the existing SEND_OUT write in a later package."
+    },
+    {
+      "archetype": "statement",
+      "align": "center",
+      "eyebrow": "Registration",
+      "headline": "Three screen jobs sit in front of Register",
+      "body": "Checks. Test groups and request no. Ward and doctor mapping. The POST must do all three before it calls register.",
+      "fontSize": 36,
+      "notes": "Register on the service already expects a packed request. That is why middleware cannot call the staff register endpoint as-is."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "Registration checks",
+      "title": "Staff see popups. The POST logs soft ones and fails hard ones.",
+      "left": {
+        "label": "Manual",
+        "tone": "neutral",
+        "title": "Alerts on the screen",
+        "points": [
+          "Soft alerts after retrieve. Staff can continue or stop.",
+          "Hard checks before Register: mapping, datetime, test, specimen state.",
+          "Mixed local and send-out is a soft alert today.",
+          "Staff can tick Relabel USID. STAR unbox can warn, then block if no location."
+        ]
+      },
+      "right": {
+        "label": "Sorter POST",
+        "tone": "accent",
+        "title": "Same rules, no dialogue",
+        "points": [
+          "Soft alerts: ALS only. Not on the response body. Status is not Relabel.",
+          "Hard checks: HTTP 200 and FAILURE, with the message code on the audit remark.",
+          "Mixed local and send-out is Failure on the API.",
+          "No Relabel checkbox. STAR with no workbench location is Failure 4422."
+        ]
+      },
+      "callout": {
+        "text": "Ack and register time is server now. Missing collection date is soft. Do not invent a date."
+      },
+      "notes": "The mixed-path change is the one to say out loud. Staff can still proceed after that popup. The sorter cannot split the tube."
+    },
+    {
+      "archetype": "cards",
+      "eyebrow": "Registration checks",
+      "title": "Soft alerts the API logs and then continues",
+      "perRow": 3,
+      "cards": [
+        {
+          "badge": 1,
+          "tone": "neutral",
+          "title": "Missing collection date",
+          "body": "Proceed. Do not invent a collection date."
+        },
+        {
+          "badge": 2,
+          "tone": "neutral",
+          "title": "Overnight specimen",
+          "body": "Same overnight window as Spec Ack. ALS warn only."
+        },
+        {
+          "badge": 3,
+          "tone": "neutral",
+          "title": "Valid period / sex-age",
+          "body": "Test validity and valid-period warnings. ALS only."
+        },
+        {
+          "badge": 4,
+          "tone": "neutral",
+          "title": "Duplicate / A-A-R",
+          "body": "Duplicate-reason and A-A-R-not-ready prompts. ALS only. AAR stays off."
+        },
+        {
+          "badge": 5,
+          "tone": "neutral",
+          "title": "Patient tag / private",
+          "body": "Private patient and patient-tag alerts. ALS only."
+        },
+        {
+          "badge": 6,
+          "tone": "warn",
+          "title": "STAR unbox alert",
+          "body": "Boxed-specimen warning is ALS. No workbench location is hard Failure, not this card."
+        }
+      ],
+      "callout": {
+        "text": "BBS blood / category / T&S alerts stay on the staff screen. BBS is out of v1."
+      },
+      "notes": "These are the R6 soft set. Mixed is not on this slide because the locked design made it Failure."
+    },
+    {
+      "archetype": "matrix",
+      "eyebrow": "Registration checks",
+      "title": "Hard checks that return Failure",
+      "table": {
+        "colWidths": [3.4, 5.0, 3.73],
+        "headers": [
+          "Check",
+          "When it fires",
+          { "text": "Code", "mono": true }
+        ],
+        "rows": [
+          [
+            { "text": "Unmapped ward / doctor", "bold": true },
+            "Doctor, location, specialty, report dest, or report copy has no LIS id",
+            { "text": "1162–1170, 1090", "mono": true }
+          ],
+          [
+            { "text": "Datetime", "bold": true },
+            "Collection before DOB; ack before collection or request; ack in the future",
+            { "text": "R12", "mono": true }
+          ],
+          [
+            { "text": "Nothing to register", "bold": true },
+            "Already used, all registered, all deleted, specimen deleted or rejected",
+            { "text": "Failure", "tone": "danger", "color": "white", "bold": true }
+          ],
+          [
+            { "text": "STAR no location", "bold": true },
+            "STAR specimen and workbench has no location",
+            { "text": "4422", "mono": true, "tone": "warn", "color": "warnInk", "bold": true }
+          ],
+          [
+            { "text": "Mixed send-out", "bold": true },
+            "Local and send-out tests on the same USID",
+            { "text": "Failure", "tone": "danger", "color": "white", "bold": true }
+          ]
+        ]
+      },
+      "takeaways": [
+        {
+          "tone": "danger",
+          "title": "Also Failure",
+          "body": "Missing test dictionary, patient HKID or name mismatch, APS / BBS / MBS, unknown sorter id."
+        },
+        {
+          "tone": "accent",
+          "title": "Not Failure",
+          "body": "Overnight, valid period, duplicate, patient tag, missing collection date, STAR unbox alert."
+        }
+      ],
+      "notes": "Walk the five rows, then the takeaway for test-dict and identity mismatch. Do not auto-create an unmapped doctor or location."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "Test grouping and request no.",
+      "title": "USID becomes the request no. only when the tube can carry it.",
+      "left": {
+        "label": "Manual",
+        "tone": "neutral",
+        "title": "Screen groups tests, then assigns",
+        "points": [
+          "Tests are grouped before Register. Each group needs a request no.",
+          "USID can be the request no. when the screen says it is eligible.",
+          "Staff can tick Relabel USID and force a new label.",
+          "More than one group, multi-specimen, suffix not 0, DFT same time-flag, or force relabel: do not use USID."
+        ]
+      },
+      "right": {
+        "label": "Sorter POST",
+        "tone": "accent",
+        "title": "Same grouping. No checkbox.",
+        "points": [
+          "Same grouping and the same Relabel rules, without a user Relabel tick.",
+          "Single group, one specimen, suffix 0, not force-relabel: request no. = USID.",
+          "Otherwise return Relabel. Do not write a lab request. Do not invent a number.",
+          "Caller cannot send an assigned request no. Auto-gen-only is still Relabel."
+        ]
+      },
+      "callout": {
+        "text": "Relabel is its own status. It is not Failure and not Registered."
+      },
+      "notes": "Partial DFT remainder is Relabel as well. DFT still uses Spec Ack register later, not the DFT register API."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "Ward and doctor mapping",
+      "title": "The screen maps office codes. The POST fails if a map is missing.",
+      "left": {
+        "label": "Manual",
+        "tone": "neutral",
+        "title": "Map, then popup if empty",
+        "points": [
+          "Request doctor, request location, specialty, report destination, and report copy are mapped from dictionary.",
+          "Unmapped doctor, location, specialty, dest, or copy blocks Register.",
+          "Staff can create a doctor from the screen when dictionary allows it."
+        ]
+      },
+      "right": {
+        "label": "Sorter POST",
+        "tone": "accent",
+        "title": "Same map. No create.",
+        "points": [
+          "Same five mappings go onto the packed register call.",
+          "Any miss is Failure with the same message codes as Spec Ack.",
+          "Do not auto-create a doctor or a location. Send the tube to staff Spec Ack."
+        ]
+      },
+      "callout": {
+        "text": "Do not compare workbench lab to the order test lab."
+      },
+      "notes": "Report destination can follow request location when that Spec Ack option is on. The convertor already does that; the API ports it, it does not invent a new rule."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "Worksheet printing",
+      "title": "Staff pick a worksheet. The POST prints every one, after it has already returned.",
+      "left": {
+        "label": "Manual",
+        "tone": "neutral",
+        "title": "Print after Register",
+        "points": [
+          "After a successful register, staff can print GCRS, send-out, and SH worksheets.",
+          "If more than one worksheet, staff pick which to print.",
+          "Labels can also print on the staff path."
+        ]
+      },
+      "right": {
+        "label": "Sorter POST",
+        "tone": "accent",
+        "title": "Print all, off the wait",
+        "points": [
+          "Return REGISTERED first. Then print every worksheet Spec Ack would have. No picker.",
+          "Send-out, Relabel, and Failure print nothing.",
+          "No labels. Late worksheet is allowed. Print fail is ALS warn; status stays Registered."
+        ]
+      },
+      "callout": {
+        "text": "p95 under 4 seconds is retrieve plus send-out or register. Print is not on that clock."
+      },
+      "notes": "Same three staff print services, in-process, no HTTP loopback. Registration only. A send-out form after local register is still a worksheet on that path, not a print after SEND_OUT."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "PHLC electronic order",
+      "title": "PHLC stays a backend create. The POST calls it only after Registered.",
+      "left": {
+        "label": "Manual",
+        "tone": "neutral",
+        "title": "Screen calls PHLC after register",
+        "points": [
+          "After Register, Spec Ack creates a PHLC electronic order when the lab option is on.",
+          "Destination must match the PHLC rule Spec Ack already uses.",
+          "Staff wait on the screen for that call."
+        ]
+      },
+      "right": {
+        "label": "Sorter POST",
+        "tone": "accent",
+        "title": "Same create, after HTTP return",
+        "points": [
+          "Same PHLC create as Spec Ack, in-process, after REGISTERED is already back.",
+          "Only when Spec Ack would send to PHLC. Send-out, Relabel, and Failure skip it.",
+          "PHLC fail is ALS warn. The sorter status stays Registered."
+        ]
+      },
+      "callout": {
+        "text": "No labels on the sorter path. Worksheet and PHLC never run on Send-out."
+      },
+      "notes": "PHLC is already backend today. The change is when it runs and that the sorter does not wait. Do not invent a new PHLC contract."
+    },
+    {
+      "archetype": "closing",
+      "eyebrow": "Next",
+      "headline": "One POST. Four bins.",
+      "stat": "P95 < 4 S",
+      "note": "Retrieve plus send-out or register. Print and PHLC after the status is already back.",
+      "nextSteps": [
+        {
+          "badge": 1,
+          "title": "Keep the staff path",
+          "body": "Spec Ack retrieve, Send-out, and Register stay. Relabel and Failure go there."
+        },
+        {
+          "badge": 2,
+          "title": "Move the three register jobs",
+          "body": "Checks, grouping and request no., ward and doctor. Then the existing register write."
+        },
+        {
+          "badge": 3,
+          "title": "Print only when Registered",
+          "body": "All worksheets, then PHLC, after HTTP return. No labels."
+        }
+      ],
+      "identity": {
+        "key": "lis-crs-spec-ack-svc",
+        "meta": "Specimen Sorter API  ·  11 Sep 2026"
+      },
+      "notes": "Close on the latency split so print arguments do not reopen the 4 second budget."
+    }
+  ]
+}
