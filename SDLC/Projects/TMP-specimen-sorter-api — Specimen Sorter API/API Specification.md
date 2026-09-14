@@ -114,16 +114,16 @@ No 401 / 403 in v1 (no auth). Do not use HTTP 4xx for unknown sorter, bad USID, 
 }
 ```
 
-| Field | Type | When present |
-|---|---|---|
-| `status` | enum | Always on HTTP 200. `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE`. |
-| `code` | string | `FAILURE`: Spec Ack / retrieve message id when known (`1336`, `1337`, `1338`, `1377`, `0001162`…`0001170`, `1090`, `4422`, or an internal sorter code). Null on other statuses. |
-| `message` | string | `FAILURE`: short text for audit / support. Not soft-alert copy. Null on other statuses. |
-| `usid` | string | Echo when a USID was supplied. |
-| `hospital` | string | Hospital actually used (request or map). |
-| `labCode` | string | `Lab` code from the order when retrieve succeeded (`CPS`, `HMS`, …) (R8). |
-| `labNo` | integer | `Lab.getLabNo()` when retrieve succeeded. |
-| `testCode` | string | GCRS / test / cluster code used for routing when known (R8). May be omitted on early Failure (missing usid, unknown sorter). |
+| Field      | Type    | When present                                                                                                                                                                    |
+| ---------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `status`   | enum    | Always on HTTP 200. `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE`.                                                                                                          |
+| `code`     | string  | `FAILURE`: Spec Ack / retrieve message id when known (`1336`, `1337`, `1338`, `1377`, `0001162`…`0001170`, `1090`, `4422`, or an internal sorter code). Null on other statuses. |
+| `message`  | string  | `FAILURE`: short text for audit / support. Not soft-alert copy. Null on other statuses.                                                                                         |
+| `usid`     | string  | Echo when a USID was supplied.                                                                                                                                                  |
+| `hospital` | string  | Hospital actually used (request or map).                                                                                                                                        |
+| `labCode`  | string  | `Lab` code from the order when retrieve succeeded (`CPS`, `HMS`, …) (R8).                                                                                                       |
+| `labNo`    | integer | `Lab.getLabNo()` when retrieve succeeded.                                                                                                                                       |
+| `testCode` | string  | GCRS / test / cluster code used for routing when known (R8). May be omitted on early Failure (missing usid, unknown sorter).                                                    |
 
 `REGISTERED` writes the lab request. `SEND_OUT` uses existing send-out. `RELABEL` and `FAILURE` do not write a lab request (R3). Relabel is never reported as Failure (R4).
 
