@@ -19,7 +19,9 @@ New endpoint and orchestrator on existing `lis-crs-spec-ack-svc`. Does not creat
 
 **Gate:** `requirement` was confirmed in writing but is not in `gates_passed`. Design proceeds under a recorded exception (requester invoked `/system-design`).
 
-Design answers D1–D11 stand. 2026-09-10: Existing / Proposed restated as the Specimen Acknowledgement screen vs one new API. Map table name is `loe_specimen_sorter_map` (was `loe_sorter_map` on D7). Hospital is derived from that map when the request omits it.
+Design answers D1–D12 stand. 2026-09-10: Existing / Proposed restated as the Specimen Acknowledgement screen vs one new API. Map table name is `loe_specimen_sorter_map` (was `loe_sorter_map` on D7). Hospital is derived from that map when the request omits it.
+
+2026-09-14: **No `loesort_labno`** on `loe_specimen_sorter_map`. One physical sorter can process more than one lab (R1). Lab allow-list stays on the retrieved order (`Lab.CPS` / `Lab.HMS`).
 
 Slides are not this note. After you confirm this delta, `/design-review-pptx` refreshes [[03 Slide Brief]].
 
@@ -60,7 +62,7 @@ One new POST on Spec Ack. Move the screen logics above onto that API. Staff clic
 1. **New API** — path, body, and response below.
 2. **Move front-end logics to the API** — retrieve (as the mapped user), validation, packing convertor, then existing send-out / register / print / PHLC in-process.
 3. **`LOE_AUDIT_TRAIL` insert** — `SORT_*` plus today's `REG` / `SEND_OUT` (D6).
-4. **New table `loe_specimen_sorter_map`** — sorter id → LIS user + workbench. If the request has no hospital, take hospital from the map / workbench. Workstation and user come from the same row.
+4. **New table `loe_specimen_sorter_map`** — sorter id → LIS user + workbench. If the request has no hospital, take hospital from the map / workbench. Workstation and user come from the same row. **No lab column** — the sorter is not pinned to one lab (D12).
 
 No Hub JWT. No API key in v1 (D1).
 
@@ -79,10 +81,11 @@ sequenceDiagram
     participant Prn as Worksheet and PHLC
 
     MW->>API: POST USID + sorterId + optional hospital HKID name
-    API->>Map: sorter id to user and workbench id
-    API->>WB: load hosp lab location printer station
-    Note over API: hospital omitted → use map / workbench hosp
+    API->>Map: sorter id to user, hosp, server name, workbench id
+    Note over API: no lab on map — hospital omitted → loesort_hosp
     API->>Ret: USID only as that user
+    Note over API: lab from retrieved order Lab.CPS or Lab.HMS
+    API->>WB: load workbench by id plus retrieved lab — location printer station
     alt not found or unsupported or mixed send-out
         API->>Aud: SORT_FAIL
         API-->>MW: Failure
@@ -111,8 +114,8 @@ Traces to: R1, R4, R5, R6, R11, R14
 | Piece | Role |
 |---|---|
 | `SpecimenSorterController` | `POST /api/specack/sorter/auto-register`. Extends `AbstractService`. Does not call GET `/retrieveGcrOrder`. |
-| `SpecimenSorterAutoRegisterService` | Orchestrator. Sets `ServiceParameterVo` from map user + workbench hospital/lab/`serverName`. If request `hospital` is empty, use `loesort_hosp` / `wkbh_hosp`. |
-| `SpecimenSorterMapService` | `loe_specimen_sorter_map` → user + workbench id/lab. Then `workbench` for hosp, location, station name, default printer. Missing map or workbench → Failure. |
+| `SpecimenSorterAutoRegisterService` | Orchestrator. Sets `ServiceParameterVo` from map user + `loesort_hosp` / `loesort_server_name`. After retrieve, set lab from the order (`hk.org.ha.lis.enums.Lab`). If request `hospital` is empty, use `loesort_hosp`. |
+| `SpecimenSorterMapService` | `loe_specimen_sorter_map` → user + hosp + server name + workbench id. **No lab on the map.** Then `workbench` by `wkbh_id` + retrieved `wkbh_labno` for location, station name, default printer. Missing map or workbench row for that lab → Failure. |
 | `SpecimenSorterPackingService` | Java port of `GcrSpecAckDataConvertor` (group tests, request no., ward/doctor, worksheet Ro). `convertUserInputDataToParam` becomes defaults: ack/register datetime = server now (R12); collection date from specimen; AAR off; urgent workstation off; label flags off; no user relabel checkbox. |
 | `SpecimenSorterValidationService` | Port of `promptAlert` (ALS only) and `GcrSpecAckDataValidator`. Mixed local + send-out → **Failure**. STAR: no `wkbh_location` → Failure `4422`. |
 | `SpecimenSorterRelabelService` | Assign-USID rules **without** `userCheckedRelabel`. |
@@ -133,10 +136,9 @@ HKID/name: if supplied and mismatch GCRS patient → Failure.
 flowchart TD
     start[POST auto-register] --> map{sorterId on loe_specimen_sorter_map?}
     map -->|no| fail[Failure]
-    map -->|yes| wb[Load workbench]
-    wb --> hosp{hospital in request?}
-    hosp -->|no| useMap[Use map / workbench hosp]
-    hosp -->|yes| match{Matches map / workbench?}
+    map -->|yes| hosp{hospital in request?}
+    hosp -->|no| useMap[Use loesort_hosp]
+    hosp -->|yes| match{Matches loesort_hosp?}
     match -->|no| fail
     match -->|yes| usid
     useMap --> usid{USID present?}
@@ -144,7 +146,9 @@ flowchart TD
     usid -->|yes| ret[retrieveGcrOrder]
     ret --> found{Order found CPS or HMS?}
     found -->|no / APS BBS MBS| fail
-    found -->|yes| mix{Local and send-out on same USID?}
+    found -->|yes| wb[Load workbench by id plus order lab]
+    wb -->|missing row| fail
+    wb -->|yes| mix{Local and send-out on same USID?}
     mix -->|yes| fail
     mix -->|no| cvt[Convertor builds packing]
     cvt --> soft[Soft alerts ALS]
@@ -163,17 +167,20 @@ flowchart TD
 
 ## Data model
 
-Traces to: R9, R10, D2, D7
+Traces to: R1, R9, R10, D2, D7, D12
 
 ### New table — `loe_specimen_sorter_map` (Oracle / LOE)
 
 Maps **sorter identifier → LIS user + workbench**. From that row the API derives:
 
 - **User** — `loesort_usercode` (dedicated sorter LIS user, not `ltc611`)
-- **Workstation** — `workbench.wkbh_station_name` (print queue / STAR location still on that workbench row)
-- **Hospital** — if the request omits `hospital`, use `loesort_hosp` / `wkbh_hosp`
+- **Hospital** — if the request omits `hospital`, use `loesort_hosp`
+- **Server** — `loesort_server_name` so `LAB_DB` can be opened
+- **Workstation** — `loesort_workbench_id`, then `workbench` loaded with the **retrieved** lab (`wkbh_id` + `wkbh_labno`) for station name / printer / STAR location
 
-Hospital, lab, location, station name, and printer are **not** duplicated as the source of truth on the map; they are read from `workbench` after the map hit. The map still stores hosp / lab / server name so `LAB_DB` can be opened.
+There is **no `loesort_labno`**. A specimen sorter can process more than one lab; lab is not an attribute of the sorter (D12). v1 allow-list is still CPS / HMS on the **order**, via `hk.org.ha.lis.enums.Lab`.
+
+Location, station name, and printer stay on `workbench`. Seed **one workbench row per lab** that the physical sorter will handle, same `wkbh_id` if the station is shared. Missing row for the retrieved lab → Failure (config), not a lab-mismatch check (D10).
 
 Forward:
 
@@ -183,7 +190,6 @@ CREATE TABLE loe_specimen_sorter_map (
   loesort_sorter_id     VARCHAR2(64)  NOT NULL,
   loesort_usercode      VARCHAR2(32)  NOT NULL,
   loesort_hosp          VARCHAR2(8)   NOT NULL,
-  loesort_labno         NUMBER        NOT NULL,
   loesort_server_name   VARCHAR2(64)  NOT NULL,
   loesort_workbench_id  VARCHAR2(16)  NOT NULL,
   created_at            TIMESTAMP,
@@ -200,7 +206,7 @@ Rollback:
 DROP TABLE loe_specimen_sorter_map;
 ```
 
-No DDL on `workbench`. Seed a workbench row per physical sorter plus one LIS user account.
+No DDL on `workbench`. Seed a workbench row per lab the sorter will process (same station/printer if they share a machine) plus one LIS user account.
 
 ### `LOE_AUDIT_TRAIL` — no DDL
 
@@ -238,7 +244,7 @@ No auth header in v1 (D1).
 | Field | Required | Rule |
 |---|---|---|
 | `usid` | Yes | Else Failure, no write. |
-| `sorterId` | Yes | Lookup `loe_specimen_sorter_map` + workbench. Unknown → Failure. Derives user and workstation. |
+| `sorterId` | Yes | Lookup `loe_specimen_sorter_map`. Unknown → Failure. Derives user, hosp, server name, workbench id. Lab comes from the retrieved order. |
 | `hospital` | No | If omitted, derive from map / workbench. If sent, must match `loesort_hosp` / `wkbh_hosp` or Failure. |
 | `hkid`, `patientName` | No | Present + mismatch → Failure. |
 
@@ -251,7 +257,7 @@ HTTP 200 with status `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE`. Transpor
 | Key | DEVQA | SIT | PROD | Type |
 |---|---|---|---|
 | `loe_specimen_sorter_map` rows | test sorter ids | SIT ids | real sorter ids | Oracle data |
-| `workbench` row per sorter (`wkbh_id`, lab, hosp, station_name, location, default_printer) | seed | seed | real | `LAB_DB` data |
+| `workbench` row per lab the sorter handles (`wkbh_id` + `wkbh_labno`, hosp, station_name, location, default_printer) | seed | seed | real | `LAB_DB` data |
 | LIS user account for sorter | non-prod user | SIT user | prod user | LIS user admin, not ConfigMap |
 | NetworkPolicy middleware → 8118 | DEV | SIT | PROD | OpenShift |
 | API key | **not used v1** | — | — | D1 |
@@ -291,14 +297,15 @@ Print/PHLC still follow the staff print methods and `LisPhlcLabOrderAppServiceIm
 | Invent STAR location when workbench has none | Failure (D9). |
 | Mixed: send-out subset only | Failure (D3). |
 | Fail when workbench lab ≠ test lab | Requester: no check (D10). |
+| `loesort_labno` on the map (one lab per sorter id) | Requester 2026-09-14: one sorter processes more than one lab (D12). |
 
 ## Promotion impact and fallback
 
 **Promotion**
 
 1. Create sorter LIS user.
-2. Seed `workbench` for the physical sorter (lab, hosp, station name, location, printer).
-3. `loe_specimen_sorter_map` row: sorter id, user, workbench id, lab, hosp, server name.
+2. Seed `workbench` for each lab the physical sorter will process (hosp, station name, location, printer; same `wkbh_id` if shared).
+3. `loe_specimen_sorter_map` row: sorter id, user, workbench id, hosp, server name — **no lab**.
 4. Deploy `lis-crs-spec-ack-svc`.
 5. NetworkPolicy for middleware (no new auth).
 6. Pilot CPS/HMS. Relabel/Failure bins → staff Spec Ack. Confirm Specimen Audit Trail action filter includes `SORT_*` (D6).
@@ -323,4 +330,6 @@ Print/PHLC still follow the staff print methods and `LisPhlcLabOrderAppServiceIm
 | D7 | Map table name and vs `LOE_CONTROL`? | Requester | **Sorter map table** `loe_specimen_sorter_map` (2026-09-10; was `loe_sorter_map`). |
 | D8 | DFT via Spec Ack `register()` vs `/api/dftreg`? | Requester | **Agree.** Same Spec Ack `register()` packing. |
 | D9 | STAR with no workbench location? | Requester | **Failure** (`4422`). |
-| D10 | Map / workbench lab vs order test lab? | Requester | **No check.** |
+| D10 | Map / workbench lab vs order test lab? | Requester | **No check.** Do not fail because they differ. |
+| D12 | Lab column on `loe_specimen_sorter_map`? | Requester | **No `loesort_labno`.** Sorter can process more than one lab. Lab from retrieved order (`Lab.CPS` / `Lab.HMS`). Workbench loaded by map `wkbh_id` + order lab. |
+| D13 | Does in-process `retrieveGcrOrder` need `ServiceParameter` lab before the USID lookup? | Implement | **Open.** Staff GET always sends lab from the screen. Confirm on `GcrUIAppServiceImpl.retrieveGcrOrder`. If lab is required first, retrieve with hosp + server only is not enough — do not put lab back on the map to solve it. |
