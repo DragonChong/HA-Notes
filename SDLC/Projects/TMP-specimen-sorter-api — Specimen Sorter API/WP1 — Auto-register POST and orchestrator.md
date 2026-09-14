@@ -72,7 +72,7 @@ Open dossier item **Paste JIRA key** is not a code blocker for WP1.
 4. Build `ServiceParameterVo` (user = `loesort_usercode`, hosp/lab/serverName from map + workbench). Call `ServiceParameterContextHolder.set(serviceParameter)`. Never set user `ltc611`. Do **not** call `CrsContext.setCurrentServiceParameter` — `CrsContext` is obsolete. If the holder does not route the datasource by itself, also call `DataSourceContextHolder.setCurrentDb(serverName, serverLab, LAB_DB)` the same way `lis-request-svc` `RegistrationController` does. Confirm on the classpath at implement time; do not copy the obsolete `CrsContext` ThreadLocal.
 5. **In-process** `GcrUIAppServiceInterface.retrieveGcrOrder(GcrUIPackingVo)` with USID only as that user. Do not HTTP-loop to GET `/retrieveGcrOrder`.
 6. Not found / retrieve error → FAILURE.
-7. Lab not CPS or HMS → FAILURE (APS/BBS/MBS/VRS and the rest). Check with `hk.org.ha.lis.constants.LabType` from `lis-svc-lib` data-source (`LabType.CPS` / `LabType.HMS`, or `fromNumber` then allow only those two). Do **not** use `CommonConstants.LAB_NO_*`. Do **not** use `hk.org.ha.lis.crs.hub.model.udt.LabType`.
+7. Lab not CPS or HMS → FAILURE (APS/BBS/MBS/VRS and the rest). Check with `hk.org.ha.lis.enums.Lab` from `lis-svc-lib` `lis-common` (`Lab.CPS` / `Lab.HMS`, or `Lab.fromTypeByInt` then allow only those two). Do **not** use `CommonConstants.LAB_NO_*`, data-source `hk.org.ha.lis.constants.LabType`, or CRS UDT `hk.org.ha.lis.crs.hub.model.udt.LabType`.
 8. Optional HKID / `patientName` present and mismatch GCRS patient → FAILURE. Mask HKID in logs.
 9. Call packing / validation / relabel / send-out / register collaborators (stubs). Mixed / relabel / send-out / register writes are WP3–WP5.
 10. Return `ResultDataResponse.success(response)` with HTTP 200 for all four statuses. Transport exceptions only → 500 via existing `ResultDataResponse.fail(INTERNAL_SERVER_ERROR, …)` + `warn("SPEC_ACK", …)`.
@@ -104,7 +104,7 @@ Open dossier item **Paste JIRA key** is not a code blocker for WP1.
 - [ ] DFT stays on Spec Ack `register()` later (D8) — WP1 must not call `/api/dftreg`
 - [ ] Print / PHLC not in this task (D11) — collaborator stub only
 - [ ] No new microservice; security starter stays commented out
-- [ ] Lab allow-list uses `hk.org.ha.lis.constants.LabType` (`CPS`, `HMS`); no `CommonConstants.LAB_NO_*` on the sorter path
+- [ ] Lab allow-list uses `hk.org.ha.lis.enums.Lab` (`CPS`, `HMS`); no `CommonConstants.LAB_NO_*`, no data-source `LabType`, no CRS UDT `LabType` on the sorter path
 
 ## Acceptance criteria
 
@@ -112,7 +112,7 @@ Open dossier item **Paste JIRA key** is not a code blocker for WP1.
 - [ ] Missing `usid` or `sorterId` returns HTTP 200 + `FAILURE` without calling retrieve
 - [ ] Retrieve uses mapped user, not `ltc611`
 - [ ] New sorter classes do not import or call `CrsContext`
-- [ ] APS / BBS / MBS (and other non CPS/HMS) → `FAILURE`, using `LabType` from data-source
+- [ ] APS / BBS / MBS (and other non CPS/HMS) → `FAILURE`, using `hk.org.ha.lis.enums.Lab` from `lis-common`
 - [ ] Optional HKID / name mismatch → `FAILURE`
 - [ ] Staff GET retrieve and `/gcrSpecAckRegister` unchanged
 - [ ] Collaborator interfaces exist; packing / validator / print / DDL / `SORT_*` not implemented
@@ -123,7 +123,7 @@ Open dossier item **Paste JIRA key** is not a code blocker for WP1.
 ## Notes
 
 - **Service parameter:** `ServiceParameterContextHolder.set(...)`. `CrsContext` is obsolete — ignore it, even though `CrsSpecAckController` still calls `CrsContext.setCurrentServiceParameter`. Do not add more `CrsContext` usage on the sorter path. Staff endpoints are out of this task.
-- **Lab check:** `hk.org.ha.lis.constants.LabType` in data-source (`CPS` = 1, `HMS` = 3). GNS and SOS share number 2 — do not treat `fromNumber(2)` as v1-allowed. Do not use `CommonConstants` or the CRS UDT `LabType` (CHEM / HAET) for this gate.
+- **Lab check:** `hk.org.ha.lis.enums.Lab` in `lis-common` (`Lab.CPS` = 1, `Lab.HMS` = 3). `lis-crs-spec-ack-svc` already depends on `lis-common`. GNS and SOS share labNo 2 — `fromTypeByInt(2)` is not v1-allowed. Do not use `CommonConstants`, data-source `LabType`, or CRS UDT `LabType` (CHEM / HAET) for this gate.
 - Design class names in [[02 System Design]] Component table are the target. Keep `SpecimenSorterController` separate from `CrsSpecAckController`.
 - Map stub: if a test needs a hit, inject a fake that returns a dedicated user + workbench id. Do not hard-code `ltc611` in that fake.
 - Hospital derive-when-omitted is orchestrator logic (R10 / D7) — implement in WP1 even though the table is WP2.
