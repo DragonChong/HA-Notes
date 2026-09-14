@@ -69,9 +69,6 @@ Looks up the GCRS order by **USID**, runs Spec Ack retrieve / validate / pack / 
 | `hkid`              | string | No       | If present and it does not match the GCRS patient → `FAILURE`. Mask in logs.                                                                                                                       |
 | `patientName`       | string | No       | If present and it does not match the GCRS patient → `FAILURE`.                                                                                                                                     |
 
-
-Lab is **not** a request field. v1 allow-list is CPS / HMS on the **retrieved order** (`hk.org.ha.lis.enums.Lab`). APS / BBS / MBS / VRS → `FAILURE`.
-
 ## Response envelope
 
 Same `ResultDataResponse` as other Spec Ack APIs (`hk.org.ha.lis.model.response.ResultDataResponse`).
