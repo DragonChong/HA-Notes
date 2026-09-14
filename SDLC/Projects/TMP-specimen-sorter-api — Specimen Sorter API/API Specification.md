@@ -23,14 +23,14 @@ This is the **v1 middleware contract**. Staff Specimen Acknowledgement endpoints
 
 ## Service
 
-| Item | Value |
-|---|---|
-| Service | `lis-crs-spec-ack-svc` |
-| Port | `8118` |
-| Root | `/api/specack` |
-| Content-Type | `application/json` |
-| Auth | None in v1 (D1). Isolation is NetworkPolicy only. Do not send JWT, API key, or Hub token. |
-| Call style | **Synchronous**. One POST per tube. No status-poll API (R8). |
+| Item         | Value                                                                                     |
+| ------------ | ----------------------------------------------------------------------------------------- |
+| Service      | `lis-crs-spec-ack-svc`                                                                    |
+| Port         | `8118`                                                                                    |
+| Root         | `/api/specack`                                                                            |
+| Content-Type | `application/json`                                                                        |
+| Auth         | None in v1 (D1). Isolation is NetworkPolicy only. Do not send JWT, API key, or Hub token. |
+| Call style   | **Synchronous**. One POST per tube. No status-poll API (R8).                              |
 
 Base URL is the OpenShift route for that environment, then `/api/specack`.
 
