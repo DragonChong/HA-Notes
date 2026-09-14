@@ -221,6 +221,8 @@ Function `SPEC_ACK`. Add `SORT_*` to the Specimen Audit Trail action filter (D6)
 
 ## Interface / API contract
 
+Consumer spec: [[API Specification]] · OpenAPI [[assets/specimen-sorter-auto-register.openapi.yaml]]
+
 Traces to: R1, R8, R10
 
 ### Path

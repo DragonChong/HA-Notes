@@ -46,6 +46,7 @@ work_type: project
 |---|---|---|
 | 01 Requirement | [[01 Requirement Confirmation]] | confirmed 2026-09-07; not in gates_passed |
 | 02 Design | [[02 System Design]] | approved 2026-09-10; **2026-09-14 delta** — no `loesort_labno` (D12). Confirm then `/design-review-pptx` |
+| API spec | [[API Specification]] | draft 2026-09-14 — middleware POST contract + OpenAPI |
 | 03 Slide Brief | [[03 Slide Brief]] | draft |
 | 03 Design Review | [[assets/Specimen Sorter API.pptx]] | generated |
 | 04 JIRA | [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]] | draft |
@@ -78,6 +79,7 @@ work_type: project
 - 2026-09-10 — `design-review` exception: CP3 not held; skip to JIRA create to close Phase 1. Deck stays generated; gate not in `gates_passed`. — Ka
 - 2026-09-10 — Design gate closed. 02 still meets the exit checklist after the rewrite (`reviewed_by` Tony Chong). `design` written to `gates_passed`. — Ka
 - 2026-09-14 — Rejected `loesort_labno` on `loe_specimen_sorter_map`: one sorter processes more than one lab. Lab from retrieved order; workbench by `wkbh_id` + order lab (D12). D13 open: whether retrieve needs lab on `ServiceParameter` first. — agent
+- 2026-09-14 — Draft [[API Specification]] for `POST /api/specack/sorter/auto-register` (`ResultDataResponse`, bin on `data.status`). — agent
 - 2026-09-10 — JIRA log drafted: [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]]. Target 30th May, 2027. No JIRA key yet. — agent
 - 2026-09-10 — [[05 Project Plan]] drafted from the programme 12-row schedule, backwards from Jun 2027 submission. 2027 window is not in [[Promotion Windows]]. Estimates await acceptance. `plan` not in `gates_passed`. — agent
 - 2026-09-10 — Estimates on [[05 Project Plan]] accepted. `plan` written to `gates_passed`. Stage → development. JIRA key still missing. — Ka

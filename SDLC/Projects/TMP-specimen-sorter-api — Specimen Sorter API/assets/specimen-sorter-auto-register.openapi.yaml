@@ -1,0 +1,151 @@
+openapi: 3.0.3
+info:
+  title: Specimen Sorter Auto-register API
+  version: "1.0.0"
+  description: |
+    v1 middleware contract on lis-crs-spec-ack-svc.
+    See vault note API Specification.md. Staff Spec Ack paths are not this API.
+  contact:
+    name: LIS CRS
+servers:
+  - url: "{baseUrl}/api/specack"
+    variables:
+      baseUrl:
+        default: http://localhost:8118
+        description: OpenShift route or local service; port 8118
+paths:
+  /sorter/auto-register:
+    post:
+      operationId: autoRegister
+      summary: Auto-register or send-out a scanned USID
+      description: |
+        Sync one call per tube. No auth header in v1 (NetworkPolicy only).
+        Bin on data.status, not HTTP 200.
+      tags:
+        - Specimen Sorter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AutoRegisterRequest"
+            examples:
+              minimal:
+                value:
+                  usid: QHSP2500000012
+                  sorterId: KTH-SORTER-01
+              withHospital:
+                value:
+                  usid: QHSP2500000012
+                  sorterId: KTH-SORTER-01
+                  hospital: QEH
+      responses:
+        "200":
+          description: Decision finished. Read data.status.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResultDataResponseAutoRegister"
+              examples:
+                registered:
+                  value:
+                    code: 200
+                    message: Success
+                    timestamp: 1778800000000
+                    data:
+                      status: REGISTERED
+                      usid: QHSP2500000012
+                      hospital: QEH
+                      labCode: CPS
+                      labNo: 1
+                      testCode: LFT
+                failure:
+                  value:
+                    code: 200
+                    message: Success
+                    timestamp: 1778800000000
+                    data:
+                      status: FAILURE
+                      code: "1377"
+                      message: Specimen not found
+                      usid: QHSP2500000012
+                      hospital: QEH
+        "500":
+          description: Transport or unhandled error. Retry allowed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResultDataResponseAutoRegister"
+              example:
+                code: 500
+                message: Internal server error
+                timestamp: 1778800000000
+                data: null
+components:
+  schemas:
+    AutoRegisterRequest:
+      type: object
+      required:
+        - usid
+        - sorterId
+      properties:
+        usid:
+          type: string
+          description: GCRS Specimen Number / USID
+        sorterId:
+          type: string
+          description: Key on loe_specimen_sorter_map. Not a lab.
+        hospital:
+          type: string
+          nullable: true
+          description: Performing hospital. Omitted → loesort_hosp.
+        hkid:
+          type: string
+          nullable: true
+        patientName:
+          type: string
+          nullable: true
+    AutoRegisterData:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum: [REGISTERED, SEND_OUT, RELABEL, FAILURE]
+        code:
+          type: string
+          nullable: true
+          description: Failure message id only
+        message:
+          type: string
+          nullable: true
+        usid:
+          type: string
+        hospital:
+          type: string
+        labCode:
+          type: string
+          description: Lab enum code from retrieved order
+        labNo:
+          type: integer
+        testCode:
+          type: string
+    ResultDataResponseAutoRegister:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: 200 completed decision; 500 transport
+        message:
+          type: string
+        timestamp:
+          type: integer
+          format: int64
+        data:
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/AutoRegisterData"
+tags:
+  - name: Specimen Sorter
+    description: Middleware auto-register
