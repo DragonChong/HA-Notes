@@ -32,3 +32,4 @@ Work packages: [[05 Project Plan]]. Design: [[02 System Design]].
 | 2026-09-10 | Added TASK-001: Auto-register POST and orchestrator (`lis-crs-spec-ack-svc`) |
 | 2026-09-10 | Linked TASK-001 to [[WP1 — Auto-register POST and orchestrator]] |
 | 2026-09-11 | TASK-001 plan: use `ServiceParameterContextHolder.set`; `CrsContext` obsolete |
+| 2026-09-14 | TASK-001 plan: lab allow-list via data-source `LabType`, not `CommonConstants` |
