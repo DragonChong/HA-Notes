@@ -61,13 +61,13 @@ Looks up the GCRS order by **USID**, runs Spec Ack retrieve / validate / pack / 
 }
 ```
 
-| Field               | Type   | Required | Rule                                                                                                                                                                                               |
-| ------------------- | ------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `usid`              | string | Yes      | GCRS Specimen Number / USID. Missing or blank → HTTP 200 + `FAILURE`, no retrieve, no write (R1). Format / allowed hospital / check digit follow Spec Ack retrieve (R2).                           |
-| `sorterId`          | string | Yes      | Key on `loe_specimen_sorter_map`. Missing or unknown → HTTP 200 + `FAILURE`. Derives LIS user, hospital, server name, workbench id. **Not** a lab. One sorter may process more than one lab (D12). |
-| `hospital`          | string | No       | Performing hospital. If omitted, use `loesort_hosp`. If sent and it does not match the map hospital → `FAILURE` (R10).                                                                             |
-| `hkid`              | string | No       | If present and it does not match the GCRS patient → `FAILURE`. Mask in logs.                                                                                                                       |
-| `patientName`       | string | No       | If present and it does not match the GCRS patient → `FAILURE`.                                                                                                                                     |
+| Field         | Type   | Required | Rule                                                                                                                                                                                               |
+| ------------- | ------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `usid`        | string | Yes      | GCRS Specimen Number / USID. Missing or blank → HTTP 200 + `FAILURE`, no retrieve, no write (R1). Format / allowed hospital / check digit follow Spec Ack retrieve (R2).                           |
+| `sorterId`    | string | Yes      | Key on `loe_specimen_sorter_map`. Missing or unknown → HTTP 200 + `FAILURE`. Derives LIS user, hospital, server name, workbench id. **Not** a lab. One sorter may process more than one lab (D12). |
+| `hospital`    | string | No       | Performing hospital. If omitted, use `loesort_hosp`. If sent and it does not match the map hospital → `FAILURE` (R10).                                                                             |
+| `hkid`        | string | No       | If present and it does not match the GCRS patient → `FAILURE`. Mask in logs.                                                                                                                       |
+| `patientName` | string | No       | If present and it does not match the GCRS patient → `FAILURE`.                                                                                                                                     |
 
 ## Response envelope
 
