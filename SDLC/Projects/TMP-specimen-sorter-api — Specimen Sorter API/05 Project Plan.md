@@ -30,16 +30,16 @@ Estimates accepted 2026-09-10 (`reviewed_by` Ka). `plan` gate closed.
 
 From [[02 System Design]]. Sizes are working days (weekends excluded). They sit inside System Development (01 Sep 2026 – 31 Dec 2026).
 
-| ID | Package | From design | Size | Days | Owner |
-|---|---|---|---|---|---|
-| WP1 | New auto-register POST and orchestrator | `POST /api/specack/sorter/auto-register` on `lis-crs-spec-ack-svc` | XL | 10 | LIS Product Team |
-| WP2 | Map table and lookup | `loe_specimen_sorter_map` DDL + rollback; sorter id → user and workbench | M | 3 | LIS Product Team, Vendor |
-| WP3 | Move packing to the API | Group tests, request no., ward/doctor convert (today on the screen) | XL | 10 | LIS Product Team |
-| WP4 | Checks, relabel, send-out | Hard/soft checks; Relabel; `LOE_SENDOUT_TEST`; mixed → Failure | XL | 10 | LIS Product Team |
-| WP5 | Worksheet and PHLC after Registered | Same print and PHLC as Spec Ack, after HTTP return | L | 5 | LIS Product Team |
-| WP6 | Audit trail | `LOE_AUDIT_TRAIL` `SORT_*` plus `REG` / `SEND_OUT`; Audit Trail filter in `lab-crs-app` | M | 3 | LIS Product Team |
-| WP7 | Seed and path | Sorter LIS user, `workbench` row, map row, NetworkPolicy to port 8118 | M | 3 | Vendor, Local IT |
-| WP8 | Latency and volume | p95 &lt; 4 s; ~20 specimens/min per lab (CPS / HMS) | L | 5 | LIS Product Team, Vendor |
+| ID  | Package                                 | From design                                                                             | Size | Days | Owner                    |
+| --- | --------------------------------------- | --------------------------------------------------------------------------------------- | ---- | ---- | ------------------------ |
+| WP1 | New auto-register POST and orchestrator | `POST /api/specack/sorter/auto-register` on `lis-crs-spec-ack-svc`                      | XL   | 10   | LIS Product Team         |
+| WP2 | Map table and lookup                    | `loe_specimen_sorter_map` DDL + rollback; sorter id → user and workbench                | M    | 3    | LIS Product Team, Vendor |
+| WP3 | Move packing to the API                 | Group tests, request no., ward/doctor convert (today on the screen)                     | XL   | 10   | LIS Product Team         |
+| WP4 | Checks, relabel, send-out               | Hard/soft checks; Relabel; `LOE_SENDOUT_TEST`; mixed → Failure                          | XL   | 10   | LIS Product Team         |
+| WP5 | Worksheet and PHLC after Registered     | Same print and PHLC as Spec Ack, after HTTP return                                      | L    | 5    | LIS Product Team         |
+| WP6 | Audit trail                             | `LOE_AUDIT_TRAIL` `SORT_*` plus `REG` / `SEND_OUT`; Audit Trail filter in `lab-crs-app` | M    | 3    | LIS Product Team         |
+| WP7 | Seed and path                           | Sorter LIS user, `workbench` row, map row, NetworkPolicy to port 8118                   | M    | 3    | Vendor, Local IT         |
+| WP8 | Latency and volume                      | p95 &lt; 4 s; ~20 specimens/min per lab (CPS / HMS)                                     | L    | 5    | LIS Product Team, Vendor |
 
 Sequential product build (WP1–WP6) is **41 working days**. The development window still has about **81 weekdays** from 10 Sep 2026 to 31 Dec 2026, so package slack is positive if WP2 lands first and WP3–WP5 overlap after the POST skeleton exists.
 
