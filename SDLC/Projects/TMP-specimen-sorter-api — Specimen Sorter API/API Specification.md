@@ -40,8 +40,6 @@ Base URL is the OpenShift route for that environment, then `/api/specack`.
 
 Looks up the GCRS order by **USID**, runs Spec Ack retrieve / validate / pack / send-out or register as the mapped sorter user, and returns a bin status on the same response.
 
-Do **not** call GET `/retrieveGcrOrder` from middleware (that GET hard-codes user `ltc611`).
-
 ## Request
 
 ### Headers
