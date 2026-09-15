@@ -56,7 +56,7 @@ To-be: the sorter scans the tube for sort and transport; LIS is called for send-
 **Eyebrow:** Proposed Change
 **Title:** One new POST on the Spec Ack service
 **Archetype:** code-findings
-**Body:** Path `POST /api/specack/sorter/auto-register`. Body: `usid`, `sorterId`, optional `hospital`, `hkid`, `patientName`. Response status `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE` on the same call.
+**Body:** Path `POST /api/sorter/auto-register`. Body: `usid`, `sorterId`, optional `hospital`, `hkid`, `patientName`. Response status `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE` on the same call.
 **Notes:** Do not reuse the staff register endpoint. No auth header in v1. Soft alerts stay off the body.
 
 ### Slide: Proposed Change - what moves

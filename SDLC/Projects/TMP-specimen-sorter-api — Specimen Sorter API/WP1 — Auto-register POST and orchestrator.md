@@ -18,7 +18,7 @@ updated: 2026-09-14
 # WP1 — Auto-register POST and orchestrator
 
 > [!info] Phase Constraint
-> **WP1** — New `POST /api/specack/sorter/auto-register`, request/response contract, orchestrator, and in-process retrieve as the mapped sorter user. Collaborator interfaces for map / packing / validation / relabel / send-out / register / post-process / audit are declared and injected; their bodies wait for WP2–WP6.
+> **WP1** — New `POST /api/sorter/auto-register`, request/response contract, orchestrator, and in-process retrieve as the mapped sorter user. Collaborator interfaces for map / packing / validation / relabel / send-out / register / post-process / audit are declared and injected; their bodies wait for WP2–WP6.
 > Do not port the Flex convertor, hard/soft validator, worksheet/PHLC, `SORT_*` audit writes, or `loe_specimen_sorter_map` DDL in this task.
 
 ## Context
@@ -48,7 +48,7 @@ Open dossier item **Paste JIRA key** is not a code blocker for WP1.
 ## Technical Approach
 
 **Files to create:**
-- `src/main/java/hk/org/ha/lis/crs/specack/controller/SpecimenSorterController.java` — `POST /sorter/auto-register` on root `/api/specack`. Extends `AbstractService`. Does **not** call GET `/retrieveGcrOrder`.
+- `src/main/java/hk/org/ha/lis/crs/specack/controller/SpecimenSorterController.java` — `@RequestMapping("/api/sorter")` and `POST /auto-register`. Extends `AbstractService`. Does **not** call GET `/retrieveGcrOrder`. Staff Spec Ack stays on `/api/specack`.
 - `src/main/java/hk/org/ha/lis/crs/hub/biz/sorter/SpecimenSorterAutoRegisterService.java` — orchestrator. Sets `ServiceParameterVo` via `ServiceParameterContextHolder.set` from map user + workbench hospital / lab / `serverName`. Do **not** use `CrsContext` (obsolete).
 - `src/main/java/hk/org/ha/lis/crs/hub/biz/sorter/SpecimenSorterMapService.java` — interface (+ stub impl for WP1). WP2 fills Oracle lookup.
 - `src/main/java/hk/org/ha/lis/crs/hub/biz/sorter/SpecimenSorterPackingService.java` — interface only (WP3).
@@ -62,7 +62,7 @@ Open dossier item **Paste JIRA key** is not a code blocker for WP1.
 - `src/test/java/hk/org/ha/lis/crs/hub/biz/sorter/SpecimenSorterAutoRegisterServiceTest.java` — missing usid/sorterId; map miss; retrieve not found; APS/BBS/MBS; HKID mismatch; HTTP envelope is 200 + `FAILURE`.
 
 **Files to modify:**
-- `src/main/java/hk/org/ha/lis/crs/hub/common/constant/CrsConstants.java` — `API_SORTER_AUTO_REGISTER = "/sorter/auto-register"` plus Operation summary strings. Do not add this path onto `API_REGISTER`.
+- `src/main/java/hk/org/ha/lis/crs/hub/common/constant/CrsConstants.java` — `LIS_CRS_SORTER_ROOT = "/api/sorter"` and `API_SORTER_AUTO_REGISTER = "/auto-register"` plus Operation summary strings. Do not add this path onto `API_REGISTER` or under `LIS_CRS_SPEC_ACK_ROOT`.
 - Do **not** add the method to `CrsSpecAckController` (already 900+ lines). Staff endpoints stay there.
 
 **Orchestrator order (WP1 implements the gates in bold):**
@@ -85,7 +85,7 @@ Open dossier item **Paste JIRA key** is not a code blocker for WP1.
 - None in WP1. Convertor/validator in later WPs load Spec Ack dictionary the same way `retrieveGcrOrder` already does (`constructGcrSpecAckDictionaryParameterVo`).
 
 **API calls:**
-- New: `POST /api/specack/sorter/auto-register`
+- New: `POST /api/sorter/auto-register`
 - Body: `{ "usid", "sorterId", "hospital?", "hkid?", "patientName?" }`
 - Reuse in-process: `GcrUIAppServiceInterface.retrieveGcrOrder`
 - Do not call: GET `/retrieveGcrOrder`, POST `/gcrSpecAckRegister`, PATCH `/v1/ecpath5-register`, `/api/dftreg/register`
@@ -108,7 +108,7 @@ Open dossier item **Paste JIRA key** is not a code blocker for WP1.
 
 ## Acceptance criteria
 
-- [ ] `POST /api/specack/sorter/auto-register` exists and is documented on Swagger (`@Operation`)
+- [ ] `POST /api/sorter/auto-register` exists and is documented on Swagger (`@Operation`)
 - [ ] Missing `usid` or `sorterId` returns HTTP 200 + `FAILURE` without calling retrieve
 - [ ] Retrieve uses mapped user, not `ltc611`
 - [ ] New sorter classes do not import or call `CrsContext`

@@ -340,3 +340,4 @@ DEVQA / local may call the service without APIM. That is not the production sort
 | 2026-09-14 | First draft from 01 + 02. No `loesort_labno`. Envelope is `ResultDataResponse`. |
 | 2026-09-15 | Consumer is HA APIM (same hosts/headers as GCRS-LIS API specification v1.0). New product, not `cms-gcrs-lisApiServices`. |
 | 2026-09-15 | Dropped port numbers from this consumer spec. |
+| 2026-09-15 | Sorter root is `/api/sorter` (`POST /api/sorter/auto-register`). Staff Spec Ack stays `/api/specack`. |

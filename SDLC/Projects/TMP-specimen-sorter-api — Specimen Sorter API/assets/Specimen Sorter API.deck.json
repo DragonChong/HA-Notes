@@ -104,7 +104,7 @@
       "eyebrow": "Proposed Change",
       "title": "One new POST on the Spec Ack service",
       "code": {
-        "filename": "POST /api/specack/sorter/auto-register",
+        "filename": "POST /api/sorter/auto-register",
         "lines": [
           "{",
           [

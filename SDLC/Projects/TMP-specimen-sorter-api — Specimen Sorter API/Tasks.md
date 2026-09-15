@@ -23,7 +23,7 @@ Work packages: [[05 Project Plan]]. Design: [[02 System Design]].
 
 | WP | Task ID | Repository | Task | Status | Notes |
 |---|---|---|---|---|---|
-| WP1 | TASK-001 | `lis-crs-spec-ack-svc` | **Auto-register POST and orchestrator** — `POST /api/specack/sorter/auto-register` | `[ ]` | [[WP1 — Auto-register POST and orchestrator]] · XL · 10d · `TASK-001` |
+| WP1 | TASK-001 | `lis-crs-spec-ack-svc` | **Auto-register POST and orchestrator** — `POST /api/sorter/auto-register` | `[ ]` | [[WP1 — Auto-register POST and orchestrator]] · XL · 10d · `TASK-001` |
 | WP3 | TASK-002 | `lis-crs-spec-ack-svc` | **Move packing to the API** — group tests, request no., ward/doctor convert (`SpecimenSorterPackingService`) | `[ ]` | [[WP3 — Move packing to the API]] · needs WP1 packing interface · XL · 10d · `TASK-002` |
 
 ## Changelog
