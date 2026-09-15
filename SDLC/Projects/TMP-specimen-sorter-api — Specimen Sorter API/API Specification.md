@@ -24,9 +24,6 @@ Sorter middleware does **not** call `lis-crs-spec-ack-svc` on the OpenShift rout
 3. Per environment, APIM issues `x-gateway-apikey`. Do not put the key in source control or in the JSON body.
 
 ## Architecture
-
-Production sorter traffic is **middleware → HA APIM → `lis-crs-spec-ack-svc`**. NetworkPolicy is gateway to the service. The sorter does not call OpenShift 8118, does not use Hub JWT, and does not reuse the GCRS-LIS product `cms-gcrs-lisApiServices`. Staff Spec Ack stays on `/api/specack` in the same service. Local / DEVQA may hit `/api/sorter` without APIM; that is not the production path.
-
 ```mermaid
 flowchart LR
   MW[Sorter middleware]
