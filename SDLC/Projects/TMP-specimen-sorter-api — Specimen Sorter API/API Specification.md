@@ -152,12 +152,12 @@ Do not use HTTP 4xx from **LIS** for unknown sorter, bad USID, or hard Spec Ack 
 
 ## Status meanings (sorter bin)
 
-| `status` | Write | Worksheet / PHLC | Sorter action |
-|---|---|---|---|
-| `REGISTERED` | Lab request + `SORT_REG` / `REG` | After HTTP return (D11). Late print does not change this status (D4). | In-house bin |
-| `SEND_OUT` | Send-out + tracking + `SORT_SO` / `SEND_OUT` | None | Send-out bin |
-| `RELABEL` | Audit `SORT_RELABEL` only | None | Relabel / staff Spec Ack |
-| `FAILURE` | Audit `SORT_FAIL` only | None | Failure / staff Spec Ack |
+| `status`     | Write                                        | Worksheet / PHLC                                                      | Sorter action            |
+| ------------ | -------------------------------------------- | --------------------------------------------------------------------- | ------------------------ |
+| `REGISTERED` | Lab request + `SORT_REG` / `REG`             | After HTTP return (D11). Late print does not change this status (D4). | In-house bin             |
+| `SEND_OUT`   | Send-out + tracking + `SORT_SO` / `SEND_OUT` | None                                                                  | Send-out bin             |
+| `RELABEL`    | Audit `SORT_RELABEL` only                    | None                                                                  | Relabel / staff Spec Ack |
+| `FAILURE`    | Audit `SORT_FAIL` only                       | None                                                                  | Failure / staff Spec Ack |
 
 Mixed local + send-out on the same USID → `FAILURE` (D3), not send-out of a subset.
 
