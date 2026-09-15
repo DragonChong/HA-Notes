@@ -285,9 +285,9 @@ Exact string constants for the sorter-internal codes are set at implement (WP1).
 
 ## Idempotency and retry
 
-- Middleware may re-POST the same USID (requirement).
+- Middleware may re-POST the same USID.
 - Already used / already registered / deleted specimen → `FAILURE` (R5), HTTP 200.
-- HTTP 500 from **LIS** (envelope `code` 500) is a transport retry. Gateway 401/403 is not. Cap retries (GCRS-LIS: e.g. max 2).
+- HTTP 500 from **LIS** (envelope `code` 500) is a transport retry. Gateway 401/403 is not.
 
 ## Environments
 
