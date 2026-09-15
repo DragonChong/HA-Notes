@@ -64,7 +64,7 @@ One new POST on Spec Ack. Move the screen logics above onto that API. Staff clic
 3. **`LOE_AUDIT_TRAIL` insert** — `SORT_*` plus today's `REG` / `SEND_OUT` (D6).
 4. **New table `loe_specimen_sorter_map`** — sorter id → LIS user + workbench. If the request has no hospital, take hospital from the map / workbench. Workstation and user come from the same row. **No lab column** — the sorter is not pinned to one lab (D12).
 
-No Hub JWT. No API key in v1 (D1).
+No Hub JWT. Sorter **consumer** uses HA APIM (`x-gateway-apikey`), same pattern as GCRS-LIS API specification v1.0. See [[API Specification]].
 
 ```mermaid
 sequenceDiagram
@@ -229,7 +229,7 @@ Traces to: R1, R8, R10
 
 `POST /api/specack/sorter/auto-register`
 
-No auth header in v1 (D1).
+Consumer: HA APIM with `x-gateway-apikey` and `x-ha-hospcode` (D1). Internal service has no Hub JWT.
 
 ### Request body
 
@@ -261,8 +261,8 @@ HTTP 200 with status `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE`. Transpor
 | `loe_specimen_sorter_map` rows | test sorter ids | SIT ids | real sorter ids | Oracle data |
 | `workbench` row per lab the sorter handles (`wkbh_id` + `wkbh_labno`, hosp, station_name, location, default_printer) | seed | seed | real | `LAB_DB` data |
 | LIS user account for sorter | non-prod user | SIT user | prod user | LIS user admin, not ConfigMap |
-| NetworkPolicy middleware → 8118 | DEV | SIT | PROD | OpenShift |
-| API key | **not used v1** | — | — | D1 |
+| NetworkPolicy APIM → 8118 | DEV | SIT | PROD | OpenShift |
+| `x-gateway-apikey` | local unused | SIT APIM key | prod APIM key | APIM secret, not ConfigMap |
 
 Print/PHLC still follow the staff print methods and `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder`. `httpClient.readTimeOut` 5 s; sorter p95 4 s excluding print.
 
@@ -292,7 +292,7 @@ Print/PHLC still follow the staff print methods and `LisPhlcLabOrderAppServiceIm
 | Keep table name `loe_sorter_map` | Requester 2026-09-10: `loe_specimen_sorter_map`. |
 | Duplicate hosp/printer on the map only | Workbench already holds them; map points at workbench (D2). |
 | Require hospital on every request | Requirement: derive from sorter id when omitted. |
-| API key / Hub JWT in v1 | No authentication currently (D1). |
+| Hub JWT as sorter credential | APIM `x-gateway-apikey` instead (D1, GCRS-LIS pattern). |
 | Staff worksheet picker | Print all (D5). |
 | Sync print in the HTTP call | Breaks 4 s; late worksheet accepted on Registered (D4). |
 | Print worksheet after send-out / ack | Registration only (D11). |
@@ -322,7 +322,7 @@ Print/PHLC still follow the staff print methods and `LisPhlcLabOrderAppServiceIm
 
 | # | Question | Owner | Answer |
 |---|---|---|---|
-| D1 | Middleware auth? | Requester | **No authentication currently.** NetworkPolicy only. No API key / JWT in v1. |
+| D1 | Middleware auth? | Requester | **2026-09-15:** sorter calls **HA APIM**. Headers `x-gateway-apikey` + `x-ha-hospcode` (GCRS-LIS v1.0). No Hub JWT. NetworkPolicy is gateway → `lis-crs-spec-ack-svc`. Direct 8118 is local/DEVQA only. |
 | D2 | LIS user and workstation? | Requester | **Dedicated sorter User.** Sorter identifier maps to **workbench**. Station name / printer / location from that row. |
 | D3 | Mixed local + send-out? | Requester | **Failure.** |
 | D4 | Print after HTTP return? | Requester | **OK** if worksheet is late; status already Registered. Does not apply to Send-out (no print). |

@@ -3,26 +3,59 @@ info:
   title: Specimen Sorter Auto-register API
   version: "1.0.0"
   description: |
-    v1 middleware contract on lis-crs-spec-ack-svc.
-    See vault note API Specification.md. Staff Spec Ack paths are not this API.
+    v1 middleware contract. Consumer calls HA APIM (same hosts as GCRS-LIS API specification v1.0).
+    Internal service is lis-crs-spec-ack-svc. Staff Spec Ack paths are not this API.
+    Product path after /gateway/ is assigned at APIM publish — not cms-gcrs-lisApiServices.
   contact:
     name: LIS CRS
 servers:
-  - url: "{baseUrl}/api/specack"
+  - url: https://apim-gateway-sit.server.ha.org.hk:8443/gateway/{product}/v1
+    description: SIT APIM (product id from usage form)
     variables:
-      baseUrl:
-        default: http://localhost:8118
-        description: OpenShift route or local service; port 8118
+      product:
+        default: lis-crs-spec-ack
+        description: Unverified until APIM publish
+  - url: https://apim-gateway-ppm.server.ha.org.hk:8443/gateway/{product}/v1
+    description: PPM APIM
+    variables:
+      product:
+        default: lis-crs-spec-ack
+  - url: https://apim-gateway-aat.server.ha.org.hk:8443/gateway/{product}/v1
+    description: AAT APIM
+    variables:
+      product:
+        default: lis-crs-spec-ack
+  - url: http://localhost:8118/api/specack
+    description: Local / DEVQA only — not the sorter production path
 paths:
   /sorter/auto-register:
     post:
       operationId: autoRegister
       summary: Auto-register or send-out a scanned USID
       description: |
-        Sync one call per tube. No auth header in v1 (NetworkPolicy only).
-        Bin on data.status, not HTTP 200.
+        Sync one call per tube via APIM. Headers x-gateway-apikey and x-ha-hospcode
+        as GCRS-LIS v1.0. Bin on data.status, not HTTP 200. Gateway 401 is not FAILURE.
       tags:
         - Specimen Sorter
+      parameters:
+        - name: x-gateway-apikey
+          in: header
+          required: true
+          schema:
+            type: string
+          description: APIM key for the env
+        - name: x-ha-hospcode
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Performing hospital (e.g. QEH)
+        - name: Content-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            default: application/json
       requestBody:
         required: true
         content:
@@ -70,6 +103,8 @@ paths:
                       message: Specimen not found
                       usid: QHSP2500000012
                       hospital: QEH
+        "401":
+          description: Gateway — missing or invalid x-gateway-apikey. Not a sorter bin.
         "500":
           description: Transport or unhandled error. Retry allowed.
           content:
