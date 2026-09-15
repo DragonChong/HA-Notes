@@ -144,24 +144,6 @@ Do not use HTTP 4xx from **LIS** for unknown sorter, bad USID, or hard Spec Ack 
 | `RELABEL`    | Audit `SORT_RELABEL` only                    | None                                                                  | Relabel / staff Spec Ack |
 | `FAILURE`    | Audit `SORT_FAIL` only                       | None                                                                  | Failure / staff Spec Ack |
 
-Mixed local + send-out on the same USID → `FAILURE` (D3), not send-out of a subset.
-
-## Decision summary (middleware does not implement these)
-
-1. Missing `usid` or `sorterId` → `FAILURE`.
-2. Unknown `sorterId` → `FAILURE`.
-3. Hospital sent and mismatch map → `FAILURE`.
-4. Retrieve as mapped user. Not found / 1336 / 1337 / 1338 / 1377 → `FAILURE`.
-5. Order lab not CPS or HMS → `FAILURE`.
-6. Optional HKID / name mismatch → `FAILURE`.
-7. Mixed local + send-out → `FAILURE`.
-8. Hard validator / datetime / unmapped doctor-location / used or deleted specimen / STAR no workbench location (`4422`) → `FAILURE`.
-9. Relabel rules (multi-group, multi-specimen / suffix, DFT same time-flag, force relabel) → `RELABEL`.
-10. All tests in `LOE_SENDOUT_TEST` → `SEND_OUT`.
-11. Else register → `REGISTERED`.
-
-Soft alerts (overnight, valid period, missing collection date, duplicate/A-A-R, patient tag, STAR unbox *alert*) → ALS only. Status is still one of the four above.
-
 ## Examples
 
 ### Registered
@@ -279,7 +261,7 @@ Business codes sit on **`data.code`**, not envelope `code`.
 | `4422`                               | STAR, no workbench location (D9)                              |
 | `WORKBENCH_MISSING`                  | No `workbench` row for map `wkbh_id` + retrieved lab          |
 
-Exact string constants for the sorter-internal codes are set at implement (WP1). Spec Ack numeric codes stay as today.
+Exact string constants for the sorter-internal codes are set at implement. Spec Ack numeric codes stay as today.
 
 ## Idempotency and retry
 
