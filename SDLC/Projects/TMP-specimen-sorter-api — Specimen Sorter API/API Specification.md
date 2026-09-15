@@ -27,13 +27,13 @@ Sorter middleware does **not** call `lis-crs-spec-ack-svc` on the OpenShift rout
 
 Path after `/gateway/` is the **new** product + version.
 
-| Env | API Gateway host                                                                     | Method (LIS)                             |
-| --- | ------------------------------------------------------------------------------------ | ---------------------------------------- |
+| Env | API Gateway host                                                                     | Method (LIS)                     |
+| --- | ------------------------------------------------------------------------------------ | -------------------------------- |
 | DEV | `https://apim-gateway-dev.server.ha.org.hk:8443/gateway/lis-crs-specAckServices/v1/` | `POST /api/sorter/auto-register` |
-| SIT | `https://apim-gateway-sit.server.ha.org.hk:8443/gateway/lis-crs-specAckServices/v1/` | same                                     |
-| PPM | `https://apim-gateway-ppm.server.ha.org.hk:8443/gateway/lis-crs-specAckServices/v1/` | same                                     |
-| AAT | `https://apim-gateway-aat.server.ha.org.hk:8443/gateway/lis-crs-specAckServices/v1/` | same                                     |
-| PRD | Refer to production APIM setup                                                       | same                                     |
+| SIT | `https://apim-gateway-sit.server.ha.org.hk:8443/gateway/lis-crs-specAckServices/v1/` | same                             |
+| PPM | `https://apim-gateway-ppm.server.ha.org.hk:8443/gateway/lis-crs-specAckServices/v1/` | same                             |
+| AAT | `https://apim-gateway-aat.server.ha.org.hk:8443/gateway/lis-crs-specAckServices/v1/` | same                             |
+| PRD | Refer to production APIM setup                                                       | same                             |
 
 ## Service
 
