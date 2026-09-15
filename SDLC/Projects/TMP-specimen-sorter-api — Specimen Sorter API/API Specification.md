@@ -29,20 +29,20 @@ Path after `/gateway/` is the **new** product + version.
 
 | Env | API Gateway host                                                                     | Method (LIS)                             |
 | --- | ------------------------------------------------------------------------------------ | ---------------------------------------- |
-| DEV | `https://apim-gateway-dev.server.ha.org.hk:8443/gateway/lis-crs-specAckServices/v1/` | `POST /api/specack/sorter/auto-register` |
+| DEV | `https://apim-gateway-dev.server.ha.org.hk:8443/gateway/lis-crs-specAckServices/v1/` | `POST /api/sorter/auto-register` |
 | SIT | `https://apim-gateway-sit.server.ha.org.hk:8443/gateway/lis-crs-specAckServices/v1/` | same                                     |
 | PPM | `https://apim-gateway-ppm.server.ha.org.hk:8443/gateway/lis-crs-specAckServices/v1/` | same                                     |
 | AAT | `https://apim-gateway-aat.server.ha.org.hk:8443/gateway/lis-crs-specAckServices/v1/` | same                                     |
 | PRD | Refer to production APIM setup                                                       | same                                     |
 
-Behind the gateway, LIS remains `lis-crs-spec-ack-svc`, root `/api/specack`. NetworkPolicy is gateway → service, not sorter → the service directly.
+Behind the gateway, LIS remains `lis-crs-spec-ack-svc`. Sorter root is `/api/sorter`. Staff Spec Ack stays `/api/specack`. NetworkPolicy is gateway → service, not sorter → the service directly.
 
 ## Service
 
 | Item          | Value                                                                    |
 | ------------- | ------------------------------------------------------------------------ |
 | Service       | `lis-crs-spec-ack-svc` (behind APIM)                                     |
-| Internal root | `/api/specack`                                                           |
+| Internal root | `/api/sorter` |
 | Consumer      | APIM `https://apim-gateway-{env}.server.ha.org.hk/gateway/{product}/v1/` |
 | Content-Type  | `application/json`                                                       |
 | Auth          | Gateway: `x-gateway-apikey` (mandatory).                                 |
@@ -50,7 +50,7 @@ Behind the gateway, LIS remains `lis-crs-spec-ack-svc`, root `/api/specack`. Net
 
 ## Endpoint
 
-`POST …/sorter/auto-register` on the **APIM** product (internal: `POST /api/specack/sorter/auto-register`).
+`POST /api/sorter/auto-register` (APIM product forwards this path).
 
 Looks up the GCRS order by **USID**, runs Spec Ack retrieve / validate / pack / send-out or register as the mapped sorter user, and returns a bin status on the same response.
 

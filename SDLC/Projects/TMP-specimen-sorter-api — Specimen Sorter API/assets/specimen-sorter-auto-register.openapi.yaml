@@ -25,10 +25,10 @@ servers:
     variables:
       product:
         default: lis-crs-spec-ack
-  - url: http://localhost:8118/api/specack
+  - url: http://localhost:8118/api/sorter
     description: Local / DEVQA only — not the sorter production path
 paths:
-  /sorter/auto-register:
+  /auto-register:
     post:
       operationId: autoRegister
       summary: Auto-register or send-out a scanned USID

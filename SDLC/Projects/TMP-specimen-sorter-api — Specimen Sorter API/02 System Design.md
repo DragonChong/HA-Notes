@@ -37,7 +37,7 @@ Today those actions are a staff click path. Retrieve, validation, packing (test 
 
 Traces to: R2, R5, R6, R7, R11, R13, R14
 
-`lis-crs-spec-ack-svc` port 8118, root `/api/specack`. Security starter commented out; isolation is NetworkPolicy. Dynamic DB routing uses `ServiceParameterVo`. Staff workbench is `LAB_DB.dbo.workbench` (PK `wkbh_id` + `wkbh_labno`). Login today: `WorkbenchEvent.selectWorkbench` by PC name / IP.
+`lis-crs-spec-ack-svc` port 8118. Staff Spec Ack root `/api/specack`. Sorter API root `/api/sorter`. Security starter commented out; isolation is NetworkPolicy. Dynamic DB routing uses `ServiceParameterVo`. Staff workbench is `LAB_DB.dbo.workbench` (PK `wkbh_id` + `wkbh_labno`). Login today: `WorkbenchEvent.selectWorkbench` by PC name / IP.
 
 ### Specimen Acknowledgement screen
 
@@ -113,7 +113,7 @@ Traces to: R1, R4, R5, R6, R11, R14
 
 | Piece | Role |
 |---|---|
-| `SpecimenSorterController` | `POST /api/specack/sorter/auto-register`. Extends `AbstractService`. Does not call GET `/retrieveGcrOrder`. |
+| `SpecimenSorterController` | `POST /api/sorter/auto-register`. Extends `AbstractService`. Does not call GET `/retrieveGcrOrder`. |
 | `SpecimenSorterAutoRegisterService` | Orchestrator. Sets `ServiceParameterVo` from map user + `loesort_hosp` / `loesort_server_name`. After retrieve, set lab from the order (`hk.org.ha.lis.enums.Lab`). If request `hospital` is empty, use `loesort_hosp`. |
 | `SpecimenSorterMapService` | `loe_specimen_sorter_map` → user + hosp + server name + workbench id. **No lab on the map.** Then `workbench` by `wkbh_id` + retrieved `wkbh_labno` for location, station name, default printer. Missing map or workbench row for that lab → Failure. |
 | `SpecimenSorterPackingService` | Java port of `GcrSpecAckDataConvertor` (group tests, request no., ward/doctor, worksheet Ro). `convertUserInputDataToParam` becomes defaults: ack/register datetime = server now (R12); collection date from specimen; AAR off; urgent workstation off; label flags off; no user relabel checkbox. |
@@ -227,7 +227,7 @@ Traces to: R1, R8, R10
 
 ### Path
 
-`POST /api/specack/sorter/auto-register`
+`POST /api/sorter/auto-register`
 
 Consumer: HA APIM with `x-gateway-apikey` and `x-ha-hospcode` (D1). Internal service has no Hub JWT.
 
