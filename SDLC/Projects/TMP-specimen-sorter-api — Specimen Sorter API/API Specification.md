@@ -15,14 +15,6 @@ version: v1
 
 # API Specification — Specimen Sorter Auto-register
 
-Traces to: [[01 Requirement Confirmation]] R1–R14 · [[02 System Design]]
-
-Gateway pattern copied from *GCRS-LIS API specification v1.0* (HOIT&HI CP1, Jan 2026): consumer registers on APIM, calls `apim-gateway-{env}.server.ha.org.hk`, sends `x-gateway-apikey`. That document is **LIS → GCRS** (`cms-gcrs-lisApiServices/v1`). This note is **sorter middleware → LIS**. Same gateway; **different API product** (name assigned when the usage form is approved).
-
-Companion OpenAPI: [[assets/specimen-sorter-auto-register.openapi.yaml]]
-
-This is the **v1 middleware contract**. Staff Specimen Acknowledgement endpoints (`/retrieveGcrOrder`, `/gcrSpecAckRegister`, `/sendOutSpecimen`, `/v1/ecpath5-register`) are unchanged and are **not** this API.
-
 ## Access — API gateway
 
 Sorter middleware does **not** call `lis-crs-spec-ack-svc` on the OpenShift route. It calls **HA API Management (APIM)** the same way GCRS-LIS consumers do.
@@ -33,14 +25,15 @@ Sorter middleware does **not** call `lis-crs-spec-ack-svc` on the OpenShift rout
 
 ### Consumer base URL (pattern)
 
-Same hosts as GCRS-LIS v1.0. Path after `/gateway/` is the **new** product + version.
+Path after `/gateway/` is the **new** product + version.
 
-| Env | Gateway host (from GCRS-LIS v1.0) | Method (LIS) |
-|---|---|---|
-| SIT | `https://apim-gateway-sit.server.ha.org.hk/gateway/{product}/v1/` | `POST …/sorter/auto-register` |
-| PPM | `https://apim-gateway-ppm.server.ha.org.hk/gateway/{product}/v1/` | same |
-| AAT | `https://apim-gateway-aat.server.ha.org.hk/gateway/{product}/v1/` | same |
-| PRD | Refer to production APIM setup | same |
+| Env | API Gateway host                                                  | Method (LIS)                  |
+| --- | ----------------------------------------------------------------- | ----------------------------- |
+| DEV | `https://apim-gateway-dev.server.ha.org.hk/gateway/{product}/v1/` | `POST …/sorter/auto-register` |
+| SIT | `https://apim-gateway-sit.server.ha.org.hk/gateway/{product}/v1/` | same                          |
+| PPM | `https://apim-gateway-ppm.server.ha.org.hk/gateway/{product}/v1/` | same                          |
+| AAT | `https://apim-gateway-aat.server.ha.org.hk/gateway/{product}/v1/` | same                          |
+| PRD | Refer to production APIM setup                                    | same                          |
 
 `{product}` is unverified until APIM publish (example shape only: `lis-crs-spec-ack` or similar). Gateway may strip `/api/specack`; the **resource** is still `sorter/auto-register`. Confirm the published path on the usage-form response.
 
