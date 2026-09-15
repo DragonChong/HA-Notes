@@ -17,7 +17,7 @@ version: v1
 
 ## Access — API gateway
 
-Sorter middleware does **not** call `lis-crs-spec-ack-svc` on the OpenShift route. It calls **HA API Management (APIM)** the same way GCRS-LIS consumers do.
+Sorter middleware does **not** call `lis-crs-spec-ack-svc` on the OpenShift route. It calls **HA API Management (APIM)**.
 
 1. Register the consumer: [API usage form](http://ea.home/apim/API%20Management%20Forms/apiUsageForm.html).
 2. Requested API: the **specimen sorter / Spec Ack** product (not `cms-gcrs-lisApiServices/v1`). Product id is filled in when APIM publishes it.
