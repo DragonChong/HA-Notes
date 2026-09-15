@@ -23,6 +23,35 @@ Sorter middleware does **not** call `lis-crs-spec-ack-svc` on the OpenShift rout
 2. Requested API: the **specimen sorter / Spec Ack** product. Product id is filled in when APIM publishes it.
 3. Per environment, APIM issues `x-gateway-apikey`. Do not put the key in source control or in the JSON body.
 
+## Architecture
+
+Production sorter traffic is **middleware → HA APIM → `lis-crs-spec-ack-svc`**. NetworkPolicy is gateway to the service. The sorter does not call OpenShift 8118, does not use Hub JWT, and does not reuse the GCRS-LIS product `cms-gcrs-lisApiServices`. Staff Spec Ack stays on `/api/specack` in the same service. Local / DEVQA may hit `/api/sorter` without APIM; that is not the production path.
+
+```mermaid
+flowchart LR
+  MW[Sorter middleware]
+  APIM[HA APIM]
+  UI[Staff Spec Ack]
+
+  subgraph oc[lis-crs-spec-ack-svc]
+    SORT["POST /api/sorter/auto-register"]
+    STAFF["GET/POST /api/specack"]
+  end
+
+  MAP[(loe_specimen_sorter_map)]
+  WB[(workbench)]
+  GCRS[GCRS retrieve in-process]
+
+  MW -->|"x-gateway-apikey and x-ha-hospcode"| APIM
+  APIM -->|NetworkPolicy| SORT
+  UI -->|Hub JWT| STAFF
+  SORT --> MAP
+  SORT --> WB
+  SORT --> GCRS
+```
+
+Print and PHLC after Registered run **inside** the same service after HTTP return. They are not extra consumer calls.
+
 ### Consumer base URL (pattern)
 
 Path after `/gateway/` is the **new** product + version.
@@ -287,3 +316,4 @@ Exact string constants for the sorter-internal codes are set at implement. Spec 
 | 2026-09-15 | Consumer is HA APIM (same hosts/headers as GCRS-LIS API specification v1.0). New product, not `cms-gcrs-lisApiServices`. |
 | 2026-09-15 | Dropped port numbers from this consumer spec. |
 | 2026-09-15 | Sorter root is `/api/sorter` (`POST /api/sorter/auto-register`). Staff Spec Ack stays `/api/specack`. |
+| 2026-09-15 | Architecture diagram: middleware → APIM → `/api/sorter`; staff stays `/api/specack`. |
