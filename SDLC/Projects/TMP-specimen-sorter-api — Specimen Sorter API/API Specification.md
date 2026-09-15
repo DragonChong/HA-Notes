@@ -122,16 +122,16 @@ Do not use HTTP 4xx from **LIS** for unknown sorter, bad USID, or hard Spec Ack 
 }
 ```
 
-| Field | Type | Description |
-|---|---|---|
-| `status` | enum | Sorter outcome: `REGISTERED`, `SEND_OUT`, `RELABEL`, or `FAILURE`. |
-| `code` | string | Message identifier. |
-| `message` | string | Message text. |
-| `usid` | string | GCRS Specimen Number / USID. |
-| `hospital` | string | Performing hospital. |
-| `labCode` | string | Laboratory code. |
-| `labNo` | integer | Laboratory number. |
-| `testCode` | string | GCRS / test / cluster code. |
+| Field      | Type    | Description                                                        |
+| ---------- | ------- | ------------------------------------------------------------------ |
+| `status`   | enum    | Sorter outcome: `REGISTERED`, `SEND_OUT`, `RELABEL`, or `FAILURE`. |
+| `code`     | string  | Message identifier.                                                |
+| `message`  | string  | Message text.                                                      |
+| `usid`     | string  | GCRS Specimen Number / USID.                                       |
+| `hospital` | string  | Performing hospital.                                               |
+| `labCode`  | string  | Laboratory code.                                                   |
+| `labNo`    | integer | Laboratory number.                                                 |
+| `testCode` | string  | GCRS / test / cluster code.                                        |
 
 `REGISTERED` writes the lab request. `SEND_OUT` uses existing send-out. `RELABEL` and `FAILURE` do not write a lab request (R3). Relabel is never reported as Failure (R4).
 
