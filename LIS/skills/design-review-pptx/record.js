@@ -10,10 +10,7 @@
 'use strict';
 
 const path = require('path');
-const K = require('./deck-kit');
 const ARCHETYPES = require('./archetypes');
-
-const DARK_BOOKENDS = new Set(['title-hero', 'statement', 'closing']);
 
 /** Stand-in for pptxgenjs's ShapeType: any name maps to itself. */
 const ShapeType = new Proxy({}, { get: (_, k) => String(k) });
@@ -87,7 +84,6 @@ function record(deck, baseDir) {
   const pptx = new RecordingPptx();
   const errors = [];
   const slides = deck.slides || [];
-  const total = slides.length;
 
   slides.forEach((spec, i) => {
     const draw = ARCHETYPES[spec.archetype];
@@ -112,9 +108,6 @@ function record(deck, baseDir) {
     }
     try {
       draw(pptx, slide, local);
-      K.slideNumber(slide, i + 1, total, {
-        onDark: DARK_BOOKENDS.has(spec.archetype),
-      });
       if (local.notes) slide.addNotes(local.notes);
     } catch (err) {
       errors.push(`slide ${i + 1} (${spec.archetype}): ${err.message}`);

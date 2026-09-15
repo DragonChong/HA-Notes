@@ -6,9 +6,9 @@
  *
  * There is no headless pptx renderer on typical HA boxes, so this is how you
  * actually look at a deck before opening PowerPoint. It replays the same
- * recorded draw calls generate-deck.js emits, so what you see here is the real
- * layout — fonts and text wrapping are the browser's approximation, everything
- * else is exact.
+ * recorded draw calls generate-deck.js emits, so the geometry is exact. Fonts
+ * are the browser's: Segoe UI / Consolas where installed, a system sans
+ * otherwise, so text wrapping is an approximation.
  */
 
 'use strict';
@@ -20,11 +20,20 @@ const K = require('./deck-kit');
 const { record } = require('./record');
 
 const PX = 96;
+const PT = PX / 72;
 const p = (v) => `${(v * PX).toFixed(1)}px`;
 const hex = (c) => (c ? `#${String(c).replace('#', '')}` : 'transparent');
 
 const esc = (s) => String(s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+/** CSS for a font face name, including the Semibold face as a weight. */
+function fontCss(face) {
+  const f = face || K.font.body;
+  if (f === K.font.mono) return `font-family:Consolas,'SF Mono',Menlo,monospace`;
+  const weight = /Semibold/i.test(f) ? ';font-weight:600' : '';
+  return `font-family:'Segoe UI',system-ui,-apple-system,sans-serif${weight}`;
+}
 
 /** CSS shape for the preset geometries the kit actually uses. */
 function geometry(shape, o) {
@@ -46,24 +55,24 @@ function geometry(shape, o) {
 
 function boxStyle(o) {
   const s = [
-    'position:absolute',
+    'position:absolute;box-sizing:border-box',
     `left:${p(o.x ?? 0)}`,
     `top:${p(o.y ?? 0)}`,
     `width:${p(o.w ?? 0)}`,
     `height:${p(o.h ?? 0)}`,
   ];
-  if (o.fill && o.fill.color) s.push(`background:${hex(o.fill.color)}`);
+  if (o.fill && o.fill.color && o.fill.transparency !== 100) s.push(`background:${hex(o.fill.color)}`);
   if (o.line && o.line.color && (o.line.width ?? 0) > 0) {
-    s.push(`box-shadow:inset 0 0 0 1px ${hex(o.line.color)}`);
+    s.push(`box-shadow:inset 0 0 0 ${(o.line.width * PT).toFixed(2)}px ${hex(o.line.color)}`);
   }
   return s.join(';');
 }
 
 function textStyle(o) {
   const s = [
-    `font-family:'${o.fontFace || K.font.body}',serif`,
-    `font-size:${((o.fontSize || 13) / 72 * PX).toFixed(2)}px`,
-    `color:${hex(o.color || '000000')}`,
+    fontCss(o.fontFace),
+    `font-size:${((o.fontSize || 13) * PT).toFixed(2)}px`,
+    `color:${hex(o.color || K.color.ink)}`,
     `line-height:${o.lineSpacingMultiple || 1.2}`,
     `text-align:${o.align || 'left'}`,
     // pre-wrap keeps code indentation and explicit newlines, which PowerPoint
@@ -72,19 +81,19 @@ function textStyle(o) {
   ];
   if (o.bold) s.push('font-weight:700');
   if (o.italic) s.push('font-style:italic');
-  if (o.charSpacing) s.push(`letter-spacing:${o.charSpacing / 20}px`);
+  if (o.charSpacing) s.push(`letter-spacing:${(o.charSpacing * PT).toFixed(2)}px`);
   const v = o.valign || 'top';
   s.push('display:flex;flex-direction:column');
   s.push(`justify-content:${v === 'middle' ? 'center' : v === 'bottom' ? 'flex-end' : 'flex-start'}`);
   return s.join(';');
 }
 
-function runsHtml(runs, base) {
+function runsHtml(runs) {
   return runs.map((r) => {
     const st = [];
     if (r.color) st.push(`color:${hex(r.color)}`);
-    if (r.fontFace) st.push(`font-family:'${r.fontFace}',serif`);
-    if (r.fontSize) st.push(`font-size:${(r.fontSize / 72 * PX).toFixed(2)}px`);
+    if (r.fontFace) st.push(fontCss(r.fontFace));
+    if (r.fontSize) st.push(`font-size:${(r.fontSize * PT).toFixed(2)}px`);
     if (r.bold) st.push('font-weight:700');
     if (r.italic) st.push('font-style:italic');
     const body = esc(r.text);
@@ -93,19 +102,24 @@ function runsHtml(runs, base) {
   }).join('');
 }
 
+/** pptxgenjs cell border [top,right,bottom,left] -> CSS. */
+function cellBorders(border) {
+  if (!Array.isArray(border)) return `border:1px solid ${hex(K.color.border)}`;
+  const sides = ['top', 'right', 'bottom', 'left'];
+  return border.map((b, i) => (b && b.type !== 'none'
+    ? `border-${sides[i]}:${((b.pt || 1) * PT).toFixed(2)}px solid ${hex(b.color)}`
+    : `border-${sides[i]}:0`)).join(';');
+}
+
 /**
- * Tables are drawn as absolutely-positioned cells, not as an HTML <table>.
- *
- * A real <table> treats the row height as a *minimum* and grows to fit its
- * content, so the preview would show the table pushing into whatever sits
- * below it — a collision PowerPoint never renders, because there the row
- * height is authoritative and text simply clips. Positioning each cell keeps
- * the preview honest about the geometry generate-deck.js actually emits.
+ * Tables are drawn as absolutely-positioned cells, not as an HTML <table>: a
+ * real <table> grows rows to fit content, which PowerPoint never does.
  */
 function tableHtml(op) {
   const o = op.options || {};
   const colW = o.colW || [];
   const rowH = o.rowH || [];
+  const padX = ((o.margin && o.margin[1]) || 10) * PT;
   const cells = [];
   let top = o.y;
 
@@ -120,11 +134,11 @@ function tableHtml(op) {
         'position:absolute;box-sizing:border-box;overflow:hidden',
         `left:${p(left)};top:${p(top)};width:${p(w)};height:${p(h)}`,
         `background:${hex((co.fill && co.fill.color) || 'FFFFFF')}`,
-        `color:${hex(co.color || '000000')}`,
-        `font-family:'${co.fontFace || K.font.body}',serif`,
-        `font-size:${((co.fontSize || 13) / 72 * PX).toFixed(2)}px`,
-        `border:1px solid ${hex(K.color.rule)}`,
-        'padding:2px 10px;display:flex;align-items:center',
+        `color:${hex(co.color || K.color.ink)}`,
+        fontCss(co.fontFace),
+        `font-size:${((co.fontSize || 13) * PT).toFixed(2)}px`,
+        cellBorders(co.border),
+        `padding:0 ${padX.toFixed(1)}px;display:flex;align-items:center`,
       ];
       if (co.bold) st.push('font-weight:700');
       cells.push(`<div style="${st.join(';')}">${esc(c.text)}</div>`);
@@ -136,24 +150,32 @@ function tableHtml(op) {
   return cells.join('');
 }
 
+/** Inline an image file so the preview is self-contained. */
+function imageSrc(file) {
+  if (!file || !fs.existsSync(file)) return null;
+  const ext = path.extname(file).slice(1).toLowerCase();
+  const mime = ext === 'jpg' ? 'jpeg' : ext === 'svg' ? 'svg+xml' : ext;
+  return `data:image/${mime};base64,${fs.readFileSync(file).toString('base64')}`;
+}
+
 function slideHtml(slide, i) {
   const bg = hex(slide.background || 'FFFFFF');
   const parts = slide.ops.map((op) => {
     const o = op.options || {};
     if (op.kind === 'table') return tableHtml(op);
     if (op.kind === 'image') {
-      return `<div style="${boxStyle(o)};background:#e9edee;display:flex;`
-        + `align-items:center;justify-content:center;font:11px sans-serif;color:#5b6b70">`
-        + `${esc(path.basename(o.path || 'image'))}</div>`;
+      const src = imageSrc(o.path);
+      return src
+        ? `<img style="${boxStyle(o)};object-fit:fill" src="${src}">`
+        : `<div style="${boxStyle(o)};background:#e2e8f0;display:flex;align-items:center;`
+          + `justify-content:center;font:11px sans-serif;color:#64748b">${esc(path.basename(o.path || 'image'))}</div>`;
     }
     if (op.kind === 'shape') {
       return `<div style="${boxStyle(o)};${geometry(op.shape, o)}"></div>`;
     }
-    // text / shapeText
     const geo = op.kind === 'shapeText' ? geometry(op.shape, o) : '';
-    const pad = op.kind === 'shapeText' ? 'padding:2px 6px;' : '';
-    return `<div style="${boxStyle(o)};${geo}${pad}${textStyle(o)}">`
-      + `<div>${runsHtml(op.runs, o)}</div></div>`;
+    return `<div style="${boxStyle(o)};${geo}${textStyle(o)}">`
+      + `<div>${runsHtml(op.runs)}</div></div>`;
   }).join('\n    ');
 
   const notes = slide.notes
@@ -177,7 +199,7 @@ function main() {
   }
   const specPath = path.resolve(args[0]);
   const deck = JSON.parse(fs.readFileSync(specPath, 'utf8'));
-  const { slides, errors } = record(deck);
+  const { slides, errors } = record(deck, path.dirname(specPath));
   errors.forEach((e) => console.error(`warning: ${e}`));
 
   const out = args[1]
@@ -190,15 +212,15 @@ function main() {
 <meta charset="utf-8">
 <title>${esc(title)} — preview</title>
 <style>
-  body { margin:0; padding:28px; background:#eceff0; font:14px/1.5 system-ui,sans-serif; color:#08323B; }
+  body { margin:0; padding:28px; background:#e2e8f0; font:14px/1.5 system-ui,sans-serif; color:#0F172A; }
   h1 { font:600 20px system-ui; margin:0 0 4px; }
-  .sub { color:#56676C; margin:0 0 24px; }
+  .sub { color:#475569; margin:0 0 24px; }
   section { margin:0 0 32px; }
-  h2 { font:600 13px system-ui; color:#56676C; margin:0 0 8px; }
-  .arch { font-weight:400; color:#8a9a9f; margin-left:8px; }
-  .slide { position:relative; width:${K.grid.W * PX}px; height:${7.5 * PX}px;
-           overflow:hidden; box-shadow:0 2px 14px rgba(8,50,59,.18); }
-  .notes { max-width:${K.grid.W * PX}px; margin:10px 0 0; font-size:12.5px; color:#56676C; }
+  h2 { font:600 13px system-ui; color:#475569; margin:0 0 8px; }
+  .arch { font-weight:400; color:#94A3B8; margin-left:8px; }
+  .slide { position:relative; width:${K.grid.W * PX}px; height:${K.grid.H * PX}px;
+           overflow:hidden; box-shadow:0 2px 14px rgba(15,23,42,.18); }
+  .notes { max-width:${K.grid.W * PX}px; margin:10px 0 0; font-size:12.5px; color:#475569; }
 </style>
 <h1>${esc(title)}</h1>
 <p class="sub">${slides.length} slides · 1:1 preview at ${PX}px/inch · generated by preview-deck.js</p>
@@ -210,3 +232,5 @@ ${slides.map(slideHtml).join('\n')}
 }
 
 if (require.main === module) main();
+
+module.exports = { run: main };

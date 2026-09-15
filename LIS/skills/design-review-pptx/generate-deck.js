@@ -34,14 +34,11 @@ function resolveImages(slide, baseDir) {
   });
 }
 
-const DARK_BOOKENDS = new Set(['title-hero', 'statement', 'closing']);
-
 function build(deck, baseDir) {
   const pptx = new PptxGenJS();
   K.applyDocProps(pptx, deck.meta || {});
 
   const slides = deck.slides || [];
-  const total = slides.length;
 
   slides.forEach((spec, i) => {
     const draw = ARCHETYPES[spec.archetype];
@@ -54,9 +51,6 @@ function build(deck, baseDir) {
     const slide = pptx.addSlide();
     try {
       draw(pptx, slide, spec);
-      K.slideNumber(slide, i + 1, total, {
-        onDark: DARK_BOOKENDS.has(spec.archetype),
-      });
     } catch (err) {
       die(`slide ${i + 1} (${spec.archetype}): ${err.message}`);
     }
@@ -155,8 +149,10 @@ async function main() {
   console.log(`Wrote ${outPath} (${(deck.slides || []).length} slides)`);
 }
 
-if (require.main === module) {
+function run() {
   main().catch((err) => die(err.stack || err.message));
 }
 
-module.exports = { build };
+if (require.main === module) run();
+
+module.exports = { build, run };

@@ -14,9 +14,10 @@ description: >
 # Design Review PowerPoint
 
 Produce a **deck spec** (JSON), then render it with the bundled generator. The
-visual system is extracted from the approved LIS-10747 deck and lives in
-`deck-kit.js`: 15 palette tokens, a 3-family type ladder, a fixed grid, and 14
-slide archetypes.
+visual system reproduces **Technical Design Review Template.pptx** — white
+bordered cards on a light canvas, dark cover and closing, sky accents, icons —
+and lives in `deck-kit.js` (palette, type ladder, grid, icons) with 15 slide
+archetypes. generate-pptx renders through this same kit.
 
 **Never hand-write pptxgenjs or python-pptx for a design review.** The whole
 point of the kit is that colours and coordinates are decided once. A deck spec
@@ -213,7 +214,8 @@ collisions, text overflow, palette and font drift, missing notes, placeholder
 text, agenda coverage.
 
 Add `--strict` for WCAG AA (4.5:1) if the deck will be read on screen rather
-than projected; the default 4.0 floor is tuned for projection. For CP3, add
+than projected; the default 3.7 floor is tuned for projection and matches the
+template's own sky-on-canvas eyebrow (3.91:1). For CP3, add
 `--profile cp3`.
 
 ### Step 7 — Preview
@@ -268,18 +270,21 @@ Do not invent facts to make a sentence smoother.
 
 | File | Purpose |
 |------|---------|
-| `deck-kit.js` | Palette, type ladder, grid, drawing primitives |
-| `archetypes.js` | The 12 slide patterns |
+| `deck-kit.js` | Palette, type ladder, grid, icons, drawing primitives |
+| `archetypes.js` | The 15 slide patterns |
 | `generate-deck.js` | Deck spec → .pptx (`--list`, `--extract`) |
 | `qa-deck.js` | Mechanical checks (`--strict`, `--warn-only`) |
 | `preview-deck.js` | Deck spec → 1:1 HTML preview |
 | `record.js` | Shared draw-call recorder behind QA and preview |
-| `examples/LIS-10747.deck.json` | The approved visual reference deck |
-| [references/design-system.md](references/design-system.md) | Palette, type, grid, craft rules |
-| [references/slide-archetypes.md](references/slide-archetypes.md) | All 12 with slot schemas |
+| `examples/TDR-template.deck.json` | Fidelity fixture: the template's slides in the kit |
+| `examples/LIS-10747.deck.json` | Incremental CP3 example |
+| `assets/icons/` | Font Awesome Free SVGs + pre-rendered tinted PNGs |
+| `tools/build-icons.sh` | Re-render icon PNGs after adding an SVG (macOS) |
+| [references/design-system.md](references/design-system.md) | Palette, type, grid, icons, contrast |
+| [references/slide-archetypes.md](references/slide-archetypes.md) | All 15 with slot schemas |
 | [references/content-rules.md](references/content-rules.md) | Brief-to-archetype mapping, writing rules |
 | [references/voice.md](references/voice.md) | Humanizer watch list and sample decks |
-| `legacy/` | Retired HA-template generator |
+| `legacy/` | Retired generators and kits |
 
 Template: `SDLC/Templates/Slide Brief Template.md`.
 
@@ -288,9 +293,10 @@ Template: `SDLC/Templates/Slide Brief Template.md`.
 ## Extending
 
 Adding an archetype is a change to `archetypes.js` — compose it from `deck-kit`
-primitives (`panel`, `badge`, `chip`, `richText`, `connector`, `shapeText`,
-`bottomBand`) and export it. It then works in the generator, QA and preview at
-once, because all three run the same code.
+primitives (`card`, `pill`, `badge`, `icon`, `keyValue`, `metaRow`, `note`,
+`codePanel`, `richText`, `shapeText`, `centreY`) and export it. It then works
+in the generator, QA and preview — and in generate-pptx — at once, because all
+of them run the same code.
 
 Changing a colour or a size is a change to `deck-kit.js`, never to a deck spec.
 If two decks need the same one-off, it is an archetype, not a `custom` slide.
@@ -303,8 +309,11 @@ If two decks need the same one-off, it is an archetype, not a `custom` slide.
   more than 5 body rows collides with its takeaway cards; QA catches this.
 - **PowerPoint does not clip overflowing text**, it spills it over whatever is
   underneath. Heed the overflow warnings.
-- **Only Cambria, Calibri and Courier New.** Anything else may not exist on an
-  HA desktop and will resolve to a substitute that breaks the layout.
+- **Only Segoe UI, Segoe UI Semibold and Consolas.** They stand in for the
+  template's Space Grotesk / Plus Jakarta Sans, which HA desktops do not have;
+  anything else resolves to a substitute that breaks the layout.
+- **Icons ship as PNG.** pptxgenjs's SVG embed writes a broken-image fallback
+  that Keynote and older Office show. Run `tools/build-icons.sh` after adding one.
 
 ## Related skills
 

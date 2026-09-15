@@ -1,3 +1,17 @@
+# Retired generators and kits
+
+## Teal LIS-10747 kit (retired Sep 2026)
+
+From Aug to Sep 2026 the PptxGenJS kit used a teal system extracted from
+`LIS-10747_Ward_Assigned_Request_No_Reminder.pptx`: Cambria / Calibri / Courier
+New, teal `08323B` dark panels, tinted fill-only cards, amber callout banners
+and `N / total` page marks. It was replaced in place by the Technical Design
+Review Template style (`../references/design-system.md`). Token and tone names
+were kept as aliases, so specs written for the teal kit render unchanged in the
+new style. Its code is in the vault's git history before the Sep 2026 revision.
+
+---
+
 # Retired — HA-template / python-pptx generator
 
 These files were the `design-review-pptx` skill up to **Aug 2026**. They are kept for

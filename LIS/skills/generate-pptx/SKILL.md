@@ -13,9 +13,11 @@ description: >
 
 # Generate PPTX
 
-Produce a **deck spec** (JSON), then render it with the bundled generator. The
-visual system lives in `deck-kit.js`: 15 palette tokens, a 3-family type ladder,
-a fixed grid, and 14 slide archetypes (including `thesis` and `asks`).
+Produce a **deck spec** (JSON), then render it with the generator. The visual
+system is the Technical Design Review Template style and has **one home**:
+`../design-review-pptx/` (`deck-kit.js`, `archetypes.js`, icons). The `.js`
+files in this folder are thin re-exports of it, so both skills always render
+identically.
 
 **Never hand-write pptxgenjs or python-pptx.** A spec names archetypes and fills
 slots; it does not set positions, hex colours, or fonts.
@@ -53,10 +55,10 @@ wherever the skill was surfaced from; in the vault it is
 `LIS/skills/generate-pptx/`. Do not hardcode either path — derive it.
 
 ```bash
-cd <skill-dir> && npm install
+cd <skill-dir>/../design-review-pptx && npm install
 ```
 
-Node 18+. The only dependency is `pptxgenjs`.
+Node 18+. The only dependency is `pptxgenjs`, installed where the kit lives.
 
 ### Step 1 — Gather content
 
@@ -150,7 +152,7 @@ text, agenda coverage.
 - Default profile: no JIRA key required.
 - `--profile cp3`: also requires a JIRA key and warns if no service name.
 - `--strict`: WCAG AA (4.5:1) when the deck will be read on screen rather than
-  projected. The default 4.0 floor is tuned for projection.
+  projected. The default 3.7 floor is tuned for projection.
 
 ### Step 6 — Preview
 
@@ -168,15 +170,13 @@ wrapping are the browser's approximation; all geometry is exact.
 
 | File | Purpose |
 |------|---------|
-| `deck-kit.js` | Palette, type ladder, grid, drawing primitives |
-| `archetypes.js` | The 14 slide patterns |
-| `generate-deck.js` | Deck spec → .pptx (`--list`, `--extract`) |
-| `qa-deck.js` | Mechanical checks (`--strict`, `--profile cp3`, `--warn-only`) |
-| `preview-deck.js` | Deck spec → 1:1 HTML preview |
-| `record.js` | Shared draw-call recorder behind QA and preview |
+| `deck-kit.js`, `archetypes.js`, `record.js` | Re-exports of `../design-review-pptx/` |
+| `generate-deck.js` | Deck spec → .pptx (`--list`, `--extract`) — runs the shared CLI |
+| `qa-deck.js` | Mechanical checks (`--strict`, `--profile cp3`, `--warn-only`) — shared CLI |
+| `preview-deck.js` | Deck spec → 1:1 HTML preview — shared CLI |
 | [examples/cluster-cutover-briefing.deck.json](examples/cluster-cutover-briefing.deck.json) | Brief-length reference |
-| [references/design-system.md](references/design-system.md) | Palette, type, grid, craft rules |
-| [references/slide-archetypes.md](references/slide-archetypes.md) | All 14 with slot schemas |
+| [references/design-system.md](references/design-system.md) | Pointer to the shared design system |
+| [references/slide-archetypes.md](references/slide-archetypes.md) | Pointer to the shared archetype reference |
 | [references/content-rules.md](references/content-rules.md) | Any-content mapping, writing rules |
 | [slides-template.md](slides-template.md) | Optional `### Slide:` outline |
 
@@ -184,16 +184,10 @@ wrapping are the browser's approximation; all geometry is exact.
 
 ## Extending
 
-Adding an archetype is a change to `archetypes.js` — compose it from `deck-kit`
-primitives (`panel`, `badge`, `chip`, `richText`, `connector`, `shapeText`,
-`bottomBand`) and export it. It then works in the generator, QA and preview at
-once.
-
-Changing a colour or a size is a change to `deck-kit.js`, never to a deck spec.
-If two decks need the same one-off, it is an archetype, not a `custom` slide.
-
-Keep `design-review-pptx` in sync if you change the kit there too — that skill
-still ships its own copy for CP3.
+Adding an archetype or changing a colour is a change to
+`../design-review-pptx/archetypes.js` or `deck-kit.js` — never to this folder,
+and never to a deck spec. Both skills pick it up at once. If two decks need the
+same one-off, it is an archetype, not a `custom` slide.
 
 ## Gotchas
 
@@ -203,8 +197,8 @@ still ships its own copy for CP3.
   more than 5 body rows collides with its takeaway cards; QA catches this.
 - **PowerPoint does not clip overflowing text**, it spills it over whatever is
   underneath. Heed the overflow warnings.
-- **Only Cambria, Calibri and Courier New.** Anything else may not exist on an
-  HA desktop and will resolve to a substitute that breaks the layout.
+- **Only Segoe UI, Segoe UI Semibold and Consolas.** Anything else may not exist
+  on an HA desktop and will resolve to a substitute that breaks the layout.
 
 ## Related skills
 

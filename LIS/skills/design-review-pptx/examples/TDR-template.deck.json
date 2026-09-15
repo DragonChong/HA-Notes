@@ -1,0 +1,279 @@
+{
+  "meta": {
+    "title": "Core Platform Technical Design Review",
+    "subject": "Fidelity fixture for the Technical Design Review Template style",
+    "author": "Systems Engineering Team"
+  },
+  "slides": [
+    {
+      "archetype": "title-hero",
+      "eyebrow": "Architecture Governance · Phase 2 ARB",
+      "headline": "Core Platform Technical Design Review",
+      "lede": "System architecture, integration specs, data persistence, and resiliency validation.",
+      "stats": [
+        { "label": "Lead Architect", "value": "Systems Engineering Team" },
+        { "label": "Target Version", "value": "v2.4 Release Candidate" },
+        { "label": "Status", "value": "Pending Review Board", "highlight": true }
+      ],
+      "notes": "Cover. Template slide 1."
+    },
+    {
+      "archetype": "agenda",
+      "eyebrow": "Agenda",
+      "title": "Technical Review Roadmap",
+      "items": [
+        { "title": "Background & Legacy Architecture", "note": "On-premise daemon limitations, batch coupling, and migration drivers." },
+        { "title": "Target Revamp & Delegation Specs", "note": "Microservice boundaries, asynchronous event logs, and schema normalization." },
+        { "title": "Promotion & Reversible Fallback Plan", "note": "Step-by-step schema deployment, cron swap, and rollback scripts." }
+      ],
+      "notes": "Agenda. Template slide 2."
+    },
+    {
+      "archetype": "cards",
+      "eyebrow": "01. Context",
+      "title": "System Scope & Primary Drivers",
+      "perRow": 3,
+      "cards": [
+        { "icon": "bolt", "title": "Throughput Scaling", "body": "Support 10x current transaction volumes." },
+        { "icon": "shield-halved", "title": "Zero-Trust Boundary", "body": "Enforce mTLS and strict RBAC across nodes." },
+        { "icon": "cubes", "title": "Domain Decoupling", "body": "Isolate billing and order orchestration pipelines." }
+      ],
+      "notes": "Icon cards. Template slide 3."
+    },
+    {
+      "archetype": "statement",
+      "tone": "light",
+      "eyebrow": "Section 02 · System Specification",
+      "headline": "Core Architecture & Data Pipeline Design",
+      "body": "Detailed component topology, state management, latency profiles, and ADR trade-offs.",
+      "notes": "Section divider. Template slide 4."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "02A. Architecture Evolution",
+      "title": "Legacy Daemon vs. Revamped Cloud Service",
+      "left": {
+        "label": "Existing Design", "tone": "danger", "title": "C Unix Daemon",
+        "points": [
+          "Trigger: Local Unix crontab polling loop",
+          "Database Coupling: Direct CT-Lib Sybase writes",
+          "Job State: Mixed configuration & queue on single table",
+          "Extensibility: Monolithic binary rebuild per change"
+        ]
+      },
+      "right": {
+        "label": "Proposed Design", "tone": "accent", "title": "Microservice & Split Schemas",
+        "points": [
+          "Trigger: Centralized scheduler trigger per lab",
+          "Database Coupling: Delegated to domain microservices",
+          "Job State: Normalized definition vs. operational request",
+          "Extensibility: Parameterized configuration & canary tags"
+        ]
+      },
+      "notes": "Existing vs proposed. Template slide 5."
+    },
+    {
+      "archetype": "image",
+      "eyebrow": "02. High-Level Design",
+      "title": "Target Architecture Blueprint",
+      "path": "tdr-diagram.png",
+      "side": "right",
+      "cards": [
+        { "title": "Edge Gateway Layer", "body": "Cloudflare Edge handles global load balancing." },
+        { "title": "Microservices Fabric", "body": "Stateless Go containers orchestrated via Kubernetes." },
+        { "title": "Event Backbone", "body": "Apache Kafka manages asynchronous cross-domain state." }
+      ],
+      "notes": "Image with stacked cards. Template slide 6."
+    },
+    {
+      "archetype": "stats",
+      "eyebrow": "02B. Performance Cap",
+      "title": "Peak Stress Profile",
+      "stats": [
+        { "value": "50k", "label": "Peak Transactions Per Second", "body": "Sustained synthetic benchmark with sub-50ms p99 latency across all active availability zones." }
+      ],
+      "notes": "Single stat. Template slide 7."
+    },
+    {
+      "archetype": "stats",
+      "eyebrow": "03. NFR Targets",
+      "title": "SLA & Reliability Baseline",
+      "stats": [
+        { "value": "99.99%", "label": "Availability Target", "body": "Max 52.6 minutes annual downtime" },
+        { "value": "< 50ms", "label": "P99 Read Latency", "body": "Across all customer-facing endpoints" },
+        { "value": "< 15m", "label": "Recovery Time (RTO)", "body": "Zero data loss target (RPO = 0)" },
+        { "value": "25k", "label": "Peak Sustained TPS", "body": "Stress tested on multi-region setup" }
+      ],
+      "notes": "Stat grid. Template slide 8."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "04. Data Persistence",
+      "title": "Transactional vs. Analytical Topology",
+      "left": {
+        "icon": "database", "tone": "accent", "title": "OLTP: PostgreSQL Cluster",
+        "points": [
+          "Primary Role: ACID ledger transactions",
+          "Replication: Synchronous multi-AZ replicas",
+          "Partitioning: Tenant key sharding strategy",
+          "Caching: Redis cluster for hot sessions"
+        ]
+      },
+      "right": {
+        "icon": "chart-line", "tone": "accent", "title": "OLAP: Snowflake Warehouse",
+        "points": [
+          "Primary Role: Reporting and telemetry",
+          "Ingestion: Debezium CDC via Kafka streams",
+          "Latency: Sub-second analytical queries",
+          "Retention: 7-year regulatory compliance"
+        ]
+      },
+      "notes": "Key-value cards with icons. Template slide 9."
+    },
+    {
+      "archetype": "cards",
+      "eyebrow": "04B. Decision Record (ADR-041)",
+      "title": "Adopt Event Sourcing for Order Pipeline",
+      "perRow": 3,
+      "cards": [
+        { "label": "Context", "tone": "accent", "title": "Auditability Deficit", "body": "Prior CRUD architecture lacked point-in-time state reconstruction for compliance." },
+        { "label": "Decision", "tone": "success", "title": "Immutable Kafka Log", "body": "Persist domain state as an ordered stream of immutable business events." },
+        { "label": "Trade-off", "tone": "warn", "title": "Eventual Consistency", "body": "Read views require CQRS projection handlers with bounded lag monitoring." }
+      ],
+      "notes": "ADR columns. Template slide 10."
+    },
+    {
+      "archetype": "matrix",
+      "eyebrow": "04C. Schema Specification",
+      "title": "Database Table Structure: job_request",
+      "table": {
+        "colWidths": [1.85, 1.5, 2.75, 5.9],
+        "headers": ["Column Name", "Data Type", "Constraints", "Functional Role"],
+        "rows": [
+          [{ "text": "id", "mono": true }, "BIGINT", { "text": "PRIMARY KEY", "bold": true, "color": "strong" }, "Surrogate auto-increment primary identifier"],
+          [{ "text": "application", "mono": true }, "VARCHAR(64)", { "text": "NOT NULL, FK", "bold": true, "color": "strong" }, "Consuming microservice name; joins job_definition"],
+          [{ "text": "cron_expression", "mono": true }, "VARCHAR(120)", { "text": "NOT NULL", "bold": true, "color": "strong" }, "Quartz scheduler trigger pattern for target site"],
+          [{ "text": "status", "mono": true }, "VARCHAR(20)", { "text": "DEFAULT 'OUTSTANDING'", "bold": true, "color": "strong" }, "Lifecycle state (OUTSTANDING, PROCESSING, COMPLETED)"]
+        ]
+      },
+      "notes": "Schema table. Template slide 11."
+    },
+    {
+      "archetype": "code-findings",
+      "eyebrow": "04D. Implementation SQL",
+      "title": "Catalog Definition & Request Insertion",
+      "code": {
+        "filename": "job_definition_seed.sql",
+        "language": "SQL",
+        "lines": [
+          [{ "text": "INSERT INTO", "color": "keyword" }, { "text": " scheduler.job_definition" }],
+          "  (application, job, bean_name,",
+          "   method, concurrent, skip_on_overdue)",
+          [{ "text": "VALUES", "color": "keyword" }],
+          [{ "text": "  (" }, { "text": "'lis-dhx-rrc-svc'", "color": "string" }, { "text": ", " }, { "text": "''", "color": "string" }, { "text": "," }],
+          [{ "text": "   " }, { "text": "'rrcProcessorService'", "color": "string" }, { "text": ", " }, { "text": "'execute'", "color": "string" }, { "text": "," }],
+          [{ "text": "   " }, { "text": "false", "color": "literal" }, { "text": ", " }, { "text": "false", "color": "literal" }, { "text": ");" }],
+          "",
+          [{ "text": "-- Queue worker execution request", "color": "comment" }],
+          [{ "text": "INSERT INTO", "color": "keyword" }, { "text": " scheduler.job_request" }],
+          "  (application, job, cron_expression, status)",
+          [{ "text": "VALUES", "color": "keyword" }],
+          [{ "text": "  (" }, { "text": "'lis-dhx-rrc-svc'", "color": "string" }, { "text": ", " }, { "text": "''", "color": "string" }, { "text": ", " }, { "text": "'0 0/5 13-18 * * ?'", "color": "string" }, { "text": ", " }, { "text": "'OUTSTANDING'", "color": "string" }, { "text": ");" }]
+        ]
+      },
+      "findings": [
+        { "title": "Nature Inserted Once", "body": "Bean, method, and concurrency rules live in definition; multiple sites reuse the row." },
+        { "title": "Dynamic Quartz Naming", "body": "JobManager derives runtime name from application prefix and site identifiers." }
+      ],
+      "notes": "Code panel with side cards. Template slide 12."
+    },
+    {
+      "archetype": "cards",
+      "eyebrow": "05. Security Posture",
+      "title": "End-to-End Threat Mitigation",
+      "perRow": 4,
+      "cards": [
+        { "icon": "key", "title": "Authentication", "body": "OIDC integration with automated token rotation." },
+        { "icon": "lock", "title": "Encryption", "body": "TLS 1.3 in transit and AES-256 at rest." },
+        { "icon": "user-shield", "title": "Authorization", "body": "Fine-grained Open Policy Agent enforcement." },
+        { "icon": "magnifying-glass-chart", "title": "Audit Trails", "body": "Append-only immutable SIEM streaming." }
+      ],
+      "notes": "Four-up icon cards. Template slide 13."
+    },
+    {
+      "archetype": "image",
+      "eyebrow": "06. Infrastructure",
+      "title": "Multi-Region Cloud Topology",
+      "path": "tdr-diagram.png",
+      "side": "left",
+      "cards": [
+        { "title": "Infrastructure as Code", "body": "100% Terraform managed with automated drift detection." },
+        { "title": "Active-Active Compute", "body": "Dual-region deployment with automated DNS failover." },
+        { "title": "Cost Allocation Model", "body": "FinOps tagging standards down to individual microservices." }
+      ],
+      "notes": "Cards beside image. Template slide 14."
+    },
+    {
+      "archetype": "matrix",
+      "eyebrow": "07. Risk Assessment",
+      "title": "Identified Technical Risks",
+      "table": {
+        "colWidths": [3.4, 1.2, 2.3, 5.1],
+        "headers": ["Identified Risk", "Severity", "Impact Area", "Mitigation Control"],
+        "rows": [
+          ["Legacy DB sync lag during cutover", { "text": "High", "tone": "danger" }, "Data Consistency", { "text": "Dual-write phase with reconciliation script", "color": "ink" }],
+          ["Kafka broker partition imbalance", { "text": "Medium", "tone": "warn" }, "Message Throughput", { "text": "Cruise Control automated rebalancing", "color": "ink" }],
+          ["Downstream API rate limiting", { "text": "Medium", "tone": "warn" }, "Partner Integration", { "text": "Circuit breakers with exponential backoff", "color": "ink" }],
+          ["Spike in cold start container delays", { "text": "Low", "tone": "success" }, "API Latency", { "text": "Minimum provisioned warm replica pools", "color": "ink" }]
+        ]
+      },
+      "notes": "Risk table. Template slide 15."
+    },
+    {
+      "archetype": "cards",
+      "eyebrow": "08. Execution",
+      "title": "Delivery & Cutover Milestones",
+      "perRow": 4,
+      "cards": [
+        { "tag": "Stage 1", "title": "Infra Build", "body": "Core network and cluster automation validation." },
+        { "tag": "Stage 2", "title": "Shadow Traffic", "body": "Mirror 10% production read requests." },
+        { "tag": "Stage 3", "title": "Canary Release", "body": "Progressive rollout to 25% tenant traffic." },
+        { "tag": "Stage 4", "title": "Full Cutover", "body": "100% traffic routed and legacy decommissioning." }
+      ],
+      "notes": "Stage cards. Template slide 16."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "08B. Release Runbook",
+      "title": "Promotion & Reversible Fallback Procedure",
+      "left": {
+        "icon": "cloud-arrow-up", "tone": "success", "title": "Promotion Procedure",
+        "steps": [
+          "Apply DDL migrations for new definition and request tables.",
+          "Disable legacy crontab triggers on on-premises daemons.",
+          "Deploy microservice containers and enable cloud scheduler."
+        ]
+      },
+      "right": {
+        "icon": "rotate-left", "tone": "danger", "title": "Fallback Procedure",
+        "steps": [
+          "Pause cloud scheduler and drain in-flight request queues.",
+          "Re-enable on-premises daemon crontab entries.",
+          "Execute rollback script to reinstate legacy schema state."
+        ]
+      },
+      "notes": "Runbook. Template slide 17."
+    },
+    {
+      "archetype": "closing",
+      "icon": "clipboard-check",
+      "headline": "Architecture Review Decision",
+      "note": "Seeking sign-off from Enterprise Architecture, InfoSec, and Infrastructure operations for Phase 2 implementation.",
+      "nextSteps": [
+        { "title": "Action Required", "body": "Sign-off approval & conditional items" },
+        { "title": "Follow-up Sync", "body": "Security drill-down session" }
+      ],
+      "notes": "Decision close. Template slide 18."
+    }
+  ]
+}

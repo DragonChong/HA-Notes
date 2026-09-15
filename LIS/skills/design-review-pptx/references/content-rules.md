@@ -6,7 +6,8 @@ looks; this is about what goes in them. Voice and humanizer rules:
 
 Craft sources (structure / asks / visual-first — **not** palette): HA
 `D:\ECP\LIS\References\General PPTX Preparation Best Practices.md` and
-Awesome-PPT-Design-Skills. Keep the approved LIS-10747 teal kit.
+Awesome-PPT-Design-Skills. The visual kit is the Technical Design Review
+Template style ([design-system.md](design-system.md)).
 
 ---
 
@@ -107,7 +108,7 @@ bodies want 20–28 words — two lines at 13pt in a 3.12" column.
 **Hyphens, not em-dashes, in titles.** `Existing Design - Overview`. Em-dashes
 are fine in body copy.
 
-**Identifiers go in `Courier New`** — JIRA keys, table and column names, setup
+**Identifiers go in `Consolas`** — JIRA keys, table and column names, setup
 constants, class and method names. Use the `mono: true` flag on table headers
 and the `tag` slot on cards; in prose, an identifier can stay in body font if
 setting it in mono would break the line.
@@ -159,7 +160,7 @@ name or date.
 - [ ] One idea per slide, H1 written as a statement
 - [ ] Every slide has an eyebrow (except bookends) and speaker notes
 - [ ] Open Questions (`asks`) present before Q&A for full / CP3 decks
-- [ ] Identifiers in `Courier New`, terminology consistent
+- [ ] Identifiers in `Consolas`, terminology consistent
 - [ ] No `TBD` / `TODO` / placeholder text — QA errors on these
 - [ ] Matrix has at most 5 body rows when it also carries takeaway cards
 - [ ] `node qa-deck.js <deck.json> --profile cp3` exits 0

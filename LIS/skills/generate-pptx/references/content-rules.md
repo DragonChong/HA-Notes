@@ -43,7 +43,7 @@ the closing Q&A `statement`.
 
 Craft sources (not style): `D:\ECP\LIS\References\General PPTX Preparation Best Practices.md`
 and Awesome-PPT-Design-Skills (thesis / negative space / visual-first / QA rigor).
-Keep the approved HA teal kit — do not adopt lifestyle palettes or Inter/serif luxury type.
+Keep the Technical Design Review Template kit (design-review-pptx/references/design-system.md) — do not adopt other palettes or type.
 
 **When the source is thin** — a few bullets, a meeting scribble — build the
 shortest honest deck (brief, 5–8 slides) and say so in the title-slide footer
@@ -81,7 +81,7 @@ Upper-casing is automatic.
 **Hyphens, not em-dashes, in titles.** `Existing flow - overview`. Em-dashes
 are fine in body copy.
 
-**Identifiers go in `Courier New`** — ticket keys, table and column names,
+**Identifiers go in `Consolas`** — ticket keys, table and column names,
 class and method names, config keys. Use the `mono: true` flag on table headers
 and the `tag` slot on cards. In a prose bullet, describe the behaviour instead.
 
@@ -133,7 +133,7 @@ design-review deck that happened to go through this skill.
 
 - [ ] One idea per slide, H1 written as a statement
 - [ ] Every slide has an eyebrow (except bookends) and speaker notes
-- [ ] Identifiers in `Courier New`, terminology consistent
+- [ ] Identifiers in `Consolas`, terminology consistent
 - [ ] No `TBD` / `TODO` / placeholder text — QA errors on these
 - [ ] Matrix has at most 5 body rows when it also carries takeaway cards
 - [ ] `node qa-deck.js <deck.json>` exits 0
