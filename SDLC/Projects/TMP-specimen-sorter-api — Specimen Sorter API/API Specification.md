@@ -69,11 +69,11 @@ Looks up the GCRS order by **USID**, runs Spec Ack retrieve / validate / pack / 
 
 ### Headers
 
-| Header             | Required         | Rule                                                        |
-| ------------------ | ---------------- | ----------------------------------------------------------- |
-| `Content-Type`     | Yes              | `application/json`                                          |
-| `x-gateway-apikey` | Yes              | APIM key for that env (UUID string). Per consumer, per env. |
-| `x-ha-hospcode`    | Yes if available | Performing hospital (e.g. `QEH`).                           |
+| Header | Required | Description |
+|---|---|---|
+| `Content-Type` | Yes | Media type of the request body (`application/json`). |
+| `x-gateway-apikey` | Yes | API Management key issued to the consumer. |
+| `x-ha-hospcode` | Yes if available | Performing hospital code. |
 
 LIS body rules for omitted `hospital` (derive from `loe_specimen_sorter_map`) still apply **after** the gateway accepts the call.
 
@@ -89,24 +89,24 @@ LIS body rules for omitted `hospital` (derive from `loe_specimen_sorter_map`) st
 }
 ```
 
-| Field         | Type   | Required | Rule                                                                                                                                                                                               |
-| ------------- | ------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `usid`        | string | Yes      | GCRS Specimen Number / USID. Missing or blank → HTTP 200 + `FAILURE`, no retrieve, no write (R1). Format / allowed hospital / check digit follow Spec Ack retrieve (R2).                           |
-| `sorterId`    | string | Yes      | Key on `loe_specimen_sorter_map`. Missing or unknown → HTTP 200 + `FAILURE`. Derives LIS user, hospital, server name, workbench id. **Not** a lab. One sorter may process more than one lab (D12). |
-| `hospital`    | string | No       | Performing hospital. If omitted, use `loesort_hosp`. If sent and it does not match the map hospital → `FAILURE` (R10).                                                                             |
-| `hkid`        | string | No       | If present and it does not match the GCRS patient → `FAILURE`. Mask in logs.                                                                                                                       |
-| `patientName` | string | No       | If present and it does not match the GCRS patient → `FAILURE`.                                                                                                                                     |
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `usid` | string | Yes | GCRS Specimen Number / USID. |
+| `sorterId` | string | Yes | Identifier of the specimen sorter. |
+| `hospital` | string | No | Performing hospital. |
+| `hkid` | string | No | Patient HKID. |
+| `patientName` | string | No | Patient name. |
 
 ## Response envelope
 
 Same `ResultDataResponse` as other Spec Ack APIs (`hk.org.ha.lis.model.response.ResultDataResponse`).
 
-| Field | Type | When |
+| Field | Type | Description |
 |---|---|---|
-| `code` | integer | `200` on a completed sorter decision. Transport / unexpected → `500` (`LisErrorConstants.INTERNAL_SERVER_ERROR`). |
-| `message` | string | `"Success"` when `code` is 200. Transport text when `code` is 500. |
-| `data` | object or null | Sorter payload when `code` is 200. Usually null on 500. |
-| `timestamp` | long | Epoch millis. |
+| `code` | integer | Envelope result code. |
+| `message` | string | Envelope result text. |
+| `data` | object or null | Sorter result payload. |
+| `timestamp` | long | Time the response was produced. |
 
 **Middleware rule:** treat `data.status` as the bin. Do **not** treat HTTP 200 as Registered. Soft alerts are never in this body (R6).
 
@@ -135,16 +135,16 @@ Do not use HTTP 4xx from **LIS** for unknown sorter, bad USID, or hard Spec Ack 
 }
 ```
 
-| Field      | Type    | When present                                                                                                                                                                    |
-| ---------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `status`   | enum    | Always on HTTP 200. `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE`.                                                                                                          |
-| `code`     | string  | `FAILURE`: Spec Ack / retrieve message id when known (`1336`, `1337`, `1338`, `1377`, `0001162`…`0001170`, `1090`, `4422`, or an internal sorter code). Null on other statuses. |
-| `message`  | string  | `FAILURE`: short text for audit / support. Not soft-alert copy. Null on other statuses.                                                                                         |
-| `usid`     | string  | Echo when a USID was supplied.                                                                                                                                                  |
-| `hospital` | string  | Hospital actually used (request or map).                                                                                                                                        |
-| `labCode`  | string  | `Lab` code from the order when retrieve succeeded (`CPS`, `HMS`, …) (R8).                                                                                                       |
-| `labNo`    | integer | `Lab.getLabNo()` when retrieve succeeded.                                                                                                                                       |
-| `testCode` | string  | GCRS / test / cluster code used for routing when known (R8). May be omitted on early Failure (missing usid, unknown sorter).                                                    |
+| Field | Type | Description |
+|---|---|---|
+| `status` | enum | Sorter outcome: `REGISTERED`, `SEND_OUT`, `RELABEL`, or `FAILURE`. |
+| `code` | string | Message identifier. |
+| `message` | string | Message text. |
+| `usid` | string | GCRS Specimen Number / USID. |
+| `hospital` | string | Performing hospital. |
+| `labCode` | string | Laboratory code. |
+| `labNo` | integer | Laboratory number. |
+| `testCode` | string | GCRS / test / cluster code. |
 
 `REGISTERED` writes the lab request. `SEND_OUT` uses existing send-out. `RELABEL` and `FAILURE` do not write a lab request (R3). Relabel is never reported as Failure (R4).
 

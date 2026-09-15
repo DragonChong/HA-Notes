@@ -129,17 +129,19 @@ components:
           description: GCRS Specimen Number / USID
         sorterId:
           type: string
-          description: Key on loe_specimen_sorter_map. Not a lab.
+          description: Identifier of the specimen sorter
         hospital:
           type: string
           nullable: true
-          description: Performing hospital. Omitted → loesort_hosp.
+          description: Performing hospital
         hkid:
           type: string
           nullable: true
+          description: Patient HKID
         patientName:
           type: string
           nullable: true
+          description: Patient name
     AutoRegisterData:
       type: object
       required:
@@ -148,37 +150,46 @@ components:
         status:
           type: string
           enum: [REGISTERED, SEND_OUT, RELABEL, FAILURE]
+          description: Sorter outcome
         code:
           type: string
           nullable: true
-          description: Failure message id only
+          description: Message identifier
         message:
           type: string
           nullable: true
+          description: Message text
         usid:
           type: string
+          description: GCRS Specimen Number / USID
         hospital:
           type: string
+          description: Performing hospital
         labCode:
           type: string
-          description: Lab enum code from retrieved order
+          description: Laboratory code
         labNo:
           type: integer
+          description: Laboratory number
         testCode:
           type: string
+          description: GCRS / test / cluster code
     ResultDataResponseAutoRegister:
       type: object
       properties:
         code:
           type: integer
-          description: 200 completed decision; 500 transport
+          description: Envelope result code
         message:
           type: string
+          description: Envelope result text
         timestamp:
           type: integer
           format: int64
+          description: Time the response was produced
         data:
           nullable: true
+          description: Sorter result payload
           allOf:
             - $ref: "#/components/schemas/AutoRegisterData"
 tags:
