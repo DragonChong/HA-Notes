@@ -17,7 +17,7 @@ version: v1
 
 Traces to: [[01 Requirement Confirmation]] R1–R14 · [[02 System Design]]
 
-Gateway pattern copied from *GCRS-LIS API specification v1.0* (HOIT&HI CP1, Jan 2026): consumer registers on APIM, calls `apim-gateway-{env}.server.ha.org.hk:8443`, sends `x-gateway-apikey`. That document is **LIS → GCRS** (`cms-gcrs-lisApiServices/v1`). This note is **sorter middleware → LIS**. Same gateway; **different API product** (name assigned when the usage form is approved).
+Gateway pattern copied from *GCRS-LIS API specification v1.0* (HOIT&HI CP1, Jan 2026): consumer registers on APIM, calls `apim-gateway-{env}.server.ha.org.hk`, sends `x-gateway-apikey`. That document is **LIS → GCRS** (`cms-gcrs-lisApiServices/v1`). This note is **sorter middleware → LIS**. Same gateway; **different API product** (name assigned when the usage form is approved).
 
 Companion OpenAPI: [[assets/specimen-sorter-auto-register.openapi.yaml]]
 
@@ -25,7 +25,7 @@ This is the **v1 middleware contract**. Staff Specimen Acknowledgement endpoints
 
 ## Access — API gateway
 
-Sorter middleware does **not** call `lis-crs-spec-ack-svc:8118` on the OpenShift route. It calls **HA API Management (APIM)** the same way GCRS-LIS consumers do.
+Sorter middleware does **not** call `lis-crs-spec-ack-svc` on the OpenShift route. It calls **HA API Management (APIM)** the same way GCRS-LIS consumers do.
 
 1. Register the consumer: [API usage form](http://ea.home/apim/API%20Management%20Forms/apiUsageForm.html).
 2. Requested API: the **specimen sorter / Spec Ack** product (not `cms-gcrs-lisApiServices/v1`). Product id is filled in when APIM publishes it.
@@ -33,18 +33,18 @@ Sorter middleware does **not** call `lis-crs-spec-ack-svc:8118` on the OpenShift
 
 ### Consumer base URL (pattern)
 
-Same host and port as GCRS-LIS v1.0. Path after `/gateway/` is the **new** product + version.
+Same hosts as GCRS-LIS v1.0. Path after `/gateway/` is the **new** product + version.
 
 | Env | Gateway host (from GCRS-LIS v1.0) | Method (LIS) |
 |---|---|---|
-| SIT | `https://apim-gateway-sit.server.ha.org.hk:8443/gateway/{product}/v1/` | `POST …/sorter/auto-register` |
-| PPM | `https://apim-gateway-ppm.server.ha.org.hk:8443/gateway/{product}/v1/` | same |
-| AAT | `https://apim-gateway-aat.server.ha.org.hk:8443/gateway/{product}/v1/` | same |
+| SIT | `https://apim-gateway-sit.server.ha.org.hk/gateway/{product}/v1/` | `POST …/sorter/auto-register` |
+| PPM | `https://apim-gateway-ppm.server.ha.org.hk/gateway/{product}/v1/` | same |
+| AAT | `https://apim-gateway-aat.server.ha.org.hk/gateway/{product}/v1/` | same |
 | PRD | Refer to production APIM setup | same |
 
 `{product}` is unverified until APIM publish (example shape only: `lis-crs-spec-ack` or similar). Gateway may strip `/api/specack`; the **resource** is still `sorter/auto-register`. Confirm the published path on the usage-form response.
 
-Behind the gateway, LIS remains `lis-crs-spec-ack-svc` port **8118**, root `/api/specack`. NetworkPolicy is gateway → service, not sorter → 8118.
+Behind the gateway, LIS remains `lis-crs-spec-ack-svc`, root `/api/specack`. NetworkPolicy is gateway → service, not sorter → the service directly.
 
 **D1 update (consumer):** D1 “no auth header / NetworkPolicy only” applied to a direct call. The **sorter path is APIM**. Gateway enforces the API key. Do not send Hub JWT. LIS still does not treat Hub login as the caller.
 
@@ -53,9 +53,8 @@ Behind the gateway, LIS remains `lis-crs-spec-ack-svc` port **8118**, root `/api
 | Item | Value |
 |---|---|
 | Service | `lis-crs-spec-ack-svc` (behind APIM) |
-| Internal port | `8118` |
 | Internal root | `/api/specack` |
-| Consumer | APIM `https://apim-gateway-{env}.server.ha.org.hk:8443/gateway/{product}/v1/` |
+| Consumer | APIM `https://apim-gateway-{env}.server.ha.org.hk/gateway/{product}/v1/` |
 | Content-Type | `application/json` |
 | Auth | Gateway: `x-gateway-apikey` (mandatory). Same header names as GCRS-LIS §4.1.1. |
 | Call style | **Synchronous**. One POST per tube. No status-poll API (R8). |
@@ -327,7 +326,7 @@ Exact string constants for the sorter-internal codes are set at implement (WP1).
 
 ## What this API does not do
 
-- Direct OpenShift call to port 8118 from the sorter (consumer = APIM)
+- Direct OpenShift call to `lis-crs-spec-ack-svc` from the sorter (consumer = APIM)
 - Hub JWT as the sorter credential
 - Soft-alert text on the body (R6)
 - Label print
@@ -341,14 +340,14 @@ Exact string constants for the sorter-internal codes are set at implement (WP1).
 
 | Env | Sorter consumer | Internal LIS |
 |---|---|---|
-| SIT | `apim-gateway-sit.server.ha.org.hk:8443` + `{product}/v1` | `lis-crs-spec-ack-svc:8118` |
-| PPM | `apim-gateway-ppm.server.ha.org.hk:8443` | same service |
-| AAT | `apim-gateway-aat.server.ha.org.hk:8443` | same service |
+| SIT | `apim-gateway-sit.server.ha.org.hk` + `{product}/v1` | `lis-crs-spec-ack-svc` |
+| PPM | `apim-gateway-ppm.server.ha.org.hk` | same service |
+| AAT | `apim-gateway-aat.server.ha.org.hk` | same service |
 | PRD | production APIM host | same service |
 
 `sorterId` values are data (`loe_specimen_sorter_map`), not ConfigMap keys. Gateway keys are APIM secrets per env.
 
-DEVQA / local: may hit 8118 without APIM. That is not the production sorter path.
+DEVQA / local may call the service without APIM. That is not the production sorter path.
 
 ## Revision
 
@@ -356,3 +355,4 @@ DEVQA / local: may hit 8118 without APIM. That is not the production sorter path
 |---|---|
 | 2026-09-14 | First draft from 01 + 02. No `loesort_labno`. Envelope is `ResultDataResponse`. |
 | 2026-09-15 | Consumer is HA APIM (same hosts/headers as GCRS-LIS API specification v1.0). New product, not `cms-gcrs-lisApiServices`. |
+| 2026-09-15 | Dropped port numbers from this consumer spec. |
