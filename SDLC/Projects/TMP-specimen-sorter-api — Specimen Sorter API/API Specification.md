@@ -50,14 +50,14 @@ Behind the gateway, LIS remains `lis-crs-spec-ack-svc`, root `/api/specack`. Net
 
 ## Service
 
-| Item | Value |
-|---|---|
-| Service | `lis-crs-spec-ack-svc` (behind APIM) |
-| Internal root | `/api/specack` |
-| Consumer | APIM `https://apim-gateway-{env}.server.ha.org.hk/gateway/{product}/v1/` |
-| Content-Type | `application/json` |
-| Auth | Gateway: `x-gateway-apikey` (mandatory). Same header names as GCRS-LIS §4.1.1. |
-| Call style | **Synchronous**. One POST per tube. No status-poll API (R8). |
+| Item          | Value                                                                    |
+| ------------- | ------------------------------------------------------------------------ |
+| Service       | `lis-crs-spec-ack-svc` (behind APIM)                                     |
+| Internal root | `/api/specack`                                                           |
+| Consumer      | APIM `https://apim-gateway-{env}.server.ha.org.hk/gateway/{product}/v1/` |
+| Content-Type  | `application/json`                                                       |
+| Auth          | Gateway: `x-gateway-apikey` (mandatory).                                 |
+| HTTP Method   | POST                                                                     |
 
 ## Endpoint
 
@@ -71,14 +71,11 @@ Do **not** call GET `/retrieveGcrOrder` from middleware (that GET hard-codes use
 
 ### Headers
 
-Same names as *GCRS-LIS API specification v1.0* §4.1.1. Gateway rejects missing key **before** LIS. That is **not** `data.status = FAILURE`.
-
-| Header | Required | Rule |
-|---|---|---|
-| `Content-Type` | Yes | `application/json` |
-| `x-gateway-apikey` | Yes | APIM key for that env (UUID string). Per consumer, per env. |
-| `x-ha-hospcode` | Yes on GCRS-LIS; **send on sorter** | Performing hospital (e.g. `QEH`). GCRS-LIS returns `rtnCode -2` if this header is missing. Send the same hospital as body `hospital` when that field is present; otherwise the hospital the middleware already uses for the sorter. Do not leave it blank if APIM copies the GCRS product policy. |
-| `Authorization` | No | Do not send Hub JWT. |
+| Header             | Required                            | Rule                                                                                                                                                                                                                                                                                              |
+| ------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Content-Type`     | Yes                                 | `application/json`                                                                                                                                                                                                                                                                                |
+| `x-gateway-apikey` | Yes                                 | APIM key for that env (UUID string). Per consumer, per env.                                                                                                                                                                                                                                       |
+| `x-ha-hospcode`    | Yes on GCRS-LIS; **send on sorter** | Performing hospital (e.g. `QEH`). GCRS-LIS returns `rtnCode -2` if this header is missing. Send the same hospital as body `hospital` when that field is present; otherwise the hospital the middleware already uses for the sorter. Do not leave it blank if APIM copies the GCRS product policy. |
 
 LIS body rules for omitted `hospital` (derive from `loe_specimen_sorter_map`) still apply **after** the gateway accepts the call.
 
