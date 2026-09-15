@@ -78,13 +78,13 @@ LIS body rules for omitted `hospital` (derive from `loe_specimen_sorter_map`) st
 }
 ```
 
-| Field | Type | Required | Description |
-|---|---|---|---|
-| `usid` | string | Yes | GCRS Specimen Number / USID. |
-| `sorterId` | string | Yes | Identifier of the specimen sorter. |
-| `hospital` | string | No | Performing hospital. |
-| `hkid` | string | No | Patient HKID. |
-| `patientName` | string | No | Patient name. |
+| Field         | Type   | Required         | Description                        |
+| ------------- | ------ | ---------------- | ---------------------------------- |
+| `usid`        | string | Yes              | USID.                              |
+| `sorterId`    | string | Yes              | Identifier of the specimen sorter. |
+| `hospital`    | string | Yes if available | Performing hospital.               |
+| `hkid`        | string | No               | Patient HKID.                      |
+| `patientName` | string | No               | Patient name.                      |
 
 ## Response envelope
 
