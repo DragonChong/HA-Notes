@@ -211,8 +211,8 @@ Soft alerts (overnight, valid period, missing collection date, duplicate/A-A-R, 
   "timestamp": 1778800000000,
   "data": {
     "status": "RELABEL",
-    "usid": "QHSP2500000012",
-    "hospital": "QEH",
+    "usid": "UC26CAB00772",
+    "hospital": "UCH",
     "labCode": "CPS",
     "labNo": 1
   }
@@ -245,27 +245,8 @@ Soft alerts (overnight, valid period, missing collection date, duplicate/A-A-R, 
     "status": "FAILURE",
     "code": "1377",
     "message": "Specimen not found",
-    "usid": "QHSP2500000012",
-    "hospital": "QEH"
-  }
-}
-```
-
-### Failure — STAR no workbench location
-
-```json
-{
-  "code": 200,
-  "message": "Success",
-  "timestamp": 1778800000000,
-  "data": {
-    "status": "FAILURE",
-    "code": "4422",
-    "message": "Workbench location is not set",
-    "usid": "QHSP2500000012",
-    "hospital": "QEH",
-    "labCode": "CPS",
-    "labNo": 1
+    "usid": "UC26HAB01135",
+    "hospital": "UCH"
   }
 }
 ```
