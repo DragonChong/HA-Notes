@@ -65,17 +65,15 @@ Behind the gateway, LIS remains `lis-crs-spec-ack-svc`, root `/api/specack`. Net
 
 Looks up the GCRS order by **USID**, runs Spec Ack retrieve / validate / pack / send-out or register as the mapped sorter user, and returns a bin status on the same response.
 
-Do **not** call GET `/retrieveGcrOrder` from middleware (that GET hard-codes user `ltc611`).
-
 ## Request
 
 ### Headers
 
-| Header             | Required                            | Rule                                                                                                                                                                                                                                                                                              |
-| ------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Content-Type`     | Yes                                 | `application/json`                                                                                                                                                                                                                                                                                |
-| `x-gateway-apikey` | Yes                                 | APIM key for that env (UUID string). Per consumer, per env.                                                                                                                                                                                                                                       |
-| `x-ha-hospcode`    | Yes on GCRS-LIS; **send on sorter** | Performing hospital (e.g. `QEH`). GCRS-LIS returns `rtnCode -2` if this header is missing. Send the same hospital as body `hospital` when that field is present; otherwise the hospital the middleware already uses for the sorter. Do not leave it blank if APIM copies the GCRS product policy. |
+| Header             | Required | Rule                                                                                                                                                                                                                                                                                              |
+| ------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Content-Type`     | Yes      | `application/json`                                                                                                                                                                                                                                                                                |
+| `x-gateway-apikey` | Yes      | APIM key for that env (UUID string). Per consumer, per env.                                                                                                                                                                                                                                       |
+| `x-ha-hospcode`    | Yes if a | Performing hospital (e.g. `QEH`). GCRS-LIS returns `rtnCode -2` if this header is missing. Send the same hospital as body `hospital` when that field is present; otherwise the hospital the middleware already uses for the sorter. Do not leave it blank if APIM copies the GCRS product policy. |
 
 LIS body rules for omitted `hospital` (derive from `loe_specimen_sorter_map`) still apply **after** the gateway accepts the call.
 
