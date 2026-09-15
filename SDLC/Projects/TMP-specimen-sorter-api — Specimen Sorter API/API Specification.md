@@ -36,18 +36,12 @@ flowchart LR
     SORT["POST /api/sorter/auto-register"]
   end
 
-  MAP[(loe_specimen_sorter_map)]
-  WB[(workbench)]
-  GCRS[GCRS retrieve in-process]
+  GCRS[(GCRS Database)]
 
   MW -->|"Header:<br>x-gateway-apikey &<br> x-ha-hospcode"| APIM
   APIM --> SORT
-  SORT --> MAP
-  SORT --> WB
   SORT --> GCRS
 ```
-
-Print and PHLC after Registered run **inside** the same service after HTTP return. They are not extra consumer calls.
 
 ### Consumer base URL (pattern)
 
