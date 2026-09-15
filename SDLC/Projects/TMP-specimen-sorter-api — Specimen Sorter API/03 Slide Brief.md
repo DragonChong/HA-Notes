@@ -1,8 +1,8 @@
 ---
 agent_assisted: true
 generated_by: design-review-pptx
-generated_on: '2026-09-10'
-profile: incremental
+generated_on: '2026-09-15'
+profile: full
 reviewed_by: ''
 tags:
   - sdlc
@@ -11,14 +11,13 @@ title: 03 Slide Brief — Specimen Sorter API
 ---
 # 03 Slide Brief — Specimen Sorter API
 
-Facts come from [[02 System Design]]. Presentational only. Table name on slides is `loe_specimen_sorter_map`. Do not name Flex classes.
+Facts come from [[02 System Design]] (reviewed Tony Chong, 2026-09-14 delta D12, 2026-09-15 D1 APIM) and the consumer contract it links, [[API Specification]]. Dates from [[05 Project Plan]]. Presentational only. Deck: `assets/Specimen Sorter API v2.deck.json`. The 2026-09-10 brief is in git history.
 
-**Profile:** incremental
-**JIRA key:** TMP-000 (dossier `TMP-specimen-sorter-api`; production JIRA not assigned; reference SEM20260612)
+**Profile:** full (new API, risk high)
+**JIRA key:** TMP-000 stand-in — Change Request not created yet (reference SEM20260612)
 **Service:** lis-crs-spec-ack-svc
 **Review forum:** CP3
-**Review date:** 11 Sep 2026
-**Prior review:** none
+**Review date:** not scheduled (design-review exception 2026-09-10); deck dated 15 Sep 2026
 **Presenters:** Ka
 **Reviewers:** Tony Chong, CP3 panel
 
@@ -26,106 +25,129 @@ Facts come from [[02 System Design]]. Presentational only. Table name on slides 
 
 ### Cover
 **Archetype:** title-hero
-**Headline:** One POST on Specimen Acknowledgement registers or sends out a USID
-**Lede:** Today staff scan a label and click Send-out or Register. The sorter will scan the tube and call LIS for those same actions.
-**Notes:** Cover is identity only. TMP-000 is the dossier stand-in. Tony Chong reviewed [[02 System Design]].
+**Eyebrow:** CP3 · Design review · 15 Sep 2026
+**Headline:** Specimen Sorter API
+**Lede:** Sorter middleware calls one POST on lis-crs-spec-ack-svc. It sends out or registers the tube by USID, with the checks and packing Specimen Acknowledgement runs today.
+**Stats:** Service lis-crs-spec-ack-svc · Change TMP-000 (key pending) · Target 30 May 2027 · Design approved (highlight)
+**Notes:** Design closed on 10 Sep with Tony Chong as reviewer. Two changes since: no lab column on the map (14 Sep) and the sorter now comes in through HA APIM (15 Sep). The Change Request key still has to be created by hand.
+
+### Agenda
+**Archetype:** agenda
+1. Background — staff clicks today, sorter calls tomorrow
+2. Existing design — what the Spec Ack screen owns
+3. Proposed change — one POST, four outcomes
+4. Contract and data — APIM call, sorter map, audit
+5. Promotion and fallback
+6. Open questions
+**Notes:** Most of the time should go on the outcome flow and the sorter map. Those carry the decisions.
 
 ### Slide: Background
-**Eyebrow:** Background
-**Title:** Staff click today. The sorter will call LIS
+**Eyebrow:** 01. Background
+**Title:** Staff scan and click today. The sorter will call LIS
 **Archetype:** compare
-**Body:**
-As-is: staff scan the specimen label on Specimen Acknowledgement and press Send-out or Register.
-To-be: the sorter scans the tube for sort and transport; LIS is called for send-out or registration so the sorter can bin.
-**Notes:** Specimen Acknowledgement stays the fallback for Relabel or Failure. Checks and packing still sit on the screen today.
+- As-is (danger): Staff scan and press. Where: Specimen Acknowledgement in lab-crs-app. Action: scan the label, then Send-out or Register. Checks and packing: run on the screen.
+- To-be (accent): Sorter scans, LIS decides. Where: sorter middleware through HA APIM. Action: one POST with the USID. Result: status on the same call, sorter bins the tube.
+**Notes:** Middleware cannot call the staff register endpoint on its own, because the packing is built on the screen first. That is the whole reason for a new API.
 
-### Slide: Existing Design - Spec Ack screen
-**Eyebrow:** Existing Design
-**Title:** The Spec Ack screen still owns validation and packing
+### Slide: Existing Design
+**Eyebrow:** 02. Existing design
+**Title:** The Spec Ack screen owns validation and packing
 **Archetype:** matrix
-**Body:**
-| Action | Front-end | Back-end |
-| Retrieve GCRS | Looks up the order | Calls backend |
-| Send-out | Presses Send-out | Calls backend |
-| Registration | Validates. Groups tests, request no., maps ward and doctor | Calls backend |
-| Worksheet | Converts worksheet data | Calls backend to print |
-| PHLC order | None | Calls backend |
-**Notes:** Amber is what moves. Group tests, request no., and ward/doctor mapping sit on registration, not on worksheet. Worksheet has its own convert, then print. PHLC is already a backend call.
+| Action | Screen does | Service does | Sorter API |
+| Retrieve GCRS order | Scans USID, calls retrieve | retrieveGcrOrder (GET hard-codes ltc611) | Retrieve as the mapped user |
+| Send-out | Staff click | sendOutSpecimen, SEND_OUT | Same path |
+| Validation | Soft prompts, hard validator | Assumes checks passed | Soft to ALS, hard to Failure |
+| Packing | Groups tests, request no., ward and doctor | register() needs the packing | Server-side convertor |
+| Worksheet | Builds Ro, staff pick | Three print methods | Print all, after Registered |
+| PHLC | Calls after register | createPhlcLabOrder | After Registered |
+**Notes:** The service only runs the writes. Everything in the second column is what moves.
 
-### Slide: Proposed Change - New API
-**Eyebrow:** Proposed Change
-**Title:** One new POST on the Spec Ack service
-**Archetype:** code-findings
-**Body:** Path `POST /api/sorter/auto-register`. Body: `usid`, `sorterId`, optional `hospital`, `hkid`, `patientName`. Response status `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE` on the same call.
-**Notes:** Do not reuse the staff register endpoint. No auth header in v1. Soft alerts stay off the body.
+### Slide: Proposed Change - overview
+**Eyebrow:** 03. Proposed change
+**Title:** One POST, the screen logic behind it, one map table
+**Archetype:** cards (4-up, icons)
+1. New API — `POST /api/sorter/auto-register` on lis-crs-spec-ack-svc. Staff `/api/specack` is unchanged.
+2. Move screen logic — retrieve, validation and packing run server-side, then the existing send-out, register, print and PHLC.
+3. Sorter map — `loe_specimen_sorter_map`: sorter id to LIS user, hospital, server and workbench.
+4. Audit — `SORT_*` actions plus today's `REG` and `SEND_OUT` on `LOE_AUDIT_TRAIL`.
+**Notes:** No new service and no DDL on workbench. The staff click path stays as the fallback bin.
 
-### Slide: Proposed Change - what moves
-**Eyebrow:** Proposed Change
-**Title:** Screen logic moves behind that POST
+### Slide: Proposed Change - outcome flow
+**Eyebrow:** 03A. Outcome flow
+**Title:** Every tube ends in one of four statuses
+**Archetype:** decision-flow
+Start: POST with USID and sorterId → Checks pass? (No → FAILURE: unknown sorter, not CPS or HMS, mixed, hard check, 4422) → Relabel rules? (Yes → RELABEL: multi-group, suffix, DFT time flag) → All tests send-out? (Yes → SEND_OUT) → No → REGISTERED.
+Condition strip: `data.status` REGISTERED | SEND_OUT | RELABEL | FAILURE. HTTP 200 on every decision; soft alerts go to ALS.
+**Notes:** A tube with both local and send-out tests fails rather than splitting (D3). Relabel is never reported as Failure.
+
+### Slide: Contract
+**Eyebrow:** 04. API contract
+**Title:** Middleware calls through HA APIM with a gateway key
+**Archetype:** code-findings (JSON request and data)
+Findings: Gateway headers (`x-gateway-apikey`, `x-ha-hospcode`; no Hub JWT). Hospital optional (omitted → `loesort_hosp`; sent and different → Failure). Bin from `data.status` (HTTP 200 is not Registered; 401/403 are gateway, 500 retry).
+**Notes:** Same hosts and headers as the GCRS-LIS API specification v1.0, but a new APIM product. Business failure codes sit on data.code, never as an HTTP 4xx from LIS.
+
+### Slide: Identity
+**Eyebrow:** 04A. Sorter identity
+**Title:** User and workbench come from the sorter id, not a PC
 **Archetype:** compare
-**Body:**
-Today: validation, test grouping, request-no assignment, and ward/doctor mapping run on the screen before register. Worksheet convert also runs on the screen before print.
-Proposed: the new API does that work, then calls the same backend register, print, and PHLC paths. Print and PHLC only after Registered.
-**Notes:** Send-out, Relabel, and Failure print nothing. Late worksheet does not change a status already returned.
+- Staff today (neutral): Login: staff LIS account. Workbench: selectWorkbench by PC name or IP. Retrieve GET: hard-codes user ltc611.
+- Sorter POST (accent): User: loesort_usercode on the map. Workbench: map wkbh_id plus the lab from the retrieved order. Hospital: request value, else loesort_hosp.
+**Notes:** The sorter must never use the retrieve GET, because of the hard-coded user. Audit rows carry the map user and the workbench station name.
 
-### Slide: Proposed Change - map and workbench
-**Eyebrow:** Proposed Change
-**Title:** Sorter id maps to a dedicated user and a workbench
-**Archetype:** cards
-**Body:**
-1. `loe_specimen_sorter_map`: sorter id to LIS user and workbench id (plus hosp / lab / server so LAB_DB can open).
-2. `workbench`: hospital, lab, station name, STAR location, printer. Not copied onto the map.
-3. Audit user = map user. Workstation = workbench station name. `SORT_*` plus `REG` / `SEND_OUT`.
-**Notes:** Unknown sorter id is Failure. Do not compare workbench lab to the test lab.
+### Slide: Data
+**Eyebrow:** 04B. Data model
+**Title:** loe_specimen_sorter_map has no lab column
+**Archetype:** matrix + takeaway
+Columns: loesort_key NUMBER PK · loesort_sorter_id VARCHAR2(64) unique · loesort_usercode VARCHAR2(32) · loesort_hosp VARCHAR2(8) · loesort_server_name VARCHAR2(64) · loesort_workbench_id VARCHAR2(16).
+Takeaway: One sorter, more than one lab — lab comes from the order; seed one workbench row per lab, missing row is Failure (D12).
+**Notes:** Rollback is DROP TABLE. Location, station name and printer stay on workbench, so they are not copied onto the map.
 
-### Slide: Proposed Change - user and workbench vs staff login
-**Eyebrow:** Proposed Change
-**Title:** User and workbench come from the sorter id
-**Archetype:** compare
-**Body:**
-Today: staff LIS login; workbench by PC name or IP; retrieve GET uses a demo user.
-POST: `sorterId` looks up the map. Dedicated user. Workbench from the same row. Hospital omitted → map / workbench.
-**Notes:** Seed user, workbench, and map before SIT.
+### Slide: Status and side effects
+**Eyebrow:** 04C. Status and audit
+**Title:** Only REGISTERED prints, and only after the response
+**Archetype:** matrix
+| Status | Writes | Worksheet and PHLC | Sorter bin |
+| REGISTERED | Lab request, SORT_REG and REG | All worksheets, then PHLC, after return | In-house |
+| SEND_OUT | Send-out, tracking, SORT_SO and SEND_OUT | None | Send-out |
+| RELABEL | SORT_RELABEL only | None | Staff Spec Ack |
+| FAILURE | SORT_FAIL with message code | None | Staff Spec Ack |
+**Notes:** A late worksheet does not change a status already returned (D4). Print failure is an ALS warning, nothing more.
 
-### Slide: Proposed Change - Spec Ack actions
-**Eyebrow:** Proposed Change
-**Title:** Each Spec Ack action, manual vs POST
-**Archetype:** compare / cards
-**Body:** Retrieve (USID only). Send-out (list; mixed = Failure). Soft ALS vs hard Failure. Grouping and request no. Ward and doctor. Worksheet all after Registered. PHLC after Registered.
-**Notes:** Inserted under Proposed Change. Staff path unchanged.
+### Slide: Non-functional
+**Eyebrow:** 05. Non-functional
+**Title:** One synchronous call per tube
+**Archetype:** stats
+< 4 s p95 through audit commit, print excluded · ~20/min per lab in v1 · CPS and HMS on the order; APS, BBS, MBS fail.
+**Notes:** Print sits outside the 4 second budget, which is why it runs after the response.
 
-### Slide: Promotion
-**Eyebrow:** Promotion
-**Title:** Seed user, workbench, and map, then deploy
-**Archetype:** cards
-**Body:** Create sorter user. Seed workbench. Insert map row on `loe_specimen_sorter_map`. Deploy lis-crs-spec-ack-svc. NetworkPolicy only.
-**Notes:** Pilot CPS and HMS. Relabel and Failure bins go back to staff Spec Ack.
-
-### Slide: Fallback
-**Eyebrow:** Fallback
-**Title:** Stop middleware. Staff Spec Ack is unchanged
-**Archetype:** cards
-**Body:** Stop middleware. Drop `loe_specimen_sorter_map` on full rollback. No history rewrite.
-**Notes:** Staff clicks still retrieve, send-out, and register.
+### Slide: Promotion and fallback
+**Eyebrow:** 06. Promotion and fallback
+**Title:** Seed the map, open the gateway path, pilot CPS and HMS
+**Archetype:** compare (steps)
+- Promotion: create sorter LIS user · seed workbench per lab · insert map row, no lab · deploy service · APIM product and NetworkPolicy · pilot CPS and HMS.
+- Fallback: stop middleware, staff Spec Ack unchanged · drop the map table on full rollback · no conversion of historical requests.
+**Notes:** Confirm the Audit Trail filter shows SORT_* before the pilot, or staff cannot find the sorter's attempts.
 
 ### Slide: Open Questions
-**Eyebrow:** Open Questions
-**Title:** Four decisions to ratify before build
+**Eyebrow:** 07. Open questions
+**Title:** Four things to settle before SIT
 **Archetype:** asks
-1. Leave v1 with NetworkPolicy only, no API key or Hub JWT? (D1)
-2. Fail the tube when the USID has both local and send-out tests? (D3)
-3. Print worksheets and PHLC only after Registered, after HTTP return? (D11, D4, D5)
-4. Show SORT_* actions on the Audit Trail filter? (D6)
-**Notes:** Requester already answered D1-D11. This room ratifies.
+1. Does in-process retrieveGcrOrder need the lab before the USID lookup? — D13. If yes, fix the retrieve, not the map.
+2. Is the APIM gateway key the only sorter credential for v1? — D1 changed on 15 Sep.
+3. Who creates the Change Request key? — SIT evidence has no ticket yet.
+4. Which 2027 promotion window do we file under? — June and July 2027 are past the published calendar.
+**Notes:** D1 to D12 are answered by the requester. D13 is the only open design point.
 
 ### Slide: Q&A
-**Archetype:** statement
+**Archetype:** statement (dark, centred)
 **Headline:** Q&A
-**Notes:** Likely questions: why a new POST; why hospital can be omitted; why DFT uses the same register path.
+**Notes:** Likely: why not let middleware call the staff register; why hospital can be omitted; why mixed tubes fail.
 
 ### Close
 **Archetype:** closing
-**Headline:** Target latency
-**Stat:** P95 < 4 S
-**Next steps:** Assign a production JIRA. Implement the POST. Seed map and workbench in SIT.
-**Notes:** About 20 specimens a minute per lab. Print sits after the sorter wait path.
+**Headline:** Next for Specimen Sorter API
+**Stat:** 30 MAY 2027
+**Body:** Target completion. Development runs to 31 Dec 2026, SIT from January.
+**Next steps:** Create the Change Request · Close D13 in WP1 · Seed SIT user, workbench and map
+**Notes:** The date is promotion preparation end. Submission is June and pilot July 2027.

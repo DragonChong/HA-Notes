@@ -30,7 +30,7 @@ tags:
 target_completion_date: '2027-05-30'
 tasks: '[[Tasks]]'
 title: Specimen Sorter API
-updated: '2026-09-14'
+updated: '2026-09-15'
 work_type: project
 ---
 # Specimen Sorter API
@@ -47,8 +47,9 @@ work_type: project
 | 01 Requirement | [[01 Requirement Confirmation]] | confirmed 2026-09-07; not in gates_passed |
 | 02 Design | [[02 System Design]] | approved 2026-09-10; **2026-09-14 delta** — no `loesort_labno` (D12). Confirm then `/design-review-pptx` |
 | API spec | [[API Specification]] | draft 2026-09-14 — middleware POST contract + OpenAPI |
-| 03 Slide Brief | [[03 Slide Brief]] | draft |
-| 03 Design Review | [[assets/Specimen Sorter API.pptx]] | generated |
+| 03 Slide Brief | [[03 Slide Brief]] | draft — refreshed 2026-09-15 (D1 APIM, D12) |
+| 03 Design Review | [[assets/Specimen Sorter API v2.pptx]] | generated 2026-09-15 |
+| 03 Design Review (prior) | [[assets/Specimen Sorter API.pptx]] | superseded |
 | 04 JIRA | [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]] | draft |
 | 05 Project Plan | [[05 Project Plan]] | accepted 2026-09-10 |
 
@@ -80,6 +81,7 @@ work_type: project
 - 2026-09-10 — Design gate closed. 02 still meets the exit checklist after the rewrite (`reviewed_by` Tony Chong). `design` written to `gates_passed`. — Ka
 - 2026-09-14 — Rejected `loesort_labno` on `loe_specimen_sorter_map`: one sorter processes more than one lab. Lab from retrieved order; workbench by `wkbh_id` + order lab (D12). D13 open: whether retrieve needs lab on `ServiceParameter` first. — agent
 - 2026-09-15 — Sorter consumer is HA APIM (`x-gateway-apikey`, `x-ha-hospcode`), same hosts as GCRS-LIS API specification v1.0. New APIM product — not `cms-gcrs-lisApiServices`. D1 updated. [[API Specification]] — agent
+- 2026-09-15 — [[03 Slide Brief]] refreshed from 02 after D12 and D1 (APIM). New deck `assets/Specimen Sorter API v2.pptx` (15 slides, full profile); prior deck kept. `design-review` still not closed. — agent
 - 2026-09-10 — JIRA log drafted: [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]]. Target 30th May, 2027. No JIRA key yet. — agent
 - 2026-09-10 — [[05 Project Plan]] drafted from the programme 12-row schedule, backwards from Jun 2027 submission. 2027 window is not in [[Promotion Windows]]. Estimates await acceptance. `plan` not in `gates_passed`. — agent
 - 2026-09-10 — Estimates on [[05 Project Plan]] accepted. `plan` written to `gates_passed`. Stage → development. JIRA key still missing. — Ka
