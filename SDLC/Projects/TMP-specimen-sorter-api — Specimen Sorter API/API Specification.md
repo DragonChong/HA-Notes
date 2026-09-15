@@ -35,8 +35,6 @@ Path after `/gateway/` is the **new** product + version.
 | AAT | `https://apim-gateway-aat.server.ha.org.hk:8443/gateway/lis-crs-specAckServices/v1/` | same                                     |
 | PRD | Refer to production APIM setup                                                       | same                                     |
 
-Behind the gateway, LIS remains `lis-crs-spec-ack-svc`. Sorter root is `/api/sorter`. Staff Spec Ack stays `/api/specack`. NetworkPolicy is gateway → service, not sorter → the service directly.
-
 ## Service
 
 | Item          | Value                                                                    |
