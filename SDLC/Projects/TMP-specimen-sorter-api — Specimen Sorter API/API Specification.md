@@ -30,21 +30,18 @@ Production sorter traffic is **middleware → HA APIM → `lis-crs-spec-ack-svc`
 ```mermaid
 flowchart LR
   MW[Sorter middleware]
-  APIM[HA APIM]
-  UI[Staff Spec Ack]
+  APIM[HA API Gateway]
 
   subgraph oc[lis-crs-spec-ack-svc]
     SORT["POST /api/sorter/auto-register"]
-    STAFF["GET/POST /api/specack"]
   end
 
   MAP[(loe_specimen_sorter_map)]
   WB[(workbench)]
   GCRS[GCRS retrieve in-process]
 
-  MW -->|"x-gateway-apikey and x-ha-hospcode"| APIM
-  APIM -->|NetworkPolicy| SORT
-  UI -->|Hub JWT| STAFF
+  MW -->|"Header:<br>x-gateway-apikey &<br> x-ha-hospcode"| APIM
+  APIM --> SORT
   SORT --> MAP
   SORT --> WB
   SORT --> GCRS
