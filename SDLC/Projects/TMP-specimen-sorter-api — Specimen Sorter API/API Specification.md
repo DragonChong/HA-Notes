@@ -299,8 +299,6 @@ Exact string constants for the sorter-internal codes are set at implement (WP1).
 | AAT | `apim-gateway-aat.server.ha.org.hk`                  | same service           |
 | PRD | production APIM host                                 | same service           |
 
-`sorterId` values are data (`loe_specimen_sorter_map`), not ConfigMap keys. Gateway keys are APIM secrets per env.
-
 ## Revision
 
 | Date | Change |
