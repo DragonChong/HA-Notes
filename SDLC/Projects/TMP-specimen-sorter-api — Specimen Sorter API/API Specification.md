@@ -131,7 +131,7 @@ Do not use HTTP 4xx from **LIS** for unknown sorter, bad USID, or hard Spec Ack 
 | `hospital` | string  | Performing hospital.                                               |
 | `labCode`  | string  | Laboratory code.                                                   |
 | `labNo`    | integer | Laboratory number.                                                 |
-| `testCode` | string  | GCRS / test / cluster code.                                        |
+| `testCode` | string  | GCRS test code.                                                    |
 
 `REGISTERED` writes the lab request. `SEND_OUT` uses existing send-out. `RELABEL` and `FAILURE` do not write a lab request (R3). Relabel is never reported as Failure (R4).
 
