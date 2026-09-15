@@ -56,14 +56,14 @@ Depends on WP1 packing **interface** (TASK-001). WP1 need not be done if the int
 
 **Port map (screen → sorter):**
 
-| Screen | Sorter packing |
-|---|---|
-| `getUniqueCurrSpecTestGroup` | Group `orderTests` by `labRequestGroup` for the scanned USID. AAR **off** — do not pull other specimens into the same request. |
-| `convertRequestTestGroupDataToParam` | No AAR specimen list. |
-| `convertWardDataToParam` | Map request doctor / location / report dest / copy from dictionary the same way retrieve already loads (`constructGcrSpecAckDictionaryParameterVo`). **Do not** call create-doctor. Unmapped locId → packing result that WP4 turns into Failure (R5). |
-| Flex `convertUserInputDataToParam` | Ack/register datetime = **server now** (R12). Collection date from specimen only — do not invent a date if missing (soft later). Urgent workstation **off**. Label flags **off**. No user relabel checkbox. |
-| `useCheckAutoAssignReqNo` assign path | `requestNoAssigned` = USID when R11 eligible. Else leave unset. |
-| `PrintWorksSheet` convertTo*Ro | Optional methods on packing for WP5; **no** `WorksheetPrintService` / PHLC in this task. |
+| Screen                                | Sorter packing                                                                                                                                                                                                                                        |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `getUniqueCurrSpecTestGroup`          | Group `orderTests` by `labRequestGroup` for the scanned USID. AAR **off** — do not pull other specimens into the same request.                                                                                                                        |
+| `convertRequestTestGroupDataToParam`  | No AAR specimen list.                                                                                                                                                                                                                                 |
+| `convertWardDataToParam`              | Map request doctor / location / report dest / copy from dictionary the same way retrieve already loads (`constructGcrSpecAckDictionaryParameterVo`). **Do not** call create-doctor. Unmapped locId → packing result that WP4 turns into Failure (R5). |
+| Flex `convertUserInputDataToParam`    | Ack/register datetime = **server now** (R12). Collection date from specimen only — do not invent a date if missing (soft later). Urgent workstation **off**. Label flags **off**. No user relabel checkbox.                                           |
+| `useCheckAutoAssignReqNo` assign path | `requestNoAssigned` = USID when R11 eligible. Else leave unset.                                                                                                                                                                                       |
+| `PrintWorksSheet` convertTo*Ro        | Optional methods on packing for WP5; **no** `WorksheetPrintService` / PHLC in this task.                                                                                                                                                              |
 
 **DFT (R14, D8):** Same Spec Ack `register()` packing shape. Do **not** call `/api/dftreg/register`. Multi-specimen same time-flag does not get a request number here.
 
