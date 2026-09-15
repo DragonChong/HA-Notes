@@ -268,18 +268,18 @@ HTTP 500. Middleware may retry. Do not bin as Relabel or Failure from this body.
 
 Business codes sit on **`data.code`**, not envelope `code`.
 
-| `data.code` | Typical cause |
-|---|---|
-| `MISSING_USID` / `MISSING_SORTER_ID` | Required field blank |
-| `UNKNOWN_SORTER` | `sorterId` not on `loe_specimen_sorter_map` |
-| `HOSPITAL_MISMATCH` | Request hospital ≠ map `loesort_hosp` |
-| `UNSUPPORTED_LAB` | Order lab not CPS / HMS |
-| `HKID_MISMATCH` / `NAME_MISMATCH` | Optional identity fields do not match GCRS |
-| `MIXED_SENDOUT` | Local and send-out on the same USID (D3) |
-| `1336` / `1337` / `1338` / `1377` | USID format / allowed hospital / check digit / not found (R2) |
-| `0001162` … `0001170`, `1090` | Spec Ack hard validator / mapping |
-| `4422` | STAR, no workbench location (D9) |
-| `WORKBENCH_MISSING` | No `workbench` row for map `wkbh_id` + retrieved lab |
+| `data.code`                          | Typical cause                                                 |
+| ------------------------------------ | ------------------------------------------------------------- |
+| `MISSING_USID` / `MISSING_SORTER_ID` | Required field blank                                          |
+| `UNKNOWN_SORTER`                     | `sorterId` not on `loe_specimen_sorter_map`                   |
+| `HOSPITAL_MISMATCH`                  | Request hospital ≠ map `loesort_hosp`                         |
+| `UNSUPPORTED_LAB`                    | Order lab not CPS / HMS                                       |
+| `HKID_MISMATCH` / `NAME_MISMATCH`    | Optional identity fields do not match GCRS                    |
+| `MIXED_SENDOUT`                      | Local and send-out on the same USID (D3)                      |
+| `1336` / `1337` / `1338` / `1377`    | USID format / allowed hospital / check digit / not found (R2) |
+| `1162` … `1170`, `1090`              | Spec Ack hard validator / mapping                             |
+| `4422`                               | STAR, no workbench location (D9)                              |
+| `WORKBENCH_MISSING`                  | No `workbench` row for map `wkbh_id` + retrieved lab          |
 
 Exact string constants for the sorter-internal codes are set at implement (WP1). Spec Ack numeric codes stay as today.
 
@@ -289,30 +289,17 @@ Exact string constants for the sorter-internal codes are set at implement (WP1).
 - Already used / already registered / deleted specimen → `FAILURE` (R5), HTTP 200.
 - HTTP 500 from **LIS** (envelope `code` 500) is a transport retry. Gateway 401/403 is not. Cap retries (GCRS-LIS: e.g. max 2).
 
-## What this API does not do
-
-- Direct OpenShift call to `lis-crs-spec-ack-svc` from the sorter (consumer = APIM)
-- Hub JWT as the sorter credential
-- Soft-alert text on the body (R6)
-- Label print
-- Caller-assigned request number
-- Retrieve by order number or request number
-- Overload `/gcrSpecAckRegister` or `/v1/ecpath5-register`
-- Reuse `cms-gcrs-lisApiServices/v1` (that product is LIS → GCRS `updateLabOrderStatus` only)
-- Return worksheet / PHLC payload (those run after `REGISTERED` on the server)
-
 ## Environments
 
-| Env | Sorter consumer | Internal LIS |
-|---|---|---|
-| SIT | `apim-gateway-sit.server.ha.org.hk` + `{product}/v1` | `lis-crs-spec-ack-svc` |
-| PPM | `apim-gateway-ppm.server.ha.org.hk` | same service |
-| AAT | `apim-gateway-aat.server.ha.org.hk` | same service |
-| PRD | production APIM host | same service |
+| Env | Sorter consumer                                      | Internal LIS           |
+| --- | ---------------------------------------------------- | ---------------------- |
+| DEV | `apim-gateway-dev.server.ha.org.hk` + `{product}/v1` | `lis-crs-spec-ack-svc` |
+| SIT | `apim-gateway-sit.server.ha.org.hk` + `{product}/v1` | same service           |
+| PPM | `apim-gateway-ppm.server.ha.org.hk`                  | same service           |
+| AAT | `apim-gateway-aat.server.ha.org.hk`                  | same service           |
+| PRD | production APIM host                                 | same service           |
 
 `sorterId` values are data (`loe_specimen_sorter_map`), not ConfigMap keys. Gateway keys are APIM secrets per env.
-
-DEVQA / local may call the service without APIM. That is not the production sorter path.
 
 ## Revision
 
