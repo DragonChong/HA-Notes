@@ -27,19 +27,15 @@ Sorter middleware does **not** call `lis-crs-spec-ack-svc` on the OpenShift rout
 
 Path after `/gateway/` is the **new** product + version.
 
-| Env | API Gateway host                                                       | Method (LIS)                             |
-| --- | ---------------------------------------------------------------------- | ---------------------------------------- |
-| DEV | `https://apim-gateway-dev.server.ha.org.hk:8443/gateway/{product}/v1/` | `POST /api/specack/sorter/auto-register` |
-| SIT | `https://apim-gateway-sit.server.ha.org.hk:8443/gateway/{product}/v1/` | same                                     |
-| PPM | `https://apim-gateway-ppm.server.ha.org.hk:8443/gateway/{product}/v1/` | same                                     |
-| AAT | `https://apim-gateway-aat.server.ha.org.hk:8443/gateway/{product}/v1/` | same                                     |
-| PRD | Refer to production APIM setup                                         | same                                     |
-
-`{product}` is unverified until APIM publish (example shape only: `lis-crs-spec-ack` or similar). Gateway may strip `/api/specack`; the **resource** is still `sorter/auto-register`. Confirm the published path on the usage-form response.
+| Env | API Gateway host                                                                     | Method (LIS)                             |
+| --- | ------------------------------------------------------------------------------------ | ---------------------------------------- |
+| DEV | `https://apim-gateway-dev.server.ha.org.hk:8443/gateway/lis-crs-specAckServices/v1/` | `POST /api/specack/sorter/auto-register` |
+| SIT | `https://apim-gateway-sit.server.ha.org.hk:8443/gateway/lis-crs-specAckServices/v1/` | same                                     |
+| PPM | `https://apim-gateway-ppm.server.ha.org.hk:8443/gateway/lis-crs-specAckServices/v1/` | same                                     |
+| AAT | `https://apim-gateway-aat.server.ha.org.hk:8443/gateway/lis-crs-specAckServices/v1/` | same                                     |
+| PRD | Refer to production APIM setup                                                       | same                                     |
 
 Behind the gateway, LIS remains `lis-crs-spec-ack-svc`, root `/api/specack`. NetworkPolicy is gateway → service, not sorter → the service directly.
-
-**D1 update (consumer):** D1 “no auth header / NetworkPolicy only” applied to a direct call. The **sorter path is APIM**. Gateway enforces the API key. Do not send Hub JWT. LIS still does not treat Hub login as the caller.
 
 ## Service
 
