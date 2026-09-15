@@ -114,11 +114,11 @@ Same `ResultDataResponse` as other Spec Ack APIs (`hk.org.ha.lis.model.response.
 
 ### HTTP status
 
-| HTTP | Envelope `code` | Meaning |
-|---|---|---|
-| 200 | 200 | Decision finished. Read `data.status`: `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE`. |
-| 401 / 403 | (gateway) | Bad or missing `x-gateway-apikey`, or consumer not subscribed. **Not** a sorter bin. Fix key / usage form. |
-| 500 | 500 | Transport / unhandled exception **after** gateway. Middleware may retry the same USID (cap retries like GCRS-LIS §4.2, e.g. max 2). |
+| HTTP      | Envelope `code` | Meaning                                                                                                    |
+| --------- | --------------- | ---------------------------------------------------------------------------------------------------------- |
+| 200       | 200             | Decision finished. Read `data.status`: `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE`.                  |
+| 401 / 403 | (gateway)       | Bad or missing `x-gateway-apikey`, or consumer not subscribed. **Not** a sorter bin. Fix key / usage form. |
+| 500       | 500             | Transport / unhandled exception **after** gateway. Middleware may retry the same USID                      |
 
 Do not use HTTP 4xx from **LIS** for unknown sorter, bad USID, or hard Spec Ack checks — those are HTTP 200 + `FAILURE`. Gateway 4xx is auth/subscription only.
 
