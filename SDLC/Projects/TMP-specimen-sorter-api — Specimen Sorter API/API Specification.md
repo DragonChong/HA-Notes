@@ -70,9 +70,9 @@ LIS body rules for omitted `hospital` (derive from `loe_specimen_sorter_map`) st
 
 ```json
 {
-  "usid": "QHSP2500000012",
-  "sorterId": "KTH-SORTER-01",
-  "hospital": "QEH",
+  "usid": "UC26CAB0079X",
+  "sorterId": "UCH-SORTER-01",
+  "hospital": "UCH",
   "hkid": null,
   "patientName": null
 }
@@ -116,8 +116,8 @@ Do not use HTTP 4xx from **LIS** for unknown sorter, bad USID, or hard Spec Ack 
   "status": "REGISTERED",
   "code": null,
   "message": null,
-  "usid": "QHSP2500000012",
-  "hospital": "QEH",
+  "usid": "UC26CAB0079X",
+  "hospital": "UCH",
   "labCode": "CPS",
   "labNo": 1,
   "testCode": "LFT"
@@ -175,8 +175,8 @@ Soft alerts (overnight, valid period, missing collection date, duplicate/A-A-R, 
   "timestamp": 1778800000000,
   "data": {
     "status": "REGISTERED",
-    "usid": "QHSP2500000012",
-    "hospital": "QEH",
+    "usid": "UC26CAB0079X",
+    "hospital": "UCH",
     "labCode": "CPS",
     "labNo": 1,
     "testCode": "LFT"
@@ -193,11 +193,11 @@ Soft alerts (overnight, valid period, missing collection date, duplicate/A-A-R, 
   "timestamp": 1778800000000,
   "data": {
     "status": "SEND_OUT",
-    "usid": "QHSP2500000012",
-    "hospital": "QEH",
+    "usid": "UC26HAB0139M",
+    "hospital": "UCH",
     "labCode": "HMS",
     "labNo": 3,
-    "testCode": "SO_CLUSTER"
+    "testCode": "SOTEST"
   }
 }
 ```
