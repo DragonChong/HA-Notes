@@ -27,8 +27,7 @@
         { "title": "Existing design", "note": "What the Spec Ack screen owns" },
         { "title": "Proposed change", "note": "One POST, four outcomes" },
         { "title": "API contract and data", "note": "APIM call, sorter map, audit" },
-        { "title": "Promotion and fallback", "note": "Seed, deploy, pilot, roll back" },
-        { "title": "Open questions", "note": "What to settle before SIT" }
+        { "title": "Promotion and fallback", "note": "Seed, deploy, pilot, roll back" }
       ],
       "notes": "Spend the time on the four statuses and the sorter map. Those are the decisions."
     },
@@ -255,37 +254,11 @@
       "notes": "Confirm the Audit Trail filter shows SORT_* before the pilot, or staff cannot find the sorter's attempts."
     },
     {
-      "archetype": "asks",
-      "eyebrow": "07. Open questions",
-      "title": "Three things to settle before SIT",
-      "asks": [
-        { "q": "Does in-process retrieveGcrOrder need the lab before the USID lookup?", "why": "D13. If yes, fix the retrieve, not the map. Do not put lab or server name on the map." },
-        { "q": "Who creates the Change Request key?", "why": "SIT evidence has no ticket yet." },
-        { "q": "Which 2027 promotion window do we file under?", "why": "Target 30 May 2027. June and July 2027 are past the published calendar." }
-      ],
-      "notes": "D1 to D12 and D14 are answered. D13 is the only open design point; the other two are delivery."
-    },
-    {
       "archetype": "statement",
       "align": "center",
       "eyebrow": "Discussion",
       "headline": "Q&A",
       "notes": "Likely questions: why not let middleware call the staff register; why hospital can be omitted; why mixed tubes fail; why server name is not on the map."
-    },
-    {
-      "archetype": "closing",
-      "icon": "rocket",
-      "eyebrow": "Next",
-      "headline": "Target completion",
-      "stat": "30 MAY 2027",
-      "note": "Development runs to 31 Dec 2026. Integration test starts January 2027.",
-      "nextSteps": [
-        { "title": "Change Request", "body": "Create the key by hand" },
-        { "title": "WP1", "body": "Close D13 in the retrieve" },
-        { "title": "SIT seed", "body": "Sorter user, workbench, map row" }
-      ],
-      "identity": { "key": "TMP-000", "meta": "lis-crs-spec-ack-svc  ·  Specimen Sorter API  ·  ref SEM20260612" },
-      "notes": "The date is the end of promotion preparation. Submission is June and pilot July 2027 per the project plan."
     }
   ]
 }
