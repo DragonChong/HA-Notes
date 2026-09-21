@@ -90,7 +90,6 @@ paths:
                       usid: QHSP2500000012
                       hospital: QEH
                       labCode: CPS
-                      labNo: 1
                       testCode: LFT
                 failure:
                   value:
@@ -167,10 +166,7 @@ components:
           description: Performing hospital
         labCode:
           type: string
-          description: Laboratory code
-        labNo:
-          type: integer
-          description: Laboratory number
+          description: Laboratory code (Lab.getCode — CPS / HMS). labNo is not on this payload.
         testCode:
           type: string
           description: GCRS / test / cluster code

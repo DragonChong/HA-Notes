@@ -4,7 +4,7 @@ tags:
   - sdlc
   - api
   - specimen-sorter
-generated_on: 2026-09-15
+generated_on: 2026-09-21
 status: draft
 traces:
   - "[[01 Requirement Confirmation]]"
@@ -134,7 +134,6 @@ Do not use HTTP 4xx from **LIS** for unknown sorter, bad USID, or hard Spec Ack 
   "usid": "UC26CAB0079X",
   "hospital": "UCH",
   "labCode": "CPS",
-  "labNo": 1,
   "testCode": "LFT"
 }
 ```
@@ -146,9 +145,8 @@ Do not use HTTP 4xx from **LIS** for unknown sorter, bad USID, or hard Spec Ack 
 | `message`  | string  | Message text.                                                      |
 | `usid`     | string  | GCRS Specimen Number / USID.                                       |
 | `hospital` | string  | Performing hospital.                                               |
-| `labCode`  | string  | Laboratory code.                                                   |
-| `labNo`    | integer | Laboratory number.                                                 |
-| `testCode` | string  | GCRS test code.                                                    |
+| `labCode`  | string  | Laboratory code (`Lab.getCode()`: `CPS` / `HMS`). Internal `labNo` is not returned. |
+| `testCode` | string  | GCRS test / cluster code.                                          |
 
 `REGISTERED` writes the lab request. `SEND_OUT` uses existing send-out. `RELABEL` and `FAILURE` do not write a lab request (R3). Relabel is never reported as Failure (R4).
 
@@ -175,7 +173,6 @@ Do not use HTTP 4xx from **LIS** for unknown sorter, bad USID, or hard Spec Ack 
     "usid": "UC26CAB0079X",
     "hospital": "UCH",
     "labCode": "CPS",
-    "labNo": 1,
     "testCode": "LFT"
   }
 }
@@ -193,7 +190,6 @@ Do not use HTTP 4xx from **LIS** for unknown sorter, bad USID, or hard Spec Ack 
     "usid": "UC26HAB0139M",
     "hospital": "UCH",
     "labCode": "HMS",
-    "labNo": 3,
     "testCode": "SOTEST"
   }
 }
@@ -211,7 +207,7 @@ Do not use HTTP 4xx from **LIS** for unknown sorter, bad USID, or hard Spec Ack 
     "usid": "UC26CAB00772",
     "hospital": "UCH",
     "labCode": "CPS",
-    "labNo": 1
+    "testCode": "LFT"
   }
 }
 ```
@@ -305,3 +301,4 @@ Exact string constants for the sorter-internal codes are set at implement. Spec 
 | 2026-09-15 | Dropped port numbers from this consumer spec. |
 | 2026-09-15 | Sorter root is `/api/sorter` (`POST /api/sorter/auto-register`). Staff Spec Ack stays `/api/specack`. |
 | 2026-09-15 | Architecture diagram: middleware → APIM → `/api/sorter`; staff stays `/api/specack`. |
+| 2026-09-21 | Dropped `labNo` from `data`. Routing fields are `labCode` and `testCode` (R3, R8). |

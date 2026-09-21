@@ -25,6 +25,8 @@ Design answers D1–D12 stand. 2026-09-10: Existing / Proposed restated as the S
 
 2026-09-21: Map PK is `loesort_sorter_id` (D14). No `loesort_key`. No `loesort_server_name`. `loesort_usercode` VARCHAR2(12) after `loesort_hosp`. `loesort_workbench_id` VARCHAR2(8).
 
+2026-09-21: Sorter `data` includes `labCode` and `testCode` (R3, R8). Do not return `labNo`. Numeric lab stays internal (`Lab.CPS` = 1, `Lab.HMS` = 3 in `lis-common`).
+
 Slides are not this note. After you confirm this delta, `/design-review-pptx` refreshes [[03 Slide Brief]].
 
 ## Context and problem
@@ -224,7 +226,7 @@ Function `SPEC_ACK`. Add `SORT_*` to the Specimen Audit Trail action filter (D6)
 
 Consumer spec: [[API Specification]] · OpenAPI [[assets/specimen-sorter-auto-register.openapi.yaml]]
 
-Traces to: R1, R8, R10
+Traces to: R1, R3, R8, R10
 
 ### Path
 
@@ -253,7 +255,31 @@ Consumer: HA APIM with `x-gateway-apikey` and `x-ha-hospcode` (D1). Internal ser
 
 ### Response
 
-HTTP 200 with status `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE`. Transport errors 500. Soft alerts never in the body.
+HTTP 200 with `data.status` `REGISTERED` / `SEND_OUT` / `RELABEL` / `FAILURE`. Transport errors 500. Soft alerts never in the body.
+
+Envelope is existing `ResultDataResponse`. Middleware bins on `data.status`, not HTTP 200.
+
+```json
+{
+  "status": "REGISTERED",
+  "code": null,
+  "message": null,
+  "usid": "QECAA0032R",
+  "hospital": "QEH",
+  "labCode": "CPS",
+  "testCode": "LFT"
+}
+```
+
+| Field | When | Rule |
+|---|---|---|
+| `status` | Always on HTTP 200 with `data` | Sorter bin (R3, R8). |
+| `code`, `message` | Failure (and Relabel when a message id applies) | Spec Ack / sorter-internal code + text. Null on success. |
+| `usid`, `hospital` | When known | Echo / retrieved performing hospital. |
+| `labCode` | When the GCRS order is retrieved | `Lab.getCode()` — `CPS` or `HMS` (R3, R8). Not `Lab.getShortForm()` (`CHEM` / `HAET`). Not integer `labNo`. |
+| `testCode` | When a GCRS test / cluster code is known | GCRS test code; send-out uses the cluster code matched on `LOE_SENDOUT_TEST` (R7, R8). Relabel after retrieve still returns both when known. Early Failure (missing USID, unknown sorter) may omit them. |
+
+Do not put `labNo` on this payload. Allow-list and workbench lookup still use `Lab.getLabNo()` inside the service.
 
 ## Configuration
 
@@ -303,6 +329,7 @@ Print/PHLC still follow the staff print methods and `LisPhlcLabOrderAppServiceIm
 | `loesort_labno` on the map (one lab per sorter id) | Requester 2026-09-14: one sorter processes more than one lab (D12). |
 | Surrogate `loesort_key` as PK | Requester 2026-09-21: `loesort_sorter_id` is unique; it is the PK (D14). |
 | `loesort_server_name` on the map | Requester 2026-09-21: not needed. Open `LAB_DB` via existing hospital/lab → `LisLabServer` (`HospitalService.resetServiceParameter`) (D14). |
+| Return `labNo` on the sorter `data` payload | Requester 2026-09-21: routing is `labCode` + `testCode` (R3, R8). Numeric lab is internal only. |
 
 ## Promotion impact and fallback
 

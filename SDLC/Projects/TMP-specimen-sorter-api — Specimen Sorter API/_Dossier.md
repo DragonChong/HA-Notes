@@ -45,8 +45,8 @@ work_type: project
 | Stage | Artifact | State |
 |---|---|---|
 | 01 Requirement | [[01 Requirement Confirmation]] | confirmed 2026-09-07; not in gates_passed |
-| 02 Design | [[02 System Design]] | approved 2026-09-10; D14 map delta 2026-09-21 |
-| API spec | [[API Specification]] | draft 2026-09-14 — middleware POST contract + OpenAPI |
+| 02 Design | [[02 System Design]] | approved 2026-09-10; D14 map; 2026-09-21 `labCode`/`testCode` on response |
+| API spec | [[API Specification]] | draft 2026-09-21 — `data` has `labCode` + `testCode`; no `labNo` |
 | 03 Slide Brief | [[03 Slide Brief]] | draft — refreshed 2026-09-21 (D14) |
 | 03 Design Review | [[assets/Specimen Sorter API v3.pptx]] | generated 2026-09-21 |
 | 03 Design Review (prior) | [[assets/Specimen Sorter API v2.pptx]] | superseded 2026-09-21 |
@@ -82,6 +82,7 @@ work_type: project
 - 2026-09-14 — Rejected `loesort_labno` on `loe_specimen_sorter_map`: one sorter processes more than one lab. Lab from retrieved order; workbench by `wkbh_id` + order lab (D12). D13 open: whether retrieve needs lab on `ServiceParameter` first. — agent
 - 2026-09-15 — Sorter consumer is HA APIM (`x-gateway-apikey`, `x-ha-hospcode`), same hosts as GCRS-LIS API specification v1.0. New APIM product — not `cms-gcrs-lisApiServices`. D1 updated. [[API Specification]] — agent
 - 2026-09-21 — [[03 Slide Brief]] refreshed from 02 after D14. New deck `assets/Specimen Sorter API v3.pptx` (15 slides, full profile); v2 kept as prior. `design-review` still not closed. — agent
+- 2026-09-21 — Sorter response `data`: `labCode` + `testCode` (R3, R8). Dropped `labNo` from [[API Specification]] and OpenAPI. Numeric lab stays on `hk.org.ha.lis.enums.Lab`. — agent
 - 2026-09-10 — JIRA log drafted: [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]]. Target 30th May, 2027. No JIRA key yet. — agent
 - 2026-09-10 — [[05 Project Plan]] drafted from the programme 12-row schedule, backwards from Jun 2027 submission. 2027 window is not in [[Promotion Windows]]. Estimates await acceptance. `plan` not in `gates_passed`. — agent
 - 2026-09-10 — Estimates on [[05 Project Plan]] accepted. `plan` written to `gates_passed`. Stage → development. JIRA key still missing. — Ka
