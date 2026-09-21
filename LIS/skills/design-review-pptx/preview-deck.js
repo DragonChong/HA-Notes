@@ -32,7 +32,7 @@ function fontCss(face) {
   const f = face || K.font.body;
   if (f === K.font.mono) return `font-family:Consolas,'SF Mono',Menlo,monospace`;
   const weight = /Semibold/i.test(f) ? ';font-weight:600' : '';
-  return `font-family:'Segoe UI',system-ui,-apple-system,sans-serif${weight}`;
+  return `font-family:'Segoe UI',Calibri,'Microsoft YaHei',sans-serif${weight}`;
 }
 
 /** CSS shape for the preset geometries the kit actually uses. */
@@ -115,11 +115,24 @@ function cellBorders(border) {
  * Tables are drawn as absolutely-positioned cells, not as an HTML <table>: a
  * real <table> grows rows to fit content, which PowerPoint never does.
  */
+/** pptxgenjs table margin: points when [0] >= 1, otherwise inches. */
+function tablePad(margin) {
+  const m = margin == null ? [0.06, 0.14, 0.06, 0.14] : margin;
+  const box = Array.isArray(m) ? m : [m, m, m, m];
+  const unit = box[0] >= 1 ? PT : PX;
+  return {
+    top: (box[0] || 0) * unit,
+    right: (box[1] || 0) * unit,
+    bottom: (box[2] || 0) * unit,
+    left: (box[3] || 0) * unit,
+  };
+}
+
 function tableHtml(op) {
   const o = op.options || {};
   const colW = o.colW || [];
   const rowH = o.rowH || [];
-  const padX = ((o.margin && o.margin[1]) || 10) * PT;
+  const pad = tablePad(o.margin);
   const cells = [];
   let top = o.y;
 
@@ -138,7 +151,8 @@ function tableHtml(op) {
         fontCss(co.fontFace),
         `font-size:${((co.fontSize || 13) * PT).toFixed(2)}px`,
         cellBorders(co.border),
-        `padding:0 ${padX.toFixed(1)}px;display:flex;align-items:center`,
+        `padding:${pad.top.toFixed(1)}px ${pad.right.toFixed(1)}px ${pad.bottom.toFixed(1)}px ${pad.left.toFixed(1)}px`,
+        'display:flex;align-items:center;white-space:pre-wrap',
       ];
       if (co.bold) st.push('font-weight:700');
       cells.push(`<div style="${st.join(';')}">${esc(c.text)}</div>`);

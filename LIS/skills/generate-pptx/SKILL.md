@@ -193,6 +193,9 @@ same one-off, it is an archetype, not a `custom` slide.
 
 - **`addShape(shape, { text })` silently drops the text** in pptxgenjs 3.12. Use
   `deck-kit.shapeText()`, which wraps the working `addText(str, { shape })`.
+- **Table `margin` is inches when the top value is under 1.** pptxgenjs reads
+  `[0, 16, 0, 16]` as 16 inches of side padding and wraps every cell to one
+  character. The kit already passes inches (`[0.06, 0.22, 0.06, 0.22]`).
 - **Table height is set by row heights, not the `h` you pass.** A matrix with
   more than 5 body rows collides with its takeaway cards; QA catches this.
 - **PowerPoint does not clip overflowing text**, it spills it over whatever is

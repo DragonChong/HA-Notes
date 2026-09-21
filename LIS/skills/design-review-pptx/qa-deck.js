@@ -202,6 +202,16 @@ function checkSlide(slide) {
       });
     }
 
+    // -- table cell margin units (pptxgenjs: [0] < 1 => inches)
+    if (op.kind === 'table' && Array.isArray(o.margin)) {
+      const [t, r, b, l] = o.margin;
+      if (t < 1 && Math.max(r || 0, b || 0, l || 0) > 1) {
+        err(n, `table margin [${o.margin}] looks like points but pptxgenjs `
+          + `will read it as inches (because top ${t} < 1). Use inches `
+          + `(e.g. [0.06, 0.22, 0.06, 0.22]) or set top >= 1`);
+      }
+    }
+
     // -- table cells
     if (op.kind === 'table') {
       (op.rows || []).forEach((row) => {

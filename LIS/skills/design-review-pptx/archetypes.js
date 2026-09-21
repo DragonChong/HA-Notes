@@ -547,10 +547,13 @@ function matrix(pptx, slide, spec) {
   const blockH = tableH + (tkH ? 0.3 + tkH : 0);
   const y = centreY(blockH);
 
+  // pptxgenjs table margin: if [0] >= 1 the values are points; if [0] < 1
+  // they are inches. `[0, 16, 0, 16]` was read as 16" of side padding and
+  // crushed every cell to a one-character column.
   slide.addTable([headerRow, ...bodyRows], {
     x: grid.margin, y, w: grid.contentW, colW,
     rowH: Array(bodyRows.length + 1).fill(rowH),
-    margin: [0, 16, 0, 16],
+    margin: [0.06, 0.22, 0.06, 0.22],
   });
   K.card(pptx, slide, { x: grid.margin, y, w: grid.contentW, h: tableH, outlineOnly: true });
 
