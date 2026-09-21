@@ -95,7 +95,13 @@
       "start": { "text": "POST\nUSID + sorterId", "w": 1.7 },
       "decisions": [
         {
-          "text": "Checks\npass?",
+          "text": "All tests\nsend-out?",
+          "w": 2.3,
+          "inLabel": "No",
+          "fallthrough": { "label": "Yes", "title": "SEND_OUT", "body": "Existing send-out, no print" }
+        },
+        {
+          "text": "Validations\npass?",
           "w": 2.3,
           "fallthrough": { "label": "No", "title": "FAILURE", "body": "Unknown sorter, lab, mixed, hard check, 4422" }
         },
@@ -104,12 +110,6 @@
           "w": 2.3,
           "inLabel": "Yes",
           "fallthrough": { "label": "Yes", "title": "RELABEL", "body": "Multi-group, suffix, DFT time flag" }
-        },
-        {
-          "text": "All tests\nsend-out?",
-          "w": 2.3,
-          "inLabel": "No",
-          "fallthrough": { "label": "Yes", "title": "SEND_OUT", "body": "Existing send-out, no print" }
         }
       ],
       "terminal": { "label": "No", "text": "REGISTERED" },
