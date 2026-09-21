@@ -1,0 +1,294 @@
+{
+  "meta": {
+    "title": "Specimen Sorter API",
+    "subject": "lis-crs-spec-ack-svc - one POST to send out or register a tube by USID",
+    "author": "Ka",
+    "company": "Hospital Authority"
+  },
+  "slides": [
+    {
+      "archetype": "title-hero",
+      "eyebrow": "CP3 · Design review · 21 Sep 2026",
+      "headline": "Specimen Sorter API",
+      "lede": "Sorter middleware calls one POST on lis-crs-spec-ack-svc. It sends out or registers the tube by USID, with the checks and packing Specimen Acknowledgement runs today.",
+      "stats": [
+        { "label": "Service", "value": "lis-crs-spec-ack-svc" },
+        { "label": "Change", "value": "TMP-000" },
+        { "label": "Target", "value": "30 May 2027" },
+        { "label": "Status", "value": "Design approved", "highlight": true }
+      ],
+      "presenters": "Ka",
+      "reviewers": "Tony Chong, CP3 panel",
+      "notes": "Tony Chong reviewed the design on 10 Sep. Since then: no lab on the map (14 Sep), HA APIM as the consumer (15 Sep), and the map PK / column lengths (21 Sep). The Change Request key still has to be created by hand."
+    },
+    {
+      "archetype": "agenda",
+      "eyebrow": "Agenda",
+      "title": "What this review covers",
+      "items": [
+        { "title": "Background", "note": "Staff clicks today, sorter calls tomorrow" },
+        { "title": "Existing design", "note": "What the Spec Ack screen owns" },
+        { "title": "Proposed change", "note": "One POST, four outcomes" },
+        { "title": "API contract and data", "note": "APIM call, sorter map, audit" },
+        { "title": "Promotion and fallback", "note": "Seed, deploy, pilot, roll back" },
+        { "title": "Open questions", "note": "What to settle before SIT" }
+      ],
+      "notes": "Spend the time on the four statuses and the sorter map. Those are the decisions."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "01. Background",
+      "title": "Staff scan and click today. The sorter will call LIS",
+      "left": {
+        "label": "As-is",
+        "tone": "danger",
+        "title": "Staff scan and press",
+        "points": [
+          "Where: Specimen Acknowledgement in lab-crs-app",
+          "Action: scan the label, then Send-out or Register",
+          "Checks and packing: run on the screen"
+        ]
+      },
+      "right": {
+        "label": "To-be",
+        "tone": "accent",
+        "title": "Sorter scans, LIS decides",
+        "points": [
+          "Where: sorter middleware through HA APIM",
+          "Action: one POST with the USID",
+          "Result: status on the same call, sorter bins the tube"
+        ]
+      },
+      "notes": "Middleware cannot call the staff register endpoint on its own, because the packing is built on the screen first. That is why there is a new API."
+    },
+    {
+      "archetype": "matrix",
+      "eyebrow": "02. Existing design",
+      "title": "The Spec Ack screen owns validation and packing",
+      "table": {
+        "colWidths": [2.0, 3.2, 3.5, 3.3],
+        "headers": ["Action", "Screen does", "Service does", "Sorter API"],
+        "rows": [
+          [{ "text": "Retrieve GCRS order", "bold": true, "color": "ink" }, "Scans USID, calls retrieve", { "text": "retrieveGcrOrder (GET hard-codes ltc611)", "mono": true }, { "text": "Retrieve as the mapped user", "tone": "accent" }],
+          [{ "text": "Send-out", "bold": true, "color": "ink" }, "Staff click", { "text": "sendOutSpecimen", "mono": true }, { "text": "Same send-out path", "tone": "accent" }],
+          [{ "text": "Validation", "bold": true, "color": "ink" }, "Soft prompts, hard validator", "Assumes checks passed", { "text": "Soft to ALS, hard to Failure", "tone": "accent" }],
+          [{ "text": "Packing", "bold": true, "color": "ink" }, "Groups tests, request no., ward and doctor", { "text": "register() needs the packing", "mono": true }, { "text": "Server-side convertor", "tone": "accent" }],
+          [{ "text": "Worksheet", "bold": true, "color": "ink" }, "Builds Ro, staff pick", "Three print methods", { "text": "Print all, after Registered", "tone": "accent" }],
+          [{ "text": "PHLC", "bold": true, "color": "ink" }, "Calls after register", { "text": "createPhlcLabOrder", "mono": true }, { "text": "After Registered", "tone": "accent" }]
+        ]
+      },
+      "notes": "The service only runs the writes. The second column is what moves behind the POST."
+    },
+    {
+      "archetype": "cards",
+      "eyebrow": "03. Proposed change",
+      "title": "One POST, the screen logic behind it, one map table",
+      "perRow": 4,
+      "cards": [
+        { "icon": "code", "title": "New API", "body": "POST /api/sorter/auto-register on lis-crs-spec-ack-svc. Staff /api/specack is unchanged." },
+        { "icon": "layer-group", "title": "Move screen logic", "body": "Retrieve, validation and packing run server-side, then the existing send-out, register, print and PHLC." },
+        { "icon": "table", "title": "Sorter map", "body": "loe_specimen_sorter_map: sorter id (PK) to LIS user, hospital and workbench. No lab. No server name." },
+        { "icon": "clipboard-check", "title": "Audit", "body": "SORT_* actions plus today's REG and SEND_OUT on LOE_AUDIT_TRAIL." }
+      ],
+      "notes": "No new service and no DDL on workbench. Staff Spec Ack stays as the Relabel and Failure bin."
+    },
+    {
+      "archetype": "decision-flow",
+      "eyebrow": "03A. Outcome flow",
+      "title": "Every tube ends in one of four statuses",
+      "start": { "text": "POST\nUSID + sorterId", "w": 1.7 },
+      "decisions": [
+        {
+          "text": "Checks\npass?",
+          "w": 2.3,
+          "fallthrough": { "label": "No", "title": "FAILURE", "body": "Unknown sorter, lab, mixed, hard check, 4422" }
+        },
+        {
+          "text": "Relabel\nrules?",
+          "w": 2.3,
+          "inLabel": "Yes",
+          "fallthrough": { "label": "Yes", "title": "RELABEL", "body": "Multi-group, suffix, DFT time flag" }
+        },
+        {
+          "text": "All tests\nsend-out?",
+          "w": 2.3,
+          "inLabel": "No",
+          "fallthrough": { "label": "Yes", "title": "SEND_OUT", "body": "Existing send-out, no print" }
+        }
+      ],
+      "terminal": { "label": "No", "text": "REGISTERED" },
+      "condition": {
+        "label": "Returned on data.status",
+        "code": "REGISTERED | SEND_OUT | RELABEL | FAILURE",
+        "note": "HTTP 200 on every decision. Soft alerts go to ALS, never the body."
+      },
+      "notes": "A tube with both local and send-out tests fails rather than splitting (D3). Relabel is not reported as Failure."
+    },
+    {
+      "archetype": "code-findings",
+      "eyebrow": "04. API contract",
+      "title": "Middleware calls through HA APIM with a gateway key",
+      "code": {
+        "filename": "POST /api/sorter/auto-register",
+        "language": "JSON",
+        "lines": [
+          [{ "text": "// request", "color": "comment" }],
+          "{",
+          [{ "text": "  \"usid\"", "color": "string" }, { "text": ": " }, { "text": "\"QHSP2500000012\"", "color": "literal" }, { "text": "," }],
+          [{ "text": "  \"sorterId\"", "color": "string" }, { "text": ": " }, { "text": "\"KTH-SORTER-01\"", "color": "literal" }, { "text": "," }],
+          [{ "text": "  \"hospital\"", "color": "string" }, { "text": ": " }, { "text": "\"QEH\"", "color": "literal" }, { "text": "," }],
+          [{ "text": "  \"hkid\"", "color": "string" }, { "text": ": " }, { "text": "null", "color": "keyword" }, { "text": ", " }, { "text": "\"patientName\"", "color": "string" }, { "text": ": " }, { "text": "null", "color": "keyword" }],
+          "}",
+          "",
+          [{ "text": "// response data", "color": "comment" }],
+          "{",
+          [{ "text": "  \"status\"", "color": "string" }, { "text": ": " }, { "text": "\"REGISTERED\"", "color": "literal" }],
+          "}"
+        ]
+      },
+      "findings": [
+        { "icon": "key", "title": "Gateway headers", "body": "x-gateway-apikey and x-ha-hospcode. No Hub JWT." },
+        { "icon": "server", "title": "Hospital is optional", "body": "Omitted: loesort_hosp. Different from the map: Failure." },
+        { "icon": "triangle-exclamation", "title": "Bin from data.status", "body": "HTTP 200 is not Registered. 500 means retry." }
+      ],
+      "findingTone": "accent",
+      "notes": "Same hosts and headers as the GCRS-LIS API specification v1.0, but a new APIM product. Business failure codes sit on data.code, never as an HTTP 4xx from LIS."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "04A. Sorter identity",
+      "title": "User and workbench come from the sorter id, not a PC",
+      "left": {
+        "label": "Staff today",
+        "tone": "neutral",
+        "title": "Login decides",
+        "points": [
+          "User: staff LIS account",
+          "Workbench: selectWorkbench by PC name or IP",
+          "Retrieve GET: hard-codes user ltc611"
+        ]
+      },
+      "right": {
+        "label": "Sorter POST",
+        "tone": "accent",
+        "title": "Sorter id decides",
+        "points": [
+          "User: loesort_usercode on the map",
+          "Workbench: map wkbh_id plus the order's lab",
+          "Hospital: request value, else loesort_hosp",
+          "Server: HospitalService from hosp and lab"
+        ]
+      },
+      "notes": "The sorter must never use the retrieve GET, because of the hard-coded user. Audit rows carry the map user and the workbench station name."
+    },
+    {
+      "archetype": "matrix",
+      "eyebrow": "04B. Data model",
+      "title": "Sorter id is the PK. Lab and server stay off the map",
+      "table": {
+        "colWidths": [3.4, 2.6, 6.0],
+        "headers": ["Column", "Type", "Role"],
+        "rows": [
+          [{ "text": "loesort_sorter_id", "mono": true }, "VARCHAR2(64)", "Primary key; unique sorter identifier"],
+          [{ "text": "loesort_hosp", "mono": true }, "VARCHAR2(8)", "Hospital when the request omits it"],
+          [{ "text": "loesort_usercode", "mono": true }, "VARCHAR2(12)", "Dedicated sorter LIS user"],
+          [{ "text": "loesort_workbench_id", "mono": true }, "VARCHAR2(8)", "Workbench, loaded with the order's lab"]
+        ]
+      },
+      "takeaways": [
+        { "title": "One sorter, more than one lab", "body": "Lab comes from the retrieved order. Seed one workbench row per lab; a missing row is Failure (D12)." },
+        { "title": "No server column", "body": "ServiceParameterVo.serverName comes from HospitalService / LisLabServer, not loesort_server_name (D14)." }
+      ],
+      "notes": "Rollback is DROP TABLE. No loesort_key. Location, station name and printer stay on workbench."
+    },
+    {
+      "archetype": "matrix",
+      "eyebrow": "04C. Status and audit",
+      "title": "Only REGISTERED prints, and only after the response",
+      "table": {
+        "colWidths": [2.1, 3.9, 3.9, 2.1],
+        "headers": ["Status", "Writes", "Worksheet and PHLC", "Sorter bin"],
+        "rows": [
+          [{ "text": "REGISTERED", "tone": "success" }, "Lab request, SORT_REG and REG", "All worksheets, then PHLC, after return", "In-house"],
+          [{ "text": "SEND_OUT", "tone": "accent" }, "Send-out, tracking, SORT_SO and SEND_OUT", { "text": "None", "color": "muted" }, "Send-out"],
+          [{ "text": "RELABEL", "tone": "warn" }, "SORT_RELABEL only", { "text": "None", "color": "muted" }, "Staff Spec Ack"],
+          [{ "text": "FAILURE", "tone": "danger" }, "SORT_FAIL with message code", { "text": "None", "color": "muted" }, "Staff Spec Ack"]
+        ]
+      },
+      "notes": "A late worksheet does not change a status already returned (D4). Print failure is an ALS warning, nothing more."
+    },
+    {
+      "archetype": "stats",
+      "eyebrow": "05. Non-functional",
+      "title": "One synchronous call per tube",
+      "stats": [
+        { "value": "< 4 s", "label": "p95 response", "body": "Through audit commit, print excluded" },
+        { "value": "~20/min", "label": "Per lab in v1", "body": "One call per tube, sync" },
+        { "value": "CPS, HMS", "label": "Labs on the order", "body": "APS, BBS and MBS return Failure" }
+      ],
+      "notes": "Print sits outside the 4 second budget, which is why it runs after the response."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "06. Promotion and fallback",
+      "title": "Seed the map, open the gateway path, pilot CPS and HMS",
+      "left": {
+        "icon": "cloud-arrow-up",
+        "tone": "success",
+        "title": "Promotion",
+        "steps": [
+          "Create the sorter LIS user.",
+          "Seed a workbench row per lab.",
+          "Insert the map row: PK sorter id, no lab, no server name.",
+          "Deploy lis-crs-spec-ack-svc.",
+          "Publish the APIM product and NetworkPolicy.",
+          "Pilot CPS and HMS."
+        ]
+      },
+      "right": {
+        "icon": "rotate-left",
+        "tone": "danger",
+        "title": "Fallback",
+        "steps": [
+          "Stop the middleware. Staff Spec Ack is unchanged.",
+          "Drop loe_specimen_sorter_map on full rollback.",
+          "No conversion of historical requests."
+        ]
+      },
+      "notes": "Confirm the Audit Trail filter shows SORT_* before the pilot, or staff cannot find the sorter's attempts."
+    },
+    {
+      "archetype": "asks",
+      "eyebrow": "07. Open questions",
+      "title": "Three things to settle before SIT",
+      "asks": [
+        { "q": "Does in-process retrieveGcrOrder need the lab before the USID lookup?", "why": "D13. If yes, fix the retrieve, not the map. Do not put lab or server name on the map." },
+        { "q": "Who creates the Change Request key?", "why": "SIT evidence has no ticket yet." },
+        { "q": "Which 2027 promotion window do we file under?", "why": "Target 30 May 2027. June and July 2027 are past the published calendar." }
+      ],
+      "notes": "D1 to D12 and D14 are answered. D13 is the only open design point; the other two are delivery."
+    },
+    {
+      "archetype": "statement",
+      "align": "center",
+      "eyebrow": "Discussion",
+      "headline": "Q&A",
+      "notes": "Likely questions: why not let middleware call the staff register; why hospital can be omitted; why mixed tubes fail; why server name is not on the map."
+    },
+    {
+      "archetype": "closing",
+      "icon": "rocket",
+      "eyebrow": "Next",
+      "headline": "Target completion",
+      "stat": "30 MAY 2027",
+      "note": "Development runs to 31 Dec 2026. Integration test starts January 2027.",
+      "nextSteps": [
+        { "title": "Change Request", "body": "Create the key by hand" },
+        { "title": "WP1", "body": "Close D13 in the retrieve" },
+        { "title": "SIT seed", "body": "Sorter user, workbench, map row" }
+      ],
+      "identity": { "key": "TMP-000", "meta": "lis-crs-spec-ack-svc  ·  Specimen Sorter API  ·  ref SEM20260612" },
+      "notes": "The date is the end of promotion preparation. Submission is June and pilot July 2027 per the project plan."
+    }
+  ]
+}
