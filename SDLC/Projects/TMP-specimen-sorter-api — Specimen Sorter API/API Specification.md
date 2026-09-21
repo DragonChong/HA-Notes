@@ -103,8 +103,6 @@ LIS body rules for omitted `hospital` (derive from `loe_specimen_sorter_map`) st
 
 ## Response envelope
 
-Same `ResultDataResponse` as other Spec Ack APIs (`hk.org.ha.lis.model.response.ResultDataResponse`).
-
 | Field | Type | Description |
 |---|---|---|
 | `code` | integer | Envelope result code. |
@@ -112,7 +110,7 @@ Same `ResultDataResponse` as other Spec Ack APIs (`hk.org.ha.lis.model.response.
 | `data` | object or null | Sorter result payload. |
 | `timestamp` | long | Time the response was produced. |
 
-**Middleware rule:** treat `data.status` as the bin. Do **not** treat HTTP 200 as Registered. Soft alerts are never in this body (R6).
+Treat `data.status` as the bin. Do **not** treat HTTP 200 as Registered. Soft alerts are never in this body (R6).
 
 ### HTTP status
 
