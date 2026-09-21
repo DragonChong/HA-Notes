@@ -32,7 +32,7 @@ From [[02 System Design]]. Sizes are working days (weekends excluded). They sit 
 
 | ID  | Package                                 | From design                                                                             | Size | Days | Owner                    |
 | --- | --------------------------------------- | --------------------------------------------------------------------------------------- | ---- | ---- | ------------------------ |
-| WP1 | New auto-register POST and orchestrator | `POST /api/sorter/auto-register` on `lis-crs-spec-ack-svc`                      | XL   | 10   | LIS Product Team         |
+| WP1 | New auto-register POST and orchestrator | `POST /api/sorter/auto-register` on `lis-crs-spec-ack-svc`                              | XL   | 10   | LIS Product Team         |
 | WP2 | Map table and lookup                    | `loe_specimen_sorter_map` DDL + rollback; sorter id → user and workbench                | M    | 3    | LIS Product Team, Vendor |
 | WP3 | Move packing to the API                 | Group tests, request no., ward/doctor convert (today on the screen)                     | XL   | 10   | LIS Product Team         |
 | WP4 | Checks, relabel, send-out               | Hard/soft checks; Relabel; `LOE_SENDOUT_TEST`; mixed → Failure                          | XL   | 10   | LIS Product Team         |
