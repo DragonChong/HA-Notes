@@ -40,7 +40,7 @@
         "tone": "danger",
         "title": "Staff scan and press",
         "points": [
-          "Where: Specimen Acknowledgement in lab-crs-app",
+          "Where: Specimen Acknowledgement in ECPath",
           "Action: scan the label, then Send-out or Register",
           "Checks and packing: run on the screen"
         ]
