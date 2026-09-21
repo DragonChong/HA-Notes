@@ -13,12 +13,10 @@
       "lede": "Sorter middleware calls one POST on lis-crs-spec-ack-svc. It sends out or registers the tube by USID, with the checks and packing Specimen Acknowledgement runs today.",
       "stats": [
         { "label": "Service", "value": "lis-crs-spec-ack-svc" },
-        { "label": "Change", "value": "TMP-000" },
-        { "label": "Target", "value": "30 May 2027" },
+        { "label": "Change", "value": "LIS-XXXXX" },
         { "label": "Status", "value": "Design approved", "highlight": true }
       ],
-      "presenters": "Ka",
-      "reviewers": "Tony Chong, CP3 panel",
+      "presenters": "Tony Chong",
       "notes": "Tony Chong reviewed the design on 10 Sep. Since then: no lab on the map (14 Sep), HA APIM as the consumer (15 Sep), and the map PK / column lengths (21 Sep). The Change Request key still has to be created by hand."
     },
     {
