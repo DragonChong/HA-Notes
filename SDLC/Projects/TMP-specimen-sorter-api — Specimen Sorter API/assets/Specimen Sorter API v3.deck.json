@@ -23,11 +23,11 @@
       "eyebrow": "Agenda",
       "title": "What this review covers",
       "items": [
-        { "title": "Background", "note": "Staff clicks today, sorter calls tomorrow" },
-        { "title": "Existing design", "note": "What the Spec Ack screen owns" },
-        { "title": "Proposed change", "note": "One POST, four outcomes" },
-        { "title": "API contract and data", "note": "APIM call, sorter map, audit" },
-        { "title": "Promotion and fallback", "note": "Seed, deploy, pilot, roll back" }
+        { "title": "Background"},
+        { "title": "Existing design"},
+        { "title": "Proposed change"},
+        { "title": "API contract and data"},
+        { "title": "Promotion and fallback"}
       ],
       "notes": "Spend the time on the four statuses and the sorter map. Those are the decisions."
     },
