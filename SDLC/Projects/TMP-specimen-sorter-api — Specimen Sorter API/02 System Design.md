@@ -246,12 +246,12 @@ Consumer: HA APIM with `x-gateway-apikey` and `x-ha-hospcode` (D1). Internal ser
 }
 ```
 
-| Field | Required | Rule |
-|---|---|---|
-| `usid` | Yes | Else Failure, no write. |
-| `sorterId` | Yes | Lookup `loe_specimen_sorter_map` by `loesort_sorter_id`. Unknown → Failure. Derives user, hosp, workbench id. Lab from the retrieved order. Server name from `HospitalService` / `LisLabServer`, not the map. |
-| `hospital` | No | If omitted, derive from map / workbench. If sent, must match `loesort_hosp` / `wkbh_hosp` or Failure. |
-| `hkid`, `patientName` | No | Present + mismatch → Failure. |
+| Field                 | Required | Rule                                                                                                                                                                                                          |
+| --------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `usid`                | Yes      | Else Failure, no write.                                                                                                                                                                                       |
+| `sorterId`            | Yes      | Lookup `loe_specimen_sorter_map` by `loesort_sorter_id`. Unknown → Failure. Derives user, hosp, workbench id. Lab from the retrieved order. Server name from `HospitalService` / `LisLabServer`, not the map. |
+| `hospital`            | No       | If omitted, derive from map / workbench. If sent, must match `loesort_hosp` / `wkbh_hosp` or Failure.                                                                                                         |
+| `hkid`, `patientName` | No       | Present + mismatch → Failure.                                                                                                                                                                                 |
 
 ### Response
 
