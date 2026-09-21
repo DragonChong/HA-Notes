@@ -309,27 +309,27 @@ Print/PHLC still follow the staff print methods and `LisPhlcLabOrderAppServiceIm
 
 ## Rejected alternatives
 
-| Alternative | Why rejected |
-|---|---|
-| Middleware retrieve then register | Packing still in the caller; convertor would not move. |
-| Overload `/gcrSpecAckRegister` | Staff packing contract. |
-| Overload ECPath5 register | Different caller; hard-coded user. |
-| Skip convertor, only validator | `register()` will not get test groups / USID request no. / mapped locations. |
-| `LOE_CONTROL` instead of map table | Requester chose a sorter map table (D7). |
-| Keep table name `loe_sorter_map` | Requester 2026-09-10: `loe_specimen_sorter_map`. |
-| Duplicate hosp/printer on the map only | Workbench already holds them; map points at workbench (D2). |
-| Require hospital on every request | Requirement: derive from sorter id when omitted. |
-| Hub JWT as sorter credential | APIM `x-gateway-apikey` instead (D1, GCRS-LIS pattern). |
-| Staff worksheet picker | Print all (D5). |
-| Sync print in the HTTP call | Breaks 4 s; late worksheet accepted on Registered (D4). |
-| Print worksheet after send-out / ack | Registration only (D11). |
-| Invent STAR location when workbench has none | Failure (D9). |
-| Mixed: send-out subset only | Failure (D3). |
-| Fail when workbench lab ≠ test lab | Requester: no check (D10). |
-| `loesort_labno` on the map (one lab per sorter id) | Requester 2026-09-14: one sorter processes more than one lab (D12). |
-| Surrogate `loesort_key` as PK | Requester 2026-09-21: `loesort_sorter_id` is unique; it is the PK (D14). |
-| `loesort_server_name` on the map | Requester 2026-09-21: not needed. Open `LAB_DB` via existing hospital/lab → `LisLabServer` (`HospitalService.resetServiceParameter`) (D14). |
-| Return `labNo` on the sorter `data` payload | Requester 2026-09-21: routing is `labCode` + `testCode` (R3, R8). Numeric lab is internal only. |
+| Alternative                                        | Why rejected                                                                                                                                |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Middleware retrieve then register                  | Packing still in the caller; convertor would not move.                                                                                      |
+| Overload `/gcrSpecAckRegister`                     | Staff packing contract.                                                                                                                     |
+| Overload ECPath5 register                          | Different caller; hard-coded user.                                                                                                          |
+| Skip convertor, only validator                     | `register()` will not get test groups / USID request no. / mapped locations.                                                                |
+| `LOE_CONTROL` instead of map table                 | Requester chose a sorter map table (D7).                                                                                                    |
+| Keep table name `loe_sorter_map`                   | Requester 2026-09-10: `loe_specimen_sorter_map`.                                                                                            |
+| Duplicate hosp/printer on the map only             | Workbench already holds them; map points at workbench (D2).                                                                                 |
+| Require hospital on every request                  | Requirement: derive from sorter id when omitted.                                                                                            |
+| Hub JWT as sorter credential                       | APIM `x-gateway-apikey` instead (D1, GCRS-LIS pattern).                                                                                     |
+| Staff worksheet picker                             | Print all (D5).                                                                                                                             |
+| Sync print in the HTTP call                        | Breaks 4 s; late worksheet accepted on Registered (D4).                                                                                     |
+| Print worksheet after send-out / ack               | Registration only (D11).                                                                                                                    |
+| Invent STAR location when workbench has none       | Failure (D9).                                                                                                                               |
+| Mixed: send-out subset only                        | Failure (D3).                                                                                                                               |
+| Fail when workbench lab ≠ test lab                 | Requester: no check (D10).                                                                                                                  |
+| `loesort_labno` on the map (one lab per sorter id) | Requester 2026-09-14: one sorter processes more than one lab (D12).                                                                         |
+| Surrogate `loesort_key` as PK                      | Requester 2026-09-21: `loesort_sorter_id` is unique; it is the PK (D14).                                                                    |
+| `loesort_server_name` on the map                   | Requester 2026-09-21: not needed. Open `LAB_DB` via existing hospital/lab → `LisLabServer` (`HospitalService.resetServiceParameter`) (D14). |
+| Return `labNo` on the sorter `data` payload        | Requester 2026-09-21: routing is `labCode` + `testCode` (R3, R8). Numeric lab is internal only.                                             |
 
 ## Promotion impact and fallback
 
