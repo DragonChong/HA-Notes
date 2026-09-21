@@ -130,8 +130,8 @@
         "lines": [
           [{ "text": "// request", "color": "comment" }],
           "{",
-          [{ "text": "  \"usid\"", "color": "string" }, { "text": ": " }, { "text": "\"QHSP2500000012\"", "color": "literal" }, { "text": "," }],
-          [{ "text": "  \"sorterId\"", "color": "string" }, { "text": ": " }, { "text": "\"KTH-SORTER-01\"", "color": "literal" }, { "text": "," }],
+          [{ "text": "  \"usid\"", "color": "string" }, { "text": ": " }, { "text": "\"QECAA0032R\"", "color": "literal" }, { "text": "," }],
+          [{ "text": "  \"sorterId\"", "color": "string" }, { "text": ": " }, { "text": "\"QEH-SORTER-01\"", "color": "literal" }, { "text": "," }],
           [{ "text": "  \"hospital\"", "color": "string" }, { "text": ": " }, { "text": "\"QEH\"", "color": "literal" }, { "text": "," }],
           [{ "text": "  \"hkid\"", "color": "string" }, { "text": ": " }, { "text": "null", "color": "keyword" }, { "text": ", " }, { "text": "\"patientName\"", "color": "string" }, { "text": ": " }, { "text": "null", "color": "keyword" }],
           "}",

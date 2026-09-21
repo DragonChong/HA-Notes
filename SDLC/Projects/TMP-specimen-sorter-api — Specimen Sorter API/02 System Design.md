@@ -236,8 +236,8 @@ Consumer: HA APIM with `x-gateway-apikey` and `x-ha-hospcode` (D1). Internal ser
 
 ```json
 {
-  "usid": "QHSP2500000012",
-  "sorterId": "KTH-SORTER-01",
+  "usid": "QECAA0032R",
+  "sorterId": "QEH-SORTER-01",
   "hospital": "QEH",
   "hkid": null,
   "patientName": null
