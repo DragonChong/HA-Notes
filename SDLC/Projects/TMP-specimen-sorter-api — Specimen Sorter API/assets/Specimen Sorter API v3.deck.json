@@ -138,7 +138,9 @@
           "",
           [{ "text": "// response data", "color": "comment" }],
           "{",
-          [{ "text": "  \"status\"", "color": "string" }, { "text": ": " }, { "text": "\"REGISTERED\"", "color": "literal" }],
+          [{ "text": "  \"status\"", "color": "string" }, { "text": ": " }, { "text": "\"REGISTERED\"", "color": "literal" }, { "text": "," }],
+          [{ "text": "  \"labCode\"", "color": "string" }, { "text": ": " }, { "text": "\"CPS\"", "color": "literal" }, { "text": "," }],
+          [{ "text": "  \"testCode\"", "color": "string" }, { "text": ": " }, { "text": "\"LFT\"", "color": "literal" }],
           "}"
         ]
       },

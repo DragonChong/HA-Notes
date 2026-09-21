@@ -48,7 +48,7 @@ work_type: project
 | 02 Design | [[02 System Design]] | approved 2026-09-10; D14 map; 2026-09-21 `labCode`/`testCode` on response |
 | API spec | [[API Specification]] | draft 2026-09-21 — `data` has `labCode` + `testCode`; no `labNo` |
 | 03 Slide Brief | [[03 Slide Brief]] | draft — refreshed 2026-09-21 (D14) |
-| 03 Design Review | [[assets/Specimen Sorter API v3.pptx]] | generated 2026-09-21 |
+| 03 Design Review | [[assets/Specimen Sorter API v3.pptx]] | regenerated 2026-09-21 (`labCode`/`testCode` on contract slide) |
 | 03 Design Review (prior) | [[assets/Specimen Sorter API v2.pptx]] | superseded 2026-09-21 |
 | 04 JIRA | [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]] | draft |
 | 05 Project Plan | [[05 Project Plan]] | accepted 2026-09-10 |

@@ -84,6 +84,7 @@ Condition strip: `data.status` REGISTERED | SEND_OUT | RELABEL | FAILURE. HTTP 2
 **Eyebrow:** 04. API contract
 **Title:** Middleware calls through HA APIM with a gateway key
 **Archetype:** code-findings (JSON request and data)
+JSON `data`: `status`, `labCode` (`CPS`/`HMS`), `testCode` — no `labNo`.
 Findings: Gateway headers (`x-gateway-apikey`, `x-ha-hospcode`; no Hub JWT). Hospital optional (omitted → `loesort_hosp`; sent and different → Failure). Bin from `data.status` (HTTP 200 is not Registered; 401/403 are gateway, 500 retry).
 **Notes:** Same hosts and headers as the GCRS-LIS API specification v1.0, but a new APIM product. Business failure codes sit on data.code, never as an HTTP 4xx from LIS.
 
