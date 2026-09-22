@@ -81,7 +81,7 @@
       "title": "One POST, the screen logic behind it, one map table",
       "perRow": 4,
       "cards": [
-        { "icon": "code", "title": "New API", "body": "POST /api/sorter/auto-register on lis-crs-spec-ack-svc.\nStaff /api/specack is unchanged." },
+        { "icon": "code", "title": "New API", "body": "POST /api/sorter/auto-register on lis-crs-spec-ack-svc.\nECPath /api/specack is unchanged." },
         { "icon": "layer-group", "title": "Move screen logic", "body": "Retrieve, validation and packing run server-side, then the existing send-out, register, print and PHLC." },
         { "icon": "table", "title": "Sorter map", "body": "loe_specimen_sorter_map: sorter id (PK) to LIS user, hospital and workbench." },
         { "icon": "clipboard-check", "title": "Audit", "body": "SORT_* actions plus today's REG and SEND_OUT on LOE_AUDIT_TRAIL." }
