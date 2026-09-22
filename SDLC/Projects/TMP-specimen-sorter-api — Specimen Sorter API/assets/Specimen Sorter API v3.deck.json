@@ -268,11 +268,11 @@
       "title": "Relabel when USID cannot be the request number",
       "perRow": 3,
       "cards": [
-        { "badge": 1, "title": "Multiple request groups", "body": "More than one request test group for the scanned USID (R4a)." },
-        { "badge": 2, "title": "Multiple specimens", "body": "More than one specimen on a test, suffix A/B/C, or several DFT specimens for one time flag (R4b, R4c)." },
-        { "badge": 3, "title": "Force relabel", "body": "GCRS force-relabel flag, or auto-gen-only lab. No checkbox. No invented number (R11)." }
+        { "badge": 1, "title": "Multiple request groups", "body": "• More than one request test group for the scanned USID" },
+        { "badge": 2, "title": "Multiple specimens", "body": "• More than one specimen on a test\n• suffix A/B/C\n• several DFT specimens for one time flag" },
+        { "badge": 3, "title": "Force relabel", "body": "• Force-relabel flag in LOE_TEST_MAP setup" }
       ],
-      "callout": { "lead": "Not registered.", "text": "Return RELABEL. No lab request. Partial DFT remainder is Relabel too (Q15)." },
+      "callout": { "lead": "Not registered.", "text": "Return RELABEL. No lab request." },
       "notes": "Same getAutoAssignUsid rules as Spec Ack, without RelabelUisdSpecimenCheckboxId."
     },
     {
