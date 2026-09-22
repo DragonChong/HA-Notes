@@ -216,8 +216,8 @@
         "colWidths": [2.6, 6.6, 2.8],
         "headers": ["Category", "Examples from Spec Ack", "API status"],
         "rows": [
-          ["Dates", "Ack / collect / request / DOB (R12)", { "text": "FAILURE", "tone": "danger" }],
-          ["Doctor / location", "Unmapped doctor, ward, specialty, report dest", { "text": "FAILURE", "tone": "danger" }],
+          ["Dates", "Ack / collect / request / DOB", { "text": "FAILURE", "tone": "danger" }],
+          ["Doctor / location", "Unmapped doctor, ward, specialty, report destination", { "text": "FAILURE", "tone": "danger" }],
           ["Test / specimen", "Failed test check; used or deleted; APS / BBS / MBS", { "text": "FAILURE", "tone": "danger" }],
           ["Patient", "HKID or name does not match GCRS", { "text": "FAILURE", "tone": "danger" }],
           ["STAR", "No workbench location — 4422 (D9)", { "text": "FAILURE", "tone": "danger" }],
