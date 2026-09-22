@@ -81,10 +81,10 @@
       "title": "One POST, the screen logic behind it, one map table",
       "perRow": 4,
       "cards": [
-        { "icon": "code", "title": "New API", "body": "• POST /api/sorter/auto-register\n• lis-crs-spec-ack-svc\n• /api/specack unchanged" },
-        { "icon": "layer-group", "title": "Move screen logic", "body": "• Retrieve, validate, pack on the server\n• Then send-out, register, print, PHLC" },
+        { "icon": "code", "title": "New API", "body": "• POST /api/sorter/auto-register on lis-crs-spec-ack-svc\n• ECPath /api/specack is unchanged" },
+        { "icon": "layer-group", "title": "Move screen logic", "body": "• Retrieve, validation, packing on the server\n• Then existng send-out, register, print, PHLC" },
         { "icon": "table", "title": "Sorter map", "body": "• loe_specimen_sorter_map\n• Sorter id (PK) → user, hospital, workbench" },
-        { "icon": "clipboard-check", "title": "Audit", "body": "• SORT_* plus REG and SEND_OUT\n• Same LOE_AUDIT_TRAIL" }
+        { "icon": "clipboard-check", "title": "Audit", "body": "• SORT_* plus REG and SEND_OUT\n• Same today's REG and SEND_OUT on LOE_AUDIT_TRAIL" }
       ],
       "notes": "No new service and no DDL on workbench. Staff Spec Ack stays as the Relabel and Failure bin."
     },
