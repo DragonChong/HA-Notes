@@ -219,9 +219,9 @@
           ["Dates", "Ack / collect / request / DOB", { "text": "FAILURE", "tone": "danger" }],
           ["Doctor / location", "Unmapped doctor, ward, specialty, report destination", { "text": "FAILURE", "tone": "danger" }],
           ["Test / specimen", "Failed test check; used or deleted; APS / BBS / MBS", { "text": "FAILURE", "tone": "danger" }],
-          ["Patient", "HKID or name does not match GCRS", { "text": "FAILURE", "tone": "danger" }],
-          ["STAR", "No workbench location — 4422 (D9)", { "text": "FAILURE", "tone": "danger" }],
-          ["Mixed send-out", "Local and send-out on one USID (D3)", { "text": "FAILURE", "tone": "danger" }]
+          ["Patient", "Patient demogrpahics do not match", { "text": "FAILURE", "tone": "danger" }],
+          ["STAR", "No workbench location — 4422", { "text": "FAILURE", "tone": "danger" }],
+          ["Mixed send-out", "Local and send-out on one USID", { "text": "FAILURE", "tone": "danger" }]
         ]
       },
       "takeaways": [
