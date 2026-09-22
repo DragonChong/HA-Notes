@@ -334,7 +334,7 @@
     {
       "archetype": "matrix",
       "eyebrow": "04B. Data model",
-      "title": "Hospital sent: workbench only. Map is hospital fallback",
+      "title": "Derive Hospital is missing. Sorter ID is defined in workbench",
       "table": {
         "colWidths": [3.4, 2.8, 1.8, 4.0],
         "headers": ["Table", "Column", "Type", "Role"],
