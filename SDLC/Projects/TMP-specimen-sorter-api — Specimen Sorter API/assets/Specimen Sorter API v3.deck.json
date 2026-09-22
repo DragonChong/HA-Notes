@@ -378,12 +378,12 @@
         {
           "icon": "list-check",
           "title": "Worksheets",
-          "body": "• All worksheets after return REGISTERED\n• GCRS Worksheet, send-out and SH Form"
+          "body": "• REGISTERED only\n• GCRS Worksheet, send-out and SH after return"
         },
         {
           "icon": "clipboard-check",
           "title": "PHLC electronic order",
-          "body": "• createPhlcLabOrder after return\n• REGISTERED only"
+          "body": "• REGISTERED only\n• createPhlcLabOrder after return"
         }
       ],
       "callout": {
