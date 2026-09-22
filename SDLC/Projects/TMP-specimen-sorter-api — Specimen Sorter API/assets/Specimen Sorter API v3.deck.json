@@ -69,7 +69,7 @@
           [{ "text": "Send-out", "bold": true, "color": "ink" }, "Staff click", { "text": "sendOutSpecimen", "mono": true }, { "text": "Same send-out path", "tone": "accent" }],
           [{ "text": "Validation", "bold": true, "color": "ink" }, "Soft prompts, hard validator", "Assumes checks passed", { "text": "Soft to ALS, hard to Failure", "tone": "accent" }],
           [{ "text": "Packing", "bold": true, "color": "ink" }, "Groups tests, request no., ward and doctor", { "text": "register() needs the packing", "mono": true }, { "text": "Server-side convertor", "tone": "accent" }],
-          [{ "text": "Worksheet", "bold": true, "color": "ink" }, "Builds Ro, staff pick", "Three print methods", { "text": "Print all, after Registered", "tone": "accent" }],
+          [{ "text": "Worksheet", "bold": true, "color": "ink" }, "Data conversion, staff pick", "Three kinds of printouts", { "text": "Print all, after Registered", "tone": "accent" }],
           [{ "text": "PHLC", "bold": true, "color": "ink" }, "Calls after register", { "text": "createPhlcLabOrder", "mono": true }, { "text": "After Registered", "tone": "accent" }]
         ]
       },
