@@ -50,7 +50,7 @@
         "tone": "accent",
         "title": "Sorter scans, LIS decides",
         "points": [
-          "Where: sorter middleware through HA APIM",
+          "Where: sorter middleware through LIS API",
           "Action: one POST with the USID",
           "Result: status on the same call, sorter bins the tube"
         ]
