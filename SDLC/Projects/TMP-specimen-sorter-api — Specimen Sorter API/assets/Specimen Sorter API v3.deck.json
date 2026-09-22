@@ -99,18 +99,18 @@
           "text": "All tests\nsend-out?",
           "w": 2.3,
           "inLabel": "No",
-          "fallthrough": { "label": "Yes", "title": "SEND_OUT", "body": "Existing send-out, no print" }
+          "fallthrough": { "label": "Yes", "title": "SEND_OUT" }
         },
         {
           "text": "Validations\npass?",
           "w": 2.3,
-          "fallthrough": { "label": "No", "title": "FAILURE", "body": "Unknown sorter, lab, mixed, hard check, 4422" }
+          "fallthrough": { "label": "No", "title": "FAILURE" }
         },
         {
           "text": "Relabel\nrules?",
           "w": 2.3,
           "inLabel": "Yes",
-          "fallthrough": { "label": "Yes", "title": "RELABEL", "body": "Multi-group, suffix, DFT time flag" }
+          "fallthrough": { "label": "Yes", "title": "RELABEL" }
         }
       ],
       "terminal": { "label": "No", "text": "REGISTERED" },
@@ -132,18 +132,18 @@
           "w": 2.3,
           "inLabel": "No",
           "highlight": true,
-          "fallthrough": { "label": "Yes", "title": "SEND_OUT", "body": "Existing send-out, no print" }
+          "fallthrough": { "label": "Yes", "title": "SEND_OUT" }
         },
         {
           "text": "Validations\npass?",
           "w": 2.3,
-          "fallthrough": { "label": "No", "title": "FAILURE", "body": "Unknown sorter, lab, mixed, hard check, 4422" }
+          "fallthrough": { "label": "No", "title": "FAILURE" }
         },
         {
           "text": "Relabel\nrules?",
           "w": 2.3,
           "inLabel": "Yes",
-          "fallthrough": { "label": "Yes", "title": "RELABEL", "body": "Multi-group, suffix, DFT time flag" }
+          "fallthrough": { "label": "Yes", "title": "RELABEL" }
         }
       ],
       "terminal": { "label": "No", "text": "REGISTERED" },
@@ -185,19 +185,19 @@
           "text": "All tests\nsend-out?",
           "w": 2.3,
           "inLabel": "No",
-          "fallthrough": { "label": "Yes", "title": "SEND_OUT", "body": "Existing send-out, no print" }
+          "fallthrough": { "label": "Yes", "title": "SEND_OUT" }
         },
         {
           "text": "Validations\npass?",
           "w": 2.3,
           "highlight": true,
-          "fallthrough": { "label": "No", "title": "FAILURE", "body": "Unknown sorter, lab, mixed, hard check, 4422" }
+          "fallthrough": { "label": "No", "title": "FAILURE" }
         },
         {
           "text": "Relabel\nrules?",
           "w": 2.3,
           "inLabel": "Yes",
-          "fallthrough": { "label": "Yes", "title": "RELABEL", "body": "Multi-group, suffix, DFT time flag" }
+          "fallthrough": { "label": "Yes", "title": "RELABEL" }
         }
       ],
       "terminal": { "label": "No", "text": "REGISTERED" },
@@ -239,19 +239,19 @@
           "text": "All tests\nsend-out?",
           "w": 2.3,
           "inLabel": "No",
-          "fallthrough": { "label": "Yes", "title": "SEND_OUT", "body": "Existing send-out, no print" }
+          "fallthrough": { "label": "Yes", "title": "SEND_OUT" }
         },
         {
           "text": "Validations\npass?",
           "w": 2.3,
-          "fallthrough": { "label": "No", "title": "FAILURE", "body": "Unknown sorter, lab, mixed, hard check, 4422" }
+          "fallthrough": { "label": "No", "title": "FAILURE" }
         },
         {
           "text": "Relabel\nrules?",
           "w": 2.3,
           "inLabel": "Yes",
           "highlight": true,
-          "fallthrough": { "label": "Yes", "title": "RELABEL", "body": "Multi-group, suffix, DFT time flag" }
+          "fallthrough": { "label": "Yes", "title": "RELABEL" }
         }
       ],
       "terminal": { "label": "No", "text": "REGISTERED" },
