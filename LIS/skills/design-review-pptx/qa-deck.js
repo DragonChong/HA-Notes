@@ -257,7 +257,8 @@ function checkSlide(slide) {
 }
 
 function checkDeck(deck, slides) {
-  const first = deck.slides && deck.slides[0];
+  const visible = (deck.slides || []).filter((s) => !s.hide);
+  const first = visible[0];
   if (!first || first.archetype !== 'title-hero') {
     warn(0, 'first slide is not a title-hero');
   } else {
@@ -273,10 +274,10 @@ function checkDeck(deck, slides) {
   }
 
   // Agenda coverage: every agenda item should appear as a later eyebrow/title.
-  const agenda = (deck.slides || []).find((s) => s.archetype === 'agenda');
+  const agenda = visible.find((s) => s.archetype === 'agenda');
   if (agenda) {
     // statement/closing slides carry their label in `headline`, not `title`.
-    const titles = (deck.slides || [])
+    const titles = visible
       .map((s) => `${s.eyebrow || ''} ${s.title || ''} ${s.headline || ''}`.toLowerCase())
       .join(' | ');
     (agenda.items || []).forEach((it) => {
@@ -287,7 +288,7 @@ function checkDeck(deck, slides) {
     });
   }
 
-  const hasAsks = (deck.slides || []).some((s) =>
+  const hasAsks = visible.some((s) =>
     s.archetype === 'asks'
     || /open questions|confirmation/i.test(`${s.eyebrow || ''} ${s.title || ''}`)
   );

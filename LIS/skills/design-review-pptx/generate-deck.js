@@ -38,7 +38,7 @@ function build(deck, baseDir) {
   const pptx = new PptxGenJS();
   K.applyDocProps(pptx, deck.meta || {});
 
-  const slides = deck.slides || [];
+  const slides = (deck.slides || []).filter((s) => !s.hide);
 
   slides.forEach((spec, i) => {
     const draw = ARCHETYPES[spec.archetype];
@@ -126,7 +126,7 @@ async function main() {
 
   if (args.includes('--list')) {
     (deck.slides || []).forEach((s, i) =>
-      console.log(`${String(i + 1).padStart(2)}. [${s.archetype}] ${s.title || s.headline || '(untitled)'}`)
+      console.log(`${String(i + 1).padStart(2)}. [${s.archetype}] ${s.title || s.headline || '(untitled)'}${s.hide ? ' (hidden)' : ''}`)
     );
     return;
   }
@@ -146,7 +146,8 @@ async function main() {
   await pptx.writeFile({ fileName: outPath });
   await verifyCanvas(outPath);
 
-  console.log(`Wrote ${outPath} (${(deck.slides || []).length} slides)`);
+  const n = (deck.slides || []).filter((s) => !s.hide).length;
+  console.log(`Wrote ${outPath} (${n} slides)`);
 }
 
 function run() {

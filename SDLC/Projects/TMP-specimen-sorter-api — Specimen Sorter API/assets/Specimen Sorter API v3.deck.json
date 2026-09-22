@@ -371,6 +371,7 @@
     },
     {
       "archetype": "stats",
+      "hide": true,
       "eyebrow": "05. Non-functional",
       "title": "One synchronous call per tube",
       "stats": [

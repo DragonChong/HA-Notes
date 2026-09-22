@@ -83,7 +83,7 @@ class RecordingPptx {
 function record(deck, baseDir) {
   const pptx = new RecordingPptx();
   const errors = [];
-  const slides = deck.slides || [];
+  const slides = (deck.slides || []).filter((s) => !s.hide);
 
   slides.forEach((spec, i) => {
     const draw = ARCHETYPES[spec.archetype];

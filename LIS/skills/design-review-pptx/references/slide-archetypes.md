@@ -13,6 +13,7 @@ Common slots on every content archetype:
 | `eyebrow` | string | caps + letter-spaced automatically (`02A. Architecture evolution`) |
 | `title` | string | the H1 |
 | `notes` | string | speaker notes; QA warns if missing |
+| `hide` | boolean | if true, skip this slide in generate, preview, and QA |
 
 Shared optional slots: `tone` (`neutral` `accent` `success` `warn` `danger`
 `ink`), `icon` (a name from `assets/icons/`), `callout` (`{ lead, text }` — a

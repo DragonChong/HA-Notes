@@ -180,7 +180,8 @@ or beside the JIRA note, from `## Design`.
 Rules:
 
 - **Every slide** needs `archetype` and `notes`. Content slides also need
-  `eyebrow` and `title`.
+  `eyebrow` and `title`. Set `"hide": true` to keep a slide in the spec but
+  skip it in generate, preview, and QA.
 - **Never put a hex colour, font name, or x/y coordinate in a spec.** Use tone
   names (`neutral`, `accent`, `warn`, `danger`, `ink`) and colour tokens
   (`ink`, `body`, `accent`, `warnInk`, …). QA rejects anything off-palette.
