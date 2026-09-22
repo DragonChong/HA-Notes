@@ -149,8 +149,7 @@
       "terminal": { "label": "No", "text": "REGISTERED" },
       "condition": {
         "label": "Returned status",
-        "code": "REGISTERED | SEND_OUT | RELABEL | FAILURE",
-        "note": "Yes on this node is SEND_OUT. Mixed local plus send-out already failed (D3)."
+        "code": "REGISTERED | SEND_OUT | RELABEL | FAILURE"
       },
       "notes": "Next slide is how LIS knows a test is send-out: LOESEND_HOSP and LOESEND_CLUSTER_CODE."
     },
@@ -204,8 +203,7 @@
       "terminal": { "label": "No", "text": "REGISTERED" },
       "condition": {
         "label": "Returned status",
-        "code": "REGISTERED | SEND_OUT | RELABEL | FAILURE",
-        "note": "No on this node is FAILURE. Soft alerts stay on ALS."
+        "code": "REGISTERED | SEND_OUT | RELABEL | FAILURE"
       },
       "notes": "Next slide lists the hard Spec Ack checks that become Failure, and the soft ones that do not."
     },
@@ -258,8 +256,7 @@
       "terminal": { "label": "No", "text": "REGISTERED" },
       "condition": {
         "label": "Returned status",
-        "code": "REGISTERED | SEND_OUT | RELABEL | FAILURE",
-        "note": "Yes on this node is RELABEL. No write. Not Failure (R3)."
+        "code": "REGISTERED | SEND_OUT | RELABEL | FAILURE"
       },
       "notes": "Next slide is the Assign-USID rules without the staff checkbox."
     },
