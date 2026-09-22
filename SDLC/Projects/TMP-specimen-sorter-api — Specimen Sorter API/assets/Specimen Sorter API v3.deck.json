@@ -65,7 +65,7 @@
         "colWidths": [2.0, 3.2, 3.5, 3.3],
         "headers": ["Action", "Screen does", "Service does", "Sorter API"],
         "rows": [
-          [{ "text": "Retrieve GCRS order", "bold": true, "color": "ink" }, "Scans USID, calls retrieve", { "text": "retrieveGcrOrder", "mono": true }, { "text": "Retrieve as the mapped user", "tone": "accent" }],
+          [{ "text": "Retrieve GCRS order", "bold": true, "color": "ink" }, "Scans USID, calls retrieve", { "text": "retrieveGcrOrder", "mono": true }, { "text": "Same retrieval path", "tone": "accent" }],
           [{ "text": "Send-out", "bold": true, "color": "ink" }, "Staff click", { "text": "sendOutSpecimen", "mono": true }, { "text": "Same send-out path", "tone": "accent" }],
           [{ "text": "Validation", "bold": true, "color": "ink" }, "Soft prompts, hard validator", "Assumes checks passed", { "text": "Soft to ALS, hard to Failure", "tone": "accent" }],
           [{ "text": "Packing", "bold": true, "color": "ink" }, "Groups tests, request no., ward and doctor", { "text": "register() needs the packing", "mono": true }, { "text": "Server-side convertor", "tone": "accent" }],
