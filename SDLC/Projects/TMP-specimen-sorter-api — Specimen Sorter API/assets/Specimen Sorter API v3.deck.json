@@ -326,7 +326,7 @@
           "User: wkbh_id (same as LIS usercode)",
           "Workbench: wkbh_station_name = sorterId",
           "Hospital sent: skip the map",
-          "Hospital omitted: loesort_hosp only"
+          "Hospital omitted: Map hospital by loesort_hosp"
         ]
       },
       "notes": "The sorter must never use the retrieve GET, because of the hard-coded user. Audit rows carry wkbh_id and wkbh_station_name. Hub already has selectWorkbenchsByStationName."
