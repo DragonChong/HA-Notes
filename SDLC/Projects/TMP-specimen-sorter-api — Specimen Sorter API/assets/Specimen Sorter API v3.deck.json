@@ -119,7 +119,7 @@
         "code": "REGISTERED | SEND_OUT | RELABEL | FAILURE",
         "note": "HTTP 200 on every decision. Soft alerts go to ALS, never the body."
       },
-      "notes": "A tube with both local and send-out tests fails rather than splitting (D3). Relabel is not reported as Failure."
+      "notes": "A tube with both local and send-out tests fails rather than splitting. Relabel is not reported as Failure."
     },
     {
       "archetype": "decision-flow",
@@ -348,8 +348,8 @@
         ]
       },
       "takeaways": [
-        { "title": "Hospital mapping", "body": "Omitted hospital: loesort_sorter_id → loesort_hosp. Hospital sent: skip the map. Do not seed the map if every caller sends hospital (D15)." },
-        { "title": "Workbench then user", "body": "sorterId finds wkbh_station_name. User is wkbh_id on that row, same as labuser_code. One workbench row per lab (D12)." }
+        { "title": "Hospital mapping", "body": "Omitted hospital: loesort_sorter_id → loesort_hosp. Hospital sent: skip the map. Do not seed the map if every caller sends hospital." },
+        { "title": "Workbench then user", "body": "sorterId finds wkbh_station_name. User is wkbh_id on that row, same as labuser_code. One workbench row per lab." }
       ],
       "notes": "No loesort_usercode or loesort_workbench_id. Location and printer stay on workbench. Server name still comes from HospitalService."
     },
@@ -367,7 +367,7 @@
           [{ "text": "FAILURE", "tone": "danger" }, "SORT_FAIL with message code", { "text": "None", "color": "muted" }, "Staff Spec Ack"]
         ]
       },
-      "notes": "A late worksheet does not change a status already returned (D4). Print failure is an ALS warning, nothing more."
+      "notes": "A late worksheet does not change a status already returned. Print failure is an ALS warning, nothing more."
     },
     {
       "archetype": "stats",
