@@ -29,6 +29,8 @@ Design answers D1–D12 stand. 2026-09-10: Existing / Proposed restated as the S
 
 2026-09-22: **D15.** Request `sorterId` is `LAB_DB.dbo.workbench.wkbh_station_name`. LIS user is that row's `wkbh_id` (not a separate `loesort_usercode`). When the sorter sends `hospital`, **do not read `loe_specimen_sorter_map`** — hospital + station name + order lab locate the workbench. The map is only the R10 fallback when `hospital` is omitted (sorter id → `loesort_hosp`). No `loesort_usercode` / `loesort_workbench_id` columns.
 
+2026-09-22: **D16.** Worksheet print or PHLC fail after Registered does **not** change `data.status` (D4). Write a new `LOE_AUDIT_TRAIL` row (`SORT_WS_FAIL` / `SORT_PHLC_FAIL`) so Specimen Audit Trail shows it (R9). ALS warn stays.
+
 Slides are not this note. After you confirm this delta, `/design-review-pptx` refreshes [[03 Slide Brief]].
 
 ## Context and problem
@@ -112,6 +114,7 @@ sequenceDiagram
             API->>Reg: converted packing
             API-->>MW: REGISTERED
             API--)Prn: all worksheets and PHLC after return
+            Note over Aud,Prn: print or PHLC fail → SORT_WS_FAIL / SORT_PHLC_FAIL; status stays REGISTERED (D16)
         end
     end
 ```
@@ -129,7 +132,7 @@ Traces to: R1, R4, R5, R6, R11, R14
 | `SpecimenSorterValidationService` | Port of `promptAlert` (ALS only) and `GcrSpecAckDataValidator`. Mixed local + send-out → **Failure**. STAR: no `wkbh_location` → Failure `4422`. |
 | `SpecimenSorterRelabelService` | Assign-USID rules **without** `userCheckedRelabel`. |
 | `SpecimenSorterSendOutResolver` | `LOE_SENDOUT_TEST` cluster join. Both send-out and in-house on the USID → Failure (D3). |
-| `SpecimenSorterPostProcessService` | After HTTP return, **Registered only** (D11): same in-process path as the three staff print methods, every worksheet Ro (no picker), then PHLC via `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder` when `isSendToPHLC`. No HTTP loopback. Send-out / Relabel / Failure skip this. Print fail → ALS warn only (D4). |
+| `SpecimenSorterPostProcessService` | After HTTP return, **Registered only** (D11): same in-process path as the three staff print methods, every worksheet Ro (no picker), then PHLC via `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder` when `isSendToPHLC`. No HTTP loopback. Send-out / Relabel / Failure skip this. Print or PHLC fail → ALS warn **and** `SORT_WS_FAIL` / `SORT_PHLC_FAIL` on `LOE_AUDIT_TRAIL` via `GcrAuditService.insertAudit` (D16). Returned status stays Registered (D4). |
 
 Reuse: `retrieveGcrOrder`, `sendOutSpecimen`, `register`, `GcrPrintReportAppService`, `GcrShWorksheetPrintingAppService`, `GcrSendOutTestFormAppService`, `WorksheetPrintService`, `LisPhlcLabOrderAppServiceImpl.createPhlcLabOrder`, `GcrAuditService`.
 
@@ -227,8 +230,10 @@ If every pilot sorter always sends `hospital`, this table need not be seeded (or
 | `SORT_SO` | Send-out from sorter (plus `SEND_OUT`) |
 | `SORT_RELABEL` | Relabel |
 | `SORT_FAIL` | Failure; description = message code + text |
+| `SORT_WS_FAIL` | After Registered: any of the three worksheet print paths fails (D16). Description = which Ro + error. Does not un-register. |
+| `SORT_PHLC_FAIL` | After Registered: `createPhlcLabOrder` fails when `isSendToPHLC` (D16). Description = error. Does not un-register. |
 
-Function `SPEC_ACK`. Add `SORT_*` to the Specimen Audit Trail action filter (D6).
+Function `SPEC_ACK`. New constants on `RegistrationConstants` (same pattern as `GCR_AUDIT_ACTION_REGISTER_TEST` = `REG`). Add `SORT_*` including the two fail codes to the Specimen Audit Trail action filter (D6, D16). Both fail → two rows. One of three worksheets fails → still `SORT_WS_FAIL`.
 
 ## Interface / API contract
 
@@ -305,7 +310,7 @@ Print/PHLC still follow the staff print methods and `LisPhlcLabOrderAppServiceIm
 
 - Soft alerts: `warn("SPEC_ACK", …)` only.
 - Mixed send-out, STAR no location, hard validator, convertor cannot map ward/doctor: `SORT_FAIL` + message code (`0001162` … `4422`).
-- Print/PHLC after **Registered** only (D11): ALS warn; status already returned stays (D4).
+- Print/PHLC after **Registered** only (D11): ALS warn; status already returned stays (D4). Also insert `SORT_WS_FAIL` and/or `SORT_PHLC_FAIL` (D16, R9). Do not write `SORT_FAIL` here — that action means the tube was not registered.
 - Mask HKID in logs as register already does.
 - Audit user = `wkbh_id`; workstation = `wkbh_station_name` (same as `sorterId`).
 
@@ -313,7 +318,7 @@ Print/PHLC still follow the staff print methods and `LisPhlcLabOrderAppServiceIm
 
 - Sync one call; p95 < 4 s through audit commit.
 - ~20/min per lab v1.
-- Worksheets + PHLC after return, **Registered only** (D11); print all (D4, D5).
+- Worksheets + PHLC after return, **Registered only** (D11); print all (D4, D5). Print/PHLC fail is Audit Trail + ALS, not a status change (D16).
 
 ## Rejected alternatives
 
@@ -332,6 +337,8 @@ Print/PHLC still follow the staff print methods and `LisPhlcLabOrderAppServiceIm
 | Hub JWT as sorter credential                       | APIM `x-gateway-apikey` instead (D1, GCRS-LIS pattern).                                                                                     |
 | Staff worksheet picker                             | Print all (D5).                                                                                                                             |
 | Sync print in the HTTP call                        | Breaks 4 s; late worksheet accepted on Registered (D4).                                                                                     |
+| Print/PHLC fail → ALS only                         | Requester 2026-09-22: staff must see it on Specimen Audit Trail (R9, D16).                                                                  |
+| Print/PHLC fail → `SORT_FAIL` or change `REGISTERED` | Tube is already registered (R3, D4). `SORT_FAIL` means no lab request.                                                                     |
 | Print worksheet after send-out / ack               | Registration only (D11).                                                                                                                    |
 | Invent STAR location when workbench has none       | Failure (D9).                                                                                                                               |
 | Mixed: send-out subset only                        | Failure (D3).                                                                                                                               |
@@ -350,7 +357,7 @@ Print/PHLC still follow the staff print methods and `LisPhlcLabOrderAppServiceIm
 3. If any caller will omit `hospital`, insert `loe_specimen_sorter_map` (sorter id → hosp only). Skip the table if hospital is always sent.
 4. Deploy `lis-crs-spec-ack-svc`.
 5. NetworkPolicy for middleware (no new auth).
-6. Pilot CPS/HMS. Relabel/Failure bins → staff Spec Ack. Confirm Specimen Audit Trail action filter includes `SORT_*` (D6).
+6. Pilot CPS/HMS. Relabel/Failure bins → staff Spec Ack. Confirm Specimen Audit Trail action filter includes `SORT_*` including `SORT_WS_FAIL` and `SORT_PHLC_FAIL` (D6, D16).
 
 **Fallback**
 
@@ -365,7 +372,8 @@ Print/PHLC still follow the staff print methods and `LisPhlcLabOrderAppServiceIm
 | D1  | Middleware auth?                                                                       | Requester | **2026-09-15:** sorter calls **HA APIM**. Headers `x-gateway-apikey` + `x-ha-hospcode` (GCRS-LIS v1.0). No Hub JWT. NetworkPolicy is gateway → `lis-crs-spec-ack-svc`. Direct 8118 is local/DEVQA only.                                                         |
 | D2  | LIS user and workstation?                                                              | Requester | **2026-09-22:** workstation = `wkbh_station_name` matching `sorterId`. User = `wkbh_id` (LIS usercode equals that id). Printer / location from the same row.                                                                                                  |
 | D3  | Mixed local + send-out?                                                                | Requester | **Failure.**                                                                                                                                                                                                                                                    |
-| D4  | Print after HTTP return?                                                               | Requester | **OK** if worksheet is late; status already Registered. Does not apply to Send-out (no print).                                                                                                                                                                  |
+| D4  | Print after HTTP return?                                                               | Requester | **OK** if worksheet is late; status already Registered. Does not apply to Send-out (no print). Print/PHLC fail still does not change status (D16).                                                                                                               |
+| D16 | Print or PHLC fail after Registered — how do staff notice?                             | Requester | **2026-09-22:** new audit actions `SORT_WS_FAIL` and `SORT_PHLC_FAIL` on `LOE_AUDIT_TRAIL` (R9). ALS warn stays. Do not change `data.status`. Add both codes to the Audit Trail filter.                                                                        |
 | D5  | Multiple worksheets?                                                                   | Requester | **Print all** (registration path only).                                                                                                                                                                                                                         |
 | D11 | When does the sorter print a worksheet?                                                | Requester | **Registration only.**                                                                                                                                                                                                                                          |
 | D6  | `SORT_*` audit codes vs reuse `REG`/`SEND_OUT` only?                                   | Requester | **Agree.** Keep `SORT_*` plus existing writes. Add `SORT_*` to the Audit Trail action filter.                                                                                                                                                                   |
