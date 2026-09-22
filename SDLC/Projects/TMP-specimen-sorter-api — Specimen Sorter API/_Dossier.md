@@ -45,10 +45,10 @@ work_type: project
 | Stage | Artifact | State |
 |---|---|---|
 | 01 Requirement | [[01 Requirement Confirmation]] | confirmed 2026-09-07; not in gates_passed |
-| 02 Design | [[02 System Design]] | approved 2026-09-10; D14 map; 2026-09-21 `labCode`/`testCode` on response |
+| 02 Design | [[02 System Design]] | approved 2026-09-10; D15 2026-09-22 — workbench first, map omit-hospital only |
 | API spec | [[API Specification]] | draft 2026-09-21 — `data` has `labCode` + `testCode`; no `labNo` |
-| 03 Slide Brief | [[03 Slide Brief]] | draft — refreshed 2026-09-21 (D14) |
-| 03 Design Review | [[assets/Specimen Sorter API v3.pptx]] | regenerated 2026-09-21 (`labCode`/`testCode` on contract slide) |
+| 03 Slide Brief | [[03 Slide Brief]] | draft — refreshed 2026-09-22 (D15) |
+| 03 Design Review | [[assets/Specimen Sorter API v3.pptx]] | regenerated 2026-09-22 (D15) |
 | 03 Design Review (prior) | [[assets/Specimen Sorter API v2.pptx]] | superseded 2026-09-21 |
 | 04 JIRA | [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]] | draft |
 | 05 Project Plan | [[05 Project Plan]] | accepted 2026-09-10 |
@@ -83,6 +83,7 @@ work_type: project
 - 2026-09-15 — Sorter consumer is HA APIM (`x-gateway-apikey`, `x-ha-hospcode`), same hosts as GCRS-LIS API specification v1.0. New APIM product — not `cms-gcrs-lisApiServices`. D1 updated. [[API Specification]] — agent
 - 2026-09-21 — [[03 Slide Brief]] refreshed from 02 after D14. New deck `assets/Specimen Sorter API v3.pptx` (15 slides, full profile); v2 kept as prior. `design-review` still not closed. — agent
 - 2026-09-21 — Sorter response `data`: `labCode` + `testCode` (R3, R8). Dropped `labNo` from [[API Specification]] and OpenAPI. Numeric lab stays on `hk.org.ha.lis.enums.Lab`. — agent
+- 2026-09-22 — D15: `sorterId` = `wkbh_station_name`; user = `wkbh_id`. Hospital sent → no `loe_specimen_sorter_map`. Map is sorter id → hosp only when hospital omitted. Dropped `loesort_usercode` / `loesort_workbench_id`. Deck refreshed; `design-review` not closed. — agent
 - 2026-09-10 — JIRA log drafted: [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]]. Target 30th May, 2027. No JIRA key yet. — agent
 - 2026-09-10 — [[05 Project Plan]] drafted from the programme 12-row schedule, backwards from Jun 2027 submission. 2027 window is not in [[Promotion Windows]]. Estimates await acceptance. `plan` not in `gates_passed`. — agent
 - 2026-09-10 — Estimates on [[05 Project Plan]] accepted. `plan` written to `gates_passed`. Stage → development. JIRA key still missing. — Ka
@@ -104,8 +105,9 @@ work_type: project
 - [x] D10 — no workbench-vs-test-lab check
 - [x] D11 — worksheet printed during registration only
 - [x] D12 — no `loesort_labno`
-- [x] D14 — map PK `loesort_sorter_id`; no server column; usercode 12; workbench id 8
-- [x] Refresh [[03 Slide Brief]] and pptx after D14
+- [x] D14 — map PK `loesort_sorter_id`; no server column
+- [x] D15 — workbench by station name; user = `wkbh_id`; map omit-hospital only
+- [x] Refresh [[03 Slide Brief]] and pptx after D15
 - [x] Human `reviewed_by` on [[02 System Design]] (Tony Chong)
 - [ ] Paste JIRA key when the Change Request is created by hand
 - [x] Run `/project-plan` (exception: `jira` not in `gates_passed`)

@@ -78,12 +78,12 @@
     {
       "archetype": "cards",
       "eyebrow": "03. Proposed change",
-      "title": "One POST, the screen logic behind it, one map table",
+      "title": "One POST, the screen logic behind it, workbench first",
       "perRow": 4,
       "cards": [
         { "icon": "code", "title": "New API", "body": "• POST /api/sorter/auto-register on lis-crs-spec-ack-svc\n• ECPath /api/specack is unchanged" },
         { "icon": "layer-group", "title": "Move screen logic", "body": "• Retrieve, validation, packing on the server\n• Then existng send-out, register, print, PHLC" },
-        { "icon": "table", "title": "Sorter map", "body": "• loe_specimen_sorter_map\n• Sorter id (PK) → user, hospital, workbench" },
+        { "icon": "table", "title": "Workbench first", "body": "• sorterId = wkbh_station_name\n• User = wkbh_id\n• Map only if hospital omitted" },
         { "icon": "clipboard-check", "title": "Audit", "body": "• New SORT_* audits on LOE_AUDIT_TRAIL\n• Same today's REG and SEND_OUT" }
       ],
       "notes": "No new service and no DDL on workbench. Staff Spec Ack stays as the Relabel and Failure bin."
@@ -146,7 +146,7 @@
       },
       "findings": [
         { "icon": "key", "title": "Gateway headers", "body": "x-gateway-apikey and x-ha-hospcode." },
-        { "icon": "server", "title": "Hospital is optional", "body": "Omitted: loesort_hosp. Different from the map: Failure." },
+        { "icon": "server", "title": "Hospital sent skips the map", "body": "Sent: workbench only. Omitted: loesort_hosp. Hosp mismatch: Failure." },
         { "icon": "triangle-exclamation", "title": "Bin from data.status", "body": "HTTP 200 is not Registered. 500 means retry." }
       ],
       "findingTone": "accent",
@@ -155,7 +155,7 @@
     {
       "archetype": "compare",
       "eyebrow": "04A. Sorter identity",
-      "title": "User and workbench come from the sorter id, not a PC",
+      "title": "User and workbench come from station name, not a PC",
       "left": {
         "label": "Staff today",
         "tone": "neutral",
@@ -169,35 +169,36 @@
       "right": {
         "label": "Sorter POST",
         "tone": "accent",
-        "title": "Sorter id decides",
+        "title": "Station name decides",
         "points": [
-          "User: loesort_usercode on the map",
-          "Workbench: map wkbh_id plus the order's lab",
-          "Hospital: request value, else loesort_hosp",
-          "Server: HospitalService from hosp and lab"
+          "User: wkbh_id (same as LIS usercode)",
+          "Workbench: wkbh_station_name = sorterId",
+          "Hospital sent: skip the map",
+          "Hospital omitted: loesort_hosp only"
         ]
       },
-      "notes": "The sorter must never use the retrieve GET, because of the hard-coded user. Audit rows carry the map user and the workbench station name."
+      "notes": "The sorter must never use the retrieve GET, because of the hard-coded user. Audit rows carry wkbh_id and wkbh_station_name. Hub already has selectWorkbenchsByStationName."
     },
     {
       "archetype": "matrix",
       "eyebrow": "04B. Data model",
-      "title": "Sorter id is the PK. Lab and server stay off the map",
+      "title": "Hospital sent: workbench only. Map is hospital fallback",
       "table": {
         "colWidths": [3.4, 2.6, 6.0],
         "headers": ["Column", "Type", "Role"],
         "rows": [
-          [{ "text": "loesort_sorter_id", "mono": true }, "VARCHAR2(64)", "Primary key; unique sorter identifier"],
-          [{ "text": "loesort_hosp", "mono": true }, "VARCHAR2(8)", "Hospital when the request omits it"],
-          [{ "text": "loesort_usercode", "mono": true }, "VARCHAR2(12)", "Dedicated sorter LIS user"],
-          [{ "text": "loesort_workbench_id", "mono": true }, "VARCHAR2(8)", "Workbench, loaded with the order's lab"]
+          [{ "text": "wkbh_station_name", "mono": true }, "workbench", "Equals request sorterId"],
+          [{ "text": "wkbh_id", "mono": true }, "workbench", "LIS user; PK with wkbh_labno"],
+          [{ "text": "wkbh_hosp", "mono": true }, "workbench", "Must match request hospital"],
+          [{ "text": "loesort_sorter_id", "mono": true }, "VARCHAR2(64)", "Fallback map PK; omit-hospital only"],
+          [{ "text": "loesort_hosp", "mono": true }, "VARCHAR2(8)", "Fallback hospital when request omits it"]
         ]
       },
       "takeaways": [
-        { "title": "One sorter, more than one lab", "body": "Lab comes from the retrieved order. Seed one workbench row per lab; a missing row is Failure (D12)." },
-        { "title": "No server column", "body": "ServiceParameterVo.serverName comes from HospitalService / LisLabServer, not loesort_server_name (D14)." }
+        { "title": "One sorter, more than one lab", "body": "Seed one workbench row per lab, same station name and wkbh_id. Missing row is Failure (D12)." },
+        { "title": "Map is optional", "body": "If every caller sends hospital, do not seed loe_specimen_sorter_map (D15)." }
       ],
-      "notes": "Rollback is DROP TABLE. No loesort_key. Location, station name and printer stay on workbench."
+      "notes": "No loesort_usercode or loesort_workbench_id. Location and printer stay on workbench. Server name still comes from HospitalService."
     },
     {
       "archetype": "matrix",
@@ -229,15 +230,14 @@
     {
       "archetype": "compare",
       "eyebrow": "06. Promotion and fallback",
-      "title": "Seed the map, open the gateway path, pilot CPS and HMS",
+      "title": "Seed workbench, open the gateway path, pilot CPS and HMS",
       "left": {
         "icon": "cloud-arrow-up",
         "tone": "success",
         "title": "Promotion",
         "steps": [
-          "Create the sorter LIS user.",
-          "Seed a workbench row per lab.",
-          "Insert the map row: PK sorter id, no lab, no server name.",
+          "Seed workbench: station name = sorter id, user = wkbh_id.",
+          "Map row only if hospital can be omitted.",
           "Deploy lis-crs-spec-ack-svc.",
           "Publish the APIM product and NetworkPolicy.",
           "Pilot CPS and HMS."
@@ -249,7 +249,7 @@
         "title": "Fallback",
         "steps": [
           "Stop the middleware. Staff Spec Ack is unchanged.",
-          "Drop loe_specimen_sorter_map on full rollback.",
+          "Drop the map table if it was created.",
           "No conversion of historical requests."
         ]
       },
@@ -260,7 +260,7 @@
       "align": "center",
       "eyebrow": "Discussion",
       "headline": "Q&A",
-      "notes": "Likely questions: why not let middleware call the staff register; why hospital can be omitted; why mixed tubes fail; why server name is not on the map."
+      "notes": "Likely questions: why not let middleware call the staff register; why hospital sent skips the map; why mixed tubes fail; why user is wkbh_id."
     }
   ]
 }
