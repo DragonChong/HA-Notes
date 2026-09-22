@@ -407,17 +407,16 @@
     {
       "archetype": "compare",
       "eyebrow": "06. Promotion and fallback",
-      "title": "Seed workbench, open the gateway path, pilot CPS and HMS",
+      "title": "Apply for the APIM provider, then seed workbench and labuser",
       "left": {
         "icon": "cloud-arrow-up",
         "tone": "success",
         "title": "Promotion",
         "steps": [
-          "Seed workbench: station name = sorter id, user = wkbh_id.",
-          "Map row only if hospital can be omitted.",
-          "Deploy lis-crs-spec-ack-svc.",
-          "Publish the APIM product and NetworkPolicy.",
-          "Pilot CPS and HMS."
+          "Apply for the API provider on APIM.",
+          "Seed workbench and labuser.",
+          "loe_specimen_sorter_map if hospital is omitted.",
+          "Deploy lis-crs-spec-ack-svc."
         ]
       },
       "right": {

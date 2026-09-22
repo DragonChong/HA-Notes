@@ -174,9 +174,9 @@ Takeaway: One sorter, more than one lab — seed one workbench row per lab (D12)
 
 ### Slide: Promotion and fallback
 **Eyebrow:** 06. Promotion and fallback
-**Title:** Seed workbench, open the gateway path, pilot CPS and HMS
+**Title:** Apply for the APIM provider, then seed workbench and labuser
 **Archetype:** compare (steps)
-- Promotion: seed workbench per lab (station name = sorter id, user = wkbh_id) · map row only if hospital can be omitted · deploy service · APIM product and NetworkPolicy · pilot CPS and HMS.
+- Promotion: apply for the API provider on APIM · seed workbench and labuser · loe_specimen_sorter_map if hospital is omitted · deploy lis-crs-spec-ack-svc.
 - Fallback: stop middleware, staff Spec Ack unchanged · drop the map table if it was created · no conversion of historical requests.
 **Notes:** Confirm the Audit Trail filter shows SORT_* including SORT_WS_FAIL and SORT_PHLC_FAIL, or staff cannot find a print or PHLC fail.
 
