@@ -163,8 +163,9 @@
         "language": "SQL",
         "lines": [
           [{ "text": "-- match GCRS test to send-out list", "color": "comment" }],
-          [{ "text": "loereqtst_test_code", "color": "string" }, { "text": " = " }, { "text": "LOESEND_CLUSTER_CODE", "color": "literal" }],
-          [{ "text": "AND send hospital", "color": "keyword" }, { "text": " = " }, { "text": "LOESEND_HOSP", "color": "literal" }]
+          [{ "text": "send hospital", "color": "string" }, { "text": " = " }, { "text": "LOESEND_HOSP", "color": "literal" }],
+          [{ "text": "AND loereqtst_test_code", "color": "string" }, { "text": " = " }, { "text": "LOESEND_CLUSTER_CODE", "color": "literal" }]
+          
         ]
       },
       "findings": [
