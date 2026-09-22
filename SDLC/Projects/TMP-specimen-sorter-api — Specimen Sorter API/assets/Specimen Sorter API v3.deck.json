@@ -362,7 +362,7 @@
         "headers": ["Status", "Writes", "Worksheet and PHLC", "Sorter bin"],
         "rows": [
           [{ "text": "REGISTERED", "tone": "success" }, "Lab request, SORT_REG and REG", "All worksheets, then PHLC, after return", "In-house"],
-          [{ "text": "SEND_OUT", "tone": "accent" }, "Send-out, tracking, SORT_SO and SEND_OUT", { "text": "None", "color": "muted" }, "Send-out"],
+          [{ "text": "SEND_OUT", "tone": "accent" }, "Send-out, tracking logs, SORT_SO and SEND_OUT", { "text": "None", "color": "muted" }, "Send-out"],
           [{ "text": "RELABEL", "tone": "warn" }, "SORT_RELABEL only", { "text": "None", "color": "muted" }, "Staff Spec Ack"],
           [{ "text": "FAILURE", "tone": "danger" }, "SORT_FAIL with message code", { "text": "None", "color": "muted" }, "Staff Spec Ack"]
         ]
