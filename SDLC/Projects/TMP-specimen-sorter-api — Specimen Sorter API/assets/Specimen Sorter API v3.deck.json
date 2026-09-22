@@ -356,18 +356,41 @@
     {
       "archetype": "matrix",
       "eyebrow": "04C. Status and audit",
-      "title": "Only REGISTERED prints, and only after the response",
+      "title": "Each status writes an audit action",
       "table": {
-        "colWidths": [2.1, 3.9, 3.9, 2.1],
-        "headers": ["Status", "Writes", "Worksheet and PHLC", "Sorter bin"],
+        "colWidths": [2.3, 3.4, 3.6, 2.7],
+        "headers": ["Status", "Writes", "Audit Action", "Sorter bin"],
         "rows": [
-          [{ "text": "REGISTERED", "tone": "success" }, "Lab request, SORT_REG and REG", "All worksheets, then PHLC, after return", "In-house"],
-          [{ "text": "SEND_OUT", "tone": "accent" }, "Send-out, tracking logs, SORT_SO and SEND_OUT", { "text": "None", "color": "muted" }, "Send-out"],
-          [{ "text": "RELABEL", "tone": "warn" }, "SORT_RELABEL only", { "text": "None", "color": "muted" }, "Staff Spec Ack"],
-          [{ "text": "FAILURE", "tone": "danger" }, "SORT_FAIL with message code", { "text": "None", "color": "muted" }, "Staff Spec Ack"]
+          [{ "text": "REGISTERED", "tone": "success" }, "Lab request", { "text": "SORT_REG and REG", "mono": true }, "In-house"],
+          [{ "text": "SEND_OUT", "tone": "accent" }, "Send-out, tracking logs", { "text": "SORT_SO and SEND_OUT", "mono": true }, "Send-out"],
+          [{ "text": "RELABEL", "tone": "warn" }, { "text": "None", "color": "muted" }, { "text": "SORT_RELABEL", "mono": true }, "Staff Spec Ack"],
+          [{ "text": "FAILURE", "tone": "danger" }, { "text": "None", "color": "muted" }, { "text": "SORT_FAIL with message code", "mono": true }, "Staff Spec Ack"]
         ]
       },
-      "notes": "A late worksheet does not change a status already returned. Print failure is an ALS warning, nothing more."
+      "notes": "SORT_* plus today's REG and SEND_OUT sit on LOE_AUDIT_TRAIL. Confirm the Audit Trail filter shows SORT_* before the pilot."
+    },
+    {
+      "archetype": "cards",
+      "eyebrow": "04D. Worksheet and PHLC",
+      "title": "Only REGISTERED prints, and only after the response",
+      "perRow": 2,
+      "cards": [
+        {
+          "icon": "list-check",
+          "title": "Worksheets",
+          "body": "• All worksheets after return\n• Worksheet, send-out and SH Ro\n• REGISTERED only"
+        },
+        {
+          "icon": "clipboard-check",
+          "title": "PHLC electronic order",
+          "body": "• createPhlcLabOrder after return\n• REGISTERED only"
+        }
+      ],
+      "callout": {
+        "lead": "Other statuses.",
+        "text": "SEND_OUT, RELABEL and FAILURE do not print or call PHLC. A late worksheet does not change a status already returned. Print failure is an ALS warning."
+      },
+      "notes": "Print sits outside the response. A late worksheet does not change a status already returned."
     },
     {
       "archetype": "stats",

@@ -145,16 +145,25 @@ Fallback map: loesort_sorter_id PK · loesort_hosp only. No usercode, workbench 
 Takeaway: One sorter, more than one lab — seed one workbench row per lab (D12). Map unused when hospital is always sent (D15).
 **Notes:** Rollback is DROP TABLE if the fallback table was created. Location and printer stay on workbench.
 
-### Slide: Status and side effects
+### Slide: Status and audit
 **Eyebrow:** 04C. Status and audit
-**Title:** Only REGISTERED prints, and only after the response
+**Title:** Each status writes an audit action
 **Archetype:** matrix
-| Status | Writes | Worksheet and PHLC | Sorter bin |
-| REGISTERED | Lab request, SORT_REG and REG | All worksheets, then PHLC, after return | In-house |
-| SEND_OUT | Send-out, tracking, SORT_SO and SEND_OUT | None | Send-out |
-| RELABEL | SORT_RELABEL only | None | Staff Spec Ack |
-| FAILURE | SORT_FAIL with message code | None | Staff Spec Ack |
-**Notes:** A late worksheet does not change a status already returned (D4). Print failure is an ALS warning, nothing more.
+| Status | Writes | Audit Action | Sorter bin |
+| REGISTERED | Lab request | SORT_REG and REG | In-house |
+| SEND_OUT | Send-out, tracking logs | SORT_SO and SEND_OUT | Send-out |
+| RELABEL | None | SORT_RELABEL | Staff Spec Ack |
+| FAILURE | None | SORT_FAIL with message code | Staff Spec Ack |
+**Notes:** SORT_* plus today's REG and SEND_OUT sit on LOE_AUDIT_TRAIL.
+
+### Slide: Worksheet and PHLC
+**Eyebrow:** 04D. Worksheet and PHLC
+**Title:** Only REGISTERED prints, and only after the response
+**Archetype:** cards
+- Worksheets — all after return (worksheet, send-out, SH Ro). REGISTERED only.
+- PHLC electronic order — createPhlcLabOrder after return. REGISTERED only.
+- Other statuses do not print or call PHLC. Print failure is an ALS warning.
+**Notes:** Print sits outside the response. A late worksheet does not change a status already returned.
 
 ### Slide: Non-functional
 **Eyebrow:** 05. Non-functional
