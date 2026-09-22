@@ -315,8 +315,7 @@
         "title": "Login decides",
         "points": [
           "User: staff LIS account",
-          "Workbench: selectWorkbench by PC name or IP",
-          "Retrieve GET: hard-codes user ltc611"
+          "Workbench: selectWorkbench by PC name or IP"
         ]
       },
       "right": {
