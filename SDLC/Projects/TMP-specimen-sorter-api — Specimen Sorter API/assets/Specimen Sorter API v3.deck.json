@@ -10,7 +10,7 @@
       "archetype": "title-hero",
       "eyebrow": "CP3 · Design review · 21 Sep 2026",
       "headline": "Specimen Sorter API",
-      "lede": "Sorter middleware calls one POST on lis-crs-spec-ack-svc. It sends out or registers the tube by USID, with the checks and packing Specimen Acknowledgement runs today.",
+      "lede": "Sorter middleware calls one POST on lis-crs-spec-ack-svc. It sends out or registers the tube by USID, with the validations and packing Specimen Acknowledgement runs today.",
       "stats": [
         { "label": "Service", "value": "lis-crs-spec-ack-svc" },
         { "label": "Change", "value": "LIS-XXXXX" }
@@ -42,7 +42,7 @@
         "points": [
           "Where: Specimen Acknowledgement in ECPath",
           "Action: scan the label, then Send-out or Register",
-          "Checks and packing: run on the screen"
+          "Validation and packing: run on the screen"
         ]
       },
       "right": {
