@@ -85,6 +85,10 @@ are fine in body copy.
 class and method names, config keys. Use the `mono: true` flag on table headers
 and the `tag` slot on cards. In a prose bullet, describe the behaviour instead.
 
+**Icons come from the kit.** Use a Font Awesome solid name from
+`design-review-pptx/assets/icons/`. See the topic table in the shared
+design-system note. Synonyms such as `settings` and `search` still resolve.
+
 **Terminology must not drift.** Pick one spelling per service, status, and
 control name and hold it across every slide.
 

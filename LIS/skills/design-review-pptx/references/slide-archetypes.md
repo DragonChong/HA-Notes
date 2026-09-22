@@ -16,7 +16,7 @@ Common slots on every content archetype:
 | `hide` | boolean | if true, skip this slide in generate, preview, and QA |
 
 Shared optional slots: `tone` (`neutral` `accent` `success` `warn` `danger`
-`ink`), `icon` (a name from `assets/icons/`), `callout` (`{ lead, text }` — a
+`ink`), `icon` (a Font Awesome solid name from `assets/icons/`), `callout` (`{ lead, text }` — a
 quiet line under the block).
 
 [`examples/TDR-template.deck.json`](../examples/TDR-template.deck.json) uses

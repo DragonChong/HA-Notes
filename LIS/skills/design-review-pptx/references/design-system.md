@@ -135,14 +135,33 @@ Template column widths fall out of the gutters: 3-up cards 3.83, 4-up 2.84,
 
 ## Icons
 
-`assets/icons/*.svg` — 30 Font Awesome Free solid icons (CC BY 4.0, see
-`assets/icons/LICENSE`). Decks embed **pre-rendered PNGs** from
-`assets/icons/png/<tint>/`, tints `accent`, `onDark`, `success`, `danger`,
-`warn`, `muted`. pptxgenjs's own SVG embed writes a broken-image fallback that
-Keynote and older Office display.
+`assets/icons/*.svg` — Font Awesome Free 7.3.1 solid icons (CC BY 4.0, see
+`assets/icons/LICENSE` and [fontawesome.com](https://fontawesome.com)). The
+curated list is `tools/fa-catalog.js` (~150 names). A few aliases map common
+synonyms onto those files (`settings` → `gear`, `search` → `magnifying-glass`).
 
-Add an icon: drop the SVG in `assets/icons/`, run `sh tools/build-icons.sh`
-(macOS). Unknown icon names fail generation and QA.
+Decks embed **pre-rendered PNGs** from `assets/icons/png/<tint>/`, tints
+`accent`, `onDark`, `success`, `danger`, `warn`, `muted`. pptxgenjs's own SVG
+embed writes a broken-image fallback that Keynote and older Office display.
+`build-icons.js` expands Font Awesome viewBoxes that overflow (paper-plane,
+gear, lock) and letterboxes into a square so tips are not clipped.
+
+Add an icon: copy the solid SVG from Font Awesome Free (keep
+`fill="currentColor"`), drop it in `assets/icons/`, add the name to
+`tools/fa-catalog.js`, then run `node tools/build-icons.js` (`npm install
+--prefix tools @resvg/resvg-js`). `tools/build-icons.sh` calls that script.
+Unknown icon names fail generation and QA.
+
+Pick by topic:
+
+| Topic | Names |
+|-------|--------|
+| Status | `circle-check`, `circle-xmark`, `triangle-exclamation`, `circle-info`, `circle-question` |
+| People | `user`, `users`, `user-gear`, `user-shield`, `user-doctor` |
+| Lab | `flask`, `vial`, `flask-vial`, `microscope`, `dna`, `syringe`, `pills`, `hospital`, `stethoscope` |
+| Infra | `server`, `database`, `hard-drive`, `laptop`, `desktop`, `microchip`, `network-wired`, `ethernet`, `wifi`, `cloud` |
+| Software | `code`, `terminal`, `code-branch`, `bug`, `sitemap`, `diagram-project`, `gears`, `sliders` |
+| Change | `rocket`, `arrows-rotate`, `rotate-left`, `arrow-right-arrow-left`, `cloud-arrow-up`, `clipboard-check` |
 
 ## Craft rules
 

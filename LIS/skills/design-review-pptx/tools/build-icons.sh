@@ -1,15 +1,14 @@
 #!/bin/sh
 # Rasterise assets/icons/*.svg into tinted PNGs under assets/icons/png/<tint>/.
-#
-# PNG, not SVG, ships in decks: pptxgenjs embeds SVG with a generated fallback
-# that is a broken-image placeholder, which Keynote and pre-365 Office show.
-# macOS only (uses AppKit to rasterise). Re-run after adding an icon.
-# Tint hexes must match deck-kit.js (ICON_TINTS).
+# Prefer the Node rasteriser (Windows / macOS / Linux). Fall back to AppKit on macOS.
 set -eu
 cd "$(dirname "$0")/.."
+if command -v node >/dev/null 2>&1; then
+  node tools/build-icons.js
+  exit 0
+fi
 BIN="${TMPDIR:-/tmp}/svg2png-deckkit"
 swiftc -O tools/svg2png.swift -o "$BIN" >/dev/null
-
 for pair in accent:0284C7 onDark:38BDF8 success:16A34A danger:DC2626 warn:D97706 muted:64748B; do
   tint="${pair%%:*}"
   hex="${pair##*:}"

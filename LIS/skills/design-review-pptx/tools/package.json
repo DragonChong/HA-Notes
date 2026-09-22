@@ -1,0 +1,8 @@
+{
+  "name": "design-review-pptx-tools",
+  "private": true,
+  "description": "Optional deps for icon PNG rebuild. Not used by generate-deck.js.",
+  "dependencies": {
+    "@resvg/resvg-js": "^2.6.2"
+  }
+}

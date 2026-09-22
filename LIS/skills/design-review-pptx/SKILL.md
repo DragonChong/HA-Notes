@@ -279,8 +279,9 @@ Do not invent facts to make a sentence smoother.
 | `record.js` | Shared draw-call recorder behind QA and preview |
 | `examples/TDR-template.deck.json` | Fidelity fixture: the template's slides in the kit |
 | `examples/LIS-10747.deck.json` | Incremental CP3 example |
-| `assets/icons/` | Font Awesome Free SVGs + pre-rendered tinted PNGs |
-| `tools/build-icons.sh` | Re-render icon PNGs after adding an SVG (macOS) |
+| `assets/icons/` | Font Awesome Free solid SVGs + pre-rendered tinted PNGs |
+| `tools/fa-catalog.js` | Curated FA names and a few synonyms |
+| `tools/build-icons.js` | Re-render icon PNGs after adding an SVG (Node, any OS) |
 | [references/design-system.md](references/design-system.md) | Palette, type, grid, icons, contrast |
 | [references/slide-archetypes.md](references/slide-archetypes.md) | All 15 with slot schemas |
 | [references/content-rules.md](references/content-rules.md) | Brief-to-archetype mapping, writing rules |
@@ -317,7 +318,8 @@ If two decks need the same one-off, it is an archetype, not a `custom` slide.
   template's Space Grotesk / Plus Jakarta Sans, which HA desktops do not have;
   anything else resolves to a substitute that breaks the layout.
 - **Icons ship as PNG.** pptxgenjs's SVG embed writes a broken-image fallback
-  that Keynote and older Office show. Run `tools/build-icons.sh` after adding one.
+  that Keynote and older Office show. Run `node tools/build-icons.js` after
+  adding one (`npm install --prefix tools @resvg/resvg-js`).
 
 ## Related skills
 

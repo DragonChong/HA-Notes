@@ -113,6 +113,10 @@ constants, class and method names. Use the `mono: true` flag on table headers
 and the `tag` slot on cards; in prose, an identifier can stay in body font if
 setting it in mono would break the line.
 
+**Icons come from the kit.** Use a Font Awesome solid name from
+`assets/icons/`. See the topic table in [design-system.md](design-system.md).
+Synonyms such as `settings` and `search` still resolve.
+
 **Terminology must not drift.** Pick `OUTSTANDING` or `Outstanding`, one service
 name spelling, one name per setup control, and hold it across every slide.
 

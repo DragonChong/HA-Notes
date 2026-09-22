@@ -202,6 +202,9 @@ same one-off, it is an archetype, not a `custom` slide.
   underneath. Heed the overflow warnings.
 - **Only Segoe UI, Segoe UI Semibold and Consolas.** Anything else may not exist
   on an HA desktop and will resolve to a substitute that breaks the layout.
+- **Icons live in `../design-review-pptx/assets/icons/`.** Use Font Awesome
+  Free solid names (`gear`, `server`, `hospital`, `code-branch`). After adding
+  an SVG, run `node tools/build-icons.js` there.
 
 ## Related skills
 

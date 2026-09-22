@@ -434,15 +434,22 @@ function keyValue(slide, line, { x, y, w, h, fontSize = size.small, onDark = fal
 
 const ICON_DIR = path.join(__dirname, 'assets', 'icons');
 const ICON_TINTS = ['accent', 'onDark', 'success', 'danger', 'warn', 'muted'];
+const ICON_ALIASES = require('./tools/fa-catalog.js').ALIASES;
+
+function resolveIconName(name) {
+  return ICON_ALIASES[name] || name;
+}
 
 function iconNames() {
-  return fs.readdirSync(ICON_DIR).filter((f) => f.endsWith('.svg')).map((f) => f.slice(0, -4));
+  const files = fs.readdirSync(ICON_DIR).filter((f) => f.endsWith('.svg')).map((f) => f.slice(0, -4));
+  return [...new Set([...files, ...Object.keys(ICON_ALIASES)])].sort();
 }
 
 /** Absolute PNG path for an icon; throws on unknown name or tint. */
 function iconPath(name, tint = 'accent') {
   if (!ICON_TINTS.includes(tint)) throw new Error(`unknown icon tint "${tint}"`);
-  const p = path.join(ICON_DIR, 'png', tint, `${name}.png`);
+  const resolved = resolveIconName(name);
+  const p = path.join(ICON_DIR, 'png', tint, `${resolved}.png`);
   if (!fs.existsSync(p)) {
     throw new Error(`unknown icon "${name}". Available: ${iconNames().join(', ')}`);
   }
@@ -630,6 +637,6 @@ module.exports = {
   columns, gutter, centreY, textWidth, lineCount, textHeight,
   lightBg, darkBg, shapeText, card, panel, rect, eyebrow, heading, splitEyebrow,
   badge, pill, chip, mono, text, richText, keyValue,
-  ICON_TINTS, iconNames, iconPath, icon, iconDisc, metaRow, note,
+  ICON_TINTS, ICON_ALIASES, iconNames, iconPath, icon, iconDisc, metaRow, note,
   connector, decisionNode, codePanel, codePanelHeight, CODE_TOKENS, applyDocProps,
 };
