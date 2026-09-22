@@ -530,13 +530,13 @@ function connector(pptx, slide, dir, { x, y, w, h, fill = color.ruleStrong }) {
 }
 
 /** Hexagonal decision node — carries its own text. */
-function decisionNode(pptx, slide, label, { x, y, w, h = 1.4, fontSize = size.eyebrow }) {
+function decisionNode(pptx, slide, label, { x, y, w, h = 1.4, fontSize = size.eyebrow, highlight = false }) {
   shapeText(pptx, slide, 'hexagon', label, {
     x, y, w, h,
-    fill: { color: color.white },
-    line: { color: color.accent, width: 1 },
+    fill: { color: highlight ? color.accentInk : color.white },
+    line: { color: color.accent, width: highlight ? 2 : 1 },
     align: 'center', valign: 'middle',
-    fontFace: font.mono, fontSize, color: color.ink,
+    fontFace: font.mono, fontSize, color: highlight ? color.white : color.ink,
   });
 }
 

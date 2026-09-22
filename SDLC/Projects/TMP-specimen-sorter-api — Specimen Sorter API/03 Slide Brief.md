@@ -36,8 +36,9 @@ Facts come from [[02 System Design]] (reviewed Tony Chong; D12 14 Sep, D1 APIM 1
 1. Background — staff clicks today, sorter calls tomorrow
 2. Existing design — what the Spec Ack screen owns
 3. Proposed change — one POST, four outcomes
-4. Contract and data — APIM call, sorter map, audit
-5. Promotion and fallback
+4. Send-out, validation, relabel — flow locator then detail
+5. Contract and data — APIM call, sorter map, audit
+6. Promotion and fallback
 6. Open questions
 **Notes:** Spend the time on the four statuses and the sorter map. Those are the decisions.
 
@@ -79,6 +80,45 @@ Facts come from [[02 System Design]] (reviewed Tony Chong; D12 14 Sep, D1 APIM 1
 Start: POST with USID and sorterId → Checks pass? (No → FAILURE: unknown sorter, not CPS or HMS, mixed, hard check, 4422) → Relabel rules? (Yes → RELABEL: multi-group, suffix, DFT time flag) → All tests send-out? (Yes → SEND_OUT) → No → REGISTERED.
 Condition strip: `data.status` REGISTERED | SEND_OUT | RELABEL | FAILURE. HTTP 200 on every decision; soft alerts go to ALS.
 **Notes:** A tube with both local and send-out tests fails rather than splitting (D3). Relabel is not reported as Failure.
+
+### Slide: Send-out locator
+**Eyebrow:** 03B. Send-out
+**Title:** This decision: are all tests send-out?
+**Archetype:** decision-flow (highlight first hexagon)
+**Notes:** Next slide is LOESEND_HOSP and LOESEND_CLUSTER_CODE.
+
+### Slide: Send-out detail
+**Eyebrow:** 03C. Send-out
+**Title:** A send-out test is a cluster code at that hospital
+**Archetype:** code-findings
+Match `loereqtst_test_code` to `LOESEND_CLUSTER_CODE` and send hospital to `LOESEND_HOSP`. All match → SEND_OUT. Mixed → FAILURE (D3). No sorter send-out flag.
+**Notes:** Same join Spec Ack uses today. No print after SEND_OUT (D11).
+
+### Slide: Validation locator
+**Eyebrow:** 03D. Validation
+**Title:** This decision: do hard checks pass?
+**Archetype:** decision-flow (highlight second hexagon)
+**Notes:** Next slide is hard Failure vs soft ALS.
+
+### Slide: Validation detail
+**Eyebrow:** 03E. Validation
+**Title:** Hard Spec Ack checks stop the API as Failure
+**Archetype:** matrix
+Dates · doctor/location · test/specimen · patient · STAR 4422 · mixed send-out → FAILURE. Soft alerts ALS only (R6).
+**Notes:** Relabel is a different node.
+
+### Slide: Relabel locator
+**Eyebrow:** 03F. Relabel
+**Title:** This decision: can USID be the request number?
+**Archetype:** decision-flow (highlight third hexagon)
+**Notes:** Next slide is Assign-USID without the checkbox.
+
+### Slide: Relabel detail
+**Eyebrow:** 03G. Relabel
+**Title:** Relabel when USID cannot be the request number
+**Archetype:** cards (3-up)
+Multiple request groups · multiple specimens / suffix / DFT time flag · force relabel / auto-gen-only. Return RELABEL. No write.
+**Notes:** Same getAutoAssignUsid rules, no RelabelUisdSpecimenCheckboxId.
 
 ### Slide: Contract
 **Eyebrow:** 04. API contract

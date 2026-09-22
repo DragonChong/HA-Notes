@@ -732,7 +732,9 @@ function decisionFlow(pptx, slide, spec) {
     }
     cursor += 0.53;
     const w = d.w ?? 3.25;
-    K.decisionNode(pptx, slide, d.text, { x: cursor, y: rowY, w, h: nodeH, fontSize: d.fontSize ?? size.eyebrow });
+    K.decisionNode(pptx, slide, d.text, {
+      x: cursor, y: rowY, w, h: nodeH, fontSize: d.fontSize ?? size.eyebrow, highlight: !!d.highlight,
+    });
 
     if (d.fallthrough) {
       const cx = cursor + w / 2;
@@ -741,7 +743,7 @@ function decisionFlow(pptx, slide, spec) {
         x: cx + 0.2, y: rowY + nodeH + 0.14, w: 0.55, h: 0.24,
         fontSize: size.eyebrow, bold: true, color: color.muted,
       });
-      outcomes.push({ x: cursor, w, ...d.fallthrough });
+      outcomes.push({ x: cursor, w, highlight: !!d.highlight, ...d.fallthrough });
     }
     cursor += w;
   });
@@ -765,7 +767,7 @@ function decisionFlow(pptx, slide, spec) {
 
   const outY = rowY + nodeH + 0.62;
   outcomes.forEach((o) => {
-    K.card(pptx, slide, { x: o.x, y: outY, w: o.w, h: 0.95 });
+    K.card(pptx, slide, { x: o.x, y: outY, w: o.w, h: 0.95, highlight: !!o.highlight });
     K.text(slide, o.title, {
       x: o.x + 0.2, y: outY + 0.14, w: o.w - 0.4, h: 0.3,
       face: font.display, fontSize: size.small, color: color.ink, align: 'center', valign: 'middle',

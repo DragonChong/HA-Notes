@@ -167,6 +167,7 @@ carry `icon` or `mark` (tinted circle, `findingTone` `danger` default / `accent`
 { "archetype": "decision-flow",
   "start": { "text": "Acknowledge specimen\nwith no request no.", "w": 2.35 },
   "decisions": [ { "text": "WARD_PRINT_LABNO_LABEL\n= 'Y' ?", "w": 3.25, "inLabel": "Yes",
+                   "highlight": true,
                    "fallthrough": { "label": "No", "title": "No popup", "body": "…" } } ],
   "terminal": { "label": "No", "text": "Show reminder popup" },
   "condition": { "label": "Effective condition", "code": "a && !b", "note": "…" } }

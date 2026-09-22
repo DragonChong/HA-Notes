@@ -26,6 +26,7 @@
         { "title": "Background"},
         { "title": "Existing design"},
         { "title": "Proposed change"},
+        { "title": "Send-out"},
         { "title": "API contract and data"},
         { "title": "Promotion and fallback"}
       ],
@@ -119,6 +120,160 @@
         "note": "HTTP 200 on every decision. Soft alerts go to ALS, never the body."
       },
       "notes": "A tube with both local and send-out tests fails rather than splitting (D3). Relabel is not reported as Failure."
+    },
+    {
+      "archetype": "decision-flow",
+      "eyebrow": "03B. Send-out",
+      "title": "This decision: are all tests send-out?",
+      "start": { "text": "POST\nUSID + sorterId", "w": 1.7 },
+      "decisions": [
+        {
+          "text": "All tests\nsend-out?",
+          "w": 2.3,
+          "inLabel": "No",
+          "highlight": true,
+          "fallthrough": { "label": "Yes", "title": "SEND_OUT", "body": "Existing send-out, no print" }
+        },
+        {
+          "text": "Validations\npass?",
+          "w": 2.3,
+          "fallthrough": { "label": "No", "title": "FAILURE", "body": "Unknown sorter, lab, mixed, hard check, 4422" }
+        },
+        {
+          "text": "Relabel\nrules?",
+          "w": 2.3,
+          "inLabel": "Yes",
+          "fallthrough": { "label": "Yes", "title": "RELABEL", "body": "Multi-group, suffix, DFT time flag" }
+        }
+      ],
+      "terminal": { "label": "No", "text": "REGISTERED" },
+      "condition": {
+        "label": "Returned status",
+        "code": "REGISTERED | SEND_OUT | RELABEL | FAILURE",
+        "note": "Yes on this node is SEND_OUT. Mixed local plus send-out already failed (D3)."
+      },
+      "notes": "Next slide is how LIS knows a test is send-out: LOESEND_HOSP and LOESEND_CLUSTER_CODE."
+    },
+    {
+      "archetype": "code-findings",
+      "eyebrow": "03C. Send-out",
+      "title": "A send-out test is a cluster code at that hospital",
+      "code": {
+        "filename": "LOE_SENDOUT_TEST",
+        "language": "SQL",
+        "lines": [
+          [{ "text": "-- match GCRS test to send-out list", "color": "comment" }],
+          [{ "text": "loereqtst_test_code", "color": "string" }, { "text": " = " }, { "text": "LOESEND_CLUSTER_CODE", "color": "literal" }],
+          [{ "text": "AND send hospital", "color": "keyword" }, { "text": " = " }, { "text": "LOESEND_HOSP", "color": "literal" }]
+        ]
+      },
+      "findings": [
+        { "icon": "vial", "title": "All tests match", "body": "In-process sendOutSpecimen. Status SEND_OUT. No worksheet." },
+        { "icon": "triangle-exclamation", "title": "Mixed on one USID", "body": "Some send-out, some local. FAILURE. Do not split (D3)." },
+        { "icon": "circle-xmark", "title": "No sorter flag", "body": "The request does not say send-out. The table does." }
+      ],
+      "findingTone": "accent",
+      "notes": "Same join Spec Ack uses today. Lab on the order still scopes the lookup inside the service. No print after SEND_OUT (D11)."
+    },
+    {
+      "archetype": "decision-flow",
+      "eyebrow": "03D. Validation",
+      "title": "This decision: do hard checks pass?",
+      "start": { "text": "POST\nUSID + sorterId", "w": 1.7 },
+      "decisions": [
+        {
+          "text": "All tests\nsend-out?",
+          "w": 2.3,
+          "inLabel": "No",
+          "fallthrough": { "label": "Yes", "title": "SEND_OUT", "body": "Existing send-out, no print" }
+        },
+        {
+          "text": "Validations\npass?",
+          "w": 2.3,
+          "highlight": true,
+          "fallthrough": { "label": "No", "title": "FAILURE", "body": "Unknown sorter, lab, mixed, hard check, 4422" }
+        },
+        {
+          "text": "Relabel\nrules?",
+          "w": 2.3,
+          "inLabel": "Yes",
+          "fallthrough": { "label": "Yes", "title": "RELABEL", "body": "Multi-group, suffix, DFT time flag" }
+        }
+      ],
+      "terminal": { "label": "No", "text": "REGISTERED" },
+      "condition": {
+        "label": "Returned status",
+        "code": "REGISTERED | SEND_OUT | RELABEL | FAILURE",
+        "note": "No on this node is FAILURE. Soft alerts stay on ALS."
+      },
+      "notes": "Next slide lists the hard Spec Ack checks that become Failure, and the soft ones that do not."
+    },
+    {
+      "archetype": "matrix",
+      "eyebrow": "03E. Validation",
+      "title": "Hard Spec Ack checks stop the API as Failure",
+      "table": {
+        "colWidths": [2.6, 6.6, 2.8],
+        "headers": ["Category", "Examples from Spec Ack", "API status"],
+        "rows": [
+          ["Dates", "Ack / collect / request / DOB (R12)", { "text": "FAILURE", "tone": "danger" }],
+          ["Doctor / location", "Unmapped doctor, ward, specialty, report dest", { "text": "FAILURE", "tone": "danger" }],
+          ["Test / specimen", "Failed test check; used or deleted; APS / BBS / MBS", { "text": "FAILURE", "tone": "danger" }],
+          ["Patient", "HKID or name does not match GCRS", { "text": "FAILURE", "tone": "danger" }],
+          ["STAR", "No workbench location — 4422 (D9)", { "text": "FAILURE", "tone": "danger" }],
+          ["Mixed send-out", "Local and send-out on one USID (D3)", { "text": "FAILURE", "tone": "danger" }]
+        ]
+      },
+      "takeaways": [
+        { "title": "Soft alerts do not bin", "body": "Overnight, valid period, duplicate, private, missing collection date, STAR unbox alert: ALS only (R6)." }
+      ],
+      "notes": "Relabel is a different node. Do not report these as Relabel."
+    },
+    {
+      "archetype": "decision-flow",
+      "eyebrow": "03F. Relabel",
+      "title": "This decision: can USID be the request number?",
+      "start": { "text": "POST\nUSID + sorterId", "w": 1.7 },
+      "decisions": [
+        {
+          "text": "All tests\nsend-out?",
+          "w": 2.3,
+          "inLabel": "No",
+          "fallthrough": { "label": "Yes", "title": "SEND_OUT", "body": "Existing send-out, no print" }
+        },
+        {
+          "text": "Validations\npass?",
+          "w": 2.3,
+          "fallthrough": { "label": "No", "title": "FAILURE", "body": "Unknown sorter, lab, mixed, hard check, 4422" }
+        },
+        {
+          "text": "Relabel\nrules?",
+          "w": 2.3,
+          "inLabel": "Yes",
+          "highlight": true,
+          "fallthrough": { "label": "Yes", "title": "RELABEL", "body": "Multi-group, suffix, DFT time flag" }
+        }
+      ],
+      "terminal": { "label": "No", "text": "REGISTERED" },
+      "condition": {
+        "label": "Returned status",
+        "code": "REGISTERED | SEND_OUT | RELABEL | FAILURE",
+        "note": "Yes on this node is RELABEL. No write. Not Failure (R3)."
+      },
+      "notes": "Next slide is the Assign-USID rules without the staff checkbox."
+    },
+    {
+      "archetype": "cards",
+      "eyebrow": "03G. Relabel",
+      "title": "Relabel when USID cannot be the request number",
+      "perRow": 3,
+      "cards": [
+        { "badge": 1, "title": "Multiple request groups", "body": "More than one request test group for the scanned USID (R4a)." },
+        { "badge": 2, "title": "Multiple specimens", "body": "More than one specimen on a test, suffix A/B/C, or several DFT specimens for one time flag (R4b, R4c)." },
+        { "badge": 3, "title": "Force relabel", "body": "GCRS force-relabel flag, or auto-gen-only lab. No checkbox. No invented number (R11)." }
+      ],
+      "callout": { "lead": "Not registered.", "text": "Return RELABEL. No lab request. Partial DFT remainder is Relabel too (Q15)." },
+      "notes": "Same getAutoAssignUsid rules as Spec Ack, without RelabelUisdSpecimenCheckboxId."
     },
     {
       "archetype": "code-findings",
