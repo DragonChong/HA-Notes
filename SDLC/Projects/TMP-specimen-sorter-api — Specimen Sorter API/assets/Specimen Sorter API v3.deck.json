@@ -163,18 +163,18 @@
         "language": "SQL",
         "lines": [
           [{ "text": "-- match GCRS test to send-out list", "color": "comment" }],
-          [{ "text": "send hospital", "color": "string" }, { "text": " = " }, { "text": "LOESEND_HOSP", "color": "literal" }],
-          [{ "text": "AND loereqtst_test_code", "color": "string" }, { "text": " = " }, { "text": "LOESEND_CLUSTER_CODE", "color": "literal" }]
+          [{ "text": "LOESEND_HOSP", "color": "string" }, { "text": " = " }, { "text": "<Send Hospital>", "color": "literal" }],
+          [{ "text": "AND LOESEND_CLUSTER_CODE", "color": "string" }, { "text": " = " }, { "text": "<CMS Test Code>", "color": "literal" }]
           
         ]
       },
       "findings": [
         { "icon": "vial", "title": "All tests match", "body": "In-process sendOutSpecimen. Status SEND_OUT. No worksheet." },
-        { "icon": "triangle-exclamation", "title": "Mixed on one USID", "body": "Some send-out, some local. FAILURE. Do not split (D3)." },
+        { "icon": "triangle-exclamation", "title": "Mixed on one USID", "body": "Some send-out, some local. FAILURE. Do not split." },
         { "icon": "circle-xmark", "title": "No sorter flag", "body": "The request does not say send-out. The table does." }
       ],
       "findingTone": "accent",
-      "notes": "Same join Spec Ack uses today. Lab on the order still scopes the lookup inside the service. No print after SEND_OUT (D11)."
+      "notes": "Same join Spec Ack uses today. Lab on the order still scopes the lookup inside the service. No print after SEND_OUT."
     },
     {
       "archetype": "decision-flow",
