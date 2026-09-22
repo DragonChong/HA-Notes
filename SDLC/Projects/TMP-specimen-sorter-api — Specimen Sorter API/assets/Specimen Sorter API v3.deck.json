@@ -336,14 +336,14 @@
       "eyebrow": "04B. Data model",
       "title": "Hospital sent: workbench only. Map is hospital fallback",
       "table": {
-        "colWidths": [3.4, 2.6, 6.0],
-        "headers": ["Column", "Type", "Role"],
+        "colWidths": [3.4, 2.8, 1.8, 4.0],
+        "headers": ["Table", "Column", "Type", "Role"],
         "rows": [
-          [{ "text": "wkbh_station_name", "mono": true }, "workbench", "Equals request sorterId"],
-          [{ "text": "wkbh_id", "mono": true }, "workbench", "LIS user; PK with wkbh_labno"],
-          [{ "text": "wkbh_hosp", "mono": true }, "workbench", "Must match request hospital"],
-          [{ "text": "loesort_sorter_id", "mono": true }, "VARCHAR2(64)", "Fallback map PK; omit-hospital only"],
-          [{ "text": "loesort_hosp", "mono": true }, "VARCHAR2(8)", "Fallback hospital when request omits it"]
+          [{ "text": "workbench", "mono": true }, { "text": "wkbh_station_name", "mono": true }, "varchar(255)", "Equals request sorterId"],
+          [{ "text": "workbench", "mono": true }, { "text": "wkbh_id", "mono": true }, "char(8)", "LIS user; PK with wkbh_labno"],
+          [{ "text": "workbench", "mono": true }, { "text": "wkbh_hosp", "mono": true }, "char(12)", "Must match request hospital"],
+          [{ "text": "loe_specimen_sorter_map", "mono": true }, { "text": "loesort_sorter_id", "mono": true }, "VARCHAR2(64)", "Fallback map PK; omit-hospital only"],
+          [{ "text": "loe_specimen_sorter_map", "mono": true }, { "text": "loesort_hosp", "mono": true }, "VARCHAR2(8)", "Fallback hospital when request omits it"]
         ]
       },
       "takeaways": [
