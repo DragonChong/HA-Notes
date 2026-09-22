@@ -145,7 +145,7 @@
         ]
       },
       "findings": [
-        { "icon": "key", "title": "Gateway headers", "body": "x-gateway-apikey and x-ha-hospcode. No Hub JWT." },
+        { "icon": "key", "title": "Gateway headers", "body": "x-gateway-apikey and x-ha-hospcode." },
         { "icon": "server", "title": "Hospital is optional", "body": "Omitted: loesort_hosp. Different from the map: Failure." },
         { "icon": "triangle-exclamation", "title": "Bin from data.status", "body": "HTTP 200 is not Registered. 500 means retry." }
       ],
