@@ -85,7 +85,7 @@
         { "icon": "code", "title": "New API", "body": "• POST /api/sorter/auto-register on lis-crs-spec-ack-svc\n• ECPath /api/specack is unchanged" },
         { "icon": "layer-group", "title": "Move screen logic", "body": "• Retrieve, validation, packing on the server\n• Then existng send-out, register, print, PHLC" },
         { "icon": "table", "title": "Workbench first", "body": "• sorterId = wkbh_station_name\n• User = wkbh_id" },
-        { "icon": "clipboard-check", "title": "Audit", "body": "• New SORT_* audits on LOE_AUDIT_TRAIL\n• Same today's REG and SEND_OUT" }
+        { "icon": "clipboard-check", "title": "Audit", "body": "• New SORT_* on LOE_AUDIT_TRAIL\n• Print or PHLC fail writes SORT_WS_FAIL / SORT_PHLC_FAIL" }
       ],
       "notes": "No new service and no DDL on workbench. Staff Spec Ack stays as the Relabel and Failure bin."
     },
@@ -367,7 +367,7 @@
           [{ "text": "FAILURE", "tone": "danger" }, { "text": "None", "color": "muted" }, { "text": "SORT_FAIL with message code", "mono": true }, "Staff Spec Ack"]
         ]
       },
-      "notes": "SORT_* plus today's REG and SEND_OUT sit on LOE_AUDIT_TRAIL. Confirm the Audit Trail filter shows SORT_* before the pilot."
+      "notes": "SORT_* plus today's REG and SEND_OUT sit on LOE_AUDIT_TRAIL. Print and PHLC fail are extra rows, not a fifth status."
     },
     {
       "archetype": "cards",
@@ -378,19 +378,19 @@
         {
           "icon": "list-check",
           "title": "Worksheets",
-          "body": "• REGISTERED only\n• GCRS Worksheet, send-out and SH after return"
+          "body": "• REGISTERED only, after return\n• Fail writes SORT_WS_FAIL"
         },
         {
           "icon": "clipboard-check",
           "title": "PHLC electronic order",
-          "body": "• REGISTERED only\n• createPhlcLabOrder after return"
+          "body": "• REGISTERED only, after return\n• Fail writes SORT_PHLC_FAIL"
         }
       ],
       "callout": {
-        "lead": "Other statuses.",
-        "text": "SEND_OUT, RELABEL and FAILURE do not print or call PHLC. A late worksheet does not change a status already returned. Print failure is an ALS warning."
+        "lead": "Status stays REGISTERED.",
+        "text": "ALS still warns. Put SORT_WS_FAIL and SORT_PHLC_FAIL on the Audit Trail filter. SEND_OUT, RELABEL and FAILURE do not print or call PHLC."
       },
-      "notes": "Print sits outside the response. A late worksheet does not change a status already returned."
+      "notes": "Print sits outside the response. A late or failed worksheet does not change a status already returned."
     },
     {
       "archetype": "stats",
@@ -430,7 +430,7 @@
           "No conversion of historical requests."
         ]
       },
-      "notes": "Confirm the Audit Trail filter shows SORT_* before the pilot, or staff cannot find the sorter's attempts."
+      "notes": "Confirm the Audit Trail filter shows SORT_* including SORT_WS_FAIL and SORT_PHLC_FAIL, or staff cannot find a print or PHLC fail."
     },
     {
       "archetype": "statement",

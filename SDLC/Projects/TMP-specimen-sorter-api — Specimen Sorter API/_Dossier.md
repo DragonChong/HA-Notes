@@ -47,8 +47,8 @@ work_type: project
 | 01 Requirement | [[01 Requirement Confirmation]] | confirmed 2026-09-07; not in gates_passed |
 | 02 Design | [[02 System Design]] | approved 2026-09-10; D16 2026-09-22 — `SORT_WS_FAIL` / `SORT_PHLC_FAIL` after Registered |
 | API spec | [[API Specification]] | draft 2026-09-21 — `data` has `labCode` + `testCode`; no `labNo` |
-| 03 Slide Brief | [[03 Slide Brief]] | draft — refreshed 2026-09-22 (D15) |
-| 03 Design Review | [[assets/Specimen Sorter API v3.pptx]] | regenerated 2026-09-22 (D15) |
+| 03 Slide Brief | [[03 Slide Brief]] | draft — refreshed 2026-09-22 (D16) |
+| 03 Design Review | [[assets/Specimen Sorter API v3.pptx]] | regenerated 2026-09-22 (D16) |
 | 03 Design Review (prior) | [[assets/Specimen Sorter API v2.pptx]] | superseded 2026-09-21 |
 | 04 JIRA | [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]] | draft |
 | 05 Project Plan | [[05 Project Plan]] | accepted 2026-09-10 |
@@ -84,7 +84,8 @@ work_type: project
 - 2026-09-21 — [[03 Slide Brief]] refreshed from 02 after D14. New deck `assets/Specimen Sorter API v3.pptx` (15 slides, full profile); v2 kept as prior. `design-review` still not closed. — agent
 - 2026-09-21 — Sorter response `data`: `labCode` + `testCode` (R3, R8). Dropped `labNo` from [[API Specification]] and OpenAPI. Numeric lab stays on `hk.org.ha.lis.enums.Lab`. — agent
 - 2026-09-22 — D15: `sorterId` = `wkbh_station_name`; user = `wkbh_id`. Hospital sent → no `loe_specimen_sorter_map`. Map is sorter id → hosp only when hospital omitted. Dropped `loesort_usercode` / `loesort_workbench_id`. Deck refreshed; `design-review` not closed. — agent
-- 2026-09-22 — D16: worksheet or PHLC fail after Registered writes `SORT_WS_FAIL` / `SORT_PHLC_FAIL` on `LOE_AUDIT_TRAIL` (R9). Rejected ALS-only and flipping status to `SORT_FAIL`. Status stays REGISTERED (D4). Slides not refreshed this turn. — agent
+- 2026-09-22 — D16: worksheet or PHLC fail after Registered writes `SORT_WS_FAIL` / `SORT_PHLC_FAIL` on `LOE_AUDIT_TRAIL` (R9). Rejected ALS-only and flipping status to `SORT_FAIL`. Status stays REGISTERED (D4). — agent
+- 2026-09-22 — [[03 Slide Brief]] and `v3.pptx` refreshed for D16 (04C/04D + Audit Trail filter). `design-review` not closed. — agent
 - 2026-09-10 — JIRA log drafted: [[Develop Auto-Registration API on `lis-crs-spec-ack-svc` for Specimen Sorter Send-out and Registration]]. Target 30th May, 2027. No JIRA key yet. — agent
 - 2026-09-10 — [[05 Project Plan]] drafted from the programme 12-row schedule, backwards from Jun 2027 submission. 2027 window is not in [[Promotion Windows]]. Estimates await acceptance. `plan` not in `gates_passed`. — agent
 - 2026-09-10 — Estimates on [[05 Project Plan]] accepted. `plan` written to `gates_passed`. Stage → development. JIRA key still missing. — Ka

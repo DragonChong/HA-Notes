@@ -11,7 +11,7 @@ title: 03 Slide Brief — Specimen Sorter API
 ---
 # 03 Slide Brief — Specimen Sorter API
 
-Facts come from [[02 System Design]] (reviewed Tony Chong; D12 14 Sep, D1 APIM 15 Sep, D14 21 Sep, D15 22 Sep) and the consumer contract it links, [[API Specification]]. Dates from [[05 Project Plan]]. Presentational only. Deck: `assets/Specimen Sorter API v3.deck.json`.
+Facts come from [[02 System Design]] (reviewed Tony Chong; D15 and D16 22 Sep) and the consumer contract it links, [[API Specification]]. Dates from [[05 Project Plan]]. Presentational only. Deck: `assets/Specimen Sorter API v3.deck.json`.
 
 **Profile:** full (new API, risk high)
 **JIRA key:** TMP-000 stand-in — Change Request not created yet (reference SEM20260612)
@@ -70,7 +70,7 @@ Facts come from [[02 System Design]] (reviewed Tony Chong; D12 14 Sep, D1 APIM 1
 1. New API — `POST /api/sorter/auto-register` on lis-crs-spec-ack-svc. Staff `/api/specack` is unchanged.
 2. Move screen logic — retrieve, validation and packing run server-side, then the existing send-out, register, print and PHLC.
 3. Workbench first — `sorterId` = `wkbh_station_name`; user = `wkbh_id`. Map only if hospital is omitted (D15).
-4. Audit — `SORT_*` actions plus today's `REG` and `SEND_OUT` on `LOE_AUDIT_TRAIL`.
+4. Audit — `SORT_*` plus today's `REG` and `SEND_OUT`. Print or PHLC fail writes `SORT_WS_FAIL` / `SORT_PHLC_FAIL`; status stays Registered.
 **Notes:** No new service and no DDL on workbench. Staff Spec Ack stays as the Relabel and Failure bin.
 
 ### Slide: Proposed Change - outcome flow
@@ -154,16 +154,16 @@ Takeaway: One sorter, more than one lab — seed one workbench row per lab (D12)
 | SEND_OUT | Send-out, tracking logs | SORT_SO and SEND_OUT | Send-out |
 | RELABEL | None | SORT_RELABEL | Staff Spec Ack |
 | FAILURE | None | SORT_FAIL with message code | Staff Spec Ack |
-**Notes:** SORT_* plus today's REG and SEND_OUT sit on LOE_AUDIT_TRAIL.
+**Notes:** SORT_* plus today's REG and SEND_OUT sit on LOE_AUDIT_TRAIL. Print and PHLC fail are extra rows, not a fifth status.
 
 ### Slide: Worksheet and PHLC
 **Eyebrow:** 04D. Worksheet and PHLC
 **Title:** Only REGISTERED prints, and only after the response
 **Archetype:** cards
-- Worksheets — all after return (worksheet, send-out, SH Ro). REGISTERED only.
-- PHLC electronic order — createPhlcLabOrder after return. REGISTERED only.
-- Other statuses do not print or call PHLC. Print failure is an ALS warning.
-**Notes:** Print sits outside the response. A late worksheet does not change a status already returned.
+- Worksheets — all after return. Fail writes SORT_WS_FAIL.
+- PHLC electronic order — createPhlcLabOrder after return. Fail writes SORT_PHLC_FAIL.
+- Status stays REGISTERED. ALS still warns. Put both codes on the Audit Trail filter.
+**Notes:** Print sits outside the response. A late or failed worksheet does not change a status already returned.
 
 ### Slide: Non-functional
 **Eyebrow:** 05. Non-functional
@@ -178,7 +178,7 @@ Takeaway: One sorter, more than one lab — seed one workbench row per lab (D12)
 **Archetype:** compare (steps)
 - Promotion: seed workbench per lab (station name = sorter id, user = wkbh_id) · map row only if hospital can be omitted · deploy service · APIM product and NetworkPolicy · pilot CPS and HMS.
 - Fallback: stop middleware, staff Spec Ack unchanged · drop the map table if it was created · no conversion of historical requests.
-**Notes:** Confirm the Audit Trail filter shows SORT_* before the pilot, or staff cannot find the sorter's attempts.
+**Notes:** Confirm the Audit Trail filter shows SORT_* including SORT_WS_FAIL and SORT_PHLC_FAIL, or staff cannot find a print or PHLC fail.
 
 ### Slide: Open Questions
 **Eyebrow:** 07. Open questions
