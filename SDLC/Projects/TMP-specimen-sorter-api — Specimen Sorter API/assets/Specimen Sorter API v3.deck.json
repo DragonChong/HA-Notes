@@ -344,7 +344,7 @@
           [{ "text": "workbench", "mono": true }, { "text": "wkbh_hosp", "mono": true }, "char(12)", "Must match request hospital"],
           [{ "text": "workbench", "mono": true }, { "text": "wkbh_station_name", "mono": true }, "varchar(255)", "Workbench from sorterId"],
           [{ "text": "workbench", "mono": true }, { "text": "wkbh_id", "mono": true }, "char(8)", "User from that workbench row"],
-          [{ "text": "labuser", "mono": true, "tone": "accent" }, { "text": "labuser_code", "mono": true, "tone": "accent" }, { "text": "char(12)", "tone": "accent" }, { "text": "Same value as wkbh_id", "tone": "accent", "bold": true }]
+          [{ "text": "labuser", "mono": true}, { "text": "labuser_code", "mono": true}, "char(12)", "Same value as wkbh_id"]
         ]
       },
       "takeaways": [
