@@ -83,7 +83,7 @@
       "cards": [
         { "icon": "code", "title": "New API", "body": "• POST /api/sorter/auto-register on lis-crs-spec-ack-svc\n• ECPath /api/specack is unchanged" },
         { "icon": "layer-group", "title": "Move screen logic", "body": "• Retrieve, validation, packing on the server\n• Then existng send-out, register, print, PHLC" },
-        { "icon": "table", "title": "Workbench first", "body": "• sorterId = wkbh_station_name\n• User = wkbh_id\n• Map only if hospital omitted" },
+        { "icon": "table", "title": "Workbench first", "body": "• sorterId = wkbh_station_name\n• User = wkbh_id" },
         { "icon": "clipboard-check", "title": "Audit", "body": "• New SORT_* audits on LOE_AUDIT_TRAIL\n• Same today's REG and SEND_OUT" }
       ],
       "notes": "No new service and no DDL on workbench. Staff Spec Ack stays as the Relabel and Failure bin."
