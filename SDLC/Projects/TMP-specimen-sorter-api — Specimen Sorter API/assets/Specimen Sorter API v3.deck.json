@@ -300,7 +300,7 @@
       "findings": [
         { "icon": "key", "title": "Gateway headers", "body": "x-gateway-apikey and x-ha-hospcode." },
         { "icon": "server", "title": "Hospital sent skips the map", "body": "Sent: Map workbench and user only. Omitted: loesort_hosp." },
-        { "icon": "triangle-exclamation", "title": "Bin from data.status", "body": "HTTP 200 is not Registered. 500 means retry." }
+        { "icon": "triangle-exclamation", "title": "Returned status, labCode, testCode", "body": "HTTP 200 is not Registered. Bin from status. labCode and testCode are LIS. 500 means retry." }
       ],
       "findingTone": "accent",
       "notes": "Same hosts and headers as the GCRS-LIS API specification v1.0, but a new APIM product. Business failure codes sit on data.code, never as an HTTP 4xx from LIS."
