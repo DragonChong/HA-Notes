@@ -769,7 +769,10 @@ function decisionFlow(pptx, slide, spec) {
   outcomes.forEach((o) => {
     K.card(pptx, slide, { x: o.x, y: outY, w: o.w, h: 0.95, highlight: !!o.highlight });
     K.text(slide, o.title, {
-      x: o.x + 0.2, y: outY + 0.14, w: o.w - 0.4, h: 0.3,
+      x: o.x + 0.2,
+      y: o.body ? outY + 0.14 : outY,
+      w: o.w - 0.4,
+      h: o.body ? 0.3 : 0.95,
       face: font.display, fontSize: size.small, color: color.ink, align: 'center', valign: 'middle',
     });
     if (o.body) {
