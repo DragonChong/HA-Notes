@@ -146,7 +146,7 @@
       },
       "findings": [
         { "icon": "key", "title": "Gateway headers", "body": "x-gateway-apikey and x-ha-hospcode." },
-        { "icon": "server", "title": "Hospital sent skips the map", "body": "Sent: workbench only. Omitted: loesort_hosp. Hosp mismatch: Failure." },
+        { "icon": "server", "title": "Hospital sent skips the map", "body": "Sent: Map workbench and user only. Omitted: loesort_hosp." },
         { "icon": "triangle-exclamation", "title": "Bin from data.status", "body": "HTTP 200 is not Registered. 500 means retry." }
       ],
       "findingTone": "accent",
