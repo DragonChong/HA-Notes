@@ -221,11 +221,12 @@
           ["Doctor / location", "Unmapped doctor, ward, specialty, report destination", { "text": "FAILURE", "tone": "danger" }],
           ["Test / specimen", "Failed test check; used or deleted; APS / BBS / MBS", { "text": "FAILURE", "tone": "danger" }],
           ["Patient", "Patient demogrpahics do not match", { "text": "FAILURE", "tone": "danger" }],
-          ["Mixed send-out", "Local and send-out on one USID", { "text": "FAILURE", "tone": "danger" }]
+          ["Mixed send-out", "Local and send-out on one USID", { "text": "FAILURE", "tone": "danger" }],
+          ["Other error", "Unexpected error", { "text": "FAILURE", "tone": "danger" }]
         ]
       },
       "takeaways": [
-        { "title": "Soft alerts do not bin", "body": "Overnight, valid period, duplicate, private, missing collection date, STAR unbox alert: ALS only (R6)." }
+        { "title": "Soft alerts do not bin", "body": "Overnight, valid period, duplicate, private, missing collection date, STAR unbox alert: ALS only." }
       ],
       "notes": "Relabel is a different node. Do not report these as Relabel."
     },
