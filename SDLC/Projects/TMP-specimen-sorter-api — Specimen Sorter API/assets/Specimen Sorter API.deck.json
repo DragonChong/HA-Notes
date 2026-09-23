@@ -141,6 +141,13 @@
       "notes": "Hospital, if sent, must match the map and workbench. Unknown sorterId is Failure. Transport errors stay 500."
     },
     {
+      "archetype": "image",
+      "eyebrow": "Proposed Change",
+      "title": "Auto-register calls lis-request-svc to register",
+      "path": "specimen-sorter-api-architecture.png",
+      "notes": "The sorter POST stays on lis-crs-spec-ack-svc. The register write is lis-request-svc, POST /api/registration. Audit stays on the Spec Ack trail."
+    },
+    {
       "archetype": "compare",
       "eyebrow": "Proposed Change",
       "title": "Screen logic moves behind that POST",
