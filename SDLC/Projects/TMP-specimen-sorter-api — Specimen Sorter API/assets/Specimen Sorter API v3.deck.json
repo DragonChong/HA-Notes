@@ -424,9 +424,9 @@
         "tone": "danger",
         "title": "Fallback",
         "steps": [
-          "Stop the middleware. Staff Spec Ack is unchanged.",
+          "Undeploy lis-crs-spec-ack-svc.",
           "Drop the map table if it was created.",
-          "No conversion of historical requests."
+          "Remove created workbench and labuser."
         ]
       },
       "notes": "Confirm the Audit Trail filter shows SORT_* including SORT_WS_FAIL and SORT_PHLC_FAIL, or staff cannot find a print or PHLC fail."
