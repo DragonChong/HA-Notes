@@ -55,7 +55,7 @@
 
     <svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="sorter-arch-title sorter-arch-desc">
       <title id="sorter-arch-title">Specimen Sorter API architecture</title>
-      <desc id="sorter-arch-desc">Sorter middleware reaches POST /api/sorter/auto-register only through HA APIM. Staff /api/specack stays off that path. The API reads workbench and an optional hospital map, writes lab requests and LOE_AUDIT_TRAIL, then prints worksheets and PHLC after return.</desc>
+      <desc id="sorter-arch-desc">Sorter middleware reaches POST /api/sorter/auto-register through HA APIM. The API reads workbench and an optional hospital map, writes lab requests and LOE_AUDIT_TRAIL, then prints worksheets and PHLC after return. Staff Spec Ack stays on /api/specack.</desc>
       <defs>
         <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
         <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
@@ -93,11 +93,6 @@
       <path d="M 618,328 V 400"
             fill="none" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
 
-      <path d="M 220,328 H 456"
-            fill="none" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3"/>
-      <line x1="448" y1="320" x2="464" y2="336" stroke="#2d3142" stroke-width="1.4"/>
-      <line x1="464" y1="320" x2="448" y2="336" stroke="#2d3142" stroke-width="1.4"/>
-
       <rect x="228" y="264" width="44" height="16" rx="2" fill="#f5f5f5"/>
       <text x="250" y="276" fill="#2e5aa8" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">POST</text>
 
@@ -112,9 +107,6 @@
 
       <rect x="520" y="352" width="88" height="16" rx="2" fill="#f5f5f5"/>
       <text x="564" y="364" fill="#4f5d75" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">AFTER RET</text>
-
-      <rect x="268" y="336" width="148" height="16" rx="2" fill="#f5f5f5"/>
-      <text x="342" y="348" fill="#4f5d75" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">NO SPECACK</text>
 
       <rect x="60" y="248" width="160" height="80" rx="6" fill="#f5f5f5"/>
       <rect x="60" y="248" width="160" height="80" rx="6" fill="rgba(79,93,117,0.10)" stroke="#7a8399" stroke-width="1"/>
@@ -182,10 +174,6 @@
       <text x="424" y="656" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">Optional / staff</text>
       <line x1="568" y1="652" x2="600" y2="652" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
       <text x="608" y="656" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">Permitted</text>
-      <line x1="700" y1="652" x2="732" y2="652" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3"/>
-      <line x1="724" y1="644" x2="740" y2="660" stroke="#2d3142" stroke-width="1.2"/>
-      <line x1="740" y1="644" x2="724" y2="660" stroke="#2d3142" stroke-width="1.2"/>
-      <text x="748" y="656" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace">Blocked bypass</text>
     </svg>
   </div>
 </body>
