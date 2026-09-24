@@ -66,7 +66,7 @@
         "colWidths": [2.0, 3.2, 3.5, 3.3],
         "headers": ["Action", "Spec Ack Front-end", "Spec Ack Back-end", "Sorter API"],
         "rows": [
-          [{ "text": "Retrieve GCRS order", "bold": true, "color": "ink" }, "Scans USID, calls retrieve", { "text": "retrieveGcrOrder()", "mono": true }, { "text": "Same retrieval path", "tone": "accent" }],
+          [{ "text": "Retrieve GCRS order", "bold": true, "color": "ink" }, "Scans USID", { "text": "retrieveGcrOrder()", "mono": true }, { "text": "Same retrieval path", "tone": "accent" }],
           [{ "text": "Send-out", "bold": true, "color": "ink" }, "Staff click", { "text": "sendOutSpecimen()", "mono": true }, { "text": "Same send-out path", "tone": "accent" }],
           [{ "text": "Validation", "bold": true, "color": "ink" }, "Soft prompts, hard validator", "", { "text": "Soft to ALS, hard to Failure", "tone": "accent" }],
           [{ "text": "Registration", "bold": true, "color": "ink" }, "Groups tests, request no. assignment, ward and doctor conversions", { "text": "register()", "mono": true }, { "text": "Server-side convertor", "tone": "accent" }],
