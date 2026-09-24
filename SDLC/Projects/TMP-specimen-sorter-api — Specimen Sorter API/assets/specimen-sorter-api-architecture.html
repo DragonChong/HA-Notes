@@ -55,7 +55,7 @@
 
     <svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="sorter-arch-title sorter-arch-desc">
       <title id="sorter-arch-title">Specimen Sorter API architecture</title>
-      <desc id="sorter-arch-desc">Sorter middleware reaches POST /api/sorter/auto-register through HA APIM. The API reads workbench, sorter mapping, and the audit trail from the database, calls lis-request-svc to register, and prints worksheets and PHLC after the response.</desc>
+      <desc id="sorter-arch-desc">Sorter middleware reaches POST /api/sorter/auto-register through HA APIM. Spec Ack reads workbench, sorter mapping, and the audit trail, calls lis-request-svc to register, and prints the worksheet after the response. lis-request-svc writes the lab request and creates the PHLC e-order.</desc>
       <defs>
         <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
         <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
@@ -82,11 +82,17 @@
       <text x="704" y="113" fill="rgba(45,49,66,0.40)" font-size="8" font-family="'Geist Mono', monospace"
             text-anchor="middle" letter-spacing="0.14em">LIS-CRS-SPEC-ACK-SVC</text>
 
-      <rect x="944" y="100" width="296" height="360" rx="8"
+      <rect x="944" y="100" width="296" height="518" rx="8"
             fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
       <rect x="1044" y="104" width="96" height="12" rx="2" fill="#f5f5f5"/>
       <text x="1092" y="113" fill="rgba(45,49,66,0.40)" font-size="8" font-family="'Geist Mono', monospace"
             text-anchor="middle" letter-spacing="0.14em">DATABASE</text>
+
+      <rect x="480" y="500" width="448" height="118" rx="8"
+            fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <rect x="626" y="504" width="156" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="704" y="513" fill="rgba(45,49,66,0.40)" font-size="8" font-family="'Geist Mono', monospace"
+            text-anchor="middle" letter-spacing="0.14em">LIS-REQUEST-SVC</text>
 
       <line x1="220" y1="288" x2="280" y2="288" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
       <line x1="436" y1="288" x2="508" y2="288" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
@@ -96,8 +102,12 @@
       <line x1="728" y1="288" x2="960" y2="288" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
       <path d="M 728,308 H 812 Q 820,308 820,316 V 396 Q 820,404 828,404 H 960"
             fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
-      <path d="M 728,324 H 760 Q 768,324 768,332 V 540 Q 768,548 776,548 H 960"
+      <path d="M 728,324 H 792 Q 800,324 800,332 V 488 Q 800,496 792,496 H 588 Q 580,496 580,504 V 522"
             fill="none" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
+      <path d="M 664,558 H 716"
+            fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <path d="M 580,594 V 606 H 940 V 566 Q 940,558 948,558 H 960"
+            fill="none" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
       <path d="M 618,328 V 400"
             fill="none" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
 
@@ -113,8 +123,11 @@
       <rect x="840" y="396" width="64" height="16" rx="2" fill="#f5f5f5"/>
       <text x="872" y="408" fill="#4f5d75" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle">Write</text>
 
-      <rect x="820" y="540" width="96" height="16" rx="2" fill="#f5f5f5"/>
-      <text x="868" y="552" fill="#2e5aa8" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle">REGISTER</text>
+      <rect x="752" y="432" width="96" height="16" rx="2" fill="#f5f5f5"/>
+      <text x="800" y="444" fill="#2e5aa8" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle">REGISTER</text>
+
+      <rect x="620" y="598" width="64" height="16" rx="2" fill="#f5f5f5"/>
+      <text x="652" y="610" fill="#4f5d75" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle">Write</text>
 
       <rect x="544" y="356" width="148" height="16" rx="2" fill="#f5f5f5"/>
       <text x="618" y="368" fill="#4f5d75" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle">AFTER registered</text>
@@ -144,7 +157,7 @@
       <rect x="508" y="400" width="220" height="80" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
       <rect x="516" y="408" width="40" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
       <text x="536" y="417" fill="#2d3142" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">ASYNC</text>
-      <text x="618" y="440" fill="#2d3142" font-size="16" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Worksheet · PHLC</text>
+      <text x="618" y="440" fill="#2d3142" font-size="16" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Print Worksheet</text>
       <text x="618" y="460" fill="#4f5d75" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle">after REGISTERED</text>
 
       <rect x="960" y="120" width="200" height="80" rx="6" fill="#f5f5f5"/>
@@ -168,12 +181,24 @@
       <text x="1060" y="404" fill="#2d3142" font-size="16" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Audit Trail</text>
       <text x="1060" y="424" fill="#4f5d75" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle">SORT_*</text>
 
-      <rect x="960" y="508" width="200" height="80" rx="6" fill="#f5f5f5"/>
-      <rect x="960" y="508" width="200" height="80" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
-      <rect x="968" y="516" width="28" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.22)" stroke-width="0.8"/>
-      <text x="982" y="525" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">API</text>
-      <text x="1060" y="548" fill="#2d3142" font-size="16" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">lis-request-svc</text>
-      <text x="1060" y="568" fill="#4f5d75" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle">POST /api/registration</text>
+      <rect x="960" y="522" width="200" height="72" rx="6" fill="#f5f5f5"/>
+      <rect x="960" y="522" width="200" height="72" rx="6" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+      <rect x="968" y="530" width="84" height="12" rx="2" fill="transparent" stroke="rgba(79,93,117,0.50)" stroke-width="0.8"/>
+      <text x="1010" y="539" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">TRANSACTION</text>
+      <text x="1060" y="564" fill="#2d3142" font-size="16" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Lab Request</text>
+
+      <rect x="496" y="522" width="168" height="72" rx="6" fill="#f5f5f5"/>
+      <rect x="496" y="522" width="168" height="72" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.30)" stroke-width="1"/>
+      <rect x="504" y="530" width="28" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.22)" stroke-width="0.8"/>
+      <text x="518" y="539" fill="#7a8399" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">API</text>
+      <text x="580" y="558" fill="#2d3142" font-size="16" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">lis-request-svc</text>
+      <text x="580" y="576" fill="#4f5d75" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle">POST /api/registration</text>
+
+      <rect x="716" y="522" width="196" height="72" rx="6" fill="#f5f5f5"/>
+      <rect x="716" y="522" width="196" height="72" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="724" y="530" width="40" height="12" rx="2" fill="transparent" stroke="rgba(45,49,66,0.40)" stroke-width="0.8"/>
+      <text x="744" y="539" fill="#2d3142" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">ASYNC</text>
+      <text x="814" y="564" fill="#2d3142" font-size="16" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Create PHLC e-order</text>
 
       <line x1="40" y1="632" x2="1240" y2="632" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
       <text x="40" y="656" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGEND</text>
