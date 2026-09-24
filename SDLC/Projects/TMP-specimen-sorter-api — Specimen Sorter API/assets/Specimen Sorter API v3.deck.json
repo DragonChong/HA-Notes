@@ -90,6 +90,13 @@
       "notes": "No new service and no DDL on workbench. Staff Spec Ack stays as the Relabel and Failure bin."
     },
     {
+      "archetype": "image",
+      "eyebrow": "03. Proposed change",
+      "title": "Auto-register calls lis-request-svc to register",
+      "path": "specimen-sorter-api-architecture.png",
+      "notes": "The sorter POST stays on lis-crs-spec-ack-svc. The register write is lis-request-svc, POST /api/registration. Audit stays on the Spec Ack trail."
+    },
+    {
       "archetype": "decision-flow",
       "eyebrow": "03A. Outcome flow",
       "title": "Every tube ends in one of four statuses",
