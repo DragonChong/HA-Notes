@@ -55,7 +55,7 @@
 
     <svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="sorter-arch-title sorter-arch-desc">
       <title id="sorter-arch-title">Specimen Sorter API architecture</title>
-      <desc id="sorter-arch-desc">Sorter middleware reaches POST /api/sorter/auto-register through HA APIM. The API derives workbench and user, calls lis-request-svc to register, writes the audit trail, and prints worksheets and PHLC after the response.</desc>
+      <desc id="sorter-arch-desc">Sorter middleware reaches POST /api/sorter/auto-register through HA APIM. The API reads workbench, sorter mapping, and the audit trail from the database, calls lis-request-svc to register, and prints worksheets and PHLC after the response.</desc>
       <defs>
         <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
         <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
@@ -76,11 +76,17 @@
       <text x="358" y="233" fill="rgba(45,49,66,0.40)" font-size="8" font-family="'Geist Mono', monospace"
             text-anchor="middle" letter-spacing="0.14em">GATEWAY</text>
 
-      <rect x="480" y="100" width="760" height="388" rx="8"
+      <rect x="480" y="100" width="448" height="388" rx="8"
             fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
-      <rect x="788" y="104" width="144" height="12" rx="2" fill="#f5f5f5"/>
-      <text x="860" y="113" fill="rgba(45,49,66,0.40)" font-size="8" font-family="'Geist Mono', monospace"
+      <rect x="632" y="104" width="144" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="704" y="113" fill="rgba(45,49,66,0.40)" font-size="8" font-family="'Geist Mono', monospace"
             text-anchor="middle" letter-spacing="0.14em">LIS SPEC ACK SVC</text>
+
+      <rect x="944" y="100" width="296" height="360" rx="8"
+            fill="rgba(45,49,66,0.02)" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <rect x="1044" y="104" width="96" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="1092" y="113" fill="rgba(45,49,66,0.40)" font-size="8" font-family="'Geist Mono', monospace"
+            text-anchor="middle" letter-spacing="0.14em">DATABASE</text>
 
       <line x1="220" y1="288" x2="280" y2="288" stroke="#2e5aa8" stroke-width="1.2" marker-end="url(#arrow-link)"/>
       <line x1="436" y1="288" x2="508" y2="288" stroke="#eb6c36" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
@@ -101,11 +107,11 @@
       <rect x="668" y="204" width="248" height="16" rx="2" fill="#f5f5f5"/>
       <text x="792" y="216" fill="#4f5d75" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle">Derive workbench &amp; user</text>
 
-      <rect x="748" y="260" width="180" height="16" rx="2" fill="#f5f5f5"/>
-      <text x="838" y="272" fill="#4f5d75" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle">Derive hospital</text>
+      <rect x="732" y="260" width="180" height="16" rx="2" fill="#f5f5f5"/>
+      <text x="822" y="272" fill="#4f5d75" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle">Derive hospital</text>
 
-      <rect x="862" y="396" width="64" height="16" rx="2" fill="#f5f5f5"/>
-      <text x="894" y="408" fill="#4f5d75" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle">Write</text>
+      <rect x="840" y="396" width="64" height="16" rx="2" fill="#f5f5f5"/>
+      <text x="872" y="408" fill="#4f5d75" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle">Write</text>
 
       <rect x="820" y="540" width="96" height="16" rx="2" fill="#f5f5f5"/>
       <text x="868" y="552" fill="#2e5aa8" font-size="12" font-family="'Geist Mono', monospace" text-anchor="middle">REGISTER</text>
