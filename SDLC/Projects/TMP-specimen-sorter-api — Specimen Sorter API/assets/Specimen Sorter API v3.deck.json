@@ -176,7 +176,7 @@
       "findings": [
         { "icon": "vial", "title": "All tests match", "body": "In-process sendOutSpecimen. Status SEND_OUT." },
         { "icon": "triangle-exclamation", "title": "Mixed on one USID", "body": "Some send-out, some local. FAILURE. Do not split." },
-        { "icon": "circle-xmark", "title": "No sorter flag", "body": "The request does not say send-out. The table does." }
+        { "icon": "circle-xmark", "title": "Neither local nor send-out", "body": "Not a local test and not a defined send-out test. FAILURE." }
       ],
       "findingTone": "accent",
       "notes": "Same join Spec Ack uses today. Lab on the order still scopes the lookup inside the service. No print after SEND_OUT."
