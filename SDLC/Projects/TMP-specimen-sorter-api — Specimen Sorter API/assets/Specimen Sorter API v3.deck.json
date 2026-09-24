@@ -82,9 +82,9 @@
       "perRow": 4,
       "cards": [
         { "icon": "code", "title": "New API", "body": "• POST /api/sorter/auto-register on lis-crs-spec-ack-svc\n• ECPath /api/specack is unchanged" },
-        { "icon": "layer-group", "title": "Move screen logic", "body": "• Retrieve, validation, packing on the server\n• Then existng send-out, register, print, PHLC" },
-        { "icon": "table", "title": "Workbench first", "body": "• sorterId = wkbh_station_name\n• User = wkbh_id" },
-        { "icon": "clipboard-check", "title": "Audit", "body": "• New SORT_* on LOE_AUDIT_TRAIL\n• Print or PHLC fail writes SORT_WS_FAIL / SORT_PHLC_FAIL" }
+        { "icon": "share-nodes", "title": "Move screen logic", "body": "• Retrieve, validation, packing on the server\n• Then existng send-out, register, print, PHLC" },
+        { "icon": "desktop", "title": "Workbench first", "body": "• sorterId = wkbh_station_name\n• User = wkbh_id" },
+        { "icon": "timeline", "title": "Audit", "body": "• New SORT_* on LOE_AUDIT_TRAIL\n• Print or PHLC fail writes SORT_WS_FAIL / SORT_PHLC_FAIL" }
       ],
       "notes": "No new service and no DDL on workbench. Staff Spec Ack stays as the Relabel and Failure bin."
     },
@@ -174,7 +174,7 @@
         ]
       },
       "findings": [
-        { "icon": "vial", "title": "All tests match", "body": "In-process sendOutSpecimen. Status SEND_OUT." },
+        { "icon": "truck", "title": "All tests match", "body": "In-process sendOutSpecimen. Status SEND_OUT." },
         { "icon": "triangle-exclamation", "title": "Mixed on one USID", "body": "Some send-out, some local. FAILURE. Do not split." },
         { "icon": "circle-xmark", "title": "Neither local nor send-out", "body": "Not a local test and not a defined send-out test. FAILURE." }
       ],
@@ -305,7 +305,7 @@
       },
       "findings": [
         { "icon": "key", "title": "Gateway headers", "body": "x-gateway-apikey and x-ha-hospcode." },
-        { "icon": "server", "title": "Hospital sent skips the map", "body": "Sent: Map workbench and user only. Omitted: loesort_hosp." },
+        { "icon": "hospital", "title": "Hospital sent skips the map", "body": "Sent: Map workbench and user only. Omitted: loesort_hosp." },
         { "icon": "triangle-exclamation", "title": "Returned status, labCode, testCode", "body": "HTTP 200 is not Registered. Bin from status. labCode and testCode are LIS. 500 means retry." }
       ],
       "findingTone": "accent",
@@ -382,12 +382,12 @@
       "perRow": 2,
       "cards": [
         {
-          "icon": "list-check",
+          "icon": "print",
           "title": "Worksheets",
           "body": "• REGISTERED only, after return\n• Fail writes SORT_WS_FAIL"
         },
         {
-          "icon": "clipboard-check",
+          "icon": "file-medical",
           "title": "PHLC electronic order",
           "body": "• REGISTERED only, after return\n• Fail writes SORT_PHLC_FAIL"
         }
