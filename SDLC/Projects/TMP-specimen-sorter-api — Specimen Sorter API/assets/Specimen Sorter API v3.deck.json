@@ -387,7 +387,7 @@
           "body": "• REGISTERED only, after return\n• Fail writes SORT_WS_FAIL"
         },
         {
-          "icon": "file-medical",
+          "icon": "file-export",
           "title": "PHLC electronic order",
           "body": "• REGISTERED only, after return\n• Fail writes SORT_PHLC_FAIL"
         }
