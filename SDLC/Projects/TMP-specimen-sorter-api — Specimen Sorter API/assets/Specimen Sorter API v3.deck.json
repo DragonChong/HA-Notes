@@ -70,7 +70,7 @@
           [{ "text": "Send-out", "bold": true, "color": "ink" }, "Staff click, calls backend", { "text": "sendOutSpecimen()", "mono": true }, { "text": "Same send-out path", "tone": "accent" }],
           [{ "text": "Validation", "bold": true, "color": "ink" }, "Soft prompts, hard validator", "", { "text": "Soft to ALS, hard to Failure", "tone": "accent" }],
           [{ "text": "Registration", "bold": true, "color": "ink" }, "Groups tests, request no. assignment, ward and doctor conversions, calls backend", { "text": "register()", "mono": true }, { "text": "Server-side convertor, same registration path", "tone": "accent" }],
-          [{ "text": "Worksheet", "bold": true, "color": "ink" }, "Data conversion, staff pick, calls backend", "Three kinds of printouts", { "text": "Print all, after Registered", "tone": "accent" }],
+          [{ "text": "Worksheet", "bold": true, "color": "ink" }, "Data conversion, staff pick, calls backend", "Three kinds of printouts", { "text": "Server-side convertor, same worksheet printing path", "tone": "accent" }],
           [{ "text": "PHLC", "bold": true, "color": "ink" }, "Calls after register, calls backend", { "text": "createPhlcLabOrder()", "mono": true }, { "text": "Same phlc e-order path", "tone": "accent" }]
         ]
       },
