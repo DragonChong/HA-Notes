@@ -355,7 +355,7 @@
         ]
       },
       "takeaways": [
-        { "title": "Hospital mapping", "body": "• Omitted hospital: loesort_sorter_id → loesort_hosp\n• Hospital sent: skip the map\n• Do not seed the map if every caller sends hospital." },
+        { "title": "Hospital mapping", "body": "• Omitted hospital: loesort_sorter_id → loesort_hosp\n• Do not need the map if caller sends hospital." },
         { "title": "Workbench then user", "body": "• sorterId finds wkbh_station_name\n• User code is wkbh_id on that row, same as labuser_code" }
       ],
       "notes": "No loesort_usercode or loesort_workbench_id. Location and printer stay on workbench. Server name still comes from HospitalService."
