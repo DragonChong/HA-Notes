@@ -497,7 +497,23 @@ function matrix(pptx, slide, spec) {
   const raw = t.colWidths || Array(t.headers.length).fill(1);
   const sum = raw.reduce((a, b) => a + b, 0);
   const colW = raw.map((v) => (v * grid.contentW) / sum);
-  const rowH = 0.5;
+  const cellLabel = (cell) => (typeof cell === 'string' ? cell : (cell && cell.text) || '');
+  const cellFont = (cell) => (cell && typeof cell === 'object' && cell.mono ? font.mono : font.body);
+  let rowH = 0.5;
+  const measure = (text, ci, face) => {
+    const inner = Math.max(0.4, colW[ci] - 0.44);
+    return K.textHeight(text, size.fine, inner, face, 1.15) + 0.2;
+  };
+  t.headers.forEach((h, ci) => {
+    const text = typeof h === 'string' ? h : h.text;
+    const face = h && h.mono ? font.mono : font.body;
+    rowH = Math.max(rowH, measure(text, ci, face));
+  });
+  t.rows.forEach((row) => {
+    row.forEach((cell, ci) => {
+      rowH = Math.max(rowH, measure(cellLabel(cell), ci, cellFont(cell)));
+    });
+  });
 
   const none = { type: 'none' };
   const hair = { type: 'solid', pt: 0.75, color: color.border };
