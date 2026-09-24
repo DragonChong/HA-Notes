@@ -26,7 +26,6 @@
         { "title": "Background"},
         { "title": "Existing design"},
         { "title": "Proposed change"},
-        { "title": "Send-out"},
         { "title": "API contract and data"},
         { "title": "Promotion and fallback"}
       ],
@@ -395,7 +394,7 @@
       ],
       "callout": {
         "lead": "Status stays REGISTERED.",
-        "text": "Put SORT_WS_FAIL and SORT_PHLC_FAIL on the Audit Trail action. SEND_OUT, RELABEL and FAILURE do not print or call PHLC."
+        "text": "Put SORT_WS_FAIL and SORT_PHLC_FAIL on the Audit Trail action."
       },
       "notes": "Print sits outside the response. A late or failed worksheet does not change a status already returned."
     },
