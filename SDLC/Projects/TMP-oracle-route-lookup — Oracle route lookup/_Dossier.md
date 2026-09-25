@@ -4,7 +4,7 @@ gates_passed:
 stage: design
 updated: '2026-09-25'
 created: '2026-09-25'
-design: ''
+design: '[[02 System Design]]'
 jira: ''
 jira_log: ''
 key: TMP-oracle-route-lookup
@@ -30,13 +30,14 @@ Oracle repository reads fail when the thread is already on a Sybase or PostgreSQ
 ## Status
 
 > [!info] Stage: **design** — gate `design` outstanding
-> Next action: `/system-design`
+> Next action: set `reviewed_by` on [[02 System Design]], then `/design-review-pptx`
 
 ## Artifacts
 
 | Stage | Artifact | State |
 |---|---|---|
 | 01 Requirement | [[01 Requirement Confirmation]] | pass with assumptions 2026-09-25 |
+| 02 Design | [[02 System Design]] | draft |
 
 ## Gate Log
 
@@ -47,7 +48,8 @@ Oracle repository reads fail when the thread is already on a Sybase or PostgreSQ
 ## Decision Log
 
 - 2026-09-25 — New dossier. The only other `status: active` dossier is [[TMP-specimen-sorter-api — Specimen Sorter API]], which is a different unit of work. Provisional key `TMP-oracle-route-lookup`.
-- 2026-09-25 — Q1 proposed default (PostgreSQL) was wrong. Requester: default to Sybase for the failed call; still do not cache it (R4). No design note exists yet. When design is written, the failure-fallback section must say Sybase, not PostgreSQL.
+- 2026-09-25 — Q1 proposed default (PostgreSQL) was wrong. Requester: default to Sybase for the failed call; still do not cache it (R4). Design failure fallback is Sybase.
+- 2026-09-25 — Rejected switching the shared route to Oracle for the `loe_control` read. `RoutingTransactionManager.ensureTarget` would commit the hospital segment (R2).
 
 ## Open Items
 
