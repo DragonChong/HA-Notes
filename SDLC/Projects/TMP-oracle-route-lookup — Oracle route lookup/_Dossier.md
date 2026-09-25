@@ -54,6 +54,7 @@ Oracle repository reads fail when the thread is already on a Sybase or PostgreSQ
 - 2026-09-25 — Rejected switching the shared route to Oracle for the `loe_control` read. `RoutingTransactionManager.ensureTarget` would commit the hospital segment (R2).
 - 2026-09-25 — High-level CP3 deck generated from [[03 Slide Brief]]. Default QA passed. CP3-profile QA still reports no numeric JIRA key because A4 is the provisional key `TMP-oracle-route-lookup`.
 - 2026-09-25 — Deck revised: agenda added. Background is the skipped Chinese-character strip in `lis-patient-pmi-sync-svc` after the LIS-10723 data-source transaction-locking upgrade. CP3 QA passed.
+- 2026-09-25 — Promotion and fallback are one compare slide. Left is the library ship. Right is the previous build. CP3 QA passed.
 
 ## Open Items
 

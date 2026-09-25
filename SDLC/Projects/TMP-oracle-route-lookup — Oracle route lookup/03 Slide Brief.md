@@ -29,8 +29,8 @@ Facts come from [[02 System Design]], plus the requester's room wording for the 
 
 ### Slide: Agenda
 **Archetype:** agenda
-**Items:** Background, Existing Design, Proposed Change, Promotion, Fallback, Open Questions
-**Notes:** Six stops. The story is the skipped strip, then the Oracle flag read that turns it back on.
+**Items:** Background, Existing Design, Proposed Change, Promotion and fallback, Open Questions
+**Notes:** Five stops. Promotion and fallback sit on one slide: ship the library, or put the previous one back.
 
 ### Slide: Background
 **Eyebrow:** Background
@@ -53,17 +53,12 @@ Facts come from [[02 System Design]], plus the requester's room wording for the 
 **Body:** Connect to Oracle and read the flag. If it says Sybase, replace the Chinese characters. Patient sync source stays as it is.
 **Notes:** The replace logic is already in lis-patient-pmi-sync-svc. The library fix is what lets that check succeed.
 
-### Slide: Promotion
-**Eyebrow:** Promotion
-**Title:** Ship the library and leave config alone
-**Archetype:** cards
-**Notes:** DEVQA, SIT, and PROD keep the same JDBC settings. What changes is the library binary.
-
-### Slide: Fallback
-**Eyebrow:** Fallback
-**Title:** Put the previous library back
-**Archetype:** cards
-**Notes:** You know the rollback worked when the old warning is back: defaulting to PostgreSQL. A wrong saved answer is cleared with `DELETE /api/clearCachedDBConn/{hospital}/{lab}`.
+### Slide: Promotion and fallback
+**Eyebrow:** Promotion and fallback
+**Title:** Ship the new library, or put the previous one back
+**Archetype:** compare
+**Body:** Left, promotion: new data-source build, JDBC unchanged in DEVQA, SIT, and PROD, patient sync rebuilds only. Right, fallback: previous build and restart, old warning `defaulting to PostgreSQL`, then clear one cached type check.
+**Notes:** DEVQA, SIT, and PROD keep the same JDBC settings. What changes is the library binary. You know the rollback worked when the old warning is back. A wrong saved answer is cleared with `DELETE /api/clearCachedDBConn/{hospital}/{lab}`.
 
 ### Slide: Open Questions
 **Eyebrow:** Open Questions

@@ -24,16 +24,15 @@
     {
       "archetype": "agenda",
       "eyebrow": "Agenda",
-      "title": "Six stops",
+      "title": "Five stops",
       "items": [
         { "title": "Background", "note": "why Chinese characters reach Sybase" },
         { "title": "Existing Design", "note": "the flag check does not reach Oracle" },
         { "title": "Proposed Change", "note": "read the flag, then strip when Sybase" },
-        { "title": "Promotion", "note": "library build, config unchanged" },
-        { "title": "Fallback", "note": "previous library" },
+        { "title": "Promotion and fallback", "note": "new library, or the previous one" },
         { "title": "Open Questions", "note": "one Oracle database, and an open transaction" }
       ],
-      "notes": "Six stops. The story is the skipped strip, then the Oracle flag read that turns it back on."
+      "notes": "Five stops. Promotion and fallback sit on one slide: ship the library, or put the previous one back."
     },
     {
       "archetype": "evolution",
@@ -119,52 +118,30 @@
       "notes": "The replace logic is already in lis-patient-pmi-sync-svc. The library fix is what lets that check succeed."
     },
     {
-      "archetype": "cards",
-      "eyebrow": "Promotion",
-      "title": "Ship the library and leave config alone",
-      "perRow": 3,
-      "cards": [
-        {
-          "icon": "cloud-arrow-up",
-          "title": "New data-source build",
-          "body": "Services take the fix by depending on the new library build."
-        },
-        {
-          "icon": "sliders",
-          "title": "No config change",
-          "body": "JDBC settings stay as they are in DEVQA, SIT, and PROD."
-        },
-        {
-          "icon": "box",
-          "title": "Patient sync only rebuilds",
-          "body": "lis-patient-pmi-sync-svc rebuilds to take the library. Its own source stays the same."
-        }
-      ],
-      "notes": "DEVQA, SIT, and PROD keep the same JDBC settings. What changes is the library binary."
-    },
-    {
-      "archetype": "cards",
-      "eyebrow": "Fallback",
-      "title": "Put the previous library back",
-      "perRow": 3,
-      "cards": [
-        {
-          "badge": 1,
-          "title": "Redeploy and restart",
-          "body": "Put the previous data-source build back on the affected service and restart it."
-        },
-        {
-          "badge": 2,
-          "title": "Watch for the old warning",
-          "body": "On a Sybase hospital, the log should again say defaulting to PostgreSQL."
-        },
-        {
-          "badge": 3,
-          "title": "Clear a wrong saved answer",
-          "body": "Drop one cached type check for that hospital and lab."
-        }
-      ],
-      "notes": "You know the rollback worked when the old warning is back: defaulting to PostgreSQL. A wrong saved answer is cleared with DELETE /api/clearCachedDBConn/{hospital}/{lab}."
+      "archetype": "compare",
+      "eyebrow": "Promotion and fallback",
+      "title": "Ship the new library, or put the previous one back",
+      "left": {
+        "icon": "cloud-arrow-up",
+        "tone": "success",
+        "title": "Promotion",
+        "steps": [
+          "Ship a new data-source build",
+          "Leave JDBC settings unchanged in DEVQA, SIT, and PROD",
+          "Rebuild lis-patient-pmi-sync-svc. Its source stays the same"
+        ]
+      },
+      "right": {
+        "icon": "rotate-left",
+        "tone": "danger",
+        "title": "Fallback",
+        "steps": [
+          "Redeploy the previous data-source build and restart",
+          "On a Sybase hospital, the log again says defaulting to PostgreSQL",
+          "Drop one cached type check for that hospital and lab"
+        ]
+      },
+      "notes": "DEVQA, SIT, and PROD keep the same JDBC settings. What changes is the library binary. You know the rollback worked when the old warning is back. A wrong saved answer is cleared with DELETE /api/clearCachedDBConn/{hospital}/{lab}."
     },
     {
       "archetype": "asks",
