@@ -1,108 +1,122 @@
 {
   "meta": {
     "title": "TMP-oracle-route-lookup Oracle route lookup",
-    "subject": "Oracle type lookup while a hospital database is in use",
+    "subject": "Chinese character strip skipped after the LIS-10723 data-source upgrade",
     "author": "LIS Team",
     "company": "Hospital Authority"
   },
   "slides": [
     {
       "archetype": "title-hero",
-      "eyebrow": "TMP-oracle-route-lookup   ·   CHANGE REQUEST   ·   CP3",
-      "headline": "Oracle lookup stays on Oracle\nwhile hospital work continues",
-      "lede": "Patient sync checks Sybase versus PostgreSQL by reading loe_control. That read currently follows the hospital route, so Oracle refuses it.",
+      "eyebrow": "TMP-oracle-route-lookup   ·   LIS-10723   ·   CP3",
+      "headline": "Chinese characters reach Sybase\nwhen the Oracle flag is not read",
+      "lede": "lis-patient-pmi-sync-svc strips Chinese characters when the hospital is on Sybase. After the LIS-10723 data-source upgrade, that flag check does not reach Oracle, so the strip is skipped.",
       "stats": [
-        { "label": "Service", "value": "lis-svc-lib" },
-        { "label": "Reviewed", "value": "25 Sep 2026", "highlight": true },
-        { "label": "Forum", "value": "CP3" }
+        { "label": "Service", "value": "lis-patient-pmi-sync-svc" },
+        { "label": "Library", "value": "data-source" },
+        { "label": "Reviewed", "value": "25 Sep 2026", "highlight": true }
       ],
       "presenters": "LIS Team",
       "reviewers": "Tony Chong",
-      "footer": "Design reviewed  ·  for CP3",
-      "notes": "Patient sync already has the hospital database open. The Sybase-or-PostgreSQL check then asks Oracle on that same route, and Oracle refuses it."
+      "footer": "Related upgrade LIS-10723  ·  for CP3",
+      "notes": "Patient sync is supposed to strip Chinese characters when the hospital is on Sybase. After the LIS-10723 data-source upgrade, the flag check does not reach Oracle, so the strip never runs."
+    },
+    {
+      "archetype": "agenda",
+      "eyebrow": "Agenda",
+      "title": "Six stops",
+      "items": [
+        { "title": "Background", "note": "why Chinese characters reach Sybase" },
+        { "title": "Existing Design", "note": "the flag check does not reach Oracle" },
+        { "title": "Proposed Change", "note": "read the flag, then strip when Sybase" },
+        { "title": "Promotion", "note": "library build, config unchanged" },
+        { "title": "Fallback", "note": "previous library" },
+        { "title": "Open Questions", "note": "one Oracle database, and an open transaction" }
+      ],
+      "notes": "Six stops. The story is the skipped strip, then the Oracle flag read that turns it back on."
     },
     {
       "archetype": "evolution",
       "eyebrow": "Background",
-      "title": "The type check fails, and the failure sticks",
+      "title": "The strip is skipped, so Chinese characters land in Sybase",
       "steps": [
         {
           "badge": 1,
           "tone": "neutral",
-          "tag": "Hospital",
-          "title": "Hospital database is already selected",
-          "body": "Patient sync has started work on the hospital Sybase or PostgreSQL database."
+          "tag": "Patient sync",
+          "title": "Chinese characters are stripped for Sybase",
+          "body": "Before a message is stored, patient sync removes Chinese characters when the hospital database is Sybase."
         },
         {
           "badge": 2,
           "tone": "danger",
-          "tag": "loe_control",
-          "title": "The type check uses that same route",
-          "body": "The read of loe_control goes to Oracle, but the route is still the hospital."
+          "tag": "LIS-10723",
+          "title": "data-source gained transaction locking",
+          "body": "The library upgrade for transaction locking left the Oracle flag check unable to reach Oracle."
         },
         {
           "badge": 3,
           "tone": "warn",
-          "tag": "Cached",
-          "title": "The miss is stored as PostgreSQL",
-          "body": "Later messages skip the check. A Sybase hospital keeps characters it cannot store."
+          "tag": "Sybase",
+          "title": "The strip does not run",
+          "body": "Chinese characters are inserted into Sybase."
         }
       ],
       "callout": {
-        "lead": "Why it sticks:",
-        "text": "One failed lookup is saved as PostgreSQL, so the next messages never ask Oracle again."
+        "lead": "What decides the strip:",
+        "text": "The Oracle flag. When the check fails, the replace is skipped."
       },
-      "notes": "The cache is the part that hurts. One miss is stored as PostgreSQL, so later messages never ask Oracle again. Chinese characters then stay in a message for a Sybase hospital."
+      "notes": "The flag is the only thing that turns the strip on. When the check fails, the program skips the replace and Sybase gets the Chinese characters."
     },
     {
       "archetype": "compare",
       "eyebrow": "Existing Design",
-      "title": "The hospital route stays put during the Oracle read",
+      "title": "The flag check does not reach Oracle",
       "left": {
         "label": "Today",
         "tone": "danger",
-        "title": "Oracle is asked on the hospital route",
+        "title": "The strip is skipped",
         "points": [
-          "Route: still the hospital database",
-          "Result: Oracle refuses the read",
-          "After: the miss is saved as PostgreSQL"
+          "Check: Oracle flag is not read",
+          "Result: replace logic does not run",
+          "Store: Chinese characters go into Sybase"
         ]
       },
       "right": {
         "label": "Proposed",
         "tone": "accent",
-        "title": "Oracle reads its own connection",
+        "title": "Read the flag on Oracle",
         "points": [
-          "Route: hospital work stays where it is",
-          "Result: loe_control is read on Oracle",
-          "After: Oracle down means Sybase, unsaved"
+          "Check: connect to Oracle and read the flag",
+          "Sybase: replace the Chinese characters",
+          "Hospital work stays open"
         ]
       },
-      "notes": "We do not point the whole thread at Oracle. That would commit hospital work already done. Only the Oracle read uses the Oracle connection."
+      "notes": "We do not move the hospital transaction onto Oracle. That would commit hospital work already done. Only the flag read uses the Oracle connection."
     },
     {
       "archetype": "cards",
       "eyebrow": "Proposed Change",
-      "title": "Patient sync code stays as it is",
+      "title": "Read the Oracle flag, then strip when the hospital is Sybase",
       "perRow": 3,
       "cards": [
         {
           "icon": "database",
-          "title": "The Oracle read succeeds",
-          "body": "loe_control is read on the Oracle connection even while the hospital database is selected."
+          "title": "Read the flag on Oracle",
+          "body": "Connect to Oracle and read the flag while the hospital database is still in use."
+        },
+        {
+          "icon": "filter",
+          "title": "Sybase means replace",
+          "body": "If the flag says the hospital is Sybase, replace the Chinese characters."
         },
         {
           "icon": "hospital",
           "title": "Hospital work stays open",
-          "body": "The hospital transaction is not switched to Oracle, so work already done is not committed early."
-        },
-        {
-          "icon": "rotate-left",
-          "title": "Oracle down means Sybase",
-          "body": "This call is treated as Sybase. That answer is not saved, so the next call can ask Oracle again."
+          "body": "Do not switch the hospital transaction over to Oracle."
         }
       ],
-      "notes": "lis-patient-pmi-sync-svc still calls the same check. The library changes underneath it."
+      "notes": "The replace logic is already in lis-patient-pmi-sync-svc. The library fix is what lets that check succeed."
     },
     {
       "archetype": "cards",
@@ -150,7 +164,7 @@
           "body": "DELETE /api/clearCachedDBConn/{hospital}/{lab} drops one cached type check."
         }
       ],
-      "notes": "You know the rollback worked when that old warning is back on a Sybase hospital."
+      "notes": "You know the rollback worked when the old warning is back: defaulting to PostgreSQL."
     },
     {
       "archetype": "asks",
@@ -159,26 +173,26 @@
       "asks": [
         {
           "q": "Is LOE / lab 1 / LOE_DB the only Oracle database?",
-          "why": "The read will use that connection unless the thread is already on Oracle."
+          "why": "The flag read will use that connection unless the thread is already on Oracle."
         },
         {
           "q": "If a distributed transaction is already open, may this Oracle read join it?",
-          "why": "Hospital work will not be committed early. Distributed transactions are otherwise unchanged."
+          "why": "Hospital work will not be committed early. Transaction locking otherwise stays as LIS-10723 left it."
         }
       ],
-      "notes": "The first question is whether a second Oracle database is registered. The second is enlistment only. We are not redesigning distributed transactions."
+      "notes": "The first question is whether a second Oracle database is registered. The second is enlistment only. We are not redesigning transaction locking."
     },
     {
       "archetype": "statement",
       "eyebrow": "Discussion",
       "headline": "Q&A",
-      "body": "Patient sync source does not change. If Oracle is down, this call is Sybase and that answer is not saved.",
-      "notes": "Likely questions: does patient sync source change (no), and what happens when Oracle is down (this call is Sybase, and that answer is not saved)."
+      "body": "Patient sync source does not change. The strip runs again once the Oracle flag can be read.",
+      "notes": "Likely question: does patient sync source change? No. The strip is already there. It runs again once the Oracle flag can be read."
     },
     {
       "archetype": "closing",
       "icon": "clipboard-check",
-      "headline": "Agree the Oracle read, then build the library",
+      "headline": "Read the flag, then strip for Sybase",
       "note": "No schema change. No config change.",
       "nextSteps": [
         { "title": "After CP3", "body": "Write actions back onto the design note" },
@@ -186,7 +200,7 @@
       ],
       "identity": {
         "key": "TMP-oracle-route-lookup",
-        "meta": "data-source  ·  lis-svc-lib"
+        "meta": "lis-patient-pmi-sync-svc  ·  LIS-10723"
       },
       "notes": "After the room, write any CP3 actions back onto the design note. This deck does not close the review gate."
     }
