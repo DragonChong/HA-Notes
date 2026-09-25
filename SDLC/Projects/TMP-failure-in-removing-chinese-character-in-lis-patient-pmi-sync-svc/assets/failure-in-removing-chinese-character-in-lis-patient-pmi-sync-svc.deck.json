@@ -14,7 +14,7 @@
       "stats": [
         { "label": "Service", "value": "lis-patient-pmi-sync-svc" },
         { "label": "Library", "value": "data-source" },
-        { "label": "Reviewed", "value": "25 Sep 2026", "highlight": true }
+        { "label": "Reviewed", "value": "30 Sep 2026", "highlight": true }
       ],
       "presenters": "Tony Chong",
       "footer": "Related upgrade LIS-10723",
@@ -93,9 +93,7 @@
         "tone": "success",
         "title": "Promotion",
         "steps": [
-          "Ship a new data-source build",
-          "Leave JDBC settings unchanged in DEVQA, SIT, and PROD",
-          "Rebuild lis-patient-pmi-sync-svc. Its source stays the same"
+          "Deploy lis-patient-pmi-sync-svc"
         ]
       },
       "right": {
@@ -103,9 +101,7 @@
         "tone": "danger",
         "title": "Fallback",
         "steps": [
-          "Redeploy the previous data-source build and restart",
-          "On Sybase, the log says defaulting to PostgreSQL",
-          "Drop one cached type check for that hospital and lab"
+          "Undeploy lis-patient-pmi-sync-svc"
         ]
       },
       "notes": "DEVQA, SIT, and PROD keep the same JDBC settings. What changes is the library binary. You know the rollback worked when the old warning is back. A wrong saved answer is cleared with DELETE /api/clearCachedDBConn/{hospital}/{lab}."
