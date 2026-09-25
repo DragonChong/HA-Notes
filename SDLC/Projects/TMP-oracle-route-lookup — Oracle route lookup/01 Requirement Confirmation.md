@@ -5,8 +5,8 @@ tags:
   - requirement
 generated_by: requirement-confirmation
 generated_on: '2026-09-25'
-reviewed_by: ''
-review_date: ''
+reviewed_by: Requester
+review_date: '2026-09-25'
 agent_assisted: true
 ---
 # 01 Requirement Confirmation — Oracle route lookup
@@ -37,7 +37,7 @@ The same exception was stopped in the debugger on `NDH` lab `9` while the messag
 - Oracle repository reads that run while the thread route is Sybase or PostgreSQL, including the `loe_control` read inside `DatabaseUtil.isPGDatabaseConnection`.
 - The active hospital transaction segment stays open across that read.
 - Sybase and PostgreSQL routers still reject a lookup key for the other hospital database type.
-- A failed Oracle type lookup is not cached as PostgreSQL.
+- A failed Oracle type lookup returns Sybase for that call and is not cached.
 
 ## Out of scope
 
@@ -53,10 +53,10 @@ The same exception was stopped in the debugger on `NDH` lab `9` while the messag
 
 | ID | Requirement | Status | Acceptance criteria |
 |---|---|---|---|
-| R1 | An Oracle repository read reaches Oracle when the thread route is Sybase or PostgreSQL. | proposed | `isPGDatabaseConnection` for a hospital already routed as `SYB` or `PG` does not throw `InvalidDataAccessApiUsageException` for an Oracle router rejecting that `dbType`. The connection used is the registered Oracle route. |
-| R2 | That read does not commit or replace the active hospital transaction segment. | proposed | Hospital work already done in the same segmented transaction is still uncommitted when the Oracle read returns. The thread route is still the hospital route afterward. |
-| R3 | Sybase and PostgreSQL routers still reject a mismatched `dbType`. | proposed | A Sybase router with a PostgreSQL lookup key still throws `IllegalStateException`. The PostgreSQL router does the same for a Sybase key. |
-| R4 | A failed Oracle type lookup is not stored as PostgreSQL. | proposed | After the Oracle lookup throws, `getCachedDatabaseConnection` for that server and lab is null. A later successful `loe_control` read is what gets cached. A missing `loe_control` row is still a real answer and may be cached as not PostgreSQL. |
+| R1 | An Oracle repository read reaches Oracle when the thread route is Sybase or PostgreSQL. | assumed | `isPGDatabaseConnection` for a hospital already routed as `SYB` or `PG` does not throw `InvalidDataAccessApiUsageException` for an Oracle router rejecting that `dbType`. The connection used is the registered Oracle route. |
+| R2 | That read does not commit or replace the active hospital transaction segment. | assumed | Hospital work already done in the same segmented transaction is still uncommitted when the Oracle read returns. The thread route is still the hospital route afterward. |
+| R3 | Sybase and PostgreSQL routers still reject a mismatched `dbType`. | assumed | A Sybase router with a PostgreSQL lookup key still throws `IllegalStateException`. The PostgreSQL router does the same for a Sybase key. |
+| R4 | A failed Oracle type lookup returns Sybase for that call and is not cached. | confirmed | After the Oracle lookup throws, the method returns Sybase (`false`) and `getCachedDatabaseConnection` for that server and lab is null. A later successful `loe_control` read is what gets cached. A missing `loe_control` row is still a real answer and may be cached as not PostgreSQL. |
 
 Status: `proposed` (draft) · `assumed` (proceeding on the default) · `confirmed`
 
@@ -83,22 +83,25 @@ Status: `proposed` (draft) · `assumed` (proceeding on the default) · `confirme
 1. Work type is a **fix**. Provisional key `TMP-oracle-route-lookup` until a JIRA key exists.
 2. Oracle remains a single route: `LOE` / lab `1` / `LOE_DB`.
 3. The code change stays in `data-source`. `MessageQueueService` keeps calling `isPGDatabaseConnection`.
-4. On Oracle unavailable, the current call still returns PostgreSQL, and that default is not cached.
+4. On Oracle unavailable, the current call returns Sybase, and that default is not cached.
 5. The hospital route is not switched to Oracle to perform the read, because a route switch commits the active hospital segment.
 
 ## Open questions
 
 | # | Question | Proposed default | Owner | Answer |
 |---|---|---|---|---|
-| Q1 | When Oracle is down, should this call still default to PostgreSQL? | Yes for this call only. Do not cache it (R4). | Ka | |
-| Q2 | Is the Oracle target always `LOE` / `1` / `LOE_DB`? | Yes. One Oracle route. | Ka | |
-| Q3 | Change only `data-source`, and leave `MessageQueueService` as it is? | Yes. | Ka | |
-| Q4 | Must the hospital segment stay uncommitted across the Oracle read? | Yes. Do not switch the shared hospital route to Oracle for the read (R2). | Ka | |
-| Q5 | JIRA key? | Provisional `TMP-oracle-route-lookup` until a key is assigned. | Ka | |
+| Q1 | When Oracle is down, should this call still default to PostgreSQL? | Yes for this call only. Do not cache it (R4). | Ka | **No. Default to Sybase.** Do not cache (R4). |
+| Q2 | Is the Oracle target always `LOE` / `1` / `LOE_DB`? | Yes. One Oracle route. | Ka | Proceed on assumption (A1). |
+| Q3 | Change only `data-source`, and leave `MessageQueueService` as it is? | Yes. | Ka | Proceed on assumption (A2). |
+| Q4 | Must the hospital segment stay uncommitted across the Oracle read? | Yes. Do not switch the shared hospital route to Oracle for the read (R2). | Ka | Proceed on assumption (A3). |
+| Q5 | JIRA key? | Provisional `TMP-oracle-route-lookup` until a key is assigned. | Ka | Proceed on assumption (A4). |
 
 ## Confirmation
 
-Two ways the gate closes:
+- Confirmed by: Requester (chat)
+- Date: 2026-09-25
+- Verdict for orchestrator: **`pass with assumptions`**
+- Statement (quoted):
 
-1. **Confirmed** — quote or link the requester's written confirmation.
-2. **Proceed on assumptions** — you accept the proposed defaults. Each unanswered question becomes a dossier Open Item (`A1…`). When the real answer arrives, update this note; if a default was wrong, reopen the affected design sections.
+> Q1, default to Sybase.
+> proceed on assumptions for others

@@ -1,7 +1,10 @@
 ---
+gates_passed:
+  - requirement
+stage: design
+updated: '2026-09-25'
 created: '2026-09-25'
 design: ''
-gates_passed: []
 jira: ''
 jira_log: ''
 key: TMP-oracle-route-lookup
@@ -13,42 +16,46 @@ requirement: '[[01 Requirement Confirmation]]'
 risk: medium
 services:
   - data-source
-stage: requirement
 status: active
 tags:
   - sdlc-dossier
 target_completion_date: ''
 title: Oracle route lookup
-updated: '2026-09-25'
 work_type: fix
 ---
 # Oracle route lookup
 
-Oracle repository reads fail when the thread is already on a Sybase or PostgreSQL hospital route. Requirement draft is waiting for confirmation.
+Oracle repository reads fail when the thread is already on a Sybase or PostgreSQL hospital route. Requirement gate is passed with assumptions. Design is next.
 
 ## Status
 
-> [!info] Stage: **requirement** — gate `requirement` outstanding
-> Next action: wait for confirmation, or say **proceed on assumptions**
+> [!info] Stage: **design** — gate `design` outstanding
+> Next action: `/system-design`
 
 ## Artifacts
 
 | Stage | Artifact | State |
 |---|---|---|
-| 01 Requirement | [[01 Requirement Confirmation]] | draft |
+| 01 Requirement | [[01 Requirement Confirmation]] | pass with assumptions 2026-09-25 |
 
 ## Gate Log
 
 | Date | Gate | Verdict | By | Note |
 |---|---|---|---|---|
+| 2026-09-25 | requirement | pass with assumptions | Requester | Q1 answered: default to Sybase. Q2–Q5 kept as A1–A4. |
 
 ## Decision Log
 
 - 2026-09-25 — New dossier. The only other `status: active` dossier is [[TMP-specimen-sorter-api — Specimen Sorter API]], which is a different unit of work. Provisional key `TMP-oracle-route-lookup`.
+- 2026-09-25 — Q1 proposed default (PostgreSQL) was wrong. Requester: default to Sybase for the failed call; still do not cache it (R4). No design note exists yet. When design is written, the failure-fallback section must say Sybase, not PostgreSQL.
 
 ## Open Items
 
-- [ ] Confirm Q1–Q5 on [[01 Requirement Confirmation]], or proceed on the proposed defaults
+- [x] Confirm Q1–Q5 on [[01 Requirement Confirmation]], or proceed on the proposed defaults
+- [ ] A1 — Oracle target is `LOE` / lab `1` / `LOE_DB` (Q2)
+- [ ] A2 — Change only `data-source`; leave `MessageQueueService` unchanged (Q3)
+- [ ] A3 — Hospital segment stays uncommitted; do not switch the shared route to Oracle for the read (Q4)
+- [ ] A4 — Provisional key `TMP-oracle-route-lookup` until a JIRA key is assigned (Q5)
 
 ## Links
 
