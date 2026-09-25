@@ -161,10 +161,10 @@
         {
           "badge": 3,
           "title": "Clear a wrong saved answer",
-          "body": "DELETE /api/clearCachedDBConn/{hospital}/{lab} drops one cached type check."
+          "body": "Drop one cached type check for that hospital and lab."
         }
       ],
-      "notes": "You know the rollback worked when the old warning is back: defaulting to PostgreSQL."
+      "notes": "You know the rollback worked when the old warning is back: defaulting to PostgreSQL. A wrong saved answer is cleared with DELETE /api/clearCachedDBConn/{hospital}/{lab}."
     },
     {
       "archetype": "asks",

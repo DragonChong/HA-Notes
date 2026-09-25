@@ -63,7 +63,7 @@ Facts come from [[02 System Design]], plus the requester's room wording for the 
 **Eyebrow:** Fallback
 **Title:** Put the previous library back
 **Archetype:** cards
-**Notes:** You know the rollback worked when the old warning is back: defaulting to PostgreSQL.
+**Notes:** You know the rollback worked when the old warning is back: defaulting to PostgreSQL. A wrong saved answer is cleared with `DELETE /api/clearCachedDBConn/{hospital}/{lab}`.
 
 ### Slide: Open Questions
 **Eyebrow:** Open Questions
