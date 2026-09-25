@@ -144,42 +144,11 @@
       "notes": "DEVQA, SIT, and PROD keep the same JDBC settings. What changes is the library binary. You know the rollback worked when the old warning is back. A wrong saved answer is cleared with DELETE /api/clearCachedDBConn/{hospital}/{lab}."
     },
     {
-      "archetype": "asks",
-      "eyebrow": "Open Questions",
-      "title": "Two questions before we build",
-      "asks": [
-        {
-          "q": "Is LOE / lab 1 / LOE_DB the only Oracle database?",
-          "why": "The flag read will use that connection unless the thread is already on Oracle."
-        },
-        {
-          "q": "If a distributed transaction is already open, may this Oracle read join it?",
-          "why": "Hospital work will not be committed early. Transaction locking otherwise stays as LIS-10723 left it."
-        }
-      ],
-      "notes": "The first question is whether a second Oracle database is registered. The second is enlistment only. We are not redesigning transaction locking."
-    },
-    {
       "archetype": "statement",
+      "align": "center",
       "eyebrow": "Discussion",
       "headline": "Q&A",
-      "body": "Patient sync source does not change. The strip runs again once the Oracle flag can be read.",
       "notes": "Likely question: does patient sync source change? No. The strip is already there. It runs again once the Oracle flag can be read."
-    },
-    {
-      "archetype": "closing",
-      "icon": "clipboard-check",
-      "headline": "Read the flag, then strip for Sybase",
-      "note": "No schema change. No config change.",
-      "nextSteps": [
-        { "title": "After CP3", "body": "Write actions back onto the design note" },
-        { "title": "Then build", "body": "data-source only" }
-      ],
-      "identity": {
-        "key": "TMP-oracle-route-lookup",
-        "meta": "lis-patient-pmi-sync-svc  ·  LIS-10723"
-      },
-      "notes": "After the room, write any CP3 actions back onto the design note. This deck does not close the review gate."
     }
   ]
 }

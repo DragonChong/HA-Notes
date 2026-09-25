@@ -55,7 +55,8 @@ Oracle repository reads fail when the thread is already on a Sybase or PostgreSQ
 - 2026-09-25 — High-level CP3 deck generated from [[03 Slide Brief]]. Default QA passed. CP3-profile QA still reports no numeric JIRA key because A4 is the provisional key `TMP-oracle-route-lookup`.
 - 2026-09-25 — Deck revised: agenda added. Background is the skipped Chinese-character strip in `lis-patient-pmi-sync-svc` after the LIS-10723 data-source transaction-locking upgrade. CP3 QA passed.
 - 2026-09-25 — Promotion and fallback are one compare slide. Left is the library ship. Right is the previous build. CP3 QA passed.
-- 2026-09-25 — Fallback step 2 was wrapping, so step 3 sat lower than the promotion column. Shortened to “On Sybase, the log says defaulting to PostgreSQL”. Both columns now share the same step tops. CP3 QA passed. The open `Oracle route lookup.pptx` was locked, so the aligned file is `Oracle route lookup-steps.pptx`.
+- 2026-09-25 — Fallback step 2 was wrapping, so step 3 sat lower than the promotion column. Shortened to “On Sybase, the log says defaulting to PostgreSQL”. Both columns now share the same step tops.
+- 2026-09-25 — Regenerated `Oracle route lookup.pptx` from the current spec (7 slides). CP3 QA: 0 errors. Two warnings: the agenda still lists Open Questions, and the spec has no asks slide and no closing slide.
 
 ## Open Items
 
