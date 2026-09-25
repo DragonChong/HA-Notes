@@ -80,7 +80,7 @@ Status: `proposed` (draft) · `assumed` (proceeding on the default) · `confirme
 
 ## Assumptions
 
-1. Work type is a **fix**. Provisional key `TMP-oracle-route-lookup` until a JIRA key exists.
+1. Work type is a **fix**. Provisional key `TMP-failure-in-removing-chinese-character-in-lis-patient-pmi-sync-svc` until a JIRA key exists.
 2. Oracle remains a single route: `LOE` / lab `1` / `LOE_DB`.
 3. The code change stays in `data-source`. `MessageQueueService` keeps calling `isPGDatabaseConnection`.
 4. On Oracle unavailable, the current call returns Sybase, and that default is not cached.
@@ -94,7 +94,7 @@ Status: `proposed` (draft) · `assumed` (proceeding on the default) · `confirme
 | Q2 | Is the Oracle target always `LOE` / `1` / `LOE_DB`? | Yes. One Oracle route. | Ka | Proceed on assumption (A1). |
 | Q3 | Change only `data-source`, and leave `MessageQueueService` as it is? | Yes. | Ka | Proceed on assumption (A2). |
 | Q4 | Must the hospital segment stay uncommitted across the Oracle read? | Yes. Do not switch the shared hospital route to Oracle for the read (R2). | Ka | Proceed on assumption (A3). |
-| Q5 | JIRA key? | Provisional `TMP-oracle-route-lookup` until a key is assigned. | Ka | Proceed on assumption (A4). |
+| Q5 | JIRA key? | Provisional `TMP-failure-in-removing-chinese-character-in-lis-patient-pmi-sync-svc` until a key is assigned. | Ka | Proceed on assumption (A4). |
 
 ## Confirmation
 

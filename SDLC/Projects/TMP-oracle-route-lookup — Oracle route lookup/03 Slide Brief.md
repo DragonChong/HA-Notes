@@ -14,7 +14,7 @@ title: 03 Slide Brief — Failure in removing chinese character in lis-patient-p
 Facts come from [[02 System Design]], plus the requester's room wording for the LIS-10723 trigger. Presentational only.
 
 **Profile:** incremental
-**JIRA key:** TMP-oracle-route-lookup (related upgrade LIS-10723)
+**JIRA key:** TMP-failure-in-removing-chinese-character-in-lis-patient-pmi-sync-svc (related upgrade LIS-10723)
 **Service:** lis-patient-pmi-sync-svc, library data-source
 **Review forum:** CP3
 **Review date:** 25 Sep 2026

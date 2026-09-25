@@ -7,7 +7,7 @@ created: '2026-09-25'
 design: '[[02 System Design]]'
 jira: ''
 jira_log: ''
-key: TMP-oracle-route-lookup
+key: TMP-failure-in-removing-chinese-character-in-lis-patient-pmi-sync-svc
 owner: Ka
 reference_jira: []
 repos:
@@ -59,6 +59,7 @@ Oracle repository reads fail when the thread is already on a Sybase or PostgreSQ
 - 2026-09-25 — Regenerated `Oracle route lookup.pptx` from the current spec (7 slides). CP3 QA: 0 errors. Two warnings: the agenda still lists Open Questions, and the spec has no asks slide and no closing slide.
 - 2026-09-25 — Slide wording uses remove instead of strip. Regenerated `Oracle route lookup.pptx`.
 - 2026-09-25 — Title changed from Oracle route lookup to Failure in removing chinese character in lis-patient-pmi-sync-svc. Key stays `TMP-oracle-route-lookup`.
+- 2026-09-25 — Provisional key renamed from `TMP-oracle-route-lookup` to `TMP-failure-in-removing-chinese-character-in-lis-patient-pmi-sync-svc`. A4 still waits for a JIRA key. Folder rename was denied because the path is in use.
 
 ## Open Items
 
@@ -66,7 +67,7 @@ Oracle repository reads fail when the thread is already on a Sybase or PostgreSQ
 - [ ] A1 — Oracle target is `LOE` / lab `1` / `LOE_DB` (Q2)
 - [ ] A2 — Change only `data-source`; leave `MessageQueueService` unchanged (Q3)
 - [ ] A3 — Hospital segment stays uncommitted; do not switch the shared route to Oracle for the read (Q4)
-- [ ] A4 — Provisional key `TMP-oracle-route-lookup` until a JIRA key is assigned (Q5)
+- [ ] A4 — Provisional key `TMP-failure-in-removing-chinese-character-in-lis-patient-pmi-sync-svc` until a JIRA key is assigned (Q5)
 
 ## Links
 
