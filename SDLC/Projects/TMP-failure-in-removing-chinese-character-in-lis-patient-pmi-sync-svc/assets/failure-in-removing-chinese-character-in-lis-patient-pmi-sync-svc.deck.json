@@ -76,8 +76,7 @@
         "title": "Characters are not removed",
         "points": [
           "Check: Oracle flag is not read",
-          "Result: replace logic does not run",
-          "Store: Chinese characters go into Sybase"
+          "Result: Replace logic does not run.Chinese characters go into Sybase"
         ]
       },
       "right": {
@@ -85,9 +84,8 @@
         "tone": "accent",
         "title": "Read the flag on Oracle",
         "points": [
-          "Check: connect to Oracle and read the flag",
-          "Sybase: replace the Chinese characters",
-          "Hospital work stays open"
+          "Check: Connect to Oracle and read the flag",
+          "Result: Replace the Chinese characters for Sybase"
         ]
       },
       "notes": "We do not move the hospital transaction onto Oracle. That would commit hospital work already done. Only the flag read uses the Oracle connection."
