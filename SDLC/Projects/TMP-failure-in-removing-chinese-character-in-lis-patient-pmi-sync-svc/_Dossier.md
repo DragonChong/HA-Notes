@@ -39,7 +39,7 @@ Oracle repository reads fail when the thread is already on a Sybase or PostgreSQ
 | 01 Requirement | [[01 Requirement Confirmation]] | pass with assumptions 2026-09-25 |
 | 02 Design | [[02 System Design]] | draft |
 | 03 Slide Brief | [[03 Slide Brief]] | draft |
-| 03 Design Review | [[assets/Oracle route lookup.pptx]] | generated |
+| 03 Design Review | [[assets/failure-in-removing-chinese-character-in-lis-patient-pmi-sync-svc.pptx]] | generated |
 
 ## Gate Log
 
@@ -59,7 +59,8 @@ Oracle repository reads fail when the thread is already on a Sybase or PostgreSQ
 - 2026-09-25 — Regenerated `Oracle route lookup.pptx` from the current spec (7 slides). CP3 QA: 0 errors. Two warnings: the agenda still lists Open Questions, and the spec has no asks slide and no closing slide.
 - 2026-09-25 — Slide wording uses remove instead of strip. Regenerated `Oracle route lookup.pptx`.
 - 2026-09-25 — Title changed from Oracle route lookup to Failure in removing chinese character in lis-patient-pmi-sync-svc. Key stays `TMP-oracle-route-lookup`.
-- 2026-09-25 — Provisional key renamed from `TMP-oracle-route-lookup` to `TMP-failure-in-removing-chinese-character-in-lis-patient-pmi-sync-svc`. A4 still waits for a JIRA key. Folder rename was denied because the path is in use.
+- 2026-09-25 — Provisional key renamed from `TMP-oracle-route-lookup` to `TMP-failure-in-removing-chinese-character-in-lis-patient-pmi-sync-svc`. A4 still waits for a JIRA key. Folder rename was denied because the path was in use.
+- 2026-09-25 — Folder renamed by the requester. Regenerated `failure-in-removing-chinese-character-in-lis-patient-pmi-sync-svc.pptx` (7 slides). CP3 QA: 0 errors, 2 warnings (agenda still lists Open Questions; no asks slide).
 
 ## Open Items
 
