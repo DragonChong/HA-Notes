@@ -103,12 +103,12 @@ LIS body rules for omitted `hospital` (derive from `loe_specimen_sorter_map`) st
 
 ## Response envelope
 
-| Field | Type | Description |
-|---|---|---|
-| `code` | integer | Envelope result code. |
-| `message` | string | Envelope result text. |
-| `data` | object or null | Sorter result payload. |
-| `timestamp` | long | Time the response was produced. |
+| Field       | Type           | Description                     |
+| ----------- | -------------- | ------------------------------- |
+| `code`      | integer        | Envelope result code.           |
+| `message`   | string         | Envelope result text.           |
+| `data`      | object or null | Sorter result payload.          |
+| `timestamp` | long           | Time the response was produced. |
 
 Treat `data.status` as the bin. Do **not** treat HTTP 200 as Registered. Soft alerts are never in this body (R6).
 
