@@ -7,9 +7,9 @@ reviewed_by: ''
 tags:
   - sdlc
   - slide-brief
-title: 03 Slide Brief — Oracle route lookup
+title: 03 Slide Brief — Failure in removing chinese character in lis-patient-pmi-sync-svc
 ---
-# 03 Slide Brief — Oracle route lookup
+# 03 Slide Brief — Failure in removing chinese character in lis-patient-pmi-sync-svc
 
 Facts come from [[02 System Design]], plus the requester's room wording for the LIS-10723 trigger. Presentational only.
 

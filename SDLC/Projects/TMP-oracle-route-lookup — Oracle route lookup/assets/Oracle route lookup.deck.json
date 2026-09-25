@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "TMP-oracle-route-lookup Oracle route lookup",
+    "title": "Failure in removing chinese character in lis-patient-pmi-sync-svc",
     "subject": "Removing Chinese characters is skipped after the LIS-10723 data-source upgrade",
     "author": "LIS Team",
     "company": "Hospital Authority"

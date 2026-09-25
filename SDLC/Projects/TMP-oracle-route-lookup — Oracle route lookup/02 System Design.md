@@ -8,9 +8,9 @@ reviewed_by: Tony Chong
 tags:
   - sdlc
   - design
-title: 02 System Design — Oracle route lookup
+title: 02 System Design — Failure in removing chinese character in lis-patient-pmi-sync-svc
 ---
-# 02 System Design — Oracle route lookup
+# 02 System Design — Failure in removing chinese character in lis-patient-pmi-sync-svc
 
 Incremental change to `data-source` in `lis-svc-lib`. No new API, table, or configuration key.
 

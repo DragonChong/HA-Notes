@@ -20,10 +20,10 @@ status: active
 tags:
   - sdlc-dossier
 target_completion_date: ''
-title: Oracle route lookup
+title: Failure in removing chinese character in lis-patient-pmi-sync-svc
 work_type: fix
 ---
-# Oracle route lookup
+# Failure in removing chinese character in lis-patient-pmi-sync-svc
 
 Oracle repository reads fail when the thread is already on a Sybase or PostgreSQL hospital route. Requirement gate is passed with assumptions. Design is next.
 
@@ -58,6 +58,7 @@ Oracle repository reads fail when the thread is already on a Sybase or PostgreSQ
 - 2026-09-25 — Fallback step 2 was wrapping, so step 3 sat lower than the promotion column. Shortened to “On Sybase, the log says defaulting to PostgreSQL”. Both columns now share the same step tops.
 - 2026-09-25 — Regenerated `Oracle route lookup.pptx` from the current spec (7 slides). CP3 QA: 0 errors. Two warnings: the agenda still lists Open Questions, and the spec has no asks slide and no closing slide.
 - 2026-09-25 — Slide wording uses remove instead of strip. Regenerated `Oracle route lookup.pptx`.
+- 2026-09-25 — Title changed from Oracle route lookup to Failure in removing chinese character in lis-patient-pmi-sync-svc. Key stays `TMP-oracle-route-lookup`.
 
 ## Open Items
 

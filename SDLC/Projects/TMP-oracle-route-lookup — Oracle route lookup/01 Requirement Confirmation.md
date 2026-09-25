@@ -1,5 +1,5 @@
 ---
-title: 01 Requirement Confirmation — Oracle route lookup
+title: 01 Requirement Confirmation — Failure in removing chinese character in lis-patient-pmi-sync-svc
 tags:
   - sdlc
   - requirement
@@ -9,7 +9,7 @@ reviewed_by: Requester
 review_date: '2026-09-25'
 agent_assisted: true
 ---
-# 01 Requirement Confirmation — Oracle route lookup
+# 01 Requirement Confirmation — Failure in removing chinese character in lis-patient-pmi-sync-svc
 
 Sources used (no PHI):
 
