@@ -80,11 +80,6 @@
           "icon": "filter",
           "title": "Sybase means replace",
           "body": "If the flag says the hospital is Sybase, replace the Chinese characters."
-        },
-        {
-          "icon": "hospital",
-          "title": "Hospital work stays open",
-          "body": "Do not switch the hospital transaction over to Oracle."
         }
       ],
       "notes": "The replace logic is already in lis-patient-pmi-sync-svc. The library fix is what lets that check succeed."
