@@ -42,7 +42,7 @@
         {
           "badge": 1,
           "tone": "neutral",
-          "tag": "Patient sync",
+          "tag": "Patient PMI Sync",
           "title": "Chinese characters are stripped for Sybase",
           "body": "Before a message is stored, patient sync removes Chinese characters when the hospital database is Sybase."
         },
