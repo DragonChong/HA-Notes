@@ -69,7 +69,7 @@
       "archetype": "cards",
       "eyebrow": "Proposed Change",
       "title": "Fix the read of the Oracle flag, then remove when the connection is Sybase",
-      "perRow": 3,
+      "perRow": 2,
       "cards": [
         {
           "icon": "database",
