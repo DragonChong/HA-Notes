@@ -55,7 +55,7 @@
         {
           "badge": 3,
           "tone": "warn",
-          "tag": "Sybase",
+          "tag": "LIS-10723",
           "title": "Characters are not removed",
           "body": "Chinese characters are inserted into Sybase."
         }
