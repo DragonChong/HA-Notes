@@ -57,7 +57,7 @@ Facts come from [[02 System Design]], plus the requester's room wording for the 
 **Eyebrow:** Promotion and fallback
 **Title:** Ship the new library, or put the previous one back
 **Archetype:** compare
-**Body:** Left, promotion: new data-source build, JDBC unchanged in DEVQA, SIT, and PROD, patient sync rebuilds only. Right, fallback: previous build and restart, old warning `defaulting to PostgreSQL`, then clear one cached type check.
+**Body:** Left, promotion: new data-source build, JDBC unchanged in DEVQA, SIT, and PROD, patient sync rebuilds only. Right, fallback: previous build and restart, on Sybase the log says `defaulting to PostgreSQL`, then clear one cached type check.
 **Notes:** DEVQA, SIT, and PROD keep the same JDBC settings. What changes is the library binary. You know the rollback worked when the old warning is back. A wrong saved answer is cleared with `DELETE /api/clearCachedDBConn/{hospital}/{lab}`.
 
 ### Slide: Open Questions
