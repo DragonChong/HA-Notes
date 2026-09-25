@@ -26,6 +26,7 @@
         { "title": "Background"},
         { "title": "Existing design"},
         { "title": "Proposed change"},
+        { "title": "Send-out"},
         { "title": "API contract and data"},
         { "title": "Promotion and fallback"}
       ],
