@@ -25,7 +25,7 @@ Facts come from [[02 System Design]], plus the requester's room wording for the 
 ### Cover
 **Archetype:** title-hero
 **Headline:** Chinese characters reach Sybase when the Oracle flag is not read
-**Notes:** Patient sync is supposed to strip Chinese characters when the hospital is on Sybase. After the LIS-10723 data-source upgrade, the flag check does not reach Oracle, so the strip never runs.
+**Notes:** Patient sync is supposed to remove Chinese characters when the hospital is on Sybase. After the LIS-10723 data-source upgrade, the flag check does not reach Oracle, so they are not removed.
 
 ### Slide: Agenda
 **Archetype:** agenda
@@ -34,21 +34,21 @@ Facts come from [[02 System Design]], plus the requester's room wording for the 
 
 ### Slide: Background
 **Eyebrow:** Background
-**Title:** The strip is skipped, so Chinese characters land in Sybase
+**Title:** Chinese characters are not removed, so they land in Sybase
 **Archetype:** evolution
-**Body:** Patient sync strips Chinese characters for a Sybase hospital. LIS-10723 upgraded data-source for transaction locking. The Oracle flag check then fails, and the strip does not run.
-**Notes:** The flag is the only thing that turns the strip on. When the check fails, the program skips the replace and Sybase gets the Chinese characters.
+**Body:** Patient sync removes Chinese characters for a Sybase hospital. LIS-10723 upgraded data-source for transaction locking. The Oracle flag check then fails, and the characters are not removed.
+**Notes:** The flag is the only thing that decides whether to remove. When the check fails, the program skips the replace and Sybase gets the Chinese characters.
 
 ### Slide: Existing Design
 **Eyebrow:** Existing Design
 **Title:** The flag check does not reach Oracle
 **Archetype:** compare
-**Body:** Today the read follows the hospital route and is refused, so the strip is skipped. After the change, the flag is read on Oracle. If the hospital is Sybase, the Chinese characters are replaced.
+**Body:** Today the read follows the hospital route and is refused, so Chinese characters are not removed. After the change, the flag is read on Oracle. If the hospital is Sybase, the Chinese characters are replaced.
 **Notes:** We do not move the hospital transaction onto Oracle. That would commit hospital work already done. Only the flag read uses the Oracle connection.
 
 ### Slide: Proposed Change
 **Eyebrow:** Proposed Change
-**Title:** Read the Oracle flag, then strip when the hospital is Sybase
+**Title:** Read the Oracle flag, then remove when the hospital is Sybase
 **Archetype:** cards
 **Body:** Connect to Oracle and read the flag. If it says Sybase, replace the Chinese characters. Patient sync source stays as it is.
 **Notes:** The replace logic is already in lis-patient-pmi-sync-svc. The library fix is what lets that check succeed.
@@ -71,7 +71,7 @@ Facts come from [[02 System Design]], plus the requester's room wording for the 
 ### Slide: Q&A
 **Archetype:** statement
 **Headline:** Q&A
-**Notes:** Likely question: does patient sync source change? No. The strip is already there. It runs again once the Oracle flag can be read.
+**Notes:** Likely question: does patient sync source change? No. The logic to remove Chinese characters is already there. It runs again once the Oracle flag can be read.
 
 ### Close
 **Archetype:** closing

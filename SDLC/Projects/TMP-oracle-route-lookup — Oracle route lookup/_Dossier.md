@@ -57,6 +57,7 @@ Oracle repository reads fail when the thread is already on a Sybase or PostgreSQ
 - 2026-09-25 — Promotion and fallback are one compare slide. Left is the library ship. Right is the previous build. CP3 QA passed.
 - 2026-09-25 — Fallback step 2 was wrapping, so step 3 sat lower than the promotion column. Shortened to “On Sybase, the log says defaulting to PostgreSQL”. Both columns now share the same step tops.
 - 2026-09-25 — Regenerated `Oracle route lookup.pptx` from the current spec (7 slides). CP3 QA: 0 errors. Two warnings: the agenda still lists Open Questions, and the spec has no asks slide and no closing slide.
+- 2026-09-25 — Slide wording uses remove instead of strip. Regenerated `Oracle route lookup.pptx`.
 
 ## Open Items
 

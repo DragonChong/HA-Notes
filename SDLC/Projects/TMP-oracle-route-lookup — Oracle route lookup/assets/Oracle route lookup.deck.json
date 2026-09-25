@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "TMP-oracle-route-lookup Oracle route lookup",
-    "subject": "Chinese character strip skipped after the LIS-10723 data-source upgrade",
+    "subject": "Removing Chinese characters is skipped after the LIS-10723 data-source upgrade",
     "author": "LIS Team",
     "company": "Hospital Authority"
   },
@@ -10,7 +10,7 @@
       "archetype": "title-hero",
       "eyebrow": "TMP-oracle-route-lookup   ·   LIS-10723   ·   CP3",
       "headline": "Chinese characters reach Sybase\nwhen the Oracle flag is not read",
-      "lede": "lis-patient-pmi-sync-svc strips Chinese characters when the hospital is on Sybase. After the LIS-10723 data-source upgrade, that flag check does not reach Oracle, so the strip is skipped.",
+      "lede": "lis-patient-pmi-sync-svc removes Chinese characters when the hospital is on Sybase. After the LIS-10723 data-source upgrade, that flag check does not reach Oracle, so they are not removed.",
       "stats": [
         { "label": "Service", "value": "lis-patient-pmi-sync-svc" },
         { "label": "Library", "value": "data-source" },
@@ -19,7 +19,7 @@
       "presenters": "LIS Team",
       "reviewers": "Tony Chong",
       "footer": "Related upgrade LIS-10723  ·  for CP3",
-      "notes": "Patient sync is supposed to strip Chinese characters when the hospital is on Sybase. After the LIS-10723 data-source upgrade, the flag check does not reach Oracle, so the strip never runs."
+      "notes": "Patient sync is supposed to remove Chinese characters when the hospital is on Sybase. After the LIS-10723 data-source upgrade, the flag check does not reach Oracle, so they are not removed."
     },
     {
       "archetype": "agenda",
@@ -28,7 +28,7 @@
       "items": [
         { "title": "Background", "note": "why Chinese characters reach Sybase" },
         { "title": "Existing Design", "note": "the flag check does not reach Oracle" },
-        { "title": "Proposed Change", "note": "read the flag, then strip when Sybase" },
+        { "title": "Proposed Change", "note": "read the flag, then remove when Sybase" },
         { "title": "Promotion and fallback", "note": "new library, or the previous one" },
         { "title": "Open Questions", "note": "one Oracle database, and an open transaction" }
       ],
@@ -37,13 +37,13 @@
     {
       "archetype": "evolution",
       "eyebrow": "Background",
-      "title": "The strip is skipped, so Chinese characters land in Sybase",
+      "title": "Chinese characters are not removed, so they land in Sybase",
       "steps": [
         {
           "badge": 1,
           "tone": "neutral",
           "tag": "Patient PMI Sync",
-          "title": "Non-ASCII characters are stripped for Sybase",
+          "title": "Non-ASCII characters are removed for Sybase",
           "body": "Before a message is stored, patient sync removes Chinese characters when the hospital database is Sybase."
         },
         {
@@ -57,15 +57,15 @@
           "badge": 3,
           "tone": "warn",
           "tag": "Sybase",
-          "title": "The strip does not run",
+          "title": "Characters are not removed",
           "body": "Chinese characters are inserted into Sybase."
         }
       ],
       "callout": {
-        "lead": "What decides the strip:",
+        "lead": "What decides whether to remove:",
         "text": "The Oracle flag. When the check fails, the replace is skipped."
       },
-      "notes": "The flag is the only thing that turns the strip on. When the check fails, the program skips the replace and Sybase gets the Chinese characters."
+      "notes": "The flag is the only thing that decides whether to remove. When the check fails, the program skips the replace and Sybase gets the Chinese characters."
     },
     {
       "archetype": "compare",
@@ -74,7 +74,7 @@
       "left": {
         "label": "Today",
         "tone": "danger",
-        "title": "The strip is skipped",
+        "title": "Characters are not removed",
         "points": [
           "Check: Oracle flag is not read",
           "Result: replace logic does not run",
@@ -96,7 +96,7 @@
     {
       "archetype": "cards",
       "eyebrow": "Proposed Change",
-      "title": "Read the Oracle flag, then strip when the hospital is Sybase",
+      "title": "Read the Oracle flag, then remove when the hospital is Sybase",
       "perRow": 3,
       "cards": [
         {
@@ -148,7 +148,7 @@
       "align": "center",
       "eyebrow": "Discussion",
       "headline": "Q&A",
-      "notes": "Likely question: does patient sync source change? No. The strip is already there. It runs again once the Oracle flag can be read."
+      "notes": "Likely question: does patient sync source change? No. The logic to remove Chinese characters is already there. It runs again once the Oracle flag can be read."
     }
   ]
 }
