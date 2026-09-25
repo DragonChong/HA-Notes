@@ -103,8 +103,8 @@ section-to-archetype mapping.
 **Incremental** (default, scheduler voice):
 
 ```
-title-hero → evolution → code-findings|compare|image → decision-flow|steps-sidebar
-           → cards (Promotion) → cards (Fallback) → asks → statement (Q&A) → closing
+title-hero → agenda → evolution → code-findings|compare|image → decision-flow|steps-sidebar
+           → compare (Promotion and fallback) → asks → statement (Q&A) → closing
 ```
 
 **Full:**
@@ -113,7 +113,7 @@ title-hero → evolution → code-findings|compare|image → decision-flow|steps
 title-hero → agenda → thesis (Executive Summary)
            → Background → Existing (visual-first) → Proposed (+ compare)
            → Deep Dive (optional) → Trade-offs → Impact
-           → Promotion → Fallback → asks → Q&A → closing
+           → compare (Promotion and fallback) → asks → Q&A → closing
 ```
 
 **Walkthrough** (USID pattern, only when asked):
@@ -122,9 +122,11 @@ title-hero → agenda → thesis (Executive Summary)
 title-hero → agenda → (per stage: image → evolution as-is/to-be → asks) → statement
 ```
 
-Full and incremental CP3 decks require Open Questions (`asks`) before the
-closing Q&A `statement`. Promotion maps Best Practices "Implementation Plan"
-in narrative only — keep `cards` / `steps-sidebar`. Run QA with `--profile cp3`.
+Every incremental and full deck includes an `agenda` slide after the cover.
+Full and incremental CP3 decks also require Open Questions (`asks`) before the
+closing Q&A `statement`. Promotion and fallback are one `compare` slide: left
+`success` steps, right `danger` steps. QA warns if the agenda is missing, or
+if that pair is not a `compare`. Run QA with `--profile cp3`.
 
 Pick per slide from the table at the end of
 [references/slide-archetypes.md](references/slide-archetypes.md).
@@ -256,8 +258,9 @@ Two samples. Do not mix them.
 | `walkthrough` only | `G:\Request\BackEnd\Specimen Sorter\USID Auto-Registration Flow.deck.json` |
 
 Scheduler is the bar: statement titles, short bodies, notes that add
-reasoning. Gaps not to copy: cover typo `lis-scheudler`, missing `asks`,
-missing closing.
+reasoning. Gaps not to copy: cover typo `lis-scheudler`, missing `agenda`, promotion
+and fallback as `cards` instead of one `compare`, missing `asks`, missing
+closing.
 
 USID is a workshop walkthrough (many `image` slides, asks per stage). It is
 not the incremental 6–10 CP3 sequence.

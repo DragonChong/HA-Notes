@@ -49,8 +49,9 @@ dividers; `highlight` turns a value sky. QA warns if there is no date; under
   "items": [ "Background", { "title": "Design Review", "note": "the change itself" } ] }
 ```
 
-White row cards with `01`, `02` numerals. Up to 6 items. QA warns when an agenda
-item has no matching slide eyebrow, title or headline.
+White row cards with `01`, `02` numerals. Up to 6 items. Required after the
+cover on incremental and full decks. QA warns when the slide is missing, and
+when an item has no matching slide eyebrow, title or headline.
 
 ## 3. `cards` — 2/3/4-up grid (templates 3, 10, 13, 16)
 
@@ -66,8 +67,9 @@ item has no matching slide eyebrow, title or headline.
 Stack order inside a card: `icon`, `badge` (tinted circle), `label` (small caps
 coloured by tone — ADR `Context / Decision / Trade-off`), `tag` (display caps,
 `STAGE 1`), title, body. Cards hug their content. `tone: "ink"` makes a dark
-card; `highlight: true` gives the sky border. The workhorse for Promotion,
-Fallback, risks, benefits.
+card; `highlight: true` gives the sky border. The workhorse for risks,
+benefits, and trade-offs. Promotion and fallback are a `compare` slide, not
+two card slides.
 
 ## 4. `stats` — numbers (templates 7, 8)
 

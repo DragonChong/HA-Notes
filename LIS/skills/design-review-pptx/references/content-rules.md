@@ -35,15 +35,14 @@ slide (`"Design status: draft — to be populated before CP3 review."`).
 |----------------------------|-----------|
 | Cover metadata | `title-hero` eyebrow + stats (+ optional `presenters` / `reviewers`) |
 | Meeting goal / exec summary | `title-hero` lede; full reviews also get early `thesis` |
-| Agenda | `agenda` |
+| Agenda | `agenda` — required after the cover |
 | Background | `evolution` (history) or `cards` |
 | Existing Design | `image`, `compare`, or `code-findings` — visual-first |
 | Proposed Change overview | `compare` or `decision-flow` |
 | Proposed Change detail / schema | `steps-sidebar`, `matrix`, or `code-findings` |
 | Trade-offs / Alternatives | `cards` |
 | Impact (deps + risks) | `cards` |
-| Promotion | `cards` or `steps-sidebar` |
-| Fallback | `cards` |
+| Promotion and fallback | `compare` with `steps` — one slide; left Promotion (`success`), right Fallback (`danger`) |
 | Open Questions | `asks` (required before Q&A) |
 | Q&A | `statement` |
 | Close / next steps | `closing` |
@@ -66,8 +65,8 @@ QA warn if there is no `asks` slide before the closing Q&A `statement`.
 **Incremental sequence:**
 
 ```
-title-hero → Background → Existing (ref) → Proposed (2–4)
-           → Promotion → Fallback → asks → Q&A statement → closing
+title-hero → agenda → Background → Existing (ref) → Proposed (2–4)
+           → compare (Promotion and fallback) → asks → Q&A statement → closing
 ```
 
 **Full sequence:**
@@ -76,12 +75,15 @@ title-hero → Background → Existing (ref) → Proposed (2–4)
 title-hero → agenda → thesis (exec summary)
            → Background → Existing → Proposed (+ compare)
            → Deep Dive (optional) → Trade-offs → Impact
-           → Promotion → Fallback → asks → Q&A → closing
+           → compare (Promotion and fallback) → asks → Q&A → closing
 ```
 
-A full review adds `agenda`, `thesis`, `image` (architecture), `compare`, and
-`cards` for Trade-offs / Impact / Promotion / Fallback. Incremental reviews may
-skip the agenda and thesis but still need Open Questions (`asks`).
+Both profiles include `agenda` after the cover. A full review also adds
+`thesis`, `image` (architecture), and `cards` for Trade-offs and Impact.
+Promotion and fallback are one `compare` slide, not two `cards` slides.
+Incremental reviews may skip the thesis. Both still need Open Questions
+(`asks`). QA warns when the agenda is missing, or when promotion and fallback
+are not that `compare`.
 
 **Walkthrough sequence** (USID sample): per stage `image` → as-is/to-be
 `evolution` → `asks`. Do not use this profile unless Ka asked for it.

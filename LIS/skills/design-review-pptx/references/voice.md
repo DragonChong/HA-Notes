@@ -19,6 +19,7 @@ Scheduler bar for a note:
 > The rename is not cosmetic: config keys change with it.
 
 Do not copy from the scheduler sample: cover typo `lis-scheudler`, missing
+`agenda`, promotion and fallback as `cards` instead of one `compare`, missing
 `asks`, missing closing.
 
 USID is a workshop: many `image` slides, as-is vs to-be, asks per stage. Not

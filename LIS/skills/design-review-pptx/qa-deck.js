@@ -273,9 +273,11 @@ function checkDeck(deck, slides) {
     }
   }
 
-  // Agenda coverage: every agenda item should appear as a later eyebrow/title.
+  // Agenda is required after the cover. Every item should appear later.
   const agenda = visible.find((s) => s.archetype === 'agenda');
-  if (agenda) {
+  if (!agenda) {
+    warn(0, 'deck has no agenda slide — put one after the cover');
+  } else {
     // statement/closing slides carry their label in `headline`, not `title`.
     const titles = visible
       .map((s) => `${s.eyebrow || ''} ${s.title || ''} ${s.headline || ''}`.toLowerCase())
@@ -286,6 +288,19 @@ function checkDeck(deck, slides) {
         warn(0, `agenda item "${label}" has no matching slide`);
       }
     });
+  }
+
+  // Promotion and fallback are one compare: left steps, right steps.
+  const runbookBlob = (s) => [
+    s.eyebrow, s.title, s.headline,
+    s.left && s.left.title, s.right && s.right.title,
+  ].filter(Boolean).join(' ').toLowerCase();
+  const runbook = visible.find((s) => {
+    const blob = runbookBlob(s);
+    return /promotion/.test(blob) && /fallback/.test(blob);
+  });
+  if (!runbook || runbook.archetype !== 'compare') {
+    warn(0, 'promotion and fallback must be one compare slide (left success steps, right danger steps)');
   }
 
   const hasAsks = visible.some((s) =>
