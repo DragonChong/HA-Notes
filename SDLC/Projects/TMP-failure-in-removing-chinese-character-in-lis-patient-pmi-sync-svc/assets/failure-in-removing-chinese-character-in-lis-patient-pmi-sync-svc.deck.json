@@ -23,15 +23,14 @@
     {
       "archetype": "agenda",
       "eyebrow": "Agenda",
-      "title": "Five stops",
+      "title": "Four stops",
       "items": [
         { "title": "Background", "note": "why Chinese characters reach Sybase" },
-        { "title": "Existing Design", "note": "the flag check does not reach Oracle" },
         { "title": "Proposed Change", "note": "read the flag, then remove when Sybase" },
         { "title": "Promotion and fallback", "note": "new library, or the previous one" },
         { "title": "Open Questions", "note": "one Oracle database, and an open transaction" }
       ],
-      "notes": "Five stops. Promotion and fallback sit on one slide: ship the library, or put the previous one back."
+      "notes": "Four stops. Promotion and fallback sit on one slide: ship the library, or put the previous one back."
     },
     {
       "archetype": "evolution",
@@ -65,30 +64,6 @@
         "text": "The Oracle flag. When the check fails, the replace is skipped."
       },
       "notes": "The flag is the only thing that decides whether to remove. When the check fails, the program skips the replace and Sybase gets the Chinese characters."
-    },
-    {
-      "archetype": "compare",
-      "eyebrow": "Existing Design",
-      "title": "The flag check does not reach Oracle",
-      "left": {
-        "label": "Today",
-        "tone": "danger",
-        "title": "Characters are not removed",
-        "points": [
-          "Check: Oracle flag is not read",
-          "Result: Replace logic does not run.Chinese characters go into Sybase"
-        ]
-      },
-      "right": {
-        "label": "Proposed",
-        "tone": "accent",
-        "title": "Read the flag on Oracle",
-        "points": [
-          "Check: Connect to Oracle and read the flag",
-          "Result: Replace the Chinese characters for Sybase"
-        ]
-      },
-      "notes": "We do not move the hospital transaction onto Oracle. That would commit hospital work already done. Only the flag read uses the Oracle connection."
     },
     {
       "archetype": "cards",

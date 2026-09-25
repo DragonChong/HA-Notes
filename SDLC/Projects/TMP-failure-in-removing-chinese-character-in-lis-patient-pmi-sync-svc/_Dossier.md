@@ -61,6 +61,7 @@ Oracle repository reads fail when the thread is already on a Sybase or PostgreSQ
 - 2026-09-25 — Title changed from Oracle route lookup to Failure in removing chinese character in lis-patient-pmi-sync-svc. Key stays `TMP-oracle-route-lookup`.
 - 2026-09-25 — Provisional key renamed from `TMP-oracle-route-lookup` to `TMP-failure-in-removing-chinese-character-in-lis-patient-pmi-sync-svc`. A4 still waits for a JIRA key. Folder rename was denied because the path was in use.
 - 2026-09-25 — Folder renamed by the requester. Regenerated `failure-in-removing-chinese-character-in-lis-patient-pmi-sync-svc.pptx` (7 slides). CP3 QA: 0 errors, 2 warnings (agenda still lists Open Questions; no asks slide).
+- 2026-09-25 — Removed the Existing Design slide. Agenda is four stops. Regenerated the deck.
 
 ## Open Items
 

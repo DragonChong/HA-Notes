@@ -29,8 +29,8 @@ Facts come from [[02 System Design]], plus the requester's room wording for the 
 
 ### Slide: Agenda
 **Archetype:** agenda
-**Items:** Background, Existing Design, Proposed Change, Promotion and fallback, Open Questions
-**Notes:** Five stops. Promotion and fallback sit on one slide: ship the library, or put the previous one back.
+**Items:** Background, Proposed Change, Promotion and fallback, Open Questions
+**Notes:** Four stops. Promotion and fallback sit on one slide: ship the library, or put the previous one back.
 
 ### Slide: Background
 **Eyebrow:** Background
@@ -38,13 +38,6 @@ Facts come from [[02 System Design]], plus the requester's room wording for the 
 **Archetype:** evolution
 **Body:** Patient sync removes Chinese characters for a Sybase hospital. LIS-10723 upgraded data-source for transaction locking. The Oracle flag check then fails, and the characters are not removed.
 **Notes:** The flag is the only thing that decides whether to remove. When the check fails, the program skips the replace and Sybase gets the Chinese characters.
-
-### Slide: Existing Design
-**Eyebrow:** Existing Design
-**Title:** The flag check does not reach Oracle
-**Archetype:** compare
-**Body:** Today the read follows the hospital route and is refused, so Chinese characters are not removed. After the change, the flag is read on Oracle. If the hospital is Sybase, the Chinese characters are replaced.
-**Notes:** We do not move the hospital transaction onto Oracle. That would commit hospital work already done. Only the flag read uses the Oracle connection.
 
 ### Slide: Proposed Change
 **Eyebrow:** Proposed Change
