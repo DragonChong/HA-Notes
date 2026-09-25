@@ -93,7 +93,7 @@
     {
       "archetype": "cards",
       "eyebrow": "Proposed Change",
-      "title": "Read the Oracle flag, then remove when the hospital is Sybase",
+      "title": "Fix the read of the Oracle flag, then remove when the connection is Sybase",
       "perRow": 3,
       "cards": [
         {
