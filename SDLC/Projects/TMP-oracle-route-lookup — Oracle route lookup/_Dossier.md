@@ -30,7 +30,7 @@ Oracle repository reads fail when the thread is already on a Sybase or PostgreSQ
 ## Status
 
 > [!info] Stage: **design** — gate `design` outstanding
-> Next action: set `reviewed_by` on [[02 System Design]], then `/design-review-pptx`
+> Next action: present the deck. Do not close `design-review` until CP3 actions are written back to [[02 System Design]].
 
 ## Artifacts
 
@@ -38,6 +38,8 @@ Oracle repository reads fail when the thread is already on a Sybase or PostgreSQ
 |---|---|---|
 | 01 Requirement | [[01 Requirement Confirmation]] | pass with assumptions 2026-09-25 |
 | 02 Design | [[02 System Design]] | draft |
+| 03 Slide Brief | [[03 Slide Brief]] | draft |
+| 03 Design Review | [[assets/Oracle route lookup.pptx]] | generated |
 
 ## Gate Log
 
@@ -50,6 +52,7 @@ Oracle repository reads fail when the thread is already on a Sybase or PostgreSQ
 - 2026-09-25 — New dossier. The only other `status: active` dossier is [[TMP-specimen-sorter-api — Specimen Sorter API]], which is a different unit of work. Provisional key `TMP-oracle-route-lookup`.
 - 2026-09-25 — Q1 proposed default (PostgreSQL) was wrong. Requester: default to Sybase for the failed call; still do not cache it (R4). Design failure fallback is Sybase.
 - 2026-09-25 — Rejected switching the shared route to Oracle for the `loe_control` read. `RoutingTransactionManager.ensureTarget` would commit the hospital segment (R2).
+- 2026-09-25 — High-level CP3 deck generated from [[03 Slide Brief]]. Default QA passed. CP3-profile QA still reports no numeric JIRA key because A4 is the provisional key `TMP-oracle-route-lookup`.
 
 ## Open Items
 

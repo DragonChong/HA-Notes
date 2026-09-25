@@ -1,0 +1,194 @@
+{
+  "meta": {
+    "title": "TMP-oracle-route-lookup Oracle route lookup",
+    "subject": "Oracle type lookup while a hospital database is in use",
+    "author": "LIS Team",
+    "company": "Hospital Authority"
+  },
+  "slides": [
+    {
+      "archetype": "title-hero",
+      "eyebrow": "TMP-oracle-route-lookup   ·   CHANGE REQUEST   ·   CP3",
+      "headline": "Oracle lookup stays on Oracle\nwhile hospital work continues",
+      "lede": "Patient sync checks Sybase versus PostgreSQL by reading loe_control. That read currently follows the hospital route, so Oracle refuses it.",
+      "stats": [
+        { "label": "Service", "value": "lis-svc-lib" },
+        { "label": "Reviewed", "value": "25 Sep 2026", "highlight": true },
+        { "label": "Forum", "value": "CP3" }
+      ],
+      "presenters": "LIS Team",
+      "reviewers": "Tony Chong",
+      "footer": "Design reviewed  ·  for CP3",
+      "notes": "Patient sync already has the hospital database open. The Sybase-or-PostgreSQL check then asks Oracle on that same route, and Oracle refuses it."
+    },
+    {
+      "archetype": "evolution",
+      "eyebrow": "Background",
+      "title": "The type check fails, and the failure sticks",
+      "steps": [
+        {
+          "badge": 1,
+          "tone": "neutral",
+          "tag": "Hospital",
+          "title": "Hospital database is already selected",
+          "body": "Patient sync has started work on the hospital Sybase or PostgreSQL database."
+        },
+        {
+          "badge": 2,
+          "tone": "danger",
+          "tag": "loe_control",
+          "title": "The type check uses that same route",
+          "body": "The read of loe_control goes to Oracle, but the route is still the hospital."
+        },
+        {
+          "badge": 3,
+          "tone": "warn",
+          "tag": "Cached",
+          "title": "The miss is stored as PostgreSQL",
+          "body": "Later messages skip the check. A Sybase hospital keeps characters it cannot store."
+        }
+      ],
+      "callout": {
+        "lead": "Why it sticks:",
+        "text": "One failed lookup is saved as PostgreSQL, so the next messages never ask Oracle again."
+      },
+      "notes": "The cache is the part that hurts. One miss is stored as PostgreSQL, so later messages never ask Oracle again. Chinese characters then stay in a message for a Sybase hospital."
+    },
+    {
+      "archetype": "compare",
+      "eyebrow": "Existing Design",
+      "title": "The hospital route stays put during the Oracle read",
+      "left": {
+        "label": "Today",
+        "tone": "danger",
+        "title": "Oracle is asked on the hospital route",
+        "points": [
+          "Route: still the hospital database",
+          "Result: Oracle refuses the read",
+          "After: the miss is saved as PostgreSQL"
+        ]
+      },
+      "right": {
+        "label": "Proposed",
+        "tone": "accent",
+        "title": "Oracle reads its own connection",
+        "points": [
+          "Route: hospital work stays where it is",
+          "Result: loe_control is read on Oracle",
+          "After: Oracle down means Sybase, unsaved"
+        ]
+      },
+      "notes": "We do not point the whole thread at Oracle. That would commit hospital work already done. Only the Oracle read uses the Oracle connection."
+    },
+    {
+      "archetype": "cards",
+      "eyebrow": "Proposed Change",
+      "title": "Patient sync code stays as it is",
+      "perRow": 3,
+      "cards": [
+        {
+          "icon": "database",
+          "title": "The Oracle read succeeds",
+          "body": "loe_control is read on the Oracle connection even while the hospital database is selected."
+        },
+        {
+          "icon": "hospital",
+          "title": "Hospital work stays open",
+          "body": "The hospital transaction is not switched to Oracle, so work already done is not committed early."
+        },
+        {
+          "icon": "rotate-left",
+          "title": "Oracle down means Sybase",
+          "body": "This call is treated as Sybase. That answer is not saved, so the next call can ask Oracle again."
+        }
+      ],
+      "notes": "lis-patient-pmi-sync-svc still calls the same check. The library changes underneath it."
+    },
+    {
+      "archetype": "cards",
+      "eyebrow": "Promotion",
+      "title": "Ship the library and leave config alone",
+      "perRow": 3,
+      "cards": [
+        {
+          "icon": "cloud-arrow-up",
+          "title": "New data-source build",
+          "body": "Services take the fix by depending on the new library build."
+        },
+        {
+          "icon": "sliders",
+          "title": "No config change",
+          "body": "JDBC settings stay as they are in DEVQA, SIT, and PROD."
+        },
+        {
+          "icon": "box",
+          "title": "Patient sync only rebuilds",
+          "body": "lis-patient-pmi-sync-svc rebuilds to take the library. Its own source stays the same."
+        }
+      ],
+      "notes": "DEVQA, SIT, and PROD keep the same JDBC settings. What changes is the library binary."
+    },
+    {
+      "archetype": "cards",
+      "eyebrow": "Fallback",
+      "title": "Put the previous library back",
+      "perRow": 3,
+      "cards": [
+        {
+          "badge": 1,
+          "title": "Redeploy and restart",
+          "body": "Put the previous data-source build back on the affected service and restart it."
+        },
+        {
+          "badge": 2,
+          "title": "Watch for the old warning",
+          "body": "On a Sybase hospital, the log should again say defaulting to PostgreSQL."
+        },
+        {
+          "badge": 3,
+          "title": "Clear a wrong saved answer",
+          "body": "DELETE /api/clearCachedDBConn/{hospital}/{lab} drops one cached type check."
+        }
+      ],
+      "notes": "You know the rollback worked when that old warning is back on a Sybase hospital."
+    },
+    {
+      "archetype": "asks",
+      "eyebrow": "Open Questions",
+      "title": "Two questions before we build",
+      "asks": [
+        {
+          "q": "Is LOE / lab 1 / LOE_DB the only Oracle database?",
+          "why": "The read will use that connection unless the thread is already on Oracle."
+        },
+        {
+          "q": "If a distributed transaction is already open, may this Oracle read join it?",
+          "why": "Hospital work will not be committed early. Distributed transactions are otherwise unchanged."
+        }
+      ],
+      "notes": "The first question is whether a second Oracle database is registered. The second is enlistment only. We are not redesigning distributed transactions."
+    },
+    {
+      "archetype": "statement",
+      "eyebrow": "Discussion",
+      "headline": "Q&A",
+      "body": "Patient sync source does not change. If Oracle is down, this call is Sybase and that answer is not saved.",
+      "notes": "Likely questions: does patient sync source change (no), and what happens when Oracle is down (this call is Sybase, and that answer is not saved)."
+    },
+    {
+      "archetype": "closing",
+      "icon": "clipboard-check",
+      "headline": "Agree the Oracle read, then build the library",
+      "note": "No schema change. No config change.",
+      "nextSteps": [
+        { "title": "After CP3", "body": "Write actions back onto the design note" },
+        { "title": "Then build", "body": "data-source only" }
+      ],
+      "identity": {
+        "key": "TMP-oracle-route-lookup",
+        "meta": "data-source  ·  lis-svc-lib"
+      },
+      "notes": "After the room, write any CP3 actions back onto the design note. This deck does not close the review gate."
+    }
+  ]
+}
