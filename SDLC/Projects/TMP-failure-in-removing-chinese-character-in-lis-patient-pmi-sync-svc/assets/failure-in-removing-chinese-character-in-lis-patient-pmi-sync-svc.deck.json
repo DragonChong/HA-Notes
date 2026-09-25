@@ -9,7 +9,7 @@
     {
       "archetype": "title-hero",
       "eyebrow": "LIS-XXXXX",
-      "headline": "Chinese characters reach Sybase\nwhen the Oracle flag is not read",
+      "headline": "Failure in removing chinese character in lis-patient-pmi-sync-svc",
       "lede": "lis-patient-pmi-sync-svc removes Chinese characters when the hospital is on Sybase. After the LIS-10723 data-source upgrade, that flag check does not reach Oracle, so they are not removed.",
       "stats": [
         { "label": "Service", "value": "lis-patient-pmi-sync-svc" },
