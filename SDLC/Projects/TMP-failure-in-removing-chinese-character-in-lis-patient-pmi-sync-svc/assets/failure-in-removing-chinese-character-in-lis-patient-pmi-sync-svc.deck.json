@@ -16,8 +16,7 @@
         { "label": "Library", "value": "data-source" },
         { "label": "Reviewed", "value": "25 Sep 2026", "highlight": true }
       ],
-      "presenters": "LIS Team",
-      "reviewers": "Tony Chong",
+      "presenters": "Tony Chong",
       "footer": "Related upgrade LIS-10723  ·  for CP3",
       "notes": "Patient sync is supposed to remove Chinese characters when the hospital is on Sybase. After the LIS-10723 data-source upgrade, the flag check does not reach Oracle, so they are not removed."
     },
